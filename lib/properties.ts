@@ -1,0 +1,246 @@
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "https://admin.haskerrealtygroup.com";
+
+// ─── API Response Types ────────────────────────────────────────────────────
+
+export interface PropertyImageAPI {
+  id: number;
+  image_url: string | null;
+  caption: string | null;
+  is_primary: boolean;
+  order: number;
+}
+
+export interface PropertyAmenityAPI {
+  id: number;
+  name: string;
+}
+
+export interface AmenityCategoryAPI {
+  id: number | null;
+  name: string;
+  icon: string;
+  amenities: PropertyAmenityAPI[];
+}
+
+export interface PropertyAgentAPI {
+  id: number;
+  first_name: string;
+  last_name: string;
+  full_name: string;
+  phone: string;
+  email: string;
+  avatar_url: string | null;
+  agent_profile?: {
+    license_number?: string;
+    bio?: string;
+    specialties?: string[];
+  };
+}
+
+/** Shape returned by GET /api/v1/properties/ (list) */
+export interface PropertyListItemAPI {
+  id: number;
+  slug: string;
+  title: string;
+  type: string;
+  listing_type: string;
+  status: string;
+  price: number;
+  price_label: string;
+  bedrooms: number;
+  bathrooms: number;
+  sqft: number;
+  address: string;
+  city: string;
+  state: string;
+  neighborhood: string | null;
+  is_featured: boolean;
+  primary_image_url: string | null;
+  agent_name: string;
+  created_at: string;
+  latitude: number | null;
+  longitude: number | null;
+}
+
+/** Shape returned by GET /api/v1/properties/<slug>/ (detail) */
+export interface PropertyDetailAPI extends PropertyListItemAPI {
+  description: string;
+  zip_code: string;
+  lot_size: number | null;
+  year_built: number | null;
+  garage: number | null;
+  stories: number | null;
+  latitude: number | null;
+  longitude: number | null;
+  virtual_tour_url: string | null;
+  tour_360_url: string | null;
+  condition: string | null;
+  cross_street: string | null;
+  images: PropertyImageAPI[];
+  amenities: PropertyAmenityAPI[];
+  amenity_categories: AmenityCategoryAPI[];
+  agent: PropertyAgentAPI;
+  updated_at: string;
+}
+
+export interface PaginatedProperties {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: PropertyListItemAPI[];
+}
+
+// ─── Fetch Functions ───────────────────────────────────────────────────────
+
+export interface FetchPropertiesParams {
+  listing_type?: string;
+  q?: string;
+  beds?: string;
+  min_price?: string;
+  max_price?: string;
+  is_featured?: string;
+  agent?: string;
+  state?: string;
+  sort?: string;
+  type?: string;
+  page_size?: string;
+  page?: string;
+  lat_min?: string;
+  lat_max?: string;
+  lng_min?: string;
+  lng_max?: string;
+}
+
+export async function fetchProperties(
+  params?: FetchPropertiesParams
+): Promise<PaginatedProperties> {
+  const url = new URL(`${API_BASE}/api/v1/properties/`);
+  if (params?.listing_type) url.searchParams.set("listing_type", params.listing_type);
+  url.searchParams.set("is_published", "true");
+  if (params?.q)           url.searchParams.set("q", params.q);
+  if (params?.beds)        url.searchParams.set("beds", params.beds);
+  if (params?.min_price)   url.searchParams.set("min_price", params.min_price);
+  if (params?.max_price)   url.searchParams.set("max_price", params.max_price);
+  if (params?.is_featured) url.searchParams.set("is_featured", params.is_featured);
+  if (params?.agent)       url.searchParams.set("agent", params.agent);
+  if (params?.state)       url.searchParams.set("state", params.state);
+  if (params?.sort)        url.searchParams.set("sort", params.sort);
+  if (params?.type)        url.searchParams.set("type", params.type);
+  if (params?.page_size)   url.searchParams.set("page_size", params.page_size);
+  if (params?.page)        url.searchParams.set("page", params.page);
+  if (params?.lat_min)     url.searchParams.set("lat_min", params.lat_min);
+  if (params?.lat_max)     url.searchParams.set("lat_max", params.lat_max);
+  if (params?.lng_min)     url.searchParams.set("lng_min", params.lng_min);
+  if (params?.lng_max)     url.searchParams.set("lng_max", params.lng_max);
+
+  const res = await fetch(url.toString(), { next: { revalidate: 300 } });
+  if (!res.ok) throw new Error(`fetchProperties: ${res.status}`);
+  return res.json();
+}
+
+export async function fetchFeaturedProperties(): Promise<PropertyListItemAPI[]> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/properties/featured/`, {
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) return [];
+    const data: PropertyListItemAPI[] | PaginatedProperties = await res.json();
+    if (Array.isArray(data)) return data;
+    return (data as PaginatedProperties).results ?? [];
+  } catch (err) {
+    console.error("fetchFeaturedProperties failed:", err);
+    return [];
+  }
+}
+
+/**
+ * Fetches properties hand-picked by the admin for the homepage "Available Now" section.
+ * Uses homepage_featured=True; falls back to is_featured if none are set.
+ */
+export async function fetchHomepageProperties(): Promise<PropertyListItemAPI[]> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/properties/homepage/`, {
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) return [];
+    const data: PropertyListItemAPI[] | PaginatedProperties = await res.json();
+    if (Array.isArray(data)) return data;
+    return (data as PaginatedProperties).results ?? [];
+  } catch (err) {
+    console.error("fetchHomepageProperties failed:", err);
+    return [];
+  }
+}
+
+export async function fetchPropertyBySlug(slug: string): Promise<PropertyDetailAPI> {
+  const res = await fetch(`${API_BASE}/api/v1/properties/${slug}/`, {
+    next: { revalidate: 300 },
+  });
+  if (res.status === 404) {
+    const err = new Error("Property not found") as Error & { status: number };
+    err.status = 404;
+    throw err;
+  }
+  if (!res.ok) throw new Error(`fetchPropertyBySlug: ${res.status}`);
+  return res.json();
+}
+
+export async function fetchAllPropertySlugs(): Promise<string[]> {
+  try {
+    // Reuse the dedicated sitemap endpoint which returns ALL slugs without the 200-row page cap
+    const res = await fetch(`${API_BASE}/api/v1/properties/sitemap/`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return [];
+    const data: { slug: string; updated_at: string }[] = await res.json();
+    return data.map((p) => p.slug);
+  } catch (err) {
+    console.error("fetchAllPropertySlugs failed:", err);
+    return [];
+  }
+}
+
+/** For sitemap.ts: returns slug + lastModified for all active properties. Throws on failure so sitemap.ts returns a 500 (Googlebot retries) instead of an empty list (Googlebot deindexes). */
+export async function fetchPropertiesForSitemap(): Promise<{ slug: string; lastModified: string }[]> {
+  const res = await fetch(`${API_BASE}/api/v1/properties/sitemap/`, {
+    next: { revalidate: 3600 },
+  });
+  if (!res.ok) throw new Error(`Properties sitemap fetch failed: ${res.status}`);
+  const data: { slug: string; updated_at: string }[] = await res.json();
+  return data.map((p) => ({ slug: p.slug, lastModified: p.updated_at }));
+}
+
+// ─── Mapper: API list item → Property type (for PropertyCard) ─────────────
+
+import type { Property } from "@/types";
+
+export function toPropertyCardShape(p: PropertyListItemAPI): Property {
+  return {
+    id:          String(p.id),
+    slug:        p.slug,
+    title:       p.title,
+    description: "",
+    type:        p.type as Property["type"],
+    listingType: p.listing_type as Property["listingType"],
+    status:      p.status as Property["status"],
+    price:       p.price,
+    priceLabel:  p.price_label || undefined,
+    bedrooms:    p.bedrooms,
+    bathrooms:   p.bathrooms,
+    sqft:        p.sqft,
+    address:     p.address,
+    city:        p.city,
+    state:       p.state,
+    zip:         "",
+    neighborhood: p.neighborhood ?? undefined,
+    images:      p.primary_image_url
+      ? [{ id: "primary", url: p.primary_image_url, caption: p.title, isPrimary: true }]
+      : [],
+    amenities:   [],
+    isFeatured:  p.is_featured,
+    isPublished: true,
+    agentId:     "",
+    createdAt:   p.created_at,
+    updatedAt:   p.created_at,
+  };
+}
