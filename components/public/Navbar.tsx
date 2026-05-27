@@ -44,10 +44,8 @@ export function Navbar() {
 
   // Close mobile menu on route change
   useEffect(() => {
-    if (mobileOpen) {
-      setTimeout(() => setMobileOpen(false), 0);
-    }
-  }, [pathname, mobileOpen]);
+    setMobileOpen(false);
+  }, [pathname]);
 
   // When scrolled OR on non-hero pages → solid white bar
   // When at the top of a hero page → transparent (dark gradient so text stays visible)
