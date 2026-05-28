@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  Sparkles, TrendingUp, ChevronRight, ShieldCheck
+  Sparkles, Calendar, ChevronRight, ShieldCheck
 } from "lucide-react";
 import { PropertyEligibilityDrawer } from "./PropertyEligibilityDrawer";
 import { ActiveSpecialModal } from "./ActiveSpecialModal";
@@ -91,13 +91,13 @@ export function PropertyLeadCTAs({
             Apply Free — Decision in 24 Hours
           </Link>
 
-          {/* Secondary CTA - Check Eligibility */}
+          {/* Secondary CTA - Book a Tour */}
           <button
             onClick={() => setEligibilityOpen(true)}
             className="w-full flex items-center justify-center gap-2 h-12 border-2 border-brand-dark/90 text-brand-dark hover:bg-brand-dark hover:text-white text-sm font-bold rounded-xl transition-all cursor-pointer bg-white group"
           >
-            <TrendingUp size={15} className="text-brand group-hover:text-white transition-colors" />
-            Check Eligibility in 30s
+            <Calendar size={15} className="text-brand group-hover:text-white transition-colors" />
+            Book a Tour
           </button>
           
           <p className="text-[10px] text-center text-neutral-400">
@@ -122,13 +122,13 @@ export function PropertyLeadCTAs({
     return (
       <>
         <div className="flex items-center gap-3 w-full">
-          {/* Check Eligibility Button */}
+          {/* Book a Tour Button */}
           <button
             onClick={() => setEligibilityOpen(true)}
             className="flex-1 h-11 border border-brand-dark text-brand-dark text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 hover:bg-neutral-50 transition-colors cursor-pointer bg-white"
           >
-            <TrendingUp size={13} className="text-brand" />
-            Eligibility Check
+            <Calendar size={13} className="text-brand" />
+            Book a Tour
           </button>
 
           {/* Apply Button */}

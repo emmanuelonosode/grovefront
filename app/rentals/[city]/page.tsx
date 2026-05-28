@@ -371,7 +371,7 @@ export default async function CityRentalsPage(
       </section>
 
       {/* ── LEAD CAPTURE ─────────────────────────────────────────── */}
-      <section className="bg-[#0B1F3A] py-16 lg:py-20 px-6">
+      <section className="bg-[#1E3A5F] py-16 lg:py-20 px-6">
         <div className="max-w-xl mx-auto text-center">
           <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-3">Be First</p>
           <h2 className="font-serif text-3xl lg:text-4xl font-bold text-white mb-4">

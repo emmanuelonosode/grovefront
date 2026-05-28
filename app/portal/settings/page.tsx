@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -279,7 +279,7 @@ export default function SettingsPage() {
                 <div className="bg-[#F5F5F7] rounded-xl px-4 py-3 flex items-center gap-2">
                   <Shield size={13} className="text-[#C7C7CC]" />
                   <span className="text-[15px] text-[#6E6E73]">
-                    {roleLabel[user?.role ?? ""] ?? user?.role ?? "—"}
+                    {roleLabel[user?.role ?? ""] ?? user?.role ?? "â€”"}
                   </span>
                 </div>
               </div>
@@ -369,10 +369,10 @@ export default function SettingsPage() {
         </div>
 
         {/* Contact info card */}
-        <div className="bg-[#0B1F3A] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="bg-[#1E3A5F] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <p className="text-[13px] font-semibold text-white tracking-tight">Need to update your email?</p>
-            <p className="text-[12px] text-white/40 mt-0.5">Contact our team — email changes require verification.</p>
+            <p className="text-[12px] text-white/40 mt-0.5">Contact our team â€” email changes require verification.</p>
           </div>
           <a
             href="mailto:info@haskerrealtygroup.com?subject=Account Email Change"

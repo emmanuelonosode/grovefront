@@ -94,7 +94,7 @@ function SuccessContent() {
         </div>
 
         {/* Questions */}
-        <div className="bg-[#0B1F3A] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="bg-[#1E3A5F] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <p className="text-[13px] font-semibold text-white tracking-tight">Questions about your application?</p>
             <p className="text-[12px] text-white/40 mt-0.5">Reference your ID when emailing us.</p>
