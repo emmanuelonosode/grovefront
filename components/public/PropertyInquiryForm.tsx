@@ -36,14 +36,14 @@ const TOUR_TYPES = [
 ];
 
 const TIME_SLOTS = [
-  { id: "morning",   label: "Morning",   hours: "9 AM â€“ 12 PM", Icon: Sun    },
-  { id: "afternoon", label: "Afternoon", hours: "1 â€“ 5 PM",     Icon: Sunset },
+  { id: "morning",   label: "Morning",   hours: "9 AM ”“ 12 PM", Icon: Sun    },
+  { id: "afternoon", label: "Afternoon", hours: "1 ”“ 5 PM",     Icon: Sunset },
 ];
 
 const TIMELINES = [
   { label: "ASAP",          value: "ASAP"         },
-  { label: "1â€“3 months",    value: "1_3_MONTHS"   },
-  { label: "3â€“6 months",    value: "3_6_MONTHS"   },
+  { label: "1”“3 months",    value: "1_3_MONTHS"   },
+  { label: "3”“6 months",    value: "3_6_MONTHS"   },
   { label: "6+ months",     value: "6_PLUS"       },
   { label: "Just browsing", value: "JUST_BROWSING" },
 ];
@@ -458,7 +458,7 @@ export function PropertyInquiryForm({
               id="sv-notes"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Accessibility needs, specific questions, or anything elseâ€¦"
+              placeholder="Accessibility needs, specific questions, or anything else…"
               rows={2}
               className={
                 "w-full px-3 py-2.5 bg-white border border-[#E2E8F0] rounded-sm " +
@@ -495,7 +495,7 @@ export function PropertyInquiryForm({
               {loading ? (
                 <>
                   <Loader2 size={14} className="animate-spin" />
-                  Bookingâ€¦
+                  Booking…
                 </>
               ) : (
                 <>

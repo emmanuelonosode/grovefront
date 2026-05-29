@@ -101,7 +101,7 @@ function SplitScreenLogin() {
           <MarqueeRow direction="right" items={HOUSE_IMAGES} speed="50s" />
         </div>
 
-        {/* Branding â€” logo + tagline only, no glass */}
+        {/* Branding — logo + tagline only, no glass */}
         <div className="absolute inset-0 z-20 flex flex-col justify-center items-center pointer-events-none">
           <Image
             src="/logo.svg"
@@ -167,7 +167,7 @@ function SplitScreenLogin() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={`${inputCls} pr-12`}
-                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                  placeholder="••••••••"
                 />
                 <button
                   type="button"
@@ -187,7 +187,7 @@ function SplitScreenLogin() {
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Signing inâ€¦
+                  Signing in…
                 </span>
               ) : "Sign In"}
             </button>

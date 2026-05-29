@@ -103,7 +103,7 @@ function ApplicationDrawer({
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch {
-      // ignore â€” show nothing on error, let user retry
+      // ignore — show nothing on error, let user retry
     } finally {
       setSaving(false);
     }
@@ -164,7 +164,7 @@ function ApplicationDrawer({
           {app.extra_field_label && (
             <div>
               <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-1">{app.extra_field_label}</p>
-              <p className="text-sm text-[#1E3A5F]">{app.extra_field_value || "â€”"}</p>
+              <p className="text-sm text-[#1E3A5F]">{app.extra_field_value || "—"}</p>
             </div>
           )}
 
@@ -207,7 +207,7 @@ function ApplicationDrawer({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={4}
-              placeholder="Add notes for your team â€” interview feedback, follow-up actions, etc."
+              placeholder="Add notes for your team — interview feedback, follow-up actions, etc."
               className="w-full border border-neutral-200 rounded-lg px-3.5 py-2.5 text-sm text-[#1E3A5F] placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand resize-none leading-relaxed"
             />
           </div>
@@ -219,7 +219,7 @@ function ApplicationDrawer({
             className="w-full flex items-center justify-center gap-2 bg-[#1E3A5F] hover:bg-brand text-white text-sm font-semibold py-3 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {saving ? (
-              <><Loader2 size={14} className="animate-spin" /> Savingâ€¦</>
+              <><Loader2 size={14} className="animate-spin" /> Saving…</>
             ) : saved ? (
               <><CheckCircle2 size={14} /> Saved</>
             ) : (
@@ -314,7 +314,7 @@ export default function HiringPage() {
           <Search size={13} className="text-neutral-400 shrink-0" />
           <input
             type="text"
-            placeholder="Search by name, email, or roleâ€¦"
+            placeholder="Search by name, email, or role…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="flex-1 text-sm text-[#1E3A5F] placeholder:text-neutral-300 outline-none bg-transparent"

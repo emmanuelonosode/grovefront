@@ -2,7 +2,7 @@
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "Brand & Design Kit â€” Hasker & Co. Realty Group",
+  title: "Brand & Design Kit — Hasker & Co. Realty Group",
   robots: { index: false, follow: false },
 };
 
@@ -29,8 +29,8 @@ const adSizes = [
   { platform: "Facebook / Instagram Feed",  size: "1080 Ã— 1080 px",  ratio: "1:1"   },
   { platform: "Facebook / Instagram Story", size: "1080 Ã— 1920 px",  ratio: "9:16"  },
   { platform: "Facebook Link Preview",      size: "1200 Ã— 630 px",   ratio: "1.91:1"},
-  { platform: "Google Display (banner)",    size: "728 Ã— 90 px",     ratio: "â€”"     },
-  { platform: "Google Display (rectangle)", size: "300 Ã— 250 px",    ratio: "â€”"     },
+  { platform: "Google Display (banner)",    size: "728 Ã— 90 px",     ratio: "—"     },
+  { platform: "Google Display (rectangle)", size: "300 Ã— 250 px",    ratio: "—"     },
   { platform: "Twitter/X Card",             size: "1200 Ã— 675 px",   ratio: "16:9"  },
   { platform: "LinkedIn Post",              size: "1200 Ã— 627 px",   ratio: "1.91:1"},
   { platform: "Flyer / Print (portrait)",   size: "2480 Ã— 3508 px",  ratio: "A4"    },
@@ -126,25 +126,25 @@ export default function DesignHandoffPage() {
           <h2 className="font-sans text-2xl font-bold text-brand-dark mb-6">Typography</h2>
           <div className="space-y-4">
             <div className="bg-white border border-neutral-200 rounded-sm p-6">
-              <p className="text-xs text-neutral-400 uppercase tracking-widest mb-3">Display / Hero â€” Playfair Display, 700â€“900</p>
+              <p className="text-xs text-neutral-400 uppercase tracking-widest mb-3">Display / Hero — Playfair Display, 700”“900</p>
               <p className="font-serif text-5xl font-bold text-brand-dark leading-tight">Good Homes. Fair Prices.</p>
             </div>
             <div className="bg-white border border-neutral-200 rounded-sm p-6">
-              <p className="text-xs text-neutral-400 uppercase tracking-widest mb-3">Section Heading â€” DM Sans, 700â€“800</p>
+              <p className="text-xs text-neutral-400 uppercase tracking-widest mb-3">Section Heading — DM Sans, 700”“800</p>
               <p className="font-sans text-4xl font-bold text-brand-dark">Homes Available Now</p>
             </div>
             <div className="bg-white border border-neutral-200 rounded-sm p-6">
-              <p className="text-xs text-neutral-400 uppercase tracking-widest mb-3">Subheading â€” DM Sans, 600</p>
+              <p className="text-xs text-neutral-400 uppercase tracking-widest mb-3">Subheading — DM Sans, 600</p>
               <p className="font-sans text-xl font-semibold text-brand-dark">No hidden fees. 24-hour application review.</p>
             </div>
             <div className="bg-white border border-neutral-200 rounded-sm p-6">
-              <p className="text-xs text-neutral-400 uppercase tracking-widest mb-3">Body â€” DM Sans, 400</p>
+              <p className="text-xs text-neutral-400 uppercase tracking-widest mb-3">Body — DM Sans, 400</p>
               <p className="font-sans text-base text-neutral-600 leading-relaxed">
-                Everyone deserves a quality home they can actually afford. Hasker &amp; Co. Realty Group cuts through the noise â€” no inflated prices, no hidden admin fees, no bait-and-switch listings. Just honest homes for real families.
+                Everyone deserves a quality home they can actually afford. Hasker &amp; Co. Realty Group cuts through the noise — no inflated prices, no hidden admin fees, no bait-and-switch listings. Just honest homes for real families.
               </p>
             </div>
             <div className="bg-white border border-neutral-200 rounded-sm p-6">
-              <p className="text-xs text-neutral-400 uppercase tracking-widest mb-3">Eyebrow Label â€” DM Sans, 600, all-caps, wide tracking</p>
+              <p className="text-xs text-neutral-400 uppercase tracking-widest mb-3">Eyebrow Label — DM Sans, 600, all-caps, wide tracking</p>
               <p className="font-sans text-xs font-semibold tracking-[0.35em] uppercase text-brand">Move-In Ready</p>
             </div>
           </div>
@@ -199,7 +199,7 @@ export default function DesignHandoffPage() {
 
         {/* â”€â”€ Trust Signals â”€â”€ */}
         <section>
-          <h2 className="font-sans text-2xl font-bold text-brand-dark mb-6">Trust Signals â€” Use in Ads</h2>
+          <h2 className="font-sans text-2xl font-bold text-brand-dark mb-6">Trust Signals — Use in Ads</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {trust.map((t) => (
               <div key={t} className="bg-white border border-neutral-200 rounded-sm p-4 flex items-center gap-3">
@@ -241,8 +241,8 @@ export default function DesignHandoffPage() {
           <div className="bg-white border border-neutral-200 rounded-sm p-6 space-y-3 text-sm text-neutral-600">
             <p><span className="font-semibold text-brand-dark">Subject:</span> Real families in real homes. Bright interiors, welcoming front doors, families unpacking or relaxing. Not staged magazine shoots.</p>
             <p><span className="font-semibold text-brand-dark">Mood:</span> Warm, hopeful, attainable. Natural light. Clutter-free but lived-in.</p>
-            <p><span className="font-semibold text-brand-dark">Avoid:</span> Luxury penthouses, crystal chandeliers, marble everything. We are affordable â€” show it.</p>
-            <p><span className="font-semibold text-brand-dark">Overlay:</span> On hero images use a dark navy gradient (<code className="bg-neutral-100 px-1.5 py-0.5 rounded text-xs">#1E3A5F at 55â€“85% opacity</code>) so white text stays readable.</p>
+            <p><span className="font-semibold text-brand-dark">Avoid:</span> Luxury penthouses, crystal chandeliers, marble everything. We are affordable — show it.</p>
+            <p><span className="font-semibold text-brand-dark">Overlay:</span> On hero images use a dark navy gradient (<code className="bg-neutral-100 px-1.5 py-0.5 rounded text-xs">#1E3A5F at 55”“85% opacity</code>) so white text stays readable.</p>
             <p><span className="font-semibold text-brand-dark">Stock sources:</span> Unsplash, Pexels. Search terms: "family home interior", "affordable apartment", "house rental", "moving in family".</p>
           </div>
         </section>

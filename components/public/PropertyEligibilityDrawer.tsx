@@ -225,7 +225,7 @@ export function PropertyEligibilityDrawer({
         full_name: name.trim(),
         email: email.trim(),
         phone: phone.trim() || undefined,
-        source: "SPECIAL_OFFER",
+        source: "CONTACT_FORM",
         interest_type: "RENT",
         budget_max: recommendedMaxRent || undefined,
         message: `Opted in for automated budget alert:\n` +

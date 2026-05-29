@@ -71,7 +71,7 @@ export default async function ApplyPage({ searchParams }: Props) {
                 Your next home is<br /> one form away.
               </h1>
               <p className="hero-animate text-[14px] sm:text-[15px] text-[#4B5563] leading-relaxed max-w-[400px] mx-auto md:mx-0 mb-6" style={{ animationDelay: "110ms" }}>
-                Takes 5 minutes. We review every application within 24 hours â€” straightforward decisions, no waiting.
+                Takes 5 minutes. We review every application within 24 hours — straightforward decisions, no waiting.
               </p>
               <div className="hero-animate flex flex-wrap gap-2 justify-center md:justify-start" style={{ animationDelay: "160ms" }}>
                 {TRUST.map(({ icon: Icon, text }) => (
@@ -86,7 +86,7 @@ export default async function ApplyPage({ searchParams }: Props) {
               </div>
             </div>
 
-            {/* Illustration â€” desktop only */}
+            {/* Illustration — desktop only */}
             <div className="hidden md:flex w-[360px] xl:w-[400px] shrink-0 items-end justify-center">
               <Image
                 src="/illustrations/email-header-welcome.png"

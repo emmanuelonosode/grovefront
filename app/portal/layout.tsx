@@ -70,7 +70,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
           </p>
         </div>
 
-        {/* User chip â€” links to settings */}
+        {/* User chip — links to settings */}
         <Link
           href="/portal/settings"
           className="mx-3 mb-4 px-3 py-3 rounded-xl bg-white/[0.06] flex items-center gap-3 hover:bg-white/[0.10] transition-colors group"

@@ -9,7 +9,7 @@ import {
   List, Map as MapIcon, Layers, BedDouble, DollarSign, ArrowRight,
 } from "lucide-react";
 import { FavoriteButton } from "./FavoriteButton";
-import { captureSearchIntent } from "@/lib/tracking";
+import { captureSearchIntent, getBestKnownCity, getDeviceContext, getStoredReferralCode, getStoredUTMs, trackEvent } from "@/lib/tracking";
 import { PropertiesMapLoader } from "./PropertiesMapLoader";
 import { fetchAllCities, CITIES } from "@/lib/cities";
 import type { MapMarker, MapBounds } from "./PropertiesMap";
@@ -78,6 +78,7 @@ export function PropertiesClient({
     initialMinPrice ? (initialMaxPrice ? `${initialMinPrice}-${initialMaxPrice}` : initialMinPrice) : ""
   );
 
+  const [leadCaptured, setLeadCaptured] = useState(false);
   const [mapResults, setMapResults]     = useState<PropertyListItemAPI[] | null>(null);
   const [mapLoading, setMapLoading]     = useState(false);
   const [searchOnMove, setSearchOnMove] = useState(true);
@@ -95,6 +96,7 @@ export function PropertiesClient({
   const [liveCities, setLiveCities] = useState<{ city: string; state: string }[]>([]);
 
   useEffect(() => {
+    if (sessionStorage.getItem("hasker_lead_captured") === "true") setLeadCaptured(true);
     fetchAllCities().then((cities) => {
       setLiveCities(cities.map((c) => ({ city: c.city, state: c.state })));
     }).catch(() => {});
@@ -474,17 +476,23 @@ export function PropertiesClient({
               </div>
             ) : (
               <div className="p-3 grid grid-cols-1 lg:grid-cols-2 gap-3">
-                {results.map((p) => (
-                  <div
-                    key={p.slug}
-                    className="flex flex-col"
-                    ref={(el) => { cardRefs.current[p.slug] = el; }}
-                    onMouseEnter={() => setActiveSlug(p.slug)}
-                    onMouseLeave={() => setActiveSlug(null)}
-                  >
-                    <PanelCard property={p} isActive={activeSlug === p.slug} />
-                  </div>
-                ))}
+                {results.flatMap((p, i) => {
+                  const card = (
+                    <div
+                      key={p.slug}
+                      className="flex flex-col"
+                      ref={(el) => { cardRefs.current[p.slug] = el; }}
+                      onMouseEnter={() => setActiveSlug(p.slug)}
+                      onMouseLeave={() => setActiveSlug(null)}
+                    >
+                      <PanelCard property={p} isActive={activeSlug === p.slug} />
+                    </div>
+                  );
+                  if (i === 5 && results.length > 6 && !leadCaptured) {
+                    return [card, <InlineLeadCard key="inline-lead" onCaptured={() => setLeadCaptured(true)} />];
+                  }
+                  return [card];
+                })}
 
                 {!mapResults && totalPages > 1 && (
                   <div className="col-span-1">
@@ -657,6 +665,123 @@ function PanelCard({ property, isActive }: { property: PropertyListItemAPI; isAc
         )}
       </div>
     </article>
+  );
+}
+
+// ── Inline lead capture card (injected after 6th property) ───────────────────
+
+function InlineLeadCard({ onCaptured }: { onCaptured: () => void }) {
+  const [name,    setName]    = useState("");
+  const [email,   setEmail]   = useState("");
+  const [phone,   setPhone]   = useState("");
+  const [loading, setLoading] = useState(false);
+  const [done,    setDone]    = useState(false);
+  const [error,   setError]   = useState("");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!name.trim())  { setError("Please enter your name."); return; }
+    if (!email.trim() || !/^\S+@\S+\.\S+$/.test(email)) { setError("Please enter a valid email."); return; }
+    setLoading(true); setError("");
+    try {
+      const res = await fetch("/api/v1/leads/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          full_name:     name.trim(),
+          email:         email.trim(),
+          phone:         phone.trim() || undefined,
+          source:        "CONTACT_FORM",
+          interest_type: "RENT",
+          detected_city: getBestKnownCity() || undefined,
+          message:       "Browse-grid inline card." + getDeviceContext(),
+          referral_code: getStoredReferralCode() || undefined,
+          ...getStoredUTMs(),
+        }),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        throw new Error((d as { detail?: string }).detail ?? "Failed.");
+      }
+      sessionStorage.setItem("hasker_lead_captured", "true");
+      trackEvent("generate_lead", { source: "inline_card" });
+      setDone(true);
+      onCaptured();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const inputCls =
+    "w-full h-10 border border-neutral-200 rounded-lg px-3 text-sm text-brand-dark " +
+    "placeholder:text-neutral-400 focus:outline-none focus:border-brand focus:ring-2 " +
+    "focus:ring-brand/15 transition-all bg-white font-medium";
+
+  if (done) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 bg-emerald-50 border border-emerald-200 rounded-xl min-h-[220px] p-5 text-center">
+        <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+          <ArrowRight size={18} className="text-emerald-600" />
+        </div>
+        <p className="font-serif font-bold text-emerald-800 text-sm">Thanks! We&apos;ll be in touch.</p>
+        <p className="text-xs text-emerald-600 leading-relaxed">Check your inbox — we&apos;ll match you with the right home.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-brand-light border border-brand-muted rounded-xl min-h-[220px] p-5 flex flex-col justify-center gap-3">
+      <div>
+        <p className="text-[10px] font-black tracking-[0.2em] uppercase text-brand mb-1">
+          Personal Match
+        </p>
+        <p className="font-serif font-bold text-brand-dark text-sm leading-snug">
+          Can&apos;t find what you&apos;re looking for?
+        </p>
+        <p className="text-xs text-neutral-500 mt-1 leading-relaxed">
+          Tell us what you need — we&apos;ll find the right home and reach out.
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-2" noValidate>
+        <input
+          type="text"
+          placeholder="Your name"
+          value={name}
+          onChange={(e) => { setName(e.target.value); setError(""); }}
+          className={inputCls}
+          required
+        />
+        <input
+          type="email"
+          placeholder="Email address"
+          value={email}
+          onChange={(e) => { setEmail(e.target.value); setError(""); }}
+          className={inputCls}
+          required
+        />
+        <input
+          type="tel"
+          placeholder="Phone (optional)"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          className={inputCls}
+        />
+        {error && <p className="text-red-500 text-[11px] font-medium">{error}</p>}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full h-10 bg-brand hover:bg-brand-hover text-white text-xs font-bold rounded-lg transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center"
+        >
+          {loading
+            ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            : "Find My Match"
+          }
+        </button>
+      </form>
+    </div>
   );
 }
 

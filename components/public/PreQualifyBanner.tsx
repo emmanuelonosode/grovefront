@@ -45,7 +45,7 @@ export function PreQualifyBanner() {
         body: JSON.stringify({
           full_name: name.trim(),
           email: email.trim(),
-          source: "QUALIFY_FORM",
+          source: "CONTACT_FORM",
           interest_type: "RENT",
           message: `Pre-qualify form: monthly income ${income}.`,
           ...getStoredUTMs(),

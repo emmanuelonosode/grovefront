@@ -1,4 +1,4 @@
-﻿// Editorial line art illustrations â€” Workers scene + Pet scene.
+﻿// Editorial line art illustrations — Workers scene + Pet scene.
 // Brand-aligned: navy stroke, brand-blue uniforms, warm + sage accents.
 
 const HC = {

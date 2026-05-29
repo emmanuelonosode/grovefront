@@ -28,7 +28,7 @@ const PRIORITIES = [
   { value: "LOW",    label: "Low",    sub: "Non-urgent, no immediate risk",    color: "#6E6E73" },
   { value: "MEDIUM", label: "Medium", sub: "Needs attention soon",             color: "#FF9F0A" },
   { value: "HIGH",   label: "High",   sub: "Affecting daily life",             color: "#FF6B00" },
-  { value: "URGENT", label: "Urgent", sub: "Safety risk â€” needs immediate fix", color: "#FF3B30" },
+  { value: "URGENT", label: "Urgent", sub: "Safety risk — needs immediate fix", color: "#FF3B30" },
 ] as const;
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ElementType }> = {
@@ -195,7 +195,7 @@ export default function MaintenancePage() {
       const res = await apiFetch(`${API_BASE}/api/v1/maintenance/`, {
         method: "POST",
         body,
-        // No Content-Type â€” let browser set multipart boundary
+        // No Content-Type — let browser set multipart boundary
       });
 
       if (!res.ok) {
@@ -356,7 +356,7 @@ export default function MaintenancePage() {
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Describe the issue, when it started, and how often it occursâ€¦"
+                    placeholder="Describe the issue, when it started, and how often it occurs…"
                     rows={4}
                     className="w-full bg-[#F5F5F7] rounded-xl px-4 py-3 text-[15px] text-[#1D1D1F] outline-none border border-transparent focus:border-brand/30 transition-colors resize-none"
                   />
@@ -371,7 +371,7 @@ export default function MaintenancePage() {
                     type="text"
                     value={accessTime}
                     onChange={(e) => setAccessTime(e.target.value)}
-                    placeholder="e.g. Weekdays after 5pm, anytime Satâ€“Sun"
+                    placeholder="e.g. Weekdays after 5pm, anytime Sat”“Sun"
                     className="w-full bg-[#F5F5F7] rounded-xl px-4 py-3 text-[15px] text-[#1D1D1F] outline-none border border-transparent focus:border-brand/30 transition-colors"
                   />
                 </div>

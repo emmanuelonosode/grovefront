@@ -2,7 +2,7 @@
 
 // â”€â”€ Icon assets (URL-encoded SVGs for satori <img>) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-// Small icon mark (circle bg + house) â€” 44Ã—44 viewBox
+// Small icon mark (circle bg + house) — 44Ã—44 viewBox
 const ICON_SVG =
   '%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2044%2044%22%3E' +
   '%3Ccircle%20cx%3D%2222%22%20cy%3D%2222%22%20r%3D%2222%22%20fill%3D%22%230B1F3A%22/%3E' +
@@ -14,7 +14,7 @@ const ICON_SVG =
   '%3C/g%3E' +
   '%3C/svg%3E'
 
-// Large decorative mark (house only, no circle bg) â€” 320Ã—320 viewBox
+// Large decorative mark (house only, no circle bg) — 320Ã—320 viewBox
 const DECO_SVG =
   '%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20320%20320%22%3E' +
   '%3Cpolygon%20points%3D%2276%2C160%20160%2C56%20244%2C160%20160%2C264%22%20fill%3D%22none%22%20stroke%3D%22%231A56DB%22%20stroke-width%3D%228%22/%3E' +

@@ -112,7 +112,7 @@ function addMarkers(
   nearby: DetailMarker[],
   markersRef: MutableRefObject<any[]>,
 ) {
-  // Current property â€” house icon, always opens popup
+  // Current property — house icon, always opens popup
   if (validCoord(current)) {
     const m = L.marker([current.lat, current.lng], {
       icon: makeCurrentIcon(L),
@@ -124,7 +124,7 @@ function addMarkers(
     markersRef.current.push(m);
   }
 
-  // Nearby â€” price bubbles, hover to open popup
+  // Nearby — price bubbles, hover to open popup
   nearby.filter(validCoord).forEach((nb) => {
     const mk = L.marker([nb.lat, nb.lng], {
       icon: makeNearbyIcon(L, nb.price, nb.price_label),

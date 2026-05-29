@@ -428,7 +428,7 @@ function PaymentModal({
               </div>
               <h4 className="text-[18px] font-bold text-[#1D1D1F] mb-2">Proof Submitted!</h4>
               <p className="text-[13px] text-[#6E6E73] leading-relaxed max-w-xs">
-                Our team will verify your payment. You&apos;ll receive an email once it&apos;s confirmed â€” typically within 1â€“2 business hours.
+                Our team will verify your payment. You&apos;ll receive an email once it&apos;s confirmed — typically within 1”“2 business hours.
               </p>
               <div className="mt-6 w-full bg-[#F5F5F7] rounded-full h-1 overflow-hidden">
                 <div className="h-full bg-brand animate-[shrink_2.5s_linear_forwards] rounded-full" />
@@ -458,7 +458,7 @@ function PaymentModal({
                 </div>
               )}
 
-              {/* â”€â”€ Method selector â€” full-width radio cards â”€â”€ */}
+              {/* â”€â”€ Method selector — full-width radio cards â”€â”€ */}
               <div>
                 <p className="text-[10px] font-bold text-[#6E6E73] uppercase tracking-[0.12em] mb-3">Choose payment method</p>
                 <div className="space-y-2">
@@ -503,7 +503,7 @@ function PaymentModal({
 
               {/* â”€â”€ Payment details card â”€â”€ */}
               {isBankTransfer ? (
-                /* Bank Transfer â€” dark header + stacked rows */
+                /* Bank Transfer — dark header + stacked rows */
                 <div className="rounded-2xl overflow-hidden border border-[#E5E5EA]">
                   {/* Dark header */}
                   <div className="bg-[#1A3557] px-4 py-4 flex items-center gap-3">
@@ -574,7 +574,7 @@ function PaymentModal({
                   </div>
                 </div>
               ) : (
-                /* P2P â€” dark send-to card with break-all handle + Copy pill */
+                /* P2P — dark send-to card with break-all handle + Copy pill */
                 <div className="bg-[#1E3A5F] rounded-2xl p-5 text-white">
                   <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Send to</p>
                   <div className="flex items-start gap-3 mb-4">
@@ -659,7 +659,7 @@ function PaymentModal({
                       <Camera size={20} className="text-[#6E6E73] opacity-50 shrink-0" />
                       <div>
                         <p className="text-[13px] font-medium text-[#6E6E73]">Upload receipt screenshot</p>
-                        <p className="text-[11px] text-[#6E6E73] opacity-60">PNG, JPG â€” up to 10 MB</p>
+                        <p className="text-[11px] text-[#6E6E73] opacity-60">PNG, JPG — up to 10 MB</p>
                       </div>
                     </>
                   )}
@@ -676,13 +676,13 @@ function PaymentModal({
                 className="w-full bg-brand text-white font-bold py-4 rounded-2xl hover:bg-brand-hover transition-colors shadow-lg shadow-brand/20 flex items-center justify-center gap-2 disabled:opacity-70"
               >
                 {loading ? (
-                  <><span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /><span>Uploadingâ€¦</span></>
+                  <><span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /><span>Uploading…</span></>
                 ) : "Submit Proof of Payment"}
               </button>
 
               <div className="flex items-center gap-2 justify-center text-[#6E6E73] pb-2">
                 <Shield size={12} />
-                <p className="text-[11px]">Verification takes 1â€“2 business hours</p>
+                <p className="text-[11px]">Verification takes 1”“2 business hours</p>
               </div>
             </form>
           )}
@@ -931,7 +931,7 @@ export default function PaymentsPage() {
             onClose={() => setSelectedInvoice(null)}
             onSuccess={() => {
               fetchData();
-              toast.success("Payment proof submitted â€” we'll email you once it's verified.");
+              toast.success("Payment proof submitted — we'll email you once it's verified.");
             }}
           />
         )}
@@ -950,7 +950,7 @@ export default function PaymentsPage() {
           </div>
         </div>
 
-        {/* Stats row â€” only shown when data exists */}
+        {/* Stats row — only shown when data exists */}
         {!loading && !loadError && hasData && (
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
             <div className="bg-white rounded-2xl p-3 sm:p-5 shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden">

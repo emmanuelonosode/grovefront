@@ -161,7 +161,7 @@ export default function DocumentsPage() {
           <div className="px-5 py-4 border-b border-black/[0.04] flex items-center justify-between">
             <p className="text-[14px] font-semibold text-[#1D1D1F] tracking-tight">Your Files</p>
             <span className="text-[11px] text-[#6E6E73] bg-[#F5F5F7] px-2.5 py-1 rounded-lg font-medium">
-              {loading ? "â€¦" : `${documents.length} document${documents.length !== 1 ? "s" : ""}`}
+              {loading ? "…" : `${documents.length} document${documents.length !== 1 ? "s" : ""}`}
             </span>
           </div>
 

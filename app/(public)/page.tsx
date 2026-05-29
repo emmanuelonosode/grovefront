@@ -5,42 +5,41 @@ import { HeroSearch } from "@/components/public/HeroSearch";
 import { FeaturedPropertiesSection } from "@/components/public/FeaturedPropertiesSection";
 import { WorkersScene, PetScene } from "@/components/public/HomepageIllustrations";
 import { fetchHomepageProperties, fetchProperties, toPropertyCardShape } from "@/lib/properties";
-import { formatPrice } from "@/lib/utils";
 import { CITIES, fetchAllCities, buildGenericCityData, type CityData } from "@/lib/cities";
 
 export const metadata = {
   title: "Hasker & Co. Realty Group | Affordable Homes to Rent & Buy",
   description:
-    "Hasker & Co. Realty Group â€” find affordable homes to rent and buy across Atlanta, Charlotte, Houston, Dallas, Nashville and Phoenix. Decisions in 24 hrs.",
+    "Hasker & Co. Realty Group — find affordable homes to rent and buy across Atlanta, Charlotte, Houston, Dallas, Nashville and Phoenix. Decisions in 24 hrs.",
   keywords: [
-    "affordable homes for rent",
-    "cheap apartments near me",
+    "houses for rent",
+    "homes for rent near me",
     "houses for rent Atlanta",
     "affordable rentals Charlotte",
-    "cheap homes Houston",
+    "rental homes Houston",
     "rental homes Dallas",
     "affordable housing Nashville",
     "homes for sale affordable",
     "move-in ready rental",
     "24 hour rental approval",
     "pet friendly rentals",
-    "rent with bad credit",
-    "2 bedroom apartments for rent",
-    "3 bedroom houses for rent affordable",
+    "2 bedroom houses for rent",
+    "3 bedroom houses for rent",
     "affordable housing for families",
-    "first time renter apartments",
+    "Hasker Realty Group",
+    "haskerrealtygroup.com",
   ],
   openGraph: {
     title: "Hasker & Co. Realty Group | Affordable Homes to Rent & Buy",
-    description: "Hasker & Co. Realty Group â€” quality homes, well-maintained and move-in ready. Fast approvals. 12+ cities.",
+    description: "Hasker & Co. Realty Group — quality homes, well-maintained and move-in ready. Fast approvals. 12+ cities.",
     type: "website",
     url: "https://haskerrealtygroup.com",
-    images: [{ url: "https://haskerrealtygroup.com/opengraph-image", width: 1200, height: 630, alt: "Hasker & Co. Realty Group â€” Affordable Homes" }],
+    images: [{ url: "https://haskerrealtygroup.com/opengraph-image", width: 1200, height: 630, alt: "Hasker & Co. Realty Group — Affordable Homes" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Hasker & Co. Realty Group | Affordable Homes to Rent & Buy",
-    description: "Hasker & Co. Realty Group â€” quality homes, well-maintained and move-in ready. Fast approvals. 12+ cities.",
+    description: "Hasker & Co. Realty Group — quality homes, well-maintained and move-in ready. Fast approvals. 12+ cities.",
     images: ["https://haskerrealtygroup.com/opengraph-image"],
     creator: "@haskerrealty",
   },
@@ -62,7 +61,7 @@ const LOCAL_BUSINESS_SCHEMA = {
   url: BASE_URL,
   logo: `${BASE_URL}/logo.svg`,
   image: `${BASE_URL}/opengraph-image`,
-  description: "Hasker & Co. Realty Group â€” affordable homes to rent and buy. Quality homes, move-in ready, fast decisions. 2,000+ families housed across 12+ US cities since 2012.",
+  description: "Hasker & Co. Realty Group — affordable homes to rent and buy. Quality homes, move-in ready, fast decisions. 2,000+ families housed across 12+ US cities since 2012.",
   email: "info@haskerrealtygroup.com",
   priceRange: "$$",
   foundingDate: "2012",
@@ -135,7 +134,7 @@ const FAQ_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: [
-    { "@type": "Question", name: "What is Hasker Realty Group?", acceptedAnswer: { "@type": "Answer", text: "Hasker Realty Group â€” officially named Hasker & Co. Realty Group â€” is a licensed US real estate company founded in 2012 and headquartered in Winder, GA. The company specializes in affordable rental homes and budget-friendly properties for sale across 12+ US cities." } },
+    { "@type": "Question", name: "What is Hasker Realty Group?", acceptedAnswer: { "@type": "Answer", text: "Hasker Realty Group — officially named Hasker & Co. Realty Group — is a licensed US real estate company founded in 2012 and headquartered in Winder, GA. The company specializes in affordable rental homes and budget-friendly properties for sale across 12+ US cities." } },
     { "@type": "Question", name: "How long does it take to get approved for a rental?", acceptedAnswer: { "@type": "Answer", text: "Hasker & Co. Realty Group reviews every rental application within 24 hours. You can apply online in under 10 minutes at haskerrealtygroup.com/apply." } },
     { "@type": "Question", name: "Does Hasker & Co. Realty Group charge hidden fees?", acceptedAnswer: { "@type": "Answer", text: "No. The listed price is what you pay. No administrative processing fees or convenience surcharges beyond the standard security deposit." } },
     { "@type": "Question", name: "Can I rent with bad credit through Hasker & Co. Realty Group?", acceptedAnswer: { "@type": "Answer", text: "Hasker & Co. Realty Group reviews applications individually and works with renters who have imperfect credit or limited rental history." } },
@@ -180,7 +179,7 @@ const howItWorks = [
 
 const maintenancePromises = [
   { h: "30-point pre-listing inspection",  d: "Every home is checked before a single photo goes online. If it can't pass, it isn't listed." },
-  { h: "Same-day maintenance response",    d: "Submit a request in the portal â€” a real person responds within the business day. No 7-day ticket queues." },
+  { h: "Same-day maintenance response",    d: "Submit a request in the portal — a real person responds within the business day. No 7-day ticket queues." },
   { h: "In-house team, not third-party",   d: "Our own technicians service every home. They know the property, you, and the history." },
 ];
 
@@ -193,10 +192,10 @@ const whyPillars = [
 
 const faqs = [
   { q: "How long does it take to get approved?",               a: "Every application gets reviewed within 24 hours. Most renters hear back the same business day." },
-  { q: "Do you charge hidden fees or admin charges?",          a: "No. The listed price is what you pay. Standard security deposit and that's it â€” no admin fees, no convenience surcharges." },
-  { q: "Can I apply with limited credit or rental history?",   a: "Yes. We review every application individually and look at your full financial picture â€” not just a credit score." },
+  { q: "Do you charge hidden fees or admin charges?",          a: "No. The listed price is what you pay. Standard security deposit and that's it — no admin fees, no convenience surcharges." },
+  { q: "Can I apply with limited credit or rental history?",   a: "Yes. We review every application individually and look at your full financial picture — not just a credit score." },
   { q: "Are pets allowed?",                                    a: "Most of our homes are pet-friendly. Each listing shows the policy up front. Pet deposits and rent vary by home." },
-  { q: "How do I tour a property?",                            a: "Pick a time on any listing â€” in-person, video, or phone. A specialist confirms within 24 hours." },
+  { q: "How do I tour a property?",                            a: "Pick a time on any listing — in-person, video, or phone. A specialist confirms within 24 hours." },
   { q: "Do you handle maintenance after I move in?",           a: "Yes. Submit a request in the tenant portal and our team responds same day. We don't leave you waiting." },
 ];
 
@@ -259,7 +258,7 @@ export default async function HomePage() {
 
           {/* H1 */}
           <h1 className="font-serif font-bold text-white leading-[1.05] mb-[18px] text-[2.6rem] sm:text-[3.5rem] lg:text-[4.5rem]" style={{ letterSpacing: "-0.02em", maxWidth: 900 }}>
-            Best-maintained homes for rent,<br className="hidden sm:block" /> in 12+ U.S. cities.
+            Best-maintained houses for rent,<br className="hidden sm:block" /> in 12+ U.S. cities.
           </h1>
 
           {/* Subhead */}
@@ -284,7 +283,7 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4">
             {[
-              { v: totalProperties != null ? String(totalProperties) : "â€”", l: "Homes available",      s: "right now" },
+              { v: totalProperties != null ? String(totalProperties) : "—", l: "Homes available",      s: "right now" },
               { v: "2,400+",                                                  l: "Families housed",      s: "since 2012" },
               { v: "12+",                                                     l: "U.S. cities",          s: "and growing" },
               { v: "24h",                                                     l: "Application decisions", s: "typical review" },
@@ -346,7 +345,7 @@ export default async function HomePage() {
                 The best-maintained rentals on the market.
               </h2>
               <p className="leading-[1.65] mb-7" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 15.5, color: "#475569", maxWidth: 460 }}>
-                We don&apos;t list homes we wouldn&apos;t live in. Every property is inspected, cleaned, and turned by our in-house maintenance team before move-in â€” then supported the same way after.
+                We don&apos;t list homes we wouldn&apos;t live in. Every property is inspected, cleaned, and turned by our in-house maintenance team before move-in — then supported the same way after.
               </p>
               <div className="flex flex-col gap-[18px]">
                 {maintenancePromises.map((pr) => (
@@ -362,6 +361,22 @@ export default async function HomePage() {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* CTA */}
+              <div className="mt-9 flex flex-col sm:flex-row gap-3">
+                <Link
+                  href="/houses-for-rent"
+                  className="inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-hover text-white font-bold text-[15px] px-8 py-4 rounded-xl shadow-lg shadow-brand/20 hover:shadow-brand/30 transition-all"
+                >
+                  Browse Houses for Rent <ArrowRight size={16} />
+                </Link>
+                <Link
+                  href="/apply"
+                  className="inline-flex items-center justify-center gap-2 border-2 border-brand-dark/80 text-brand-dark hover:bg-brand-dark hover:text-white font-bold text-[15px] px-8 py-4 rounded-xl transition-all"
+                >
+                  Apply Free — 24hr Decision
+                </Link>
               </div>
             </div>
           </div>
@@ -466,7 +481,7 @@ export default async function HomePage() {
                 Quality homes.<br />Honest pricing.<br />Real support.
               </h2>
               <p className="mt-6 leading-[1.65]" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14, color: "#475569", maxWidth: 280 }}>
-                Everyone deserves a quality home they can actually afford. We cut through the noise â€” no inflated prices, no hidden fees, no bait-and-switch listings.
+                Everyone deserves a quality home they can actually afford. We cut through the noise — no inflated prices, no hidden fees, no bait-and-switch listings.
               </p>
             </div>
             {/* Pillars */}

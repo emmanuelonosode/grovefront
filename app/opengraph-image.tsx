@@ -1,7 +1,7 @@
 ﻿import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
-export const alt = 'Hasker & Co. Realty Group â€” Quality Homes. Move-In Ready.'
+export const alt = 'Hasker & Co. Realty Group — Quality Homes. Move-In Ready.'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -40,7 +40,7 @@ const ICON_SVG =
 
 const ICON_SRC = `data:image/svg+xml,${ICON_SVG}`
 
-// Warm modern house photo â€” used as right-panel backdrop
+// Warm modern house photo — used as right-panel backdrop
 const PHOTO_URL =
   'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=960&q=85&auto=format&fit=crop'
 

@@ -1,5 +1,5 @@
 ﻿/**
- * Hasker & Co. Realty Group â€” SVG wordmark component.
+ * Hasker & Co. Realty Group — SVG wordmark component.
  * Icon: diamond house mark (same geometry as hasker-icon.html) inside a navy circle.
  * Text: "HASKER & CO." bold + "REALTY GROUP" spaced below.
  *
@@ -29,10 +29,10 @@ export function HaskerLogo({
       <circle cx="22" cy="22" r="22" fill="#1E3A5F" />
 
       {/*
-        House mark â€” original coords live in a 320Ã—320 coordinate space,
+        House mark — original coords live in a 320Ã—320 coordinate space,
         centered at (160,160). We translate the origin to (160,160), scale
         down so the mark fits snugly inside the 44-unit circle, then
-        re-place the result at (22,22) â€” the center of our icon area.
+        re-place the result at (22,22) — the center of our icon area.
         Scale = 36 / 208  â‰ˆ 0.173  (208 = full diamond height in source).
       */}
       <g transform="translate(22,22) scale(0.173) translate(-160,-160)">
