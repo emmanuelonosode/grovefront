@@ -14,7 +14,7 @@ export function HeroSearch() {
     const params = new URLSearchParams();
     params.set("listing_type", listingType);
     if (location.trim()) params.set("q", location.trim());
-    router.push(`/homes-for-rent?${params.toString()}`);
+    router.push(`/houses-for-rent?${params.toString()}`);
   }
 
   return (

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
 
 const navLinks = [
-  { label: "Browse Homes", href: "/homes-for-rent" },
+  { label: "Browse Homes", href: "/houses-for-rent" },
   { label: "Our Team", href: "/agents" },
   { label: "Renter's Guide", href: "/blog" },
   { label: "Contact", href: "/contact" },

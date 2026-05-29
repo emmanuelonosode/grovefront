@@ -8,12 +8,12 @@ export const metadata = {
   title: "Homes to Rent & Buy Across America | Hasker & Co. Realty Group",
   description:
     "Browse affordable apartments, rental homes, and homes for sale across America — Atlanta, Charlotte, Houston, Miami, Phoenix, Seattle and more. All homes inspected and move-in ready.",
-  alternates: { canonical: "https://haskerrealtygroup.com/homes-for-rent" },
+  alternates: { canonical: "https://haskerrealtygroup.com/houses-for-rent" },
   openGraph: {
     title: "Homes to Rent & Buy Across America | Hasker & Co. Realty Group",
     description: "Browse affordable rentals and homes for sale. All homes inspected and move-in ready.",
     type: "website",
-    url: "https://haskerrealtygroup.com/homes-for-rent",
+    url: "https://haskerrealtygroup.com/houses-for-rent",
   },
 };
 
@@ -62,7 +62,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home",       item: "https://haskerrealtygroup.com" },
-      { "@type": "ListItem", position: 2, name: "Properties", item: "https://haskerrealtygroup.com/homes-for-rent" },
+      { "@type": "ListItem", position: 2, name: "Properties", item: "https://haskerrealtygroup.com/houses-for-rent" },
     ],
   };
 

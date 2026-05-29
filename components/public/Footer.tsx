@@ -42,10 +42,10 @@ const footerCols = [
   {
     h: "Rent",
     links: [
-      { label: "Browse homes",         href: "/homes-for-rent" },
-      { label: "By city",              href: "/homes-for-rent" },
-      { label: "Pet-friendly",         href: "/homes-for-rent?q=pet" },
-      { label: "New listings",         href: "/homes-for-rent" },
+      { label: "Browse homes",         href: "/houses-for-rent" },
+      { label: "By city",              href: "/houses-for-rent" },
+      { label: "Pet-friendly",         href: "/houses-for-rent?q=pet" },
+      { label: "New listings",         href: "/houses-for-rent" },
     ],
   },
   {

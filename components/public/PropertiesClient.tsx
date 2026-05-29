@@ -152,7 +152,7 @@ export function PropertiesClient({
     };
     Object.entries({ ...base, ...overrides }).forEach(([k, v]) => { if (v) p.set(k, v); });
     const qs = p.toString();
-    return `/homes-for-rent${qs ? `?${qs}` : ""}`;
+    return `/houses-for-rent${qs ? `?${qs}` : ""}`;
   }
 
   function navigate(overrides: Record<string, string | undefined> = {}) {
@@ -350,7 +350,7 @@ export function PropertiesClient({
             {/* Clear filters */}
             {activeFiltersCount > 0 && (
               <Link
-                href="/homes-for-rent"
+                href="/houses-for-rent"
                 className="shrink-0 flex items-center gap-1.5 h-9 px-4 text-[12px] font-bold text-red-500 border-2 border-red-200 rounded-xl hover:bg-red-50 active:bg-red-100 transition-colors whitespace-nowrap bg-white"
               >
                 <X size={13} /> Clear
@@ -463,7 +463,7 @@ export function PropertiesClient({
                 </p>
                 <div className="flex flex-col gap-2 w-full max-w-[200px]">
                   {activeFiltersCount > 0 && (
-                    <Link href="/homes-for-rent" className="w-full py-3 px-4 bg-brand text-white text-[13px] font-bold rounded-xl hover:bg-brand-hover transition-colors text-center">
+                    <Link href="/houses-for-rent" className="w-full py-3 px-4 bg-brand text-white text-[13px] font-bold rounded-xl hover:bg-brand-hover transition-colors text-center">
                       Clear all filters
                     </Link>
                   )}
@@ -561,7 +561,7 @@ function FilterPill({
 
 function PanelCard({ property, isActive }: { property: PropertyListItemAPI; isActive: boolean }) {
   const isRental   = property.listing_type !== "for-sale";
-  const detailHref = `/homes-for-rent/${property.slug}`;
+  const detailHref = `/houses-for-rent/${property.slug}`;
   const applyHref  = `/apply?property=${property.slug}`;
 
   return (
@@ -639,17 +639,23 @@ function PanelCard({ property, isActive }: { property: PropertyListItemAPI; isAc
         </p>
       </Link>
 
-      {/* Apply — fully independent, outside the body link */}
-      {isRental && (
-        <div className="px-3 pb-3">
+      {/* Actions — outside the body link */}
+      <div className="px-3 pb-3 flex gap-2">
+        <Link
+          href={detailHref}
+          className="flex-1 flex items-center justify-center gap-1.5 py-3 sm:py-2 border-2 border-brand-dark/80 text-brand-dark hover:bg-brand-dark hover:text-white text-[12px] sm:text-[11px] font-bold rounded-lg transition-colors duration-150"
+        >
+          See More
+        </Link>
+        {isRental && (
           <Link
             href={applyHref}
-            className="flex items-center justify-center gap-1.5 w-full py-3 sm:py-2 bg-brand hover:bg-brand-hover active:bg-brand-hover text-white text-[12px] sm:text-[11px] font-bold rounded-lg transition-colors duration-150"
+            className="flex-1 flex items-center justify-center gap-1.5 py-3 sm:py-2 bg-brand hover:bg-brand-hover active:bg-brand-hover text-white text-[12px] sm:text-[11px] font-bold rounded-lg transition-colors duration-150"
           >
             Apply Now <ArrowRight size={11} />
           </Link>
-        </div>
-      )}
+        )}
+      </div>
     </article>
   );
 }

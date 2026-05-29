@@ -23,7 +23,7 @@ export default function NotFound() {
       </p>
       <div className="flex flex-col sm:flex-row gap-3">
         <Link
-          href="/homes-for-rent"
+          href="/houses-for-rent"
           className="inline-flex items-center justify-center gap-2 bg-[#2563EB] text-white text-sm font-semibold px-7 py-3.5 rounded-sm hover:bg-[#1D4ED8] transition-colors"
         >
           Browse Homes
