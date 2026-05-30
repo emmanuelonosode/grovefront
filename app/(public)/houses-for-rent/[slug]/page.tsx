@@ -759,16 +759,16 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               <>
                 <a
                   href="#schedule-form-mobile"
-                  className="shrink-0 h-11 px-5 bg-brand-dark text-white text-sm font-semibold rounded-sm flex items-center gap-1.5 hover:bg-brand transition-colors"
+                  className="flex-1 h-12 border-2 border-brand-dark text-brand-dark text-sm font-bold rounded-xl flex items-center justify-center hover:bg-brand-dark hover:text-white transition-all"
                 >
-                  <Calendar size={14} /> Tour
+                  Book a Tour
                 </a>
                 {property.listing_type === "for-sale" && (
                   <Link
                     href={`/contact?property=${property.slug}&inquiry=purchase`}
-                    className="shrink-0 h-11 px-5 bg-brand text-white text-sm font-semibold rounded-sm flex items-center hover:opacity-90 transition-opacity"
+                    className="flex-1 h-12 bg-brand text-white text-sm font-bold rounded-xl flex items-center justify-center hover:bg-brand-hover transition-colors shadow-md shadow-brand/20"
                   >
-                    Inquire
+                    Inquire Now
                   </Link>
                 )}
               </>

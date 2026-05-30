@@ -14,7 +14,7 @@ import {
 const POPUP_TS_KEY   = "hasker_popup_ts";
 const LEAD_KEY       = "hasker_lead_captured";
 const COOLDOWN_MS    = 24 * 60 * 60 * 1000;
-const TIMER_DELAY_MS = 40_000;
+const TIMER_DELAY_MS = 18_000;
 
 const INPUT_CLS =
   "w-full h-[52px] border border-neutral-200 rounded-xl pl-10 pr-4 " +

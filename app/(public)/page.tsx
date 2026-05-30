@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { HeroSearch } from "@/components/public/HeroSearch";
+import { HeroCallbackStrip } from "@/components/public/HeroCallbackStrip";
 import { FeaturedPropertiesSection } from "@/components/public/FeaturedPropertiesSection";
 import { WorkersScene, PetScene } from "@/components/public/HomepageIllustrations";
 import { fetchHomepageProperties, fetchProperties, toPropertyCardShape } from "@/lib/properties";
@@ -238,12 +239,13 @@ export default async function HomePage() {
       {/* â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="relative flex flex-col items-center justify-center overflow-hidden text-center" style={{ minHeight: 620 }}>
         <Image
-          src="https://images.unsplash.com/photo-1560184897-ae75f418493e?w=1920&q=85"
+          src="https://images.unsplash.com/photo-1560184897-ae75f418493e?w=1400&q=75&fm=webp&auto=format"
           alt="Beautiful home available through Hasker & Co. Realty Group"
           fill
           className="object-cover object-center"
           sizes="100vw"
           priority
+          fetchPriority="high"
         />
         <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(30,58,95,0.15) 0%, rgba(30,58,95,0.50) 100%)" }} />
 
@@ -267,9 +269,12 @@ export default async function HomePage() {
           </p>
 
           {/* Search */}
-          <div className="w-full max-w-[760px] mb-7">
+          <div className="w-full max-w-[760px] mb-3">
             <HeroSearch />
           </div>
+
+          {/* Phone callback strip — lowest friction above-fold capture */}
+          <HeroCallbackStrip />
 
           {/* Trust micro-line */}
           <p className="text-[12px] tracking-[0.05em]" style={{ color: "rgba(255,255,255,0.55)" }}>

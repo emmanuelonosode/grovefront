@@ -94,16 +94,16 @@ export function Navbar() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <a
-              href="mailto:info@haskerrealtygroup.com"
+            <button
+              onClick={() => window.dispatchEvent(new Event("hasker:open-callback"))}
               className={cn(
-                "flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-brand",
+                "flex items-center gap-1.5 text-sm font-semibold transition-colors hover:text-brand cursor-pointer",
                 solidBg ? "text-brand-dark" : "text-white/90"
               )}
             >
               <Phone size={14} />
-              Email Us
-            </a>
+              Call Me
+            </button>
             {user ? (
               <div className="flex items-center gap-2">
                 <Link

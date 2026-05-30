@@ -33,6 +33,13 @@ export function FloatingCallbackButton() {
     if (sessionStorage.getItem(CAPTURED_KEY) === "true") setAlreadySent(true);
   }, []);
 
+  // Listen for programmatic open trigger (e.g. from Navbar "Call Me" button)
+  useEffect(() => {
+    const handler = () => { if (!alreadySent) setOpen(true); };
+    window.addEventListener("hasker:open-callback", handler);
+    return () => window.removeEventListener("hasker:open-callback", handler);
+  }, [alreadySent]);
+
   // Scroll lock when open
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -97,11 +104,11 @@ export function FloatingCallbackButton() {
       {/* Floating button — bottom-right, above mobile nav */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-40 flex items-center gap-2 bg-brand hover:bg-brand-hover text-white font-bold text-sm px-4 py-3 lg:px-5 lg:py-3.5 rounded-full shadow-xl shadow-brand/30 hover:shadow-brand/40 transition-all active:scale-95 cursor-pointer group"
+        className="fixed bottom-24 right-4 lg:bottom-6 lg:right-6 z-40 flex items-center gap-2 bg-brand hover:bg-brand-hover text-white font-bold text-sm px-4 py-3 lg:px-5 lg:py-3.5 rounded-full shadow-xl shadow-brand/30 hover:shadow-brand/40 transition-all active:scale-95 cursor-pointer group"
         aria-label="Request a callback"
       >
         <Phone size={16} className="shrink-0 group-hover:animate-bounce" />
-        <span className="hidden sm:inline">Get a Call Back</span>
+        <span>Get a Call Back</span>
       </button>
 
       {/* Modal */}

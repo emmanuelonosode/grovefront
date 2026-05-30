@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   Search, ChevronDown, MapPin, X,
-  List, Map as MapIcon, Layers, BedDouble, DollarSign, ArrowRight,
+  List, Map as MapIcon, Layers, BedDouble, DollarSign, ArrowRight, Calendar,
 } from "lucide-react";
 import { FavoriteButton } from "./FavoriteButton";
 import { captureSearchIntent, getBestKnownCity, getDeviceContext, getStoredReferralCode, getStoredUTMs, trackEvent } from "@/lib/tracking";
@@ -78,8 +78,9 @@ export function PropertiesClient({
     initialMinPrice ? (initialMaxPrice ? `${initialMinPrice}-${initialMaxPrice}` : initialMinPrice) : ""
   );
 
-  const [leadCaptured, setLeadCaptured] = useState(false);
-  const [mapResults, setMapResults]     = useState<PropertyListItemAPI[] | null>(null);
+  const [leadCaptured,     setLeadCaptured]     = useState(false);
+  const [bannerDismissed,  setBannerDismissed]  = useState(false);
+  const [mapResults, setMapResults]             = useState<PropertyListItemAPI[] | null>(null);
   const [mapLoading, setMapLoading]     = useState(false);
   const [searchOnMove, setSearchOnMove] = useState(true);
   const [activeSlug, setActiveSlug]     = useState<string | null>(null);
@@ -412,6 +413,30 @@ export function PropertiesClient({
         {/* Cards panel */}
         <div className={`${mobileView === "map" ? "hidden" : "flex"} lg:flex w-full lg:w-[50%] xl:w-[46%] shrink-0 flex-col border-l border-neutral-200 bg-white`}>
 
+          {/* Overwhelmed banner — shows when 50+ results and user hasn't captured or dismissed */}
+          {initialTotal > 50 && !leadCaptured && !bannerDismissed && (
+            <div className="shrink-0 bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex items-center justify-between gap-3">
+              <p className="text-xs font-semibold text-amber-800 leading-snug">
+                <span className="font-black">{initialTotal.toLocaleString()} homes</span> — overwhelmed? Let an agent narrow it down.
+              </p>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  onClick={() => window.dispatchEvent(new Event("hasker:open-callback"))}
+                  className="text-[11px] font-bold text-white bg-brand hover:bg-brand-hover px-3 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+                >
+                  Get Help
+                </button>
+                <button
+                  onClick={() => setBannerDismissed(true)}
+                  className="text-neutral-400 hover:text-neutral-600 cursor-pointer p-1"
+                  aria-label="Dismiss"
+                >
+                  <X size={13} />
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Panel header */}
           <div className="shrink-0 px-4 py-3 border-b border-neutral-100 flex items-center justify-between gap-3 bg-white">
             <div>
@@ -463,15 +488,13 @@ export function PropertiesClient({
                 <p className="text-neutral-400 text-[13px] mb-6 max-w-[220px] leading-relaxed">
                   Try a different location, a wider budget, or remove a filter.
                 </p>
-                <div className="flex flex-col gap-2 w-full max-w-[200px]">
+                <div className="flex flex-col gap-2 w-full max-w-[240px]">
                   {activeFiltersCount > 0 && (
                     <Link href="/houses-for-rent" className="w-full py-3 px-4 bg-brand text-white text-[13px] font-bold rounded-xl hover:bg-brand-hover transition-colors text-center">
                       Clear all filters
                     </Link>
                   )}
-                  <Link href="/contact" className="w-full py-3 px-4 border-2 border-neutral-200 text-brand-dark text-[13px] font-bold rounded-xl hover:bg-neutral-50 transition-colors text-center">
-                    Ask our team
-                  </Link>
+                  <EmptyStateCallbackForm />
                 </div>
               </div>
             ) : (
@@ -488,7 +511,7 @@ export function PropertiesClient({
                       <PanelCard property={p} isActive={activeSlug === p.slug} />
                     </div>
                   );
-                  if (i === 5 && results.length > 6 && !leadCaptured) {
+                  if (i === 2 && results.length > 3 && !leadCaptured) {
                     return [card, <InlineLeadCard key="inline-lead" onCaptured={() => setLeadCaptured(true)} />];
                   }
                   return [card];
@@ -649,12 +672,15 @@ function PanelCard({ property, isActive }: { property: PropertyListItemAPI; isAc
 
       {/* Actions — outside the body link */}
       <div className="px-3 pb-3 flex gap-2">
+        {/* Book Tour — left button, always shown */}
         <Link
-          href={detailHref}
+          href={`${detailHref}#schedule-form`}
           className="flex-1 flex items-center justify-center gap-1.5 py-3 sm:py-2 border-2 border-brand-dark/80 text-brand-dark hover:bg-brand-dark hover:text-white text-[12px] sm:text-[11px] font-bold rounded-lg transition-colors duration-150"
         >
-          See More
+          <Calendar size={12} />
+          Book Tour
         </Link>
+        {/* Apply Now — right button, rentals only */}
         {isRental && (
           <Link
             href={applyHref}
@@ -665,6 +691,84 @@ function PanelCard({ property, isActive }: { property: PropertyListItemAPI; isAc
         )}
       </div>
     </article>
+  );
+}
+
+// ── Empty-state callback form ─────────────────────────────────────────────────
+
+function EmptyStateCallbackForm() {
+  const [phone,   setPhone]   = useState("");
+  const [name,    setName]    = useState("");
+  const [loading, setLoading] = useState(false);
+  const [done,    setDone]    = useState(false);
+  const [error,   setError]   = useState("");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!phone.trim()) { setError("Enter your phone number."); return; }
+    if (!name.trim())  { setError("Enter your name."); return; }
+    setLoading(true); setError("");
+    try {
+      const res = await fetch("/api/v1/leads/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          full_name:         name.trim(),
+          phone:             phone.trim(),
+          source:            "CONTACT_FORM",
+          interest_type:     "RENT",
+          preferred_contact: "PHONE",
+          detected_city:     getBestKnownCity() || undefined,
+          message:           `No-results empty state callback. Phone: ${phone.trim()}` + getDeviceContext(),
+          referral_code:     getStoredReferralCode() || undefined,
+          ...getStoredUTMs(),
+        }),
+      });
+      if (!res.ok) throw new Error("Failed");
+      sessionStorage.setItem("hasker_lead_captured", "true");
+      trackEvent("generate_lead", { source: "empty_state" });
+      setDone(true);
+    } catch {
+      setError("Something went wrong.");
+    } finally { setLoading(false); }
+  }
+
+  if (done) {
+    return (
+      <div className="text-center py-3 text-xs text-emerald-700 font-semibold bg-emerald-50 border border-emerald-200 rounded-xl px-3">
+        We'll call you back shortly!
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-brand-light border border-brand-muted rounded-xl p-3 space-y-2">
+      <p className="text-[11px] font-bold text-brand-dark text-center">No matches? We'll find it for you.</p>
+      <form onSubmit={handleSubmit} className="space-y-1.5" noValidate>
+        <input
+          type="text"
+          placeholder="Your name"
+          value={name}
+          onChange={(e) => { setName(e.target.value); setError(""); }}
+          className="w-full h-9 border border-neutral-200 rounded-lg px-3 text-xs text-brand-dark placeholder:text-neutral-400 focus:outline-none focus:border-brand bg-white"
+        />
+        <input
+          type="tel"
+          placeholder="Your phone number"
+          value={phone}
+          onChange={(e) => { setPhone(e.target.value); setError(""); }}
+          className="w-full h-9 border border-neutral-200 rounded-lg px-3 text-xs text-brand-dark placeholder:text-neutral-400 focus:outline-none focus:border-brand bg-white"
+        />
+        {error && <p className="text-red-500 text-[10px]">{error}</p>}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full h-9 bg-brand hover:bg-brand-hover text-white text-xs font-bold rounded-lg transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center"
+        >
+          {loading ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : "Call Me Back"}
+        </button>
+      </form>
+    </div>
   );
 }
 
