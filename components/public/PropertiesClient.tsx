@@ -123,7 +123,7 @@ export function PropertiesClient({
   const [aiLoading,        setAiLoading]        = useState(false);
   const [mapResults, setMapResults]             = useState<PropertyListItemAPI[] | null>(null);
   const [mapLoading, setMapLoading]     = useState(false);
-  const [searchOnMove, setSearchOnMove] = useState(true);
+  const [searchOnMove, setSearchOnMove] = useState(false);
   const [activeSlug, setActiveSlug]     = useState<string | null>(null);
   const [mobileView, setMobileView]     = useState<"list" | "map">("list");
 

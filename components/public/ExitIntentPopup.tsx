@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { X, Phone, User, Mail, Clock, Check, PhoneCall } from "lucide-react";
+import { X, Phone, User, Clock, Check, PhoneCall } from "lucide-react";
 import {
   getBestKnownCity,
   getStoredUTMs,
@@ -11,16 +11,16 @@ import {
   trackEvent,
 } from "@/lib/tracking";
 
-const POPUP_TS_KEY   = "hasker_popup_ts";
-const LEAD_KEY       = "hasker_lead_captured";
+const POPUP_TS_KEY   = "hasker_popup_ts";        // 24h cross-session cooldown
+const SHOWN_KEY      = "hasker_popup_shown";     // hard once-per-session guard
+const LEAD_KEY       = "hasker_lead_captured";   // set by any lead form
 const COOLDOWN_MS    = 24 * 60 * 60 * 1000;
-const TIMER_DELAY_MS = 18_000;
+const TIMER_DELAY_MS = 30_000;                    // calm — only after real browsing
 
 const INPUT_CLS =
-  "w-full h-[52px] border border-neutral-200 rounded-xl pl-10 pr-4 " +
-  "text-brand-dark text-sm placeholder:text-neutral-400 " +
-  "focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 " +
-  "transition-all bg-neutral-50 focus:bg-white font-medium";
+  "w-full h-[50px] rounded-2xl border border-neutral-200 bg-neutral-50/60 pl-11 pr-4 " +
+  "text-[15px] text-brand-dark placeholder:text-neutral-400 transition-all " +
+  "focus:outline-none focus:border-brand focus:ring-4 focus:ring-brand/10 focus:bg-white";
 
 export function ExitIntentPopup() {
   const pathname = usePathname();
@@ -30,37 +30,45 @@ export function ExitIntentPopup() {
   const [city,      setCity]      = useState("");
   const [phone,     setPhone]     = useState("");
   const [name,      setName]      = useState("");
-  const [email,     setEmail]     = useState("");
   const [timeline,  setTimeline]  = useState("");
   const [loading,   setLoading]   = useState(false);
   const [errorMsg,  setErrorMsg]  = useState("");
 
   const phoneInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => { setCity(getBestKnownCity()); }, []);
-
+  // Trigger — fires at most ONCE. Re-arms on navigation only until it has shown.
   useEffect(() => {
     const suppressed =
       pathname.startsWith("/apply") ||
       pathname.startsWith("/portal") ||
       sessionStorage.getItem(LEAD_KEY) === "true" ||
+      sessionStorage.getItem(SHOWN_KEY) === "true" ||
       Date.now() - Number(localStorage.getItem(POPUP_TS_KEY) || 0) < COOLDOWN_MS;
 
     if (suppressed) return;
 
+    let fired = false;
     const show = () => {
+      if (fired) return;
+      fired = true;
+      // Mark seen the moment it appears — closing without submitting still counts,
+      // so it never re-pops this session or for the next 24h.
+      sessionStorage.setItem(SHOWN_KEY, "true");
+      localStorage.setItem(POPUP_TS_KEY, String(Date.now()));
       setCity(getBestKnownCity());
       setVisible(true);
+      cleanup();
     };
 
     const timer = setTimeout(show, TIMER_DELAY_MS);
-    const handleMouseLeave = (e: MouseEvent) => { if (e.clientY < 5) show(); };
-    document.addEventListener("mouseleave", handleMouseLeave);
+    const onLeave = (e: MouseEvent) => { if (e.clientY < 5) show(); }; // desktop exit-intent
+    document.addEventListener("mouseleave", onLeave);
 
-    return () => {
+    function cleanup() {
       clearTimeout(timer);
-      document.removeEventListener("mouseleave", handleMouseLeave);
-    };
+      document.removeEventListener("mouseleave", onLeave);
+    }
+    return cleanup;
   }, [pathname]);
 
   useEffect(() => {
@@ -76,13 +84,13 @@ export function ExitIntentPopup() {
   }, [visible]);
 
   useEffect(() => {
-    if (visible && !submitted) setTimeout(() => phoneInputRef.current?.focus(), 150);
+    if (visible && !submitted) setTimeout(() => phoneInputRef.current?.focus(), 200);
   }, [visible, submitted]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!phone.trim()) { setErrorMsg("Please enter your phone number."); return; }
-    if (!name.trim())  { setErrorMsg("Please enter your name."); return; }
+    if (!phone.trim()) { setErrorMsg("Please add a phone number so we can call."); return; }
+    if (!name.trim())  { setErrorMsg("Please add your name."); return; }
     setLoading(true);
     setErrorMsg("");
     try {
@@ -91,7 +99,6 @@ export function ExitIntentPopup() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           full_name:        name.trim(),
-          email:            email.trim() || undefined,
           phone:            phone.trim(),
           source:           "CONTACT_FORM",
           interest_type:    "RENT",
@@ -107,12 +114,11 @@ export function ExitIntentPopup() {
         const data = await res.json().catch(() => ({}));
         throw new Error((data as { detail?: string }).detail ?? "Submission failed.");
       }
-      localStorage.setItem(POPUP_TS_KEY, String(Date.now()));
       sessionStorage.setItem(LEAD_KEY, "true");
       trackEvent("generate_lead", { source: "exit_popup", type: "callback", city });
       setSubmitted(true);
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : "Something went wrong.");
+      setErrorMsg(err instanceof Error ? err.message : "Something went wrong — please try again.");
     } finally {
       setLoading(false);
     }
@@ -122,118 +128,88 @@ export function ExitIntentPopup() {
 
   return (
     <div className="fixed inset-0 z-[9998] flex items-center justify-center p-4">
-      <div onClick={() => setVisible(false)} className="absolute inset-0 bg-brand-dark/75 backdrop-blur-md" aria-hidden="true" />
+      {/* Soft backdrop */}
+      <div
+        onClick={() => setVisible(false)}
+        className="absolute inset-0 bg-brand-dark/55 backdrop-blur-md"
+        aria-hidden="true"
+      />
 
+      {/* Card */}
       <div
         role="dialog" aria-modal="true" aria-labelledby="exit-popup-title"
-        className="relative w-full max-w-md bg-white rounded-3xl overflow-hidden shadow-2xl border border-neutral-100 animate-in fade-in zoom-in-95 duration-200"
+        className="relative w-full max-w-md bg-white rounded-[28px] overflow-hidden shadow-[0_24px_70px_-12px_rgba(30,58,95,0.4)] ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-200"
       >
-        {/* Header */}
-        <div className="bg-brand-dark px-6 py-7 text-white relative overflow-hidden">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
-              <PhoneCall size={18} className="text-white" />
+        {/* Close */}
+        <button
+          onClick={() => setVisible(false)}
+          className="absolute top-4 right-4 z-10 text-neutral-400 hover:text-brand-dark bg-neutral-100 hover:bg-neutral-200 p-2 rounded-full transition-all cursor-pointer"
+          aria-label="Close"
+        >
+          <X size={15} />
+        </button>
+
+        {!submitted ? (
+          <>
+            {/* Header — warm, calm, centered */}
+            <div className="px-7 pt-10 pb-5 text-center">
+              <div className="mx-auto w-14 h-14 rounded-2xl bg-brand-light ring-1 ring-brand/10 flex items-center justify-center mb-4">
+                <PhoneCall size={22} className="text-brand" />
+              </div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-brand mb-2">
+                {city ? `New homes in ${city}` : "Still searching?"}
+              </p>
+              <h3 id="exit-popup-title" className="font-serif text-[26px] leading-tight font-bold text-brand-dark">
+                Let an agent do<br />the searching.
+              </h3>
+              <p className="text-[13.5px] text-neutral-500 mt-2.5 leading-relaxed max-w-[19rem] mx-auto">
+                Leave your number and a local agent calls within the hour with homes that fit — no endless scrolling.
+              </p>
             </div>
-            <p className="text-[10px] font-black tracking-[0.25em] uppercase text-white/50">
-              Free Callback · {city || "Your Area"}
-            </p>
-          </div>
-          <h3 id="exit-popup-title" className="font-serif text-2xl font-bold text-white leading-tight">
-            We&apos;ll call you back<br />with matching homes.
-          </h3>
-          <p className="text-white/60 text-xs mt-2 leading-relaxed">
-            Drop your number — a real agent will call you within the hour with homes that fit your budget in{" "}
-            <strong className="text-white/90">{city || "your area"}</strong>.
-          </p>
-          <button
-            onClick={() => setVisible(false)}
-            className="absolute top-4 right-4 text-white/60 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-xl transition-all cursor-pointer"
-            aria-label="Close"
-          >
-            <X size={15} />
-          </button>
-        </div>
 
-        {/* Body */}
-        <div className="p-6">
-          {!submitted ? (
-            <form onSubmit={handleSubmit} className="space-y-3" noValidate>
-
-              {/* Phone — first, required */}
-              <div>
-                <label className="block text-[10px] font-black tracking-widest uppercase text-neutral-500 mb-1.5">
-                  Phone Number <span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <Phone size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
-                  <input
-                    ref={phoneInputRef}
-                    type="tel"
-                    required
-                    placeholder="(555) 000-0000"
-                    value={phone}
-                    onChange={(e) => { setPhone(e.target.value); setErrorMsg(""); }}
-                    className={INPUT_CLS}
-                  />
-                </div>
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="px-7 pb-7 space-y-2.5" noValidate>
+              <div className="relative">
+                <Phone size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+                <input
+                  ref={phoneInputRef}
+                  type="tel"
+                  required
+                  aria-label="Phone number"
+                  placeholder="Phone number"
+                  value={phone}
+                  onChange={(e) => { setPhone(e.target.value); setErrorMsg(""); }}
+                  className={INPUT_CLS}
+                />
               </div>
 
-              {/* Name — required */}
-              <div>
-                <label className="block text-[10px] font-black tracking-widest uppercase text-neutral-500 mb-1.5">
-                  Your Name <span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <User size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
-                  <input
-                    type="text"
-                    required
-                    placeholder="Jane Smith"
-                    value={name}
-                    onChange={(e) => { setName(e.target.value); setErrorMsg(""); }}
-                    className={INPUT_CLS}
-                  />
-                </div>
+              <div className="relative">
+                <User size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+                <input
+                  type="text"
+                  required
+                  aria-label="Your name"
+                  placeholder="Your name"
+                  value={name}
+                  onChange={(e) => { setName(e.target.value); setErrorMsg(""); }}
+                  className={INPUT_CLS}
+                />
               </div>
 
-              {/* Email — optional */}
-              <div>
-                <label className="block text-[10px] font-black tracking-widest uppercase text-neutral-500 mb-1.5">
-                  Email{" "}
-                  <span className="text-neutral-400 font-normal normal-case tracking-normal">(optional)</span>
-                </label>
-                <div className="relative">
-                  <Mail size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
-                  <input
-                    type="email"
-                    placeholder="jane@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className={INPUT_CLS}
-                  />
-                </div>
-              </div>
-
-              {/* Timeline */}
-              <div>
-                <label className="block text-[10px] font-black tracking-widest uppercase text-neutral-500 mb-1.5">
-                  When do you need to move?{" "}
-                  <span className="text-neutral-400 font-normal normal-case tracking-normal">(optional)</span>
-                </label>
-                <div className="relative">
-                  <Clock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
-                  <select
-                    value={timeline}
-                    onChange={(e) => setTimeline(e.target.value)}
-                    className={`${INPUT_CLS} appearance-none`}
-                  >
-                    <option value="">Select timeline…</option>
-                    <option value="ASAP">ASAP — Ready now</option>
-                    <option value="1_3_MONTHS">1–3 months</option>
-                    <option value="3_6_MONTHS">3–6 months</option>
-                    <option value="JUST_BROWSING">Just browsing</option>
-                  </select>
-                </div>
+              <div className="relative">
+                <Clock size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+                <select
+                  aria-label="Move-in timeline (optional)"
+                  value={timeline}
+                  onChange={(e) => setTimeline(e.target.value)}
+                  className={`${INPUT_CLS} appearance-none ${timeline ? "" : "text-neutral-400"}`}
+                >
+                  <option value="">When do you want to move? (optional)</option>
+                  <option value="ASAP">As soon as possible</option>
+                  <option value="1_3_MONTHS">In 1–3 months</option>
+                  <option value="3_6_MONTHS">In 3–6 months</option>
+                  <option value="JUST_BROWSING">Just browsing for now</option>
+                </select>
               </div>
 
               {errorMsg && (
@@ -246,36 +222,37 @@ export function ExitIntentPopup() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-[52px] bg-brand text-white font-bold rounded-xl hover:bg-brand-hover shadow-md shadow-brand/15 transition-all flex items-center justify-center gap-2 text-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mt-1"
+                className="w-full h-[52px] mt-1 bg-brand text-white font-semibold rounded-2xl hover:bg-brand-hover shadow-lg shadow-brand/20 transition-all flex items-center justify-center gap-2 text-[15px] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {loading
                   ? <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  : <><PhoneCall size={15} /> Call Me Back</>
-                }
+                  : <><PhoneCall size={16} /> Request my callback</>}
               </button>
 
-              <p className="text-center text-[10px] text-neutral-400">
-                A real agent will call within 1 hour during business hours. No spam.
+              <p className="text-center text-[11px] text-neutral-400 pt-0.5">
+                One quick call during business hours · No spam, opt out anytime.
               </p>
             </form>
-          ) : (
-            <div className="text-center py-6 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto">
-                <Check size={28} className="text-emerald-500" />
-              </div>
-              <div>
-                <p className="text-[9px] font-black tracking-[0.3em] uppercase text-emerald-600 mb-1.5">Call Requested!</p>
-                <h4 className="font-serif text-xl font-bold text-brand-dark">Expect a call soon</h4>
-                <p className="text-sm text-neutral-500 mt-2 leading-relaxed max-w-xs mx-auto">
-                  An agent will reach out to <strong className="text-brand-dark">{phone}</strong> within the hour with homes in {city || "your area"}.
-                </p>
-              </div>
-              <button onClick={() => setVisible(false)} className="text-neutral-400 hover:text-brand-dark text-xs font-bold transition-all cursor-pointer">
-                Continue Browsing
-              </button>
+          </>
+        ) : (
+          /* Success */
+          <div className="px-7 py-12 text-center animate-in fade-in slide-in-from-bottom-3 duration-300">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-emerald-50 ring-1 ring-emerald-200 flex items-center justify-center mb-5">
+              <Check size={30} className="text-emerald-500" />
             </div>
-          )}
-        </div>
+            <h4 className="font-serif text-2xl font-bold text-brand-dark">You&apos;re all set</h4>
+            <p className="text-[14px] text-neutral-500 mt-2.5 leading-relaxed max-w-[18rem] mx-auto">
+              An agent will call <strong className="text-brand-dark">{phone}</strong> shortly
+              {city ? <> with homes in <strong className="text-brand-dark">{city}</strong></> : null}.
+            </p>
+            <button
+              onClick={() => setVisible(false)}
+              className="mt-6 inline-flex h-11 items-center justify-center px-6 rounded-2xl border border-neutral-200 text-brand-dark text-sm font-semibold hover:bg-neutral-50 transition-colors cursor-pointer"
+            >
+              Keep browsing
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
