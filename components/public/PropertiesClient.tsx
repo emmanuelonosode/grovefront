@@ -7,6 +7,7 @@ import Link from "next/link";
 import {
   Search, ChevronDown, MapPin, X,
   List, Map as MapIcon, Layers, BedDouble, DollarSign, ArrowRight, Calendar,
+  Bath, Home, PawPrint, Maximize,
 } from "lucide-react";
 import { FavoriteButton } from "./FavoriteButton";
 import { captureSearchIntent, getBestKnownCity, getDeviceContext, getStoredReferralCode, getStoredUTMs, trackEvent } from "@/lib/tracking";
@@ -14,6 +15,7 @@ import { PropertiesMapLoader } from "./PropertiesMapLoader";
 import { fetchAllCities, CITIES } from "@/lib/cities";
 import type { MapMarker, MapBounds } from "./PropertiesMap";
 import type { PropertyListItemAPI } from "@/lib/properties";
+import { looksNaturalLanguage, parseSmartQuery } from "@/lib/properties";
 
 interface Props {
   initialResults: PropertyListItemAPI[];
@@ -21,8 +23,13 @@ interface Props {
   initialPage: number;
   initialQ?: string;
   initialBeds?: string;
+  initialBaths?: string;
   initialMinPrice?: string;
   initialMaxPrice?: string;
+  initialMinSqft?: string;
+  initialMaxSqft?: string;
+  initialType?: string;
+  initialPets?: string;
   initialListingType?: string;
   initialSort?: string;
 }
@@ -48,6 +55,29 @@ const BEDS_OPTIONS = [
   { label: "4+ Beds",  value: "4" },
 ];
 
+const BATHS_OPTIONS = [
+  { label: "Any Baths", value: "" },
+  { label: "1+ Bath",   value: "1" },
+  { label: "2+ Baths",  value: "2" },
+  { label: "3+ Baths",  value: "3" },
+];
+
+const TYPE_OPTIONS = [
+  { label: "Any Type",   value: "" },
+  { label: "House",      value: "residential" },
+  { label: "Condo",      value: "condo" },
+  { label: "Townhouse",  value: "townhouse" },
+];
+
+const SQFT_OPTIONS = [
+  { label: "Any Size",    value: "" },
+  { label: "500+ sqft",   value: "500" },
+  { label: "750+ sqft",   value: "750" },
+  { label: "1,000+ sqft", value: "1000" },
+  { label: "1,500+ sqft", value: "1500" },
+  { label: "2,000+ sqft", value: "2000" },
+];
+
 const SORT_OPTIONS = [
   { label: "Best Match",   value: "diverse" },
   { label: "Newest First", value: "newest" },
@@ -63,8 +93,13 @@ export function PropertiesClient({
   initialPage,
   initialQ = "",
   initialBeds = "",
+  initialBaths = "",
   initialMinPrice = "",
   initialMaxPrice = "",
+  initialMinSqft = "",
+  initialMaxSqft = "",
+  initialType = "",
+  initialPets = "",
   initialListingType = "",
   initialSort = "newest",
 }: Props) {
@@ -72,6 +107,11 @@ export function PropertiesClient({
 
   const [q, setQ]                   = useState(initialQ);
   const [beds, setBeds]             = useState(initialBeds);
+  const [baths, setBaths]           = useState(initialBaths);
+  const [propType, setPropType]     = useState(initialType);
+  const [pets, setPets]             = useState(initialPets === "true");
+  const [minSqft, setMinSqft]       = useState(initialMinSqft);
+  const [maxSqft, setMaxSqft]       = useState(initialMaxSqft);
   const [listingType, setListingType] = useState(initialListingType);
   const [sort, setSort]             = useState(initialSort);
   const [priceRange, setPriceRange] = useState(
@@ -80,6 +120,7 @@ export function PropertiesClient({
 
   const [leadCaptured,     setLeadCaptured]     = useState(false);
   const [bannerDismissed,  setBannerDismissed]  = useState(false);
+  const [aiLoading,        setAiLoading]        = useState(false);
   const [mapResults, setMapResults]             = useState<PropertyListItemAPI[] | null>(null);
   const [mapLoading, setMapLoading]     = useState(false);
   const [searchOnMove, setSearchOnMove] = useState(true);
@@ -95,6 +136,13 @@ export function PropertiesClient({
   const [locOpen, setLocOpen]   = useState(false);
   const [locIndex, setLocIndex] = useState(-1);
   const [liveCities, setLiveCities] = useState<{ city: string; state: string }[]>([]);
+
+  // Custom price popover
+  const priceRef = useRef<HTMLDivElement>(null);
+  const [priceOpen, setPriceOpen] = useState(false);
+  const initialCustom = initialMinPrice && !PRICE_RANGES.some((r) => r.value === priceRange);
+  const [customMin, setCustomMin] = useState(initialCustom ? initialMinPrice : "");
+  const [customMax, setCustomMax] = useState(initialCustom ? initialMaxPrice : "");
 
   useEffect(() => {
     if (sessionStorage.getItem("hasker_lead_captured") === "true") setLeadCaptured(true);
@@ -119,10 +167,21 @@ export function PropertiesClient({
       if (locationRef.current && !locationRef.current.contains(e.target as Node)) {
         setLocOpen(false); setLocIndex(-1);
       }
+      if (priceRef.current && !priceRef.current.contains(e.target as Node)) {
+        setPriceOpen(false);
+      }
     }
     document.addEventListener("pointerdown", onOut);
     return () => document.removeEventListener("pointerdown", onOut);
   }, []);
+
+  function applyCustomPrice() {
+    const min = customMin.trim();
+    const max = customMax.trim();
+    setPriceRange(min || max ? `${min}-${max}` : "");
+    setPriceOpen(false);
+    navigate({ minPrice: min || undefined, maxPrice: max || undefined });
+  }
 
   useEffect(() => {
     const el = cardListRef.current;
@@ -147,9 +206,14 @@ export function PropertiesClient({
     const base: Record<string, string | undefined> = {
       q:            q || undefined,
       beds:         beds || undefined,
+      baths:        baths || undefined,
+      type:         propType || undefined,
+      pets:         pets ? "true" : undefined,
       listing_type: listingType || undefined,
       minPrice:     prMin || undefined,
       maxPrice:     prMax || undefined,
+      minSqft:      minSqft || undefined,
+      maxSqft:      maxSqft || undefined,
       sort:         sort && sort !== "diverse" ? sort : undefined,
       page:         initialPage > 1 ? String(initialPage) : undefined,
     };
@@ -163,9 +227,25 @@ export function PropertiesClient({
     router.push(buildUrl({ ...overrides, page: undefined }));
   }
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (q.trim()) captureSearchIntent(q.trim(), listingType || undefined);
+    const term = q.trim();
+    if (term) captureSearchIntent(term, listingType || undefined);
+
+    // Smart path: route clearly natural-language queries through the AI parser.
+    if (term && looksNaturalLanguage(term)) {
+      setAiLoading(true);
+      const smart = await parseSmartQuery(term);
+      setAiLoading(false);
+      if (smart) {
+        if (!smart.listing_type && listingType) smart.listing_type = listingType;
+        const params = new URLSearchParams();
+        Object.entries(smart).forEach(([k, v]) => { if (v) params.set(k, v); });
+        setMapResults(null);
+        router.push(`/houses-for-rent?${params.toString()}`);
+        return;
+      }
+    }
     navigate();
   };
 
@@ -204,7 +284,25 @@ export function PropertiesClient({
       image_url: p.primary_image_url, beds: p.bedrooms, baths: p.bathrooms,
     }));
 
-  const activeFiltersCount = [q, beds, priceRange].filter(Boolean).length;
+  const activeFiltersCount = [q, beds, baths, propType, priceRange, minSqft, maxSqft].filter(Boolean).length + (pets ? 1 : 0);
+
+  // Active filter chips — one per applied filter, each removable.
+  const priceLabel = PRICE_RANGES.find((r) => r.value === priceRange)?.label
+    ?? (priceRange ? (() => { const [mn, mx] = priceRange.split("-"); return `$${mn || "0"}–$${mx || "∞"}`; })() : undefined);
+  const activeChips: { key: string; label: string; clear: () => void }[] = [];
+  if (q)          activeChips.push({ key: "q",     label: `"${q}"`, clear: () => { setQ(""); navigate({ q: undefined }); } });
+  if (listingType) activeChips.push({ key: "lt",   label: listingType === "for-rent" ? "For Rent" : "For Sale", clear: () => { setListingType(""); navigate({ listing_type: undefined }); } });
+  if (propType)   activeChips.push({ key: "type",  label: TYPE_OPTIONS.find((t) => t.value === propType)?.label ?? propType, clear: () => { setPropType(""); navigate({ type: undefined }); } });
+  if (beds)       activeChips.push({ key: "beds",  label: BEDS_OPTIONS.find((b) => b.value === beds)?.label ?? `${beds}+ bd`, clear: () => { setBeds(""); navigate({ beds: undefined }); } });
+  if (baths)      activeChips.push({ key: "baths", label: `${baths}+ ba`, clear: () => { setBaths(""); navigate({ baths: undefined }); } });
+  if (priceRange) activeChips.push({ key: "price", label: priceLabel ?? "Price", clear: () => { setPriceRange(""); navigate({ minPrice: undefined, maxPrice: undefined }); } });
+  if (pets)       activeChips.push({ key: "pets",  label: "Pet-friendly", clear: () => { setPets(false); navigate({ pets: undefined }); } });
+  if (minSqft || maxSqft) {
+    const sqftLabel = maxSqft
+      ? `${minSqft || "0"}–${maxSqft} sqft`
+      : `${minSqft}+ sqft`;
+    activeChips.push({ key: "sqft", label: sqftLabel, clear: () => { setMinSqft(""); setMaxSqft(""); navigate({ minSqft: undefined, maxSqft: undefined }); } });
+  }
 
   return (
     <div className="pt-20 h-screen overflow-hidden flex flex-col bg-white">
@@ -215,7 +313,7 @@ export function PropertiesClient({
         style={{
           maxHeight: filterBarVisible ? 160 : 0,
           opacity: filterBarVisible ? 1 : 0,
-          overflow: (filterBarVisible && locOpen && locSuggestions.length > 0) ? "visible" : "hidden",
+          overflow: (filterBarVisible && ((locOpen && locSuggestions.length > 0) || priceOpen)) ? "visible" : "hidden",
         }}
       >
         <form onSubmit={handleSearch}>
@@ -229,7 +327,7 @@ export function PropertiesClient({
                   ref={locationInput}
                   type="text"
                   autoComplete="off"
-                  placeholder="City, ZIP, or neighborhood…"
+                  placeholder="Try: 2 bed pet-friendly in Atlanta under $1,800"
                   value={q}
                   onChange={(e) => { setQ(e.target.value); setLocOpen(true); setLocIndex(-1); }}
                   onFocus={() => setLocOpen(true)}
@@ -298,10 +396,13 @@ export function PropertiesClient({
             <button
               type="submit"
               aria-label="Search"
-              className="flex items-center justify-center gap-2 h-11 w-11 md:w-auto md:px-5 bg-brand hover:bg-brand-hover text-white rounded-xl transition-colors shrink-0 shadow-sm"
+              disabled={aiLoading}
+              className="flex items-center justify-center gap-2 h-11 w-11 md:w-auto md:px-5 bg-brand hover:bg-brand-hover text-white rounded-xl transition-colors shrink-0 shadow-sm disabled:opacity-70"
             >
-              <Search size={16} />
-              <span className="hidden md:inline text-[13px] font-bold">Search</span>
+              {aiLoading
+                ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                : <Search size={16} />}
+              <span className="hidden md:inline text-[13px] font-bold">{aiLoading ? "Thinking…" : "Search"}</span>
             </button>
           </div>
 
@@ -326,19 +427,73 @@ export function PropertiesClient({
               ))}
             </div>
 
-            {/* Price filter */}
-            <FilterPill
-              icon={<DollarSign size={13} />}
-              value={priceRange}
-              label="Price"
-              onChange={(v) => {
-                setPriceRange(v);
-                const [min, max] = v.split("-");
-                navigate({ minPrice: min || undefined, maxPrice: max || undefined });
-              }}
-            >
-              {PRICE_RANGES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
-            </FilterPill>
+            {/* Price filter — presets + custom min/max popover */}
+            <div className="relative shrink-0" ref={priceRef}>
+              <button
+                type="button"
+                onClick={() => setPriceOpen((v) => !v)}
+                className={`flex items-center gap-1.5 border-2 rounded-xl h-11 pl-3 pr-3 transition-all text-[12px] font-bold whitespace-nowrap ${
+                  priceRange
+                    ? "border-brand bg-brand/5 text-brand"
+                    : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300"
+                }`}
+              >
+                <DollarSign size={13} className={priceRange ? "text-brand" : "text-neutral-400"} />
+                {priceLabel ?? "Price"}
+                <ChevronDown size={13} className={priceRange ? "text-brand" : "text-neutral-400"} />
+              </button>
+
+              {priceOpen && (
+                <div className="absolute top-full left-0 mt-1.5 w-[260px] bg-white rounded-xl border border-neutral-200 shadow-2xl z-50 p-3">
+                  {/* Preset bands */}
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 mb-2">Quick ranges</p>
+                  <div className="grid grid-cols-2 gap-1.5 mb-3">
+                    {PRICE_RANGES.filter((r) => r.value).map((r) => (
+                      <button
+                        key={r.value}
+                        type="button"
+                        onClick={() => {
+                          setPriceRange(r.value); setCustomMin(""); setCustomMax(""); setPriceOpen(false);
+                          const [min, max] = r.value.split("-");
+                          navigate({ minPrice: min || undefined, maxPrice: max || undefined });
+                        }}
+                        className={`text-[11px] font-semibold rounded-lg px-2 py-2 border transition-colors ${
+                          priceRange === r.value
+                            ? "border-brand bg-brand/5 text-brand"
+                            : "border-neutral-200 text-neutral-600 hover:border-brand/40"
+                        }`}
+                      >
+                        {r.label}
+                      </button>
+                    ))}
+                  </div>
+                  {/* Custom min/max */}
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 mb-2">Custom range</p>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number" inputMode="numeric" min="0" placeholder="Min $"
+                      value={customMin}
+                      onChange={(e) => setCustomMin(e.target.value)}
+                      className="w-full h-9 border border-neutral-200 rounded-lg px-2.5 text-[12px] text-brand-dark placeholder:text-neutral-400 focus:outline-none focus:border-brand"
+                    />
+                    <span className="text-neutral-300">–</span>
+                    <input
+                      type="number" inputMode="numeric" min="0" placeholder="Max $"
+                      value={customMax}
+                      onChange={(e) => setCustomMax(e.target.value)}
+                      className="w-full h-9 border border-neutral-200 rounded-lg px-2.5 text-[12px] text-brand-dark placeholder:text-neutral-400 focus:outline-none focus:border-brand"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={applyCustomPrice}
+                    className="w-full mt-2.5 h-9 bg-brand hover:bg-brand-hover text-white text-[12px] font-bold rounded-lg transition-colors cursor-pointer"
+                  >
+                    Apply
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Beds filter */}
             <FilterPill
@@ -349,6 +504,50 @@ export function PropertiesClient({
             >
               {BEDS_OPTIONS.map((b) => <option key={b.value} value={b.value}>{b.label}</option>)}
             </FilterPill>
+
+            {/* Baths filter */}
+            <FilterPill
+              icon={<Bath size={13} />}
+              value={baths}
+              label="Baths"
+              onChange={(v) => { setBaths(v); navigate({ baths: v || undefined }); }}
+            >
+              {BATHS_OPTIONS.map((b) => <option key={b.value} value={b.value}>{b.label}</option>)}
+            </FilterPill>
+
+            {/* Property type filter */}
+            <FilterPill
+              icon={<Home size={13} />}
+              value={propType}
+              label="Type"
+              onChange={(v) => { setPropType(v); navigate({ type: v || undefined }); }}
+            >
+              {TYPE_OPTIONS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+            </FilterPill>
+
+            {/* Square footage (min) filter */}
+            <FilterPill
+              icon={<Maximize size={13} />}
+              value={minSqft}
+              label="Size"
+              onChange={(v) => { setMinSqft(v); navigate({ minSqft: v || undefined }); }}
+            >
+              {SQFT_OPTIONS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+            </FilterPill>
+
+            {/* Pet-friendly toggle */}
+            <button
+              type="button"
+              onClick={() => { const v = !pets; setPets(v); navigate({ pets: v ? "true" : undefined }); }}
+              className={`shrink-0 flex items-center gap-1.5 h-11 px-4 border-2 rounded-xl text-[12px] font-bold transition-all whitespace-nowrap ${
+                pets
+                  ? "border-brand bg-brand/5 text-brand"
+                  : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300"
+              }`}
+            >
+              <PawPrint size={13} className={pets ? "text-brand" : "text-neutral-400"} />
+              Pet-friendly
+            </button>
 
             {/* Clear filters */}
             {activeFiltersCount > 0 && (
@@ -362,6 +561,30 @@ export function PropertiesClient({
           </div>
         </form>
       </div>
+
+      {/* ── Active filter chips — always visible, persist when filter bar collapses ─ */}
+      {activeChips.length > 0 && (
+        <div className="shrink-0 bg-white border-b border-neutral-100 flex items-center gap-2 overflow-x-auto px-4 py-2 scrollbar-none">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 shrink-0">Filters</span>
+          {activeChips.map((chip) => (
+            <button
+              key={chip.key}
+              type="button"
+              onClick={chip.clear}
+              className="shrink-0 flex items-center gap-1.5 h-7 pl-3 pr-2 bg-brand/5 border border-brand/20 text-brand rounded-full text-[11px] font-bold hover:bg-brand/10 transition-colors cursor-pointer whitespace-nowrap"
+            >
+              {chip.label}
+              <X size={11} className="opacity-70" />
+            </button>
+          ))}
+          <Link
+            href="/houses-for-rent"
+            className="shrink-0 text-[11px] font-bold text-neutral-400 hover:text-red-500 transition-colors whitespace-nowrap ml-1"
+          >
+            Clear all
+          </Link>
+        </div>
+      )}
 
       {/* ── Map + Cards split ─────────────────────────────────────────────── */}
       <div className="flex flex-1 min-h-0">
@@ -485,9 +708,44 @@ export function PropertiesClient({
                 />
                 <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400 mb-1">No results</p>
                 <p className="text-brand-dark font-black text-[16px] mb-2">No homes match your filters</p>
-                <p className="text-neutral-400 text-[13px] mb-6 max-w-[220px] leading-relaxed">
-                  Try a different location, a wider budget, or remove a filter.
+                <p className="text-neutral-400 text-[13px] mb-4 max-w-[240px] leading-relaxed">
+                  Try widening your search — these usually bring back results:
                 </p>
+
+                {/* Relaxed-search suggestions — drop one filter at a time */}
+                <div className="flex flex-wrap items-center justify-center gap-2 mb-6 max-w-[280px]">
+                  {priceRange && (
+                    <button onClick={() => { setPriceRange(""); navigate({ minPrice: undefined, maxPrice: undefined }); }}
+                      className="text-[12px] font-semibold text-brand bg-brand/5 border border-brand/20 rounded-full px-3 py-1.5 hover:bg-brand/10 transition-colors cursor-pointer">
+                      Remove price limit
+                    </button>
+                  )}
+                  {beds && (
+                    <button onClick={() => { setBeds(""); navigate({ beds: undefined }); }}
+                      className="text-[12px] font-semibold text-brand bg-brand/5 border border-brand/20 rounded-full px-3 py-1.5 hover:bg-brand/10 transition-colors cursor-pointer">
+                      Any bedrooms
+                    </button>
+                  )}
+                  {baths && (
+                    <button onClick={() => { setBaths(""); navigate({ baths: undefined }); }}
+                      className="text-[12px] font-semibold text-brand bg-brand/5 border border-brand/20 rounded-full px-3 py-1.5 hover:bg-brand/10 transition-colors cursor-pointer">
+                      Any baths
+                    </button>
+                  )}
+                  {propType && (
+                    <button onClick={() => { setPropType(""); navigate({ type: undefined }); }}
+                      className="text-[12px] font-semibold text-brand bg-brand/5 border border-brand/20 rounded-full px-3 py-1.5 hover:bg-brand/10 transition-colors cursor-pointer">
+                      Any property type
+                    </button>
+                  )}
+                  {pets && (
+                    <button onClick={() => { setPets(false); navigate({ pets: undefined }); }}
+                      className="text-[12px] font-semibold text-brand bg-brand/5 border border-brand/20 rounded-full px-3 py-1.5 hover:bg-brand/10 transition-colors cursor-pointer">
+                      Drop pet filter
+                    </button>
+                  )}
+                </div>
+
                 <div className="flex flex-col gap-2 w-full max-w-[240px]">
                   {activeFiltersCount > 0 && (
                     <Link href="/houses-for-rent" className="w-full py-3 px-4 bg-brand text-white text-[13px] font-bold rounded-xl hover:bg-brand-hover transition-colors text-center">
@@ -736,14 +994,14 @@ function EmptyStateCallbackForm() {
   if (done) {
     return (
       <div className="text-center py-3 text-xs text-emerald-700 font-semibold bg-emerald-50 border border-emerald-200 rounded-xl px-3">
-        We'll call you back shortly!
+        We&apos;ll call you back shortly!
       </div>
     );
   }
 
   return (
     <div className="bg-brand-light border border-brand-muted rounded-xl p-3 space-y-2">
-      <p className="text-[11px] font-bold text-brand-dark text-center">No matches? We'll find it for you.</p>
+      <p className="text-[11px] font-bold text-brand-dark text-center">No matches? We&apos;ll find it for you.</p>
       <form onSubmit={handleSubmit} className="space-y-1.5" noValidate>
         <input
           type="text"

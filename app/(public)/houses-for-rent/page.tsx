@@ -27,8 +27,13 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
   const params      = await searchParams;
   const q           = params.q            as string | undefined;
   const beds        = params.beds         as string | undefined;
+  const baths       = params.baths        as string | undefined;
   const minPrice    = params.minPrice     as string | undefined;
   const maxPrice    = params.maxPrice     as string | undefined;
+  const minSqft     = params.minSqft      as string | undefined;
+  const maxSqft     = params.maxSqft      as string | undefined;
+  const propType    = params.type         as string | undefined;
+  const pets        = params.pets         as string | undefined;
   const listingType = params.listing_type as string | undefined;
   const sort        = params.sort         as string | undefined;
   const page        = params.page         as string | undefined;
@@ -45,8 +50,13 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
       listing_type: listingType,
       q,
       beds,
+      baths,
       min_price: minPrice,
       max_price: maxPrice,
+      min_sqft: minSqft,
+      max_sqft: maxSqft,
+      type: propType,
+      pets,
       sort: effectiveSort,
       page_size: String(PAGE_SIZE),
       page: String(currentPage),
@@ -80,8 +90,13 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
           initialPage={currentPage}
           initialQ={q}
           initialBeds={beds}
+          initialBaths={baths}
           initialMinPrice={minPrice}
           initialMaxPrice={maxPrice}
+          initialMinSqft={minSqft}
+          initialMaxSqft={maxSqft}
+          initialType={propType}
+          initialPets={pets}
           initialListingType={listingType}
           initialSort={sort ?? "diverse"}
         />
