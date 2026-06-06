@@ -9,6 +9,8 @@ import {
   List, Map as MapIcon, Layers, BedDouble, DollarSign, ArrowRight, Calendar,
   Bath, Home, PawPrint, Maximize,
 } from "lucide-react";
+import { HaskerLogo } from "@/components/ui/HaskerLogo";
+import { CardImageCarousel } from "./CardImageCarousel";
 import { FavoriteButton } from "./FavoriteButton";
 import { captureSearchIntent, getBestKnownCity, getDeviceContext, getStoredReferralCode, getStoredUTMs, trackEvent } from "@/lib/tracking";
 import { PropertiesMapLoader } from "./PropertiesMapLoader";
@@ -305,7 +307,7 @@ export function PropertiesClient({
   }
 
   return (
-    <div className="pt-20 h-screen overflow-hidden flex flex-col bg-white">
+    <div className="h-screen overflow-hidden flex flex-col bg-white">
 
       {/* ── Filter bar ──────────────────────────────────────────────────────── */}
       <div
@@ -320,6 +322,9 @@ export function PropertiesClient({
 
           {/* Row 1: Location search input */}
           <div className="flex items-center gap-2 px-4 pt-3 pb-2">
+            <Link href="/" aria-label="Home" className="shrink-0 mr-1 hidden sm:flex items-center hover:opacity-80 transition-opacity">
+              <HaskerLogo variant="on-white" height={24} />
+            </Link>
             <div className="relative flex-1 min-w-0" ref={locationRef}>
               <div className="flex items-center gap-2 bg-white border-2 border-neutral-200 rounded-xl px-3.5 h-11 focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/15 transition-all">
                 <Search size={15} className="text-neutral-400 shrink-0" />
@@ -852,6 +857,9 @@ function PanelCard({ property, isActive }: { property: PropertyListItemAPI; isAc
   const isRental   = property.listing_type !== "for-sale";
   const detailHref = `/houses-for-rent/${property.slug}`;
   const applyHref  = `/apply?property=${property.slug}`;
+  const images     = property.image_urls?.length
+    ? property.image_urls
+    : property.primary_image_url ? [property.primary_image_url] : [];
 
   return (
     <article className={`flex flex-col flex-1 rounded-xl overflow-hidden border bg-white group transition-all duration-150 ${
@@ -860,25 +868,9 @@ function PanelCard({ property, isActive }: { property: PropertyListItemAPI; isAc
         : "border-neutral-200 hover:shadow-md hover:border-neutral-300"
     }`}>
 
-      {/* Photo — image link at z-0, overlays at z-10 */}
+      {/* Photo — swipeable carousel at base, overlays at z-10 */}
       <div className="relative h-[200px] shrink-0 bg-neutral-100 overflow-hidden">
-        {/* Card navigation link under everything */}
-        <Link href={detailHref} className="absolute inset-0 z-0 block" aria-label={`View ${property.title}`}>
-          {property.primary_image_url ? (
-            <Image
-              src={property.primary_image_url}
-              alt={property.title}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
-              unoptimized
-            />
-          ) : (
-            <div className="w-full h-full bg-neutral-100 flex items-center justify-center">
-              <span className="text-neutral-400 text-xs">No photo</span>
-            </div>
-          )}
-        </Link>
+        <CardImageCarousel images={images} alt={property.title} href={detailHref} />
 
         {/* Badges — non-interactive */}
         <div className="absolute top-2 left-2 z-10 flex gap-1 pointer-events-none">

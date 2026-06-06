@@ -51,6 +51,10 @@ export function Navbar() {
   // When at the top of a hero page → transparent (dark gradient so text stays visible)
   const solidBg = scrolled || !isHeroPage;
 
+  // Full-screen search/map page hides the global navbar to reclaim vertical space.
+  // (Property detail pages /houses-for-rent/[slug] keep it — only the exact search route is hidden.)
+  if (pathname === "/houses-for-rent") return null;
+
   return (
     <>
       {/* ── Fixed header ─────────────────────────────────────────── */}

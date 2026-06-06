@@ -1,12 +1,22 @@
 ﻿import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Star, ShieldCheck, Users, Home as HomeIcon } from "lucide-react";
 import { HeroSearch } from "@/components/public/HeroSearch";
-import { HeroCallbackStrip } from "@/components/public/HeroCallbackStrip";
 import { FeaturedPropertiesSection } from "@/components/public/FeaturedPropertiesSection";
 import { WorkersScene, PetScene } from "@/components/public/HomepageIllustrations";
 import { fetchHomepageProperties, fetchProperties, toPropertyCardShape } from "@/lib/properties";
 import { CITIES, fetchAllCities, buildGenericCityData, type CityData } from "@/lib/cities";
+
+// Hero background rotates every 2 hours (recomputed on each ISR regeneration, revalidate=300)
+// so the homepage feels fresh. All curated, verified, and bandwidth-optimized (webp).
+const HERO_IMAGES = [
+  "https://images.unsplash.com/photo-1560184897-ae75f418493e?w=1600&q=75&fm=webp&auto=format",
+  "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1600&q=75&fm=webp&auto=format",
+  "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1600&q=75&fm=webp&auto=format",
+  "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1600&q=75&fm=webp&auto=format",
+  "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=1600&q=75&fm=webp&auto=format",
+  "https://images.unsplash.com/photo-1576941089067-2de3c901e126?w=1600&q=75&fm=webp&auto=format",
+];
 
 export const metadata = {
   title: "Hasker & Co. Realty Group | Affordable Homes to Rent & Buy",
@@ -219,6 +229,11 @@ export default async function HomePage() {
 
   const totalProperties = totalCountRaw.status === "fulfilled" ? totalCountRaw.value.count : null;
 
+  // Rotate the hero photo every 2 hours. Safe here: this is a Server Component with
+  // ISR (revalidate=300), so the value is fixed per render — no client re-render churn.
+  // eslint-disable-next-line react-hooks/purity
+  const heroImage = HERO_IMAGES[Math.floor(Date.now() / (2 * 60 * 60 * 1000)) % HERO_IMAGES.length];
+
   const dbCities = allCitiesRaw.status === "fulfilled" ? allCitiesRaw.value : [];
   const mergedCities: CityData[] = [
     ...Object.values(CITIES),
@@ -239,7 +254,7 @@ export default async function HomePage() {
       {/* â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="relative flex flex-col items-center justify-center overflow-hidden text-center" style={{ minHeight: 620 }}>
         <Image
-          src="https://images.unsplash.com/photo-1560184897-ae75f418493e?w=1400&q=75&fm=webp&auto=format"
+          src={heroImage}
           alt="Beautiful home available through Hasker & Co. Realty Group"
           fill
           className="object-cover object-center"
@@ -247,39 +262,51 @@ export default async function HomePage() {
           priority
           fetchPriority="high"
         />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(30,58,95,0.15) 0%, rgba(30,58,95,0.50) 100%)" }} />
+        {/* Readability overlay — keeps white text crisp over any photo */}
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(180deg, rgba(15,32,54,0.66) 0%, rgba(15,32,54,0.50) 42%, rgba(15,32,54,0.74) 100%)" }}
+        />
 
         <div className="relative z-10 w-full flex flex-col items-center px-5 sm:px-8 pt-28 pb-16">
-          {/* Available pill */}
-          <div className="inline-flex items-center gap-2 mb-6" style={{ background: "rgba(255,255,255,0.10)", backdropFilter: "blur(8px)", padding: "6px 14px", borderRadius: 9999 }}>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
-            <span className="text-[11px] font-semibold tracking-[0.22em] uppercase" style={{ color: "rgba(255,255,255,0.85)" }}>
-              {totalProperties != null ? `${totalProperties} homes available now` : "Homes Available Now"}
-            </span>
-          </div>
-
           {/* H1 */}
-          <h1 className="font-serif font-bold text-white leading-[1.05] mb-[18px] text-[2.6rem] sm:text-[3.5rem] lg:text-[4.5rem]" style={{ letterSpacing: "-0.02em", maxWidth: 900 }}>
+          <h1
+            className="font-serif font-bold text-white leading-[1.05] mb-[18px] text-[2.6rem] sm:text-[3.5rem] lg:text-[4.5rem]"
+            style={{ letterSpacing: "-0.02em", maxWidth: 900, textShadow: "0 2px 18px rgba(0,0,0,0.45)" }}
+          >
             Best-maintained houses for rent,<br className="hidden sm:block" /> in 12+ U.S. cities.
           </h1>
 
           {/* Subhead */}
-          <p className="text-[18px] leading-[1.55] mb-9 max-w-[540px]" style={{ color: "rgba(255,255,255,0.82)" }}>
+          <p
+            className="text-[18px] leading-[1.55] mb-9 max-w-[540px] text-white/90"
+            style={{ textShadow: "0 1px 10px rgba(0,0,0,0.4)" }}
+          >
             Well-maintained rentals at honest prices. No hidden fees. Decisions in 24 hours.
           </p>
 
           {/* Search */}
-          <div className="w-full max-w-[760px] mb-3">
+          <div className="w-full max-w-[760px] mb-7">
             <HeroSearch />
           </div>
 
-          {/* Phone callback strip — lowest friction above-fold capture */}
-          <HeroCallbackStrip />
-
-          {/* Trust micro-line */}
-          <p className="text-[12px] tracking-[0.05em]" style={{ color: "rgba(255,255,255,0.55)" }}>
-            2,400+ families housed Â· BBB A+ Â· 4.9 on Trustpilot
-          </p>
+          {/* Trust badges */}
+          <div className="flex flex-wrap items-center justify-center gap-2.5">
+            {[
+              { icon: <Star size={14} className="text-amber-300 fill-amber-300" />, label: "4.9 on Trustpilot" },
+              { icon: <ShieldCheck size={14} className="text-emerald-300" />,        label: "BBB A+ Accredited" },
+              { icon: <Users size={14} className="text-white/80" />,                 label: "2,400+ families housed" },
+              { icon: <HomeIcon size={14} className="text-white/80" />,              label: "Equal Housing Opportunity" },
+            ].map((b) => (
+              <div
+                key={b.label}
+                className="flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 px-3.5 py-2 text-[12.5px] font-medium text-white/90"
+              >
+                {b.icon}
+                {b.label}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

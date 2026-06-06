@@ -56,6 +56,7 @@ export interface PropertyListItemAPI {
   neighborhood: string | null;
   is_featured: boolean;
   primary_image_url: string | null;
+  image_urls?: string[];
   agent_name: string;
   created_at: string;
   latitude: number | null;
