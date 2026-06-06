@@ -7,7 +7,7 @@ import Link from "next/link";
 import {
   Search, ChevronDown, MapPin, X,
   List, Map as MapIcon, Layers, BedDouble, DollarSign, ArrowRight, Calendar,
-  Bath, Home, PawPrint, Maximize,
+  Bath, Home, PawPrint, Maximize, Phone,
 } from "lucide-react";
 import { HaskerLogo } from "@/components/ui/HaskerLogo";
 import { CardImageCarousel } from "./CardImageCarousel";
@@ -679,18 +679,28 @@ export function PropertiesClient({
               )}
             </div>
 
-            {/* Sort */}
-            <div className="relative shrink-0">
-              <select
-                value={sort}
-                onChange={(e) => { setSort(e.target.value); navigate({ sort: e.target.value }); }}
-                className="appearance-none text-[12px] font-semibold text-brand-dark bg-neutral-50 border border-neutral-200 rounded-lg outline-none cursor-pointer pl-3 pr-7 py-2 hover:border-brand transition-colors"
+            <div className="flex items-center gap-2 shrink-0">
+              {/* Desktop call CTA (mobile uses the bottom toolbar) */}
+              <button
+                onClick={() => window.dispatchEvent(new Event("hasker:open-callback"))}
+                className="hidden lg:flex items-center gap-1.5 text-[12px] font-bold text-brand border border-brand/30 rounded-lg px-3 py-2 hover:bg-brand/5 transition-colors cursor-pointer"
               >
-                {SORT_OPTIONS.map((s) => (
-                  <option key={s.value} value={s.value}>{s.label}</option>
-                ))}
-              </select>
-              <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+                <Phone size={13} /> Call
+              </button>
+
+              {/* Sort */}
+              <div className="relative">
+                <select
+                  value={sort}
+                  onChange={(e) => { setSort(e.target.value); navigate({ sort: e.target.value }); }}
+                  className="appearance-none text-[12px] font-semibold text-brand-dark bg-neutral-50 border border-neutral-200 rounded-lg outline-none cursor-pointer pl-3 pr-7 py-2 hover:border-brand transition-colors"
+                >
+                  {SORT_OPTIONS.map((s) => (
+                    <option key={s.value} value={s.value}>{s.label}</option>
+                  ))}
+                </select>
+                <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+              </div>
             </div>
           </div>
 
@@ -795,14 +805,23 @@ export function PropertiesClient({
         </div>
       </div>
 
-      {/* Mobile view toggle */}
-      <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
-        <button
-          onClick={() => setMobileView(mobileView === "list" ? "map" : "list")}
-          className="flex items-center gap-2.5 bg-[#0D1B2A] text-white pl-5 pr-6 py-4 rounded-full shadow-2xl text-[13px] font-bold active:scale-95 transition-transform border border-white/10"
-        >
-          {mobileView === "list" ? <><MapIcon size={17} /> Show Map</> : <><List size={17} /> Show Listings</>}
-        </button>
+      {/* Mobile bottom toolbar — segmented Map/List + Call (replaces the floating callback button) */}
+      <div className="lg:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
+        <div className="flex items-stretch bg-white rounded-full shadow-2xl border border-neutral-200 overflow-hidden">
+          <button
+            onClick={() => setMobileView(mobileView === "list" ? "map" : "list")}
+            className="flex items-center gap-2 pl-5 pr-4 py-3.5 text-[13.5px] font-bold text-brand-dark active:bg-neutral-100 transition-colors"
+          >
+            {mobileView === "list" ? <><MapIcon size={16} /> Map</> : <><List size={16} /> List</>}
+          </button>
+          <div className="w-px my-2.5 bg-neutral-200" />
+          <button
+            onClick={() => window.dispatchEvent(new Event("hasker:open-callback"))}
+            className="flex items-center gap-2 pl-4 pr-5 py-3.5 text-[13.5px] font-bold text-brand active:bg-brand/5 transition-colors"
+          >
+            <Phone size={16} /> Call
+          </button>
+        </div>
       </div>
     </div>
   );

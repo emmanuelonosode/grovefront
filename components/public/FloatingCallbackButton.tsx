@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { Phone, X, User, Check, PhoneCall } from "lucide-react";
 import {
   getBestKnownCity,
@@ -19,6 +20,7 @@ const INPUT_CLS =
   "transition-all bg-neutral-50 focus:bg-white font-medium";
 
 export function FloatingCallbackButton() {
+  const pathname = usePathname();
   const [open,      setOpen]      = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [phone,     setPhone]     = useState("");
@@ -97,19 +99,25 @@ export function FloatingCallbackButton() {
     }
   }
 
-  if (alreadySent) return null;
+  // On the full-screen search/map page the floating pill blocks content, so it's
+  // hidden there — the Call action lives in the bottom toolbar instead, which opens
+  // this same modal via the `hasker:open-callback` event. The modal + listener stay
+  // mounted on every page so that trigger always works.
+  const showFloating = !alreadySent && pathname !== "/houses-for-rent";
 
   return (
     <>
       {/* Floating button — bottom-right, above mobile nav */}
-      <button
-        onClick={() => setOpen(true)}
-        className="fixed bottom-24 right-4 lg:bottom-6 lg:right-6 z-40 flex items-center gap-2 bg-brand hover:bg-brand-hover text-white font-bold text-sm px-4 py-3 lg:px-5 lg:py-3.5 rounded-full shadow-xl shadow-brand/30 hover:shadow-brand/40 transition-all active:scale-95 cursor-pointer group"
-        aria-label="Request a callback"
-      >
-        <Phone size={16} className="shrink-0 group-hover:animate-bounce" />
-        <span>Get a Call Back</span>
-      </button>
+      {showFloating && (
+        <button
+          onClick={() => setOpen(true)}
+          className="fixed bottom-24 right-4 lg:bottom-6 lg:right-6 z-40 flex items-center gap-2 bg-brand hover:bg-brand-hover text-white font-bold text-sm px-4 py-3 lg:px-5 lg:py-3.5 rounded-full shadow-xl shadow-brand/30 hover:shadow-brand/40 transition-all active:scale-95 cursor-pointer group"
+          aria-label="Request a callback"
+        >
+          <Phone size={16} className="shrink-0 group-hover:animate-bounce" />
+          <span>Get a Call Back</span>
+        </button>
+      )}
 
       {/* Modal */}
       {open && (
