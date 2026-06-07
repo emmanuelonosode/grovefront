@@ -7,7 +7,7 @@ import Link from "next/link";
 import {
   Search, ChevronDown, MapPin, X,
   List, Map as MapIcon, Layers, BedDouble, DollarSign, ArrowRight, Calendar,
-  Bath, Home, PawPrint, Maximize, Phone,
+  Bath, Bed, Home, PawPrint, Maximize, Phone,
 } from "lucide-react";
 import { HaskerLogo } from "@/components/ui/HaskerLogo";
 import { CardImageCarousel } from "./CardImageCarousel";
@@ -928,11 +928,22 @@ function PanelCard({ property, isActive }: { property: PropertyListItemAPI; isAc
           {isRental && <span className="text-[11px] font-semibold text-neutral-400">/mo</span>}
         </p>
 
-        <p className="text-[12px] font-semibold text-neutral-600">
-          {property.bedrooms === 0 ? "Studio" : `${property.bedrooms} bd`}
-          {" · "}{property.bathrooms} ba
-          {property.sqft > 0 && ` · ${property.sqft.toLocaleString()} sqft`}
-        </p>
+        <div className="flex items-center gap-3 text-[12px] font-semibold text-neutral-600">
+          <span className="flex items-center gap-1">
+            <Bed size={14} className="text-neutral-400" />
+            {property.bedrooms === 0 ? "Studio" : <>{property.bedrooms} bd</>}
+          </span>
+          <span className="flex items-center gap-1">
+            <Bath size={14} className="text-neutral-400" />
+            {property.bathrooms} ba
+          </span>
+          {property.sqft > 0 && (
+            <span className="flex items-center gap-1">
+              <Maximize size={13} className="text-neutral-400" />
+              {property.sqft.toLocaleString()} sqft
+            </span>
+          )}
+        </div>
 
         <p className="text-[11px] text-neutral-400 truncate leading-tight">
           {property.address ? `${property.address}, ` : ""}{property.city}, {property.state}

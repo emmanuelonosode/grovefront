@@ -304,7 +304,9 @@ export function toPropertyCardShape(p: PropertyListItemAPI): Property {
     state:       p.state,
     zip:         "",
     neighborhood: p.neighborhood ?? undefined,
-    images:      p.primary_image_url
+    images:      (p.image_urls && p.image_urls.length)
+      ? p.image_urls.map((url, i) => ({ id: `img-${i}`, url, caption: p.title, isPrimary: i === 0 }))
+      : p.primary_image_url
       ? [{ id: "primary", url: p.primary_image_url, caption: p.title, isPrimary: true }]
       : [],
     amenities:   [],

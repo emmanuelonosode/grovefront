@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Bed, Bath, Maximize, MapPin, Home } from "lucide-react";
+import { Bed, Bath, Maximize, Home, Calendar, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { FavoriteButton } from "@/components/public/FavoriteButton";
+import { CardImageCarousel } from "@/components/public/CardImageCarousel";
 import { formatPrice, formatNumber } from "@/lib/utils";
 import type { Property } from "@/types";
 
@@ -16,6 +17,11 @@ interface PropertyCardProps {
 
 export function PropertyCard({ property, variant = "default" }: PropertyCardProps) {
   const primaryImage = property.images.find((i) => i.isPrimary) ?? property.images[0];
+  // Primary first, then the rest — feeds the swipeable card carousel.
+  const galleryImages = [...property.images]
+    .sort((a, b) => (a.isPrimary === b.isPrimary ? 0 : a.isPrimary ? -1 : 1))
+    .map((i) => i.url)
+    .filter(Boolean);
 
   const listingBadgeVariant =
     property.listingType === "for-sale"
@@ -90,25 +96,20 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
   return (
     <article className="group flex flex-col bg-white border border-neutral-200 rounded-2xl overflow-hidden hover:shadow-lg hover:border-neutral-300 transition-all duration-200">
 
-      {/* Image — linked to property detail */}
+      {/* Image — swipeable carousel */}
       <div className="relative aspect-[3/2] overflow-hidden bg-neutral-100">
-        {/* The image link sits at z-0 so z-10 elements (buttons) stay above it */}
-        <Link href={detailHref} className="absolute inset-0 z-0 block" aria-label={`View ${property.title}`}>
-          {primaryImage ? (
-            <Image
-              src={primaryImage.url}
-              alt={property.title}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              unoptimized
-            />
-          ) : (
-            <div className="w-full h-full bg-neutral-100 flex items-center justify-center">
-              <Home size={36} className="text-neutral-300" />
-            </div>
-          )}
-        </Link>
+        {galleryImages.length > 0 ? (
+          <CardImageCarousel
+            images={galleryImages}
+            alt={property.title}
+            href={detailHref}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        ) : (
+          <Link href={detailHref} className="flex h-full w-full items-center justify-center" aria-label={`View ${property.title}`}>
+            <Home size={36} className="text-neutral-300" />
+          </Link>
+        )}
 
         {/* Badges — non-interactive, pointer-events-none */}
         <div className="absolute top-3 left-3 z-10 flex flex-wrap gap-1.5 pointer-events-none">
@@ -124,10 +125,13 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
           <FavoriteButton propertyId={Number(property.id)} size={16} className="min-w-0 min-h-0" />
         </div>
 
-        {/* Image count */}
-        {property.images.length > 1 && (
-          <div className="absolute bottom-3 right-3 z-10 pointer-events-none bg-black/55 text-white text-[11px] font-medium px-2 py-0.5 rounded-md">
-            1 / {property.images.length}
+        {/* Available pill */}
+        {isRental && (
+          <div className="absolute bottom-3 right-3 z-10 pointer-events-none">
+            <span className="flex items-center gap-1 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block shrink-0" />
+              Available
+            </span>
           </div>
         )}
       </div>
@@ -145,16 +149,27 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
           )}
         </p>
 
-        {/* Specs */}
-        <div className="flex items-center gap-0.5 text-[13px] text-neutral-500 mt-2">
-          <span className="font-semibold text-neutral-700">{property.bedrooms}</span>
-          <span className="mr-1"> bd</span>
-          <span className="text-neutral-300 mx-1">·</span>
-          <span className="font-semibold text-neutral-700">{property.bathrooms}</span>
-          <span className="mr-1"> ba</span>
-          <span className="text-neutral-300 mx-1">·</span>
-          <span className="font-semibold text-neutral-700">{formatNumber(property.sqft)}</span>
-          <span> sqft</span>
+        {/* Specs — with icons so the numbers are unmistakable */}
+        <div className="flex items-center gap-3.5 text-[13px] text-neutral-600 mt-2">
+          <span className="flex items-center gap-1">
+            <Bed size={15} className="text-neutral-400" />
+            <span className="font-semibold text-neutral-700">
+              {property.bedrooms === 0 ? "Studio" : property.bedrooms}
+            </span>
+            {property.bedrooms !== 0 && <span className="text-neutral-500">bd</span>}
+          </span>
+          <span className="flex items-center gap-1">
+            <Bath size={15} className="text-neutral-400" />
+            <span className="font-semibold text-neutral-700">{property.bathrooms}</span>
+            <span className="text-neutral-500">ba</span>
+          </span>
+          {property.sqft > 0 && (
+            <span className="flex items-center gap-1">
+              <Maximize size={14} className="text-neutral-400" />
+              <span className="font-semibold text-neutral-700">{formatNumber(property.sqft)}</span>
+              <span className="text-neutral-500">sqft</span>
+            </span>
+          )}
         </div>
 
         {/* Address */}
@@ -166,27 +181,25 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
             ? `${property.neighborhood} · ${property.city}, ${property.state}`
             : `${property.city}, ${property.state} ${property.zip}`}
         </p>
-
-        {/* Urgency signal */}
-        {isRental && (
-          <p className="flex items-center gap-1.5 text-[11px] text-amber-600 font-medium mt-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
-            Typically rents within 5–7 days
-          </p>
-        )}
       </Link>
 
-      {/* Apply CTA — completely outside the card link, always independently clickable */}
-      {isRental && (
-        <div className="px-4 pb-4">
+      {/* CTAs — Book Tour + Apply Now (identical to the search-results card) */}
+      <div className="px-4 pb-4 flex gap-2">
+        <Link
+          href={`${detailHref}#schedule-form`}
+          className="flex-1 flex items-center justify-center gap-1.5 py-3 border-2 border-brand-dark/80 text-brand-dark hover:bg-brand-dark hover:text-white text-[12px] font-bold rounded-lg transition-colors duration-150"
+        >
+          <Calendar size={12} /> Book Tour
+        </Link>
+        {isRental && (
           <Link
             href={applyHref}
-            className="flex items-center justify-center w-full py-3 bg-brand hover:bg-brand-hover text-white text-[13px] font-bold rounded-xl transition-colors duration-150"
+            className="flex-1 flex items-center justify-center gap-1.5 py-3 bg-brand hover:bg-brand-hover text-white text-[12px] font-bold rounded-lg transition-colors duration-150"
           >
-            Apply Now — It&apos;s Free
+            Apply Now <ArrowRight size={11} />
           </Link>
-        </div>
-      )}
+        )}
+      </div>
     </article>
   );
 }

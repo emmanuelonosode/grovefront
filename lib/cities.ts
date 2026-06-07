@@ -159,18 +159,23 @@ export function buildGenericCityData(stats: CityStats): CityData {
   const avgRent = stats.avg_price
     ? `$${Math.round(stats.avg_price).toLocaleString()}`
     : "Contact us";
+  const listingWord = stats.count !== 1 ? "listings" : "listing";
+  const priceRange =
+    stats.min_price && stats.max_price && stats.max_price > stats.min_price
+      ? ` priced from $${Math.round(stats.min_price).toLocaleString()} to $${Math.round(stats.max_price).toLocaleString()}/month`
+      : "";
   return {
     slug: stats.slug,
     name: stats.city,
     state: stats.state,
     stateCode: stats.state,
-    tagline: `Explore affordable rental homes in ${stats.city}, ${stats.state}.`,
+    tagline: `Houses and apartments for rent in ${stats.city}, ${stats.state}.`,
     heroImage:
       "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1600&q=80",
     avgRent,
     population: "N/A",
-    marketHighlight: `${stats.count} active rental listing${stats.count !== 1 ? "s" : ""}`,
-    seoContent: `Hasker & Co. Realty Group offers verified rental listings in ${stats.city}, ${stats.state}. Browse our current inventory of ${stats.count} available propert${stats.count !== 1 ? "ies" : "y"} — all inspected and move-in ready, decisions within 24 hours.\n\nOur ${stats.city} listings span a range of bedroom counts and property types to fit any budget. Apply online in under 10 minutes and receive a decision the same business day.`,
+    marketHighlight: `${stats.count} active rental ${listingWord}`,
+    seoContent: `Looking for a house or apartment to rent in ${stats.city}, ${stats.state}? Hasker & Co. Realty Group has ${stats.count} verified rental ${listingWord}${priceRange} available right now. Every home is inspected and move-in ready, with transparent pricing and no hidden administrative fees.\n\nOur ${stats.city} rentals span a range of bedroom counts and property types — from 1-bedroom apartments to spacious family homes — so you can narrow down to exactly what fits your budget and lifestyle. Apply online in under 10 minutes, get a decision the same business day, and move in on your schedule.`,
   };
 }
 

@@ -4,7 +4,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import {
   Clock, ShieldCheck, PawPrint, Home, ArrowRight,
-  Bed, Bath, Maximize, MapPin, Star, TrendingUp, Users, Building,
+  Bed, Star, TrendingUp, Users, Building,
 } from "lucide-react";
 import {
   CITIES, getAllCitySlugs, getCityBySlug,
@@ -40,24 +40,24 @@ export async function generateMetadata(
     city = buildGenericCityData(stats);
   }
 
-  const title = `Homes for Rent in ${city.name}, ${city.stateCode} — Affordable Rentals | Hasker & Co. Realty Group`;
-  const description = `Find affordable 1–4 bedroom homes and apartments for rent in ${city.name}, ${city.stateCode}. Starting from ${city.avgRent}/mo. All homes inspected and move-in ready. Pet-friendly options, 24-hour approval decisions.`;
+  const title = `Houses for Rent in ${city.name}, ${city.stateCode} | Hasker & Co. Realty Group`;
+  const description = `Browse houses & apartments for rent in ${city.name}, ${city.stateCode} — 1 to 4 bedrooms from ${city.avgRent}/mo. Inspected, move-in ready, pet-friendly options. Decisions in 24 hours.`;
   const url = `https://haskerrealtygroup.com/rentals/${slug}`;
 
   return {
     title,
     description,
     keywords: [
-      `homes for rent in ${city.name}`,
-      `${city.name} affordable rentals`,
-      `apartments for rent ${city.name} ${city.stateCode}`,
-      `2 bedroom apartments ${city.name}`,
+      `houses for rent in ${city.name}`,
+      `apartments for rent in ${city.name}, ${city.stateCode}`,
+      `homes for rent ${city.name} ${city.stateCode}`,
+      `2 bedroom apartments for rent ${city.name}`,
       `3 bedroom houses for rent ${city.name}`,
-      `pet friendly apartments ${city.name}`,
-      `cheap rent ${city.name}`,
-      `move-in ready rentals ${city.name}`,
-      `${city.name} rental homes no credit check`,
-      `move in ready homes ${city.name}`,
+      `pet friendly rentals ${city.name}`,
+      `${city.name} rentals near me`,
+      `move-in ready homes for rent ${city.name}`,
+      `family homes for rent ${city.name}`,
+      `${city.name} ${city.stateCode} rental homes`,
     ],
     alternates: { canonical: url },
     openGraph: {
@@ -127,11 +127,13 @@ export default async function CityRentalsPage(
     city = buildGenericCityData(stats);
   }
 
-  // Fetch real properties for this city from the API
+  // Fetch real rental listings for this city from the API
   let properties: import("@/types").Property[] = [];
+  let totalCount = 0;
   try {
-    const data = await fetchProperties({ q: city.name, page_size: "6" });
+    const data = await fetchProperties({ q: city.name, listing_type: "for-rent", page_size: "9" });
     properties = data.results.map(toPropertyCardShape);
+    totalCount = data.count;
   } catch {
     // API may be down — page still renders with empty grid
   }
@@ -154,7 +156,7 @@ export default async function CityRentalsPage(
       name: "Hasker & Co. Realty Group",
       url: "https://haskerrealtygroup.com",
       telephone: "+14045550182",
-      address: { "@type": "PostalAddress", addressLocality: "Virginia Beach", addressRegion: "VA", addressCountry: "US" },
+      address: { "@type": "PostalAddress", streetAddress: "204 Colonial Hills Rd", addressLocality: "Winder", addressRegion: "GA", postalCode: "30680", addressCountry: "US" },
     },
   };
 
@@ -193,7 +195,7 @@ export default async function CityRentalsPage(
         name: `Does Hasker & Co. Realty Group have pet-friendly rentals in ${city.name}?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: `Yes. Several of our ${city.name} listings are pet-friendly. Pet policies are disclosed upfront on every listing. You can filter for pet-friendly homes at haskerrealtygroup.com/properties.`,
+          text: `Yes. Several of our ${city.name} listings are pet-friendly. Pet policies are disclosed upfront on every listing. You can filter for pet-friendly homes at haskerrealtygroup.com/houses-for-rent.`,
         },
       },
       {
@@ -214,10 +216,10 @@ export default async function CityRentalsPage(
       },
       {
         "@type": "Question",
-        name: `Can I rent in ${city.name} with bad credit or no rental history?`,
+        name: `How soon can I move into a rental in ${city.name}?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: `Hasker & Co. Realty Group reviews each application individually and works with renters who have less-than-perfect credit or limited rental history. We look at your full financial picture, not just your credit score. Apply at haskerrealtygroup.com/apply.`,
+          text: `Most move-ins happen within days of approval. Apply online, get a decision within 24 hours, and once approved you can sign and move in on your preferred date — many ${city.name} homes are move-in ready immediately.`,
         },
       },
     ],
@@ -259,9 +261,9 @@ export default async function CityRentalsPage(
           <h1 className="font-serif text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight hero-animate" style={{ animationDelay: "80ms" }}>
             Homes for Rent in {city.name}, {city.stateCode}
           </h1>
-          {properties.length > 0 && (
+          {totalCount > 0 && (
             <p className="text-brand text-sm font-semibold mt-3 hero-animate" style={{ animationDelay: "130ms" }}>
-              {properties.length} verified listings · Updated daily
+              {totalCount} verified {totalCount === 1 ? "listing" : "listings"} · Updated daily
             </p>
           )}
           <p className="text-blue-100 text-lg lg:text-xl max-w-2xl mt-4 leading-relaxed hero-animate" style={{ animationDelay: "160ms" }}>
@@ -305,6 +307,34 @@ export default async function CityRentalsPage(
         </div>
       </section>
 
+      {/* ── QUICK FILTERS ────────────────────────────────────────── */}
+      <section className="bg-white border-b border-neutral-100">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-6">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-neutral-400 mb-3">
+            Find your fit in {city.name}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { label: "1 Bed",       href: `/rentals/${slug}/1-bedroom`,  Icon: Bed },
+              { label: "2 Beds",      href: `/rentals/${slug}/2-bedroom`,  Icon: Bed },
+              { label: "3 Beds",      href: `/rentals/${slug}/3-bedroom`,  Icon: Bed },
+              { label: "4 Beds",      href: `/rentals/${slug}/4-bedroom`,  Icon: Bed },
+              { label: "Condos",      href: `/rentals/${slug}/condos`,     Icon: Building },
+              { label: "Townhouses",  href: `/rentals/${slug}/townhouses`, Icon: Building },
+              { label: "Pet-friendly", href: `/houses-for-rent?q=${encodeURIComponent(city.name)}&pets=true`, Icon: PawPrint },
+            ].map(({ label, href, Icon }) => (
+              <Link
+                key={label}
+                href={href}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-neutral-200 text-sm font-medium text-brand-dark hover:border-brand hover:text-brand hover:bg-brand-light transition-colors"
+              >
+                <Icon size={14} className="text-brand" /> {label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── PROPERTY GRID ────────────────────────────────────────── */}
       <section className="bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16 lg:py-20">
@@ -319,7 +349,7 @@ export default async function CityRentalsPage(
               href={`/houses-for-rent?q=${encodeURIComponent(city.name)}`}
               className="hidden sm:flex items-center gap-2 text-sm text-brand font-medium hover:underline"
             >
-              View All {city.name} Listings
+              {totalCount > properties.length ? `View all ${totalCount} listings` : `View all ${city.name} listings`}
               <ArrowRight size={14} />
             </Link>
           </div>
@@ -412,7 +442,7 @@ export default async function CityRentalsPage(
               <div className="grid grid-cols-3 gap-3 mb-6">
                 {[
                   { label: "Avg. Rent", value: city.avgRent },
-                  { label: "Homes Available", value: properties.length > 0 ? `${properties.length}+` : "New Soon" },
+                  { label: "Homes Available", value: totalCount > 0 ? `${totalCount}` : "New Soon" },
                   { label: "Decision Time", value: "24 hrs" },
                 ].map((stat) => (
                   <div key={stat.label} className="border-l-2 border-brand pl-3">
