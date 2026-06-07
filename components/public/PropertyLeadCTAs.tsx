@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Sparkles, ChevronRight, ShieldCheck } from "lucide-react";
-import { PropertyEligibilityDrawer } from "./PropertyEligibilityDrawer";
+import { Sparkles, ChevronRight, ShieldCheck, Calendar } from "lucide-react";
 import { ActiveSpecialModal } from "./ActiveSpecialModal";
+
+// Opens the shared <PropertyTourModal> mounted on the property page.
+const openTour = () => window.dispatchEvent(new Event("hasker:open-tour"));
 
 interface PropertyLeadCTAsProps {
   mode: "banner" | "sidebar" | "mobile-sticky";
@@ -23,7 +25,6 @@ export function PropertyLeadCTAs({
   propertyPrice,
   propertyCity,
 }: PropertyLeadCTAsProps) {
-  const [eligibilityOpen, setEligibilityOpen] = useState(false);
   const [specialOpen, setSpecialOpen] = useState(false);
 
   if (mode === "banner") {
@@ -70,81 +71,57 @@ export function PropertyLeadCTAs({
 
   if (mode === "sidebar") {
     return (
-      <>
-        <div className="space-y-3">
-          {/* Trust badge */}
-          <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100/80 rounded-xl p-3.5 text-xs text-emerald-800">
-            <ShieldCheck size={16} className="text-emerald-500 shrink-0" />
-            <div className="leading-snug">
-              <span className="font-bold">Instant Pre-Screening:</span> Qualify online in 30s. No hard credit checks.
-            </div>
+      <div className="space-y-3">
+        {/* Trust badge */}
+        <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100/80 rounded-xl p-3.5 text-xs text-emerald-800">
+          <ShieldCheck size={16} className="text-emerald-500 shrink-0" />
+          <div className="leading-snug">
+            <span className="font-bold">Instant Pre-Screening:</span> Qualify online in 30s. No hard credit checks.
           </div>
-
-          {/* Book a Tour — primary */}
-          <button
-            onClick={() => setEligibilityOpen(true)}
-            className="w-full flex items-center justify-center h-13 py-3.5 bg-brand hover:bg-brand-hover text-white text-sm font-bold rounded-xl shadow-lg shadow-brand/15 hover:shadow-brand/25 transition-all cursor-pointer"
-          >
-            Book a Tour
-          </button>
-
-          {/* Apply Now — secondary */}
-          <Link
-            href={`/apply?property=${propertySlug}`}
-            className="w-full flex items-center justify-center h-13 py-3.5 border-2 border-brand-dark/90 text-brand-dark hover:bg-brand-dark hover:text-white text-sm font-bold rounded-xl transition-all cursor-pointer bg-white"
-          >
-            Apply Now
-          </Link>
-
-          <p className="text-[10px] text-center text-neutral-400">
-            Guideline: Monthly Gross Income ≥ 3x rent (${(propertyPrice * 3).toLocaleString()}/mo)
-          </p>
         </div>
 
-        <PropertyEligibilityDrawer
-          open={eligibilityOpen}
-          onClose={() => setEligibilityOpen(false)}
-          propertyId={propertyId}
-          propertySlug={propertySlug}
-          propertyTitle={propertyTitle}
-          propertyPrice={propertyPrice}
-          propertyCity={propertyCity}
-        />
-      </>
+        {/* Book a Tour — primary (opens the tour modal) */}
+        <button
+          onClick={openTour}
+          className="w-full flex items-center justify-center gap-2 h-13 py-3.5 bg-brand hover:bg-brand-hover text-white text-sm font-bold rounded-xl shadow-lg shadow-brand/15 hover:shadow-brand/25 transition-all cursor-pointer"
+        >
+          <Calendar size={16} /> Book a Tour
+        </button>
+
+        {/* Apply Now — secondary */}
+        <Link
+          href={`/apply?property=${propertySlug}`}
+          className="w-full flex items-center justify-center h-13 py-3.5 border-2 border-brand-dark/90 text-brand-dark hover:bg-brand-dark hover:text-white text-sm font-bold rounded-xl transition-all cursor-pointer bg-white"
+        >
+          Apply Now
+        </Link>
+
+        <p className="text-[10px] text-center text-neutral-400">
+          Guideline: Monthly Gross Income ≥ 3x rent (${(propertyPrice * 3).toLocaleString()}/mo)
+        </p>
+      </div>
     );
   }
 
   if (mode === "mobile-sticky") {
     return (
-      <>
-        <div className="flex items-center gap-2.5 w-full">
-          {/* Book a Tour */}
-          <button
-            onClick={() => setEligibilityOpen(true)}
-            className="flex-1 h-12 border-2 border-brand-dark text-brand-dark text-sm font-bold rounded-xl flex items-center justify-center hover:bg-brand-dark hover:text-white transition-all cursor-pointer bg-white"
-          >
-            Book a Tour
-          </button>
+      <div className="flex items-center gap-2.5 w-full">
+        {/* Book a Tour (opens the tour modal) */}
+        <button
+          onClick={openTour}
+          className="flex-1 h-12 border-2 border-brand-dark text-brand-dark text-sm font-bold rounded-xl flex items-center justify-center gap-1.5 hover:bg-brand-dark hover:text-white transition-all cursor-pointer bg-white"
+        >
+          <Calendar size={15} /> Book a Tour
+        </button>
 
-          {/* Apply Now */}
-          <Link
-            href={`/apply?property=${propertySlug}`}
-            className="flex-1 h-12 bg-brand text-white text-sm font-bold rounded-xl flex items-center justify-center hover:bg-brand-hover transition-colors cursor-pointer shadow-md shadow-brand/20"
-          >
-            Apply Now
-          </Link>
-        </div>
-
-        <PropertyEligibilityDrawer
-          open={eligibilityOpen}
-          onClose={() => setEligibilityOpen(false)}
-          propertyId={propertyId}
-          propertySlug={propertySlug}
-          propertyTitle={propertyTitle}
-          propertyPrice={propertyPrice}
-          propertyCity={propertyCity}
-        />
-      </>
+        {/* Apply Now */}
+        <Link
+          href={`/apply?property=${propertySlug}`}
+          className="flex-1 h-12 bg-brand text-white text-sm font-bold rounded-xl flex items-center justify-center hover:bg-brand-hover transition-colors cursor-pointer shadow-md shadow-brand/20"
+        >
+          Apply Now
+        </Link>
+      </div>
     );
   }
 

@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Bed, Bath, Maximize, MapPin, Calendar, Clock,
+  Bed, Bath, Maximize, MapPin, Calendar, Clock, ArrowRight,
   Phone, Mail, Home,
   RotateCcw, Share2, Heart,
   Utensils, Zap, Waves, PawPrint, Thermometer,
@@ -14,11 +14,12 @@ import {
 import { fetchPropertyBySlug, fetchProperties, toPropertyCardShape } from "@/lib/properties";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { PropertyInquiryForm } from "@/components/public/PropertyInquiryForm";
 import { PropertyIntentCapture } from "@/components/public/PropertyIntentCapture";
 import { VirtualTourButton } from "@/components/public/VirtualTourButton";
 import { PropertyImageGallery } from "@/components/public/PropertyImageGallery";
-import { PropertyCard } from "@/components/public/PropertyCard";
+import { PropertiesCarousel } from "@/components/public/PropertiesCarousel";
+import { BookTourButton } from "@/components/public/BookTourButton";
+import { PropertyTourModal } from "@/components/public/PropertyTourModal";
 import { PropertyDetailMapLoader } from "@/components/public/PropertyDetailMapLoader";
 import { FavoriteButton } from "@/components/public/FavoriteButton";
 import { PropertyLeadCTAs } from "@/components/public/PropertyLeadCTAs";
@@ -139,10 +140,10 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const amenities = amenityCategories.length === 0 ? (property.amenities ?? []) : [];
   const agent = property.agent;
 
-  // Similar homes from same city (used for cards + map)
-  const similarRaw = await fetchProperties({ q: property.city, listing_type: property.listing_type }).catch(() => null);
+  // Similar homes from same city (used for the nearby-homes carousel + map)
+  const similarRaw = await fetchProperties({ q: property.city, listing_type: property.listing_type, page_size: "12" }).catch(() => null);
   const similarResults = (similarRaw?.results ?? []).filter((p) => p.slug !== property.slug);
-  const similar = similarResults.slice(0, 3).map(toPropertyCardShape);
+  const similar = similarResults.slice(0, 10).map(toPropertyCardShape);
 
   // Map markers for the detail page map
   const currentMarker: DetailMarker = {
@@ -200,6 +201,11 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const fullAddress = `${property.address}, ${property.city}, ${property.state} ${property.zip_code}`;
 
   const virtualTourUrl = (property as any).virtual_tour_url || (property as any).tour_360_url;
+
+  // Map only renders with real coordinates; otherwise show a neighborhood block.
+  const hasCoords = Number.isFinite(currentMarker.lat) && currentMarker.lat !== 0
+    && Number.isFinite(currentMarker.lng) && currentMarker.lng !== 0;
+  const citySlug = `${property.city}-${property.state}`.toLowerCase().replace(/\s+/g, "-");
 
   const breadcrumb = {
     "@context": "https://schema.org",
@@ -338,7 +344,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
         {/* ── TITLE BAND ─────────────────────────────────────────── */}
         <div className="border-b border-[#F1F5F9]">
-          <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 lg:py-9">
+          <div className="max-w-7xl mx-auto px-4 lg:px-8 py-6 lg:py-7">
             {/* Breadcrumb */}
             <nav className="flex items-center gap-2 text-xs text-[#94A3B8] mb-5">
               <Link href="/" className="hover:text-brand transition-colors">Home</Link>
@@ -422,7 +428,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                 { icon: <Fence    size={20} strokeWidth={1.8} />, value: property.lot_size  ? `${property.lot_size} ac` : "—", label: "Lot size"   },
                 { icon: <Calendar size={20} strokeWidth={1.8} />, value: property.year_built ?? "—",                           label: "Year built" },
               ] as { icon: React.ReactNode; value: string | number; label: string }[]).map((s) => (
-                <div key={s.label} className="bg-white px-5 py-6">
+                <div key={s.label} className="bg-white px-5 py-5">
                   <div className="text-brand-dark">{s.icon}</div>
                   <div className="font-serif text-[24px] font-bold text-brand-dark leading-none mt-3">{String(s.value)}</div>
                   <div className="text-[11px] font-medium tracking-[0.15em] uppercase text-[#94A3B8] mt-1.5">{s.label}</div>
@@ -434,14 +440,14 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
         {/* ── MAIN CONTENT ────────────────────────────────────────── */}
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-start">
+          <div className="flex flex-col lg:flex-row gap-10 lg:gap-12 items-start">
 
             {/* LEFT — content */}
             <div className="flex-1 min-w-0">
 
               {/* About this home */}
               {property.description && (
-                <section className="py-16 border-b border-[#F1F5F9]">
+                <section className="py-10 border-b border-[#F1F5F9]">
                   <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-brand">About this home</p>
                   <h2 className="font-serif text-[32px] font-bold text-brand-dark leading-[1.15] tracking-[-0.01em] mt-2.5 mb-6">
                     {property.title}
@@ -452,7 +458,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
               {/* Features & amenities */}
               {(amenityCategories.length > 0 || amenities.length > 0) && (
-                <section className="py-16 border-b border-[#F1F5F9]">
+                <section className="py-10 border-b border-[#F1F5F9]">
                   <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-brand">Features &amp; amenities</p>
                   <h2 className="font-serif text-[32px] font-bold text-brand-dark leading-[1.15] tracking-[-0.01em] mt-2.5 mb-8">
                     What&apos;s included.
@@ -491,7 +497,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               )}
 
               {/* Property details */}
-              <section className="py-16 border-b border-[#F1F5F9]">
+              <section className="py-10 border-b border-[#F1F5F9]">
                 <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-brand">The essentials</p>
                 <h2 className="font-serif text-[32px] font-bold text-brand-dark leading-[1.15] tracking-[-0.01em] mt-2.5 mb-7">
                   Property details.
@@ -537,30 +543,51 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                 </section>
               )}
 
-              {/* Neighborhood map */}
-              <section className="py-16 border-b border-[#F1F5F9]">
+              {/* Neighborhood */}
+              <section className="py-10 border-b border-[#F1F5F9]">
                 <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-brand">Location</p>
                 <h2 className="font-serif text-[32px] font-bold text-brand-dark leading-[1.15] tracking-[-0.01em] mt-2.5 mb-1.5">
-                  Neighborhood &amp; nearby homes.
+                  The neighborhood.
                 </h2>
                 <p className="text-[14px] text-[#475569] mb-5 flex items-center gap-1.5">
                   <MapPin size={14} className="text-brand shrink-0" />
                   {fullAddress}
                 </p>
-                <div className="rounded-sm overflow-hidden border border-[#F1F5F9]" style={{ height: 400 }}>
-                  <PropertyDetailMapLoader
-                    current={currentMarker}
-                    nearby={nearbyMarkers}
-                  />
-                </div>
-                <p className="text-xs text-[#94A3B8] mt-2">
-                  Hover price bubbles to preview nearby listings · Click to view
-                </p>
+                {hasCoords ? (
+                  <>
+                    <div className="rounded-sm overflow-hidden border border-[#F1F5F9]" style={{ height: 400 }}>
+                      <PropertyDetailMapLoader current={currentMarker} nearby={nearbyMarkers} />
+                    </div>
+                    <p className="text-xs text-[#94A3B8] mt-2">
+                      Hover price bubbles to preview nearby listings · Click to view
+                    </p>
+                  </>
+                ) : (
+                  <div className="rounded-sm border border-[#F1F5F9] bg-[#FBF9F4] p-6 flex flex-col sm:flex-row sm:items-center gap-5">
+                    <div className="w-12 h-12 rounded-full bg-brand-light flex items-center justify-center shrink-0">
+                      <MapPin size={20} className="text-brand" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-[15px] font-semibold text-brand-dark">
+                        {property.neighborhood ? `${property.neighborhood}, ${property.city}` : `${property.city}, ${property.state}`}
+                      </p>
+                      <p className="text-[13px] text-[#475569] leading-[1.6] mt-1">
+                        Located in {property.city}, {property.state}. Explore more homes and the local rental market in the area.
+                      </p>
+                    </div>
+                    <Link
+                      href={`/rentals/${citySlug}`}
+                      className="shrink-0 inline-flex items-center gap-1.5 h-11 px-5 rounded-sm bg-brand-dark hover:bg-brand text-white text-[13px] font-semibold transition-colors"
+                    >
+                      Explore {property.city} <ArrowRight size={14} />
+                    </Link>
+                  </div>
+                )}
               </section>
 
               {/* Virtual tour */}
               {virtualTourUrl && (
-                <section className="py-16 border-b border-[#F1F5F9]">
+                <section className="py-10 border-b border-[#F1F5F9]">
                   <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-brand">360° virtual tour</p>
                   <h2 className="font-serif text-[32px] font-bold text-brand-dark leading-[1.15] tracking-[-0.01em] mt-2.5 mb-6">
                     Walk through, anytime.
@@ -572,21 +599,10 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                 </section>
               )}
 
-              {/* Mobile inquiry form */}
-              <div id="schedule-form-mobile" className="lg:hidden py-10 scroll-mt-24">
-                <PropertyInquiryForm
-                  propertySlug={property.slug}
-                  propertyTitle={property.title}
-                  listingType={property.listing_type}
-                  propertyId={property.id}
-                  propertyCity={property.city}
-                />
-              </div>
-
             </div>
 
             {/* RIGHT — sticky sidebar */}
-            <div className="hidden lg:block w-[340px] shrink-0 pt-16">
+            <div className="hidden lg:block w-[340px] shrink-0 pt-10">
               <div className="sticky top-24 space-y-[18px]">
 
                 {/* Main CTA card */}
@@ -598,13 +614,10 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   <p className="text-[13px] text-[#475569] leading-[1.55] mb-[18px]">
                     In-person, video, or phone — pick what works. A specialist confirms within 24 hours.
                   </p>
-                  <a
-                    href="#schedule-form"
-                    className="flex items-center justify-center gap-2 w-full h-12 bg-brand-dark hover:bg-brand text-white rounded-sm text-[14px] font-medium tracking-[0.05em] transition-colors"
-                  >
-                    <Calendar size={15} />
-                    Schedule a tour
-                  </a>
+                  <BookTourButton
+                    label="Schedule a tour"
+                    className="flex items-center justify-center gap-2 w-full h-12 bg-brand-dark hover:bg-brand text-white rounded-sm text-[14px] font-medium tracking-[0.05em] transition-colors cursor-pointer"
+                  />
                   <div className="mt-[18px] pt-[16px] border-t border-[#F1F5F9] flex flex-col gap-2.5">
                     {([
                       { Icon: CheckCircle2, text: "Listed price is what you pay" },
@@ -692,47 +705,41 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   <p className="text-[11px] text-[#94A3B8]">— Marcus T., {property.city}</p>
                 </div>
 
-                {/* Inquiry form */}
-                <div id="schedule-form">
-                  <PropertyInquiryForm
-                    propertySlug={property.slug}
-                    propertyTitle={property.title}
-                    listingType={property.listing_type}
-                    propertyId={property.id}
-                    propertyCity={property.city}
-                  />
-                </div>
-
               </div>
             </div>
 
           </div>
 
-          {/* ── SIMILAR HOMES ── */}
+          {/* ── NEARBY HOMES (carousel) ── */}
           {similar.length > 0 && (
-            <section className="pt-16 pb-16 border-t border-[#F1F5F9]">
-              <div className="flex items-end justify-between mb-7">
+            <section className="pt-12 pb-14 border-t border-[#F1F5F9]">
+              <div className="flex items-end justify-between mb-6">
                 <div>
                   <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-brand">Keep exploring</p>
-                  <h2 className="font-serif text-[32px] font-bold text-brand-dark leading-[1.15] tracking-[-0.01em] mt-2.5">
-                    More homes in {property.city}.
+                  <h2 className="font-serif text-[28px] sm:text-[32px] font-bold text-brand-dark leading-[1.15] tracking-[-0.01em] mt-2.5">
+                    Nearby homes in {property.city}.
                   </h2>
                 </div>
                 <Link
                   href={`/houses-for-rent?q=${encodeURIComponent(property.city)}&listing_type=${property.listing_type}`}
-                  className="text-[13.5px] text-brand hover:underline font-medium"
+                  className="text-[13.5px] text-brand hover:underline font-medium shrink-0"
                 >
                   View all rentals →
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {similar.map((p) => (
-                  <PropertyCard key={p.id} property={p} />
-                ))}
-              </div>
+              <PropertiesCarousel properties={similar} />
             </section>
           )}
         </div>
+
+        {/* Tour modal — opened by any "Book a Tour" CTA via the hasker:open-tour event */}
+        <PropertyTourModal
+          propertySlug={property.slug}
+          propertyTitle={property.title}
+          listingType={property.listing_type}
+          propertyId={property.id}
+          propertyCity={property.city}
+        />
 
         {/* ── MOBILE STICKY BAR ──────────────────────────────────── */}
         <div
@@ -757,12 +764,11 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               </div>
             ) : (
               <>
-                <a
-                  href="#schedule-form-mobile"
-                  className="flex-1 h-12 border-2 border-brand-dark text-brand-dark text-sm font-bold rounded-xl flex items-center justify-center hover:bg-brand-dark hover:text-white transition-all"
-                >
-                  Book a Tour
-                </a>
+                <BookTourButton
+                  label="Book a Tour"
+                  withIcon={false}
+                  className="flex-1 h-12 border-2 border-brand-dark text-brand-dark text-sm font-bold rounded-xl flex items-center justify-center hover:bg-brand-dark hover:text-white transition-all cursor-pointer"
+                />
                 {property.listing_type === "for-sale" && (
                   <Link
                     href={`/contact?property=${property.slug}&inquiry=purchase`}

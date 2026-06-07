@@ -931,11 +931,11 @@ function PanelCard({ property, isActive }: { property: PropertyListItemAPI; isAc
         <div className="flex items-center gap-3 text-[12px] font-semibold text-neutral-600">
           <span className="flex items-center gap-1">
             <Bed size={14} className="text-neutral-400" />
-            {property.bedrooms === 0 ? "Studio" : <>{property.bedrooms} bd</>}
+            {property.bedrooms === 0 ? "Studio" : <>{property.bedrooms} bed</>}
           </span>
           <span className="flex items-center gap-1">
             <Bath size={14} className="text-neutral-400" />
-            {property.bathrooms} ba
+            {property.bathrooms} bath
           </span>
           {property.sqft > 0 && (
             <span className="flex items-center gap-1">

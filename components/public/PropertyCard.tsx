@@ -77,9 +77,9 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
                 : formatPrice(property.price, { compact: true })}
             </p>
             <div className="flex items-center gap-1 text-[12px] text-neutral-500 mb-2">
-              <span className="font-medium text-neutral-700">{property.bedrooms}</span> bd
+              <span className="font-medium text-neutral-700">{property.bedrooms}</span> bed
               <span className="text-neutral-300 mx-1">·</span>
-              <span className="font-medium text-neutral-700">{property.bathrooms}</span> ba
+              <span className="font-medium text-neutral-700">{property.bathrooms}</span> bath
               <span className="text-neutral-300 mx-1">·</span>
               <span className="font-medium text-neutral-700">{formatNumber(property.sqft)}</span> sqft
             </div>
@@ -156,12 +156,12 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
             <span className="font-semibold text-neutral-700">
               {property.bedrooms === 0 ? "Studio" : property.bedrooms}
             </span>
-            {property.bedrooms !== 0 && <span className="text-neutral-500">bd</span>}
+            {property.bedrooms !== 0 && <span className="text-neutral-500">bed</span>}
           </span>
           <span className="flex items-center gap-1">
             <Bath size={15} className="text-neutral-400" />
             <span className="font-semibold text-neutral-700">{property.bathrooms}</span>
-            <span className="text-neutral-500">ba</span>
+            <span className="text-neutral-500">bath</span>
           </span>
           {property.sqft > 0 && (
             <span className="flex items-center gap-1">
