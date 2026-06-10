@@ -542,7 +542,7 @@ function Step3_Identity() {
         <FieldGroup
           label="Social Security Number" required
           error={errors.ssn?.message}
-          hint="Only the last 4 digits are stored. Your full SSN is never saved."
+          hint="Required for tenant screening (credit & background check). Stored encrypted and only accessible to authorized staff."
         >
           <BigInput
             {...register("ssn")} type="password" inputMode="numeric"
@@ -1414,7 +1414,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
         emergency_contact_phone: d.emergency_contact_phone,
         emergency_contact_phone_type: d.emergency_contact_phone_type,
         date_of_birth: d.date_of_birth, id_type: d.id_type,
-        ssn_last4: d.id_type === "ssn" ? (d.ssn ?? "").replace(/\D/g, "").slice(-4) : "",
+        ssn: d.id_type === "ssn" ? (d.ssn ?? "").replace(/\D/g, "") : "",
         ein: d.id_type === "ein" ? d.ein : "",
         has_drivers_license: d.has_drivers_license,
         drivers_license_number: d.has_drivers_license ? d.drivers_license_number : "",
