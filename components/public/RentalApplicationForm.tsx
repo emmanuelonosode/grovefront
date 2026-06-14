@@ -17,6 +17,7 @@ import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { getStoredUTMs, trackEvent, trackMetaEvent } from "@/lib/tracking";
+import { ApplicationFeePayment } from "./ApplicationFeePayment";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -1120,6 +1121,8 @@ export function RentalApplicationForm({ propertySlug }: Props) {
   const [step, setStep]               = useState(0);
   const [submitting, setSubmitting]   = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  // After submit, collect the $100 application fee (final step) before /apply/success.
+  const [feePayment, setFeePayment]   = useState<{ id: number; amount: number; name: string } | null>(null);
   const [propertyData, setPropertyData] = useState<any>(null);
   const [autofilledFields, setAutofilledFields] = useState<Set<string>>(new Set());
   const [draftId, setDraftId] = useState<number | null>(() => {
@@ -1483,6 +1486,13 @@ export function RentalApplicationForm({ propertySlug }: Props) {
       trackEvent("submit_application", { application_id: data.id });
       trackMetaEvent("Lead", { content_name: "Rental Application Submitted", content_ids: [d.rental_property ?? ""] });
       toast.success("Application Submitted!");
+      // Final step: collect the application fee, then route to success.
+      if (data?.id) {
+        setFeePayment({ id: data.id, amount: Number(data.application_fee) || 100, name: d.first_name });
+        setSubmitting(false);
+        if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
       router.push(`/apply/success?ref=${data.id}&name=${encodeURIComponent(d.first_name)}`);
     } catch (err) {
       setServerError(err instanceof Error ? err.message : "An error occurred. Please try again.");
@@ -1583,6 +1593,21 @@ export function RentalApplicationForm({ propertySlug }: Props) {
     : "Review Application";
 
   // ── Render ─────────────────────────────────────────────────────────────────
+
+  // After submission, the application fee is the final step.
+  if (feePayment) {
+    const goSuccess = () =>
+      router.push(`/apply/success?ref=${feePayment.id}&name=${encodeURIComponent(feePayment.name)}`);
+    return (
+      <ApplicationFeePayment
+        applicationId={feePayment.id}
+        amount={feePayment.amount}
+        applicantName={feePayment.name}
+        onPaid={() => { toast.success("Payment proof received — we'll verify it shortly."); goSuccess(); }}
+        onSkip={goSuccess}
+      />
+    );
+  }
 
   return (
     <FormProvider {...methods}>
