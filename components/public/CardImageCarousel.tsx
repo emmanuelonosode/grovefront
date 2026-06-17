@@ -51,16 +51,33 @@ export function CardImageCarousel({ images, alt, href, sizes = "(max-width:640px
   const multiple = images.length > 1;
 
   const [isHovering, setIsHovering] = useState(false);
+  const [peeking, setPeeking] = useState(false);
 
   useEffect(() => {
-    if (!multiple || isHovering) return;
+    if (!multiple) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        observer.disconnect();
+        // Pause briefly after appearing before wiggling
+        setTimeout(() => {
+          setPeeking(true);
+          setTimeout(() => setPeeking(false), 300);
+        }, 600);
+      }
+    }, { threshold: 0.6 });
+    if (scroller.current) observer.observe(scroller.current);
+    return () => observer.disconnect();
+  }, [multiple]);
+
+  useEffect(() => {
+    if (!multiple || !isHovering) return;
     const interval = setInterval(() => {
       const el = scroller.current;
       if (!el) return;
       const next = (active + 1) % images.length;
       el.scrollTo({ left: next * el.clientWidth, behavior: "smooth" });
       setActive(next);
-    }, 4000);
+    }, 1800); // Faster slide when hovered
     return () => clearInterval(interval);
   }, [multiple, isHovering, active, images.length]);
 
@@ -77,7 +94,7 @@ export function CardImageCarousel({ images, alt, href, sizes = "(max-width:640px
         style={{ scrollbarWidth: "none" }}
       >
         {images.map((src, i) => (
-          <Link key={i} href={href} aria-label={alt} className="relative block h-full w-full shrink-0 snap-center">
+          <Link key={i} href={href} aria-label={alt} className={`relative block h-full w-full shrink-0 snap-center transition-transform duration-300 ease-out ${peeking ? "-translate-x-8" : "translate-x-0"}`}>
             <Image
               src={src}
               alt={i === 0 ? alt : ""}
