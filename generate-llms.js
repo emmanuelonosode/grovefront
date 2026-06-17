@@ -47,8 +47,12 @@ async function scrapePage(url) {
         // Convert the messy HTML into clean Markdown for the AI
         let markdown = turndownService.turndown(mainContent);
         
+        // Proactively rewrite legacy URL structures in scraped text/links to canonical /houses-for-rent/
+        markdown = markdown.replace(/\/properties\//g, '/houses-for-rent/');
+        markdown = markdown.replace(/\/homes-for-rent\//g, '/houses-for-rent/');
+        
         // Format it nicely for the llms-full.txt
-        return `\n\n---\n\n# URL: ${url}\n\n${markdown}`;
+        return `\n\n---\n\n# URL: ${url.replace(/\/properties\//g, '/houses-for-rent/').replace(/\/homes-for-rent\//g, '/houses-for-rent/')}\n\n${markdown}`;
         
     } catch (error) {
         console.log(`⚠️ Failed to scrape ${url}: ${error.message}`);
@@ -57,8 +61,14 @@ async function scrapePage(url) {
 }
 
 async function generate() {
-    const urls = await getUrlsFromSitemap();
+    let urls = await getUrlsFromSitemap();
     if (urls.length === 0) return;
+
+    // Optimize: Only scrape the main landing pages and the first 150 listings to prevent server overload and build times
+    if (urls.length > 150) {
+        console.log(`Optimizing crawler: limiting scrape to first 150 pages from sitemap out of ${urls.length} to prevent server overload.`);
+        urls = urls.slice(0, 150);
+    }
 
     // Start with a fresh file and write the header
     const header = `# Hasker & Co. Realty Group - Full Knowledge Base\nGenerated on: ${new Date().toISOString()}\n\nThis document contains the full text of all public pages and property listings.\n`;

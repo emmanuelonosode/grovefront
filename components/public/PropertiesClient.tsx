@@ -198,9 +198,63 @@ export function PropertiesClient({
     return () => el.removeEventListener("scroll", onScroll);
   }, []);
 
-  const results      = mapResults ?? initialResults;
+  const [appendedResults, setAppendedResults] = useState<PropertyListItemAPI[]>([]);
+  const [currentPageState, setCurrentPageState] = useState(initialPage);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [prevInitial, setPrevInitial] = useState(initialResults);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  if (initialResults !== prevInitial) {
+    setPrevInitial(initialResults);
+    setAppendedResults([]);
+    setCurrentPageState(initialPage);
+  }
+
+  const results      = mapResults ?? [...initialResults, ...appendedResults];
   const displayTotal = mapResults ? mapResults.length : initialTotal;
   const totalPages   = Math.ceil(initialTotal / PAGE_SIZE);
+
+  useEffect(() => {
+    if (!loadMoreRef.current || mapResults || loadingMore || currentPageState >= totalPages) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setLoadingMore(true);
+        const nextPage = currentPageState + 1;
+        const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "https://admin.haskerrealtygroup.com";
+        const p = new URLSearchParams();
+        const [prMin, prMax] = (priceRange || "").split("-");
+        const base: Record<string, string | undefined> = {
+          q:            q || undefined,
+          beds:         beds || undefined,
+          baths:        baths || undefined,
+          type:         propType || undefined,
+          pets:         pets ? "true" : undefined,
+          listing_type: listingType || undefined,
+          min_price:    prMin || undefined,
+          max_price:    prMax || undefined,
+          min_sqft:     minSqft || undefined,
+          max_sqft:     maxSqft || undefined,
+          sort:         sort && sort !== "diverse" ? sort : "diverse",
+          page:         String(nextPage),
+          page_size:    String(PAGE_SIZE),
+        };
+        Object.entries(base).forEach(([k, v]) => { if (v) p.set(k, v); });
+        
+        fetch(`${apiBase}/api/v1/properties/?${p}`)
+          .then(r => r.ok ? r.json() : null)
+          .then(data => {
+            if (data?.results) {
+              setAppendedResults(prev => [...prev, ...data.results]);
+              setCurrentPageState(nextPage);
+            }
+          })
+          .finally(() => setLoadingMore(false));
+      }
+    }, { root: cardListRef.current, rootMargin: "400px" });
+    
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [mapResults, loadingMore, currentPageState, totalPages, q, beds, baths, propType, pets, listingType, priceRange, minSqft, maxSqft, sort]);
 
   function buildUrl(overrides: Record<string, string | undefined> = {}) {
     const p = new URLSearchParams();
@@ -790,13 +844,9 @@ export function PropertiesClient({
                   return [card];
                 })}
 
-                {!mapResults && totalPages > 1 && (
-                  <div className="col-span-1">
-                    <PaginationBar
-                      currentPage={initialPage}
-                      totalPages={totalPages}
-                      buildHref={(pg) => buildUrl({ page: String(pg) })}
-                    />
+                {!mapResults && currentPageState < totalPages && (
+                  <div ref={loadMoreRef} className="col-span-1 lg:col-span-2 flex justify-center py-6">
+                    <span className="w-6 h-6 border-2 border-brand border-t-transparent rounded-full animate-spin" />
                   </div>
                 )}
               </div>

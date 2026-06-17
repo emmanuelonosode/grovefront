@@ -209,35 +209,51 @@ const breadcrumb = {
   ],
 };
 
-const jobPostings = openRoles.map((role) => ({
-  "@context": "https://schema.org",
-  "@type": "JobPosting",
-  title: role.title,
-  description: role.description,
-  identifier: { "@type": "PropertyValue", name: "Hasker & Co. Realty Group", value: role.id },
-  datePosted: new Date().toISOString().split("T")[0],
-  employmentType: role.type === "Full-Time" ? "FULL_TIME" : "PART_TIME",
-  hiringOrganization: {
-    "@type": "Organization",
-    name: "Hasker & Co. Realty Group",
-    sameAs: "https://haskerrealtygroup.com",
-    logo: "https://haskerrealtygroup.com/icon.png",
-  },
-  jobLocation: {
-    "@type": "Place",
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "213 Bob Ln",
-      addressLocality: "Virginia Beach",
-      addressRegion: "VA",
-      postalCode: "23454",
-      addressCountry: "US",
+const jobPostings = openRoles.map((role) => {
+  const isRemote = role.location.toLowerCase().includes("remote");
+  const oneYearFromNow = new Date();
+  oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+  const validThroughDate = oneYearFromNow.toISOString().split("T")[0];
+
+  const jp: any = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: role.title,
+    description: role.description,
+    identifier: { "@type": "PropertyValue", name: "Hasker & Co. Realty Group", value: role.id },
+    datePosted: new Date().toISOString().split("T")[0],
+    validThrough: validThroughDate,
+    employmentType: role.type.includes("Full-Time") ? "FULL_TIME" : "PART_TIME",
+    hiringOrganization: {
+      "@type": "Organization",
+      name: "Hasker & Co. Realty Group",
+      sameAs: "https://haskerrealtygroup.com",
+      logo: "https://haskerrealtygroup.com/icon.png",
     },
-  },
-  applicantLocationRequirements: { "@type": "Country", name: "US" },
-  jobBenefits: role.benefits.join(", "),
-  skills: role.requirements.join("; "),
-}));
+    applicantLocationRequirements: { "@type": "Country", name: "US" },
+    jobBenefits: role.benefits.join(", "),
+    skills: role.requirements.join("; "),
+    directApply: true,
+  };
+
+  if (isRemote) {
+    jp.jobLocationType = "TELECOMMUTE";
+  } else {
+    jp.jobLocation = {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "213 Bob Ln",
+        addressLocality: "Virginia Beach",
+        addressRegion: "VA",
+        postalCode: "23454",
+        addressCountry: "US",
+      },
+    };
+  }
+
+  return jp;
+});
 
 export default function CareersPage() {
   return (

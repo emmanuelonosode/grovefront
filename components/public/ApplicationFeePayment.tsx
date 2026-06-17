@@ -391,18 +391,6 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
           <p className="text-[12px]">Manually verified within 1–2 business hours.</p>
         </div>
 
-        {/* ── Pay later escape hatch ────────────────────────── */}
-        <button
-          type="button"
-          onClick={onSkip}
-          disabled={loading}
-          className="w-full flex items-center justify-center gap-1.5 text-[14px] font-semibold text-[#667085] hover:text-[#101828] transition-colors disabled:opacity-50 py-1"
-        >
-          I&apos;ll pay the fee later <ArrowRight size={15} />
-        </button>
-        <p className="text-center text-[12px] text-[#98A2B3] -mt-3">
-          Your application is already submitted. It will be processed once the fee is received.
-        </p>
       </form>
     </div>
   );

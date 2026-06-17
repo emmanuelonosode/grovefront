@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -50,8 +50,26 @@ export function CardImageCarousel({ images, alt, href, sizes = "(max-width:640px
 
   const multiple = images.length > 1;
 
+  const [isHovering, setIsHovering] = useState(false);
+
+  useEffect(() => {
+    if (!multiple || isHovering) return;
+    const interval = setInterval(() => {
+      const el = scroller.current;
+      if (!el) return;
+      const next = (active + 1) % images.length;
+      el.scrollTo({ left: next * el.clientWidth, behavior: "smooth" });
+      setActive(next);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [multiple, isHovering, active, images.length]);
+
   return (
-    <div className="absolute inset-0 group/car">
+    <div 
+      className="absolute inset-0 group/car"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
       <div
         ref={scroller}
         onScroll={onScroll}

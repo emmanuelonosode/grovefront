@@ -108,10 +108,7 @@ const schema = z.object({
   number_of_vehicles:             z.number(),
   has_pets:                       z.boolean(),
   animals:                        z.array(animalSchema),
-  smokes:                         z.boolean(),
-  drinks:                         z.boolean(),
-  has_felony_eviction_bankruptcy: z.boolean({ error: "Please select Yes or No" }),
-  is_active_military:             z.boolean({ error: "Please select Yes or No" }),
+
   has_housing_assistance:         z.boolean({ error: "Please select Yes or No" }),
   rental_property:                z.string().nullable(),
   confirmed:                      z.boolean(),
@@ -150,9 +147,9 @@ const STEP_FIELDS: (keyof FormData)[][] = [
   ["present_address", "city", "state", "zip_code"],                                           // 5 Address
   ["how_long_at_address", "reason_for_leaving"],                                              // 6 History
   ["move_in_date", "intended_stay_duration", "months_rent_upfront"],                          // 7 Move-In
-  ["has_kids", "number_of_kids", "has_vehicles", "number_of_vehicles", "smokes", "drinks"],  // 8 Household
+  ["has_kids", "number_of_kids", "has_vehicles", "number_of_vehicles"],  // 8 Household
   ["has_pets"],                                                                               // 9 Pets
-  ["has_felony_eviction_bankruptcy", "is_active_military", "has_housing_assistance"],        // 10 Background
+  ["has_housing_assistance"],        // 10 Background
 ];
 
 const DEFAULT_VALUES: FormData = {
@@ -172,9 +169,7 @@ const DEFAULT_VALUES: FormData = {
   has_kids: false, number_of_kids: 0,
   has_vehicles: false, number_of_vehicles: 0,
   has_pets: false, animals: [],
-  smokes: false, drinks: false,
-  has_felony_eviction_bankruptcy: undefined as unknown as boolean,
-  is_active_military:             undefined as unknown as boolean,
+
   has_housing_assistance:         undefined as unknown as boolean,
   rental_property: null, confirmed: false,
 };
@@ -775,19 +770,7 @@ function Step8_Household() {
         )}
       </div>
 
-      <div className="border-t border-[#EAECF0] pt-8">
-        <p className="text-[17px] font-semibold text-[#101828] mb-4">Do you smoke?</p>
-        <Controller control={control} name="smokes"
-          render={({ field }) => <BigYesNo value={field.value} onChange={field.onChange} />}
-        />
-      </div>
 
-      <div className="border-t border-[#EAECF0] pt-8">
-        <p className="text-[17px] font-semibold text-[#101828] mb-4">Do you drink alcohol?</p>
-        <Controller control={control} name="drinks"
-          render={({ field }) => <BigYesNo value={field.value} onChange={field.onChange} />}
-        />
-      </div>
     </div>
   );
 }
@@ -882,14 +865,7 @@ function Step9_Pets({
 function Step10_Background() {
   const { control, formState: { errors } } = useFormContext<FormData>();
   const questions = [
-    {
-      name: "has_felony_eviction_bankruptcy" as const,
-      label: "Do you have any past felonies, evictions, bankruptcies, or pending criminal charges?",
-    },
-    {
-      name: "is_active_military" as const,
-      label: "Are you currently serving in the active military?",
-    },
+
     {
       name: "has_housing_assistance" as const,
       label: "Will you receive housing assistance such as Section 8?",
@@ -1001,8 +977,7 @@ function ReviewStep({
       rows: [
         ["Children", f.has_kids ? `Yes — ${f.number_of_kids}` : "No"],
         ["Vehicles", f.has_vehicles ? `Yes — ${f.number_of_vehicles}` : "No"],
-        ["Smokes", f.smokes ? "Yes" : "No"],
-        ["Drinks", f.drinks ? "Yes" : "No"],
+
       ] as [string, string][],
     },
     {
@@ -1016,8 +991,7 @@ function ReviewStep({
     {
       title: "Background", step: 10,
       rows: [
-        ["Felony / Eviction / Bankruptcy", f.has_felony_eviction_bankruptcy === true ? "Yes" : f.has_felony_eviction_bankruptcy === false ? "No" : "—"],
-        ["Active Military", f.is_active_military === true ? "Yes" : f.is_active_military === false ? "No" : "—"],
+
         ["Housing Assistance", f.has_housing_assistance === true ? "Yes" : f.has_housing_assistance === false ? "No" : "—"],
       ] as [string, string][],
     },
@@ -1330,14 +1304,11 @@ export function RentalApplicationForm({ propertySlug }: Props) {
     if (currentStep >= 8) Object.assign(payload, {
       has_kids: d.has_kids, number_of_kids: d.number_of_kids,
       has_vehicles: d.has_vehicles, number_of_vehicles: d.number_of_vehicles,
-      smokes: d.smokes, drinks: d.drinks,
     });
     if (currentStep >= 9) Object.assign(payload, {
       has_pets: d.has_pets, animals: d.animals,
     });
     if (currentStep >= 10) Object.assign(payload, {
-      has_felony_eviction_bankruptcy: d.has_felony_eviction_bankruptcy,
-      is_active_military: d.is_active_military,
       has_housing_assistance: d.has_housing_assistance,
     });
 
@@ -1433,9 +1404,6 @@ export function RentalApplicationForm({ propertySlug }: Props) {
         has_kids: d.has_kids, number_of_kids: d.number_of_kids,
         has_vehicles: d.has_vehicles, number_of_vehicles: d.number_of_vehicles,
         has_pets: d.has_pets, animals: d.animals,
-        smokes: d.smokes, drinks: d.drinks,
-        has_felony_eviction_bankruptcy: d.has_felony_eviction_bankruptcy,
-        is_active_military: d.is_active_military,
         has_housing_assistance: d.has_housing_assistance,
         certification_text: "I certify this information is accurate.",
         ...(d.rental_property  ? { rental_property: d.rental_property } : {}),
@@ -1464,7 +1432,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
         else if (["present_address", "city", "state", "zip_code"].includes(first))    setStep(5);
         else if (["how_long_at_address", "reason_for_leaving"].includes(first))       setStep(6);
         else if (["move_in_date", "intended_stay_duration"].includes(first))          setStep(7);
-        else if (["has_felony_eviction_bankruptcy", "is_active_military", "has_housing_assistance"].includes(first)) setStep(10);
+        else if (["has_housing_assistance"].includes(first)) setStep(10);
         toast.error("Please fix the errors in the form", { description: message });
         setServerError(message);
         return;
