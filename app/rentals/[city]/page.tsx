@@ -15,6 +15,8 @@ import { fetchProperties, toPropertyCardShape } from "@/lib/properties";
 import { PropertyCard } from "@/components/public/PropertyCard";
 import { Button } from "@/components/ui/Button";
 import { CityLeadCapture } from "@/components/public/CityLeadCapture";
+import { StateHub } from "@/components/public/StateHub";
+import { getStateBySlug, stateSlugForCode, STATE_NAMES } from "@/lib/states";
 
 export const revalidate = 300;
 
@@ -23,7 +25,15 @@ export const revalidate = 300;
 export async function generateStaticParams() {
   // Only pre-render hardcoded cities at build time — unknown slugs are served
   // via ISR on first request (dynamicParams defaults to true).
-  return getAllCitySlugs().map((city) => ({ city }));
+  const citySlugs = getAllCitySlugs().map((city) => ({ city }));
+  // Also pre-render state hub pages (e.g. /rentals/georgia) for states we serve.
+  const stateCodes = new Set<string>(Object.values(CITIES).map((c) => c.stateCode));
+  ["GA", "FL", "TX", "AZ", "NC", "CO", "NV", "CA", "WA", "IL", "TN", "MN", "UT", "SC"].forEach((s) => stateCodes.add(s));
+  const stateSlugs = [...stateCodes]
+    .map((code) => stateSlugForCode(code))
+    .filter(Boolean)
+    .map((slug) => ({ city: slug }));
+  return [...citySlugs, ...stateSlugs];
 }
 
 /* ── Dynamic SEO Metadata ───────────────────────────────────────────── */
@@ -32,6 +42,31 @@ export async function generateMetadata(
   { params }: { params: Promise<{ city: string }> }
 ): Promise<Metadata> {
   const { city: slug } = await params;
+
+  // State hub (e.g. /rentals/georgia) — distinct from city pages.
+  const stateInfo = getStateBySlug(slug);
+  if (stateInfo) {
+    const title = `Houses for Rent in ${stateInfo.name} | Hasker & Co. Realty Group`;
+    const description = `Browse affordable houses & apartments for rent across ${stateInfo.name} — move-in ready homes in cities and communities statewide. Pet-friendly options, transparent pricing, 24-hour application decisions.`;
+    const url = `https://haskerrealtygroup.com/rentals/${stateInfo.slug}`;
+    return {
+      title,
+      description,
+      keywords: [
+        `houses for rent in ${stateInfo.name}`,
+        `homes for rent in ${stateInfo.name}`,
+        `apartments for rent in ${stateInfo.name}`,
+        `affordable houses for rent in ${stateInfo.name}`,
+        `${stateInfo.code} rentals`,
+        `pet friendly rentals ${stateInfo.name}`,
+        `cheap houses for rent ${stateInfo.name}`,
+      ],
+      alternates: { canonical: url },
+      openGraph: { title, description, type: "website", url },
+      twitter: { card: "summary_large_image", title, description },
+    };
+  }
+
   let city = getCityBySlug(slug);
   if (!city) {
     const dbCities = await fetchAllCities();
@@ -119,6 +154,45 @@ export default async function CityRentalsPage(
   { params }: { params: Promise<{ city: string }> }
 ) {
   const { city: slug } = await params;
+
+  // ── State hub page (e.g. /rentals/georgia) ──────────────────────────────
+  const stateInfo = getStateBySlug(slug);
+  if (stateInfo) {
+    const dbCities = await fetchAllCities().catch(() => []);
+    const inState = dbCities.filter((c) => (c.state || "").toUpperCase() === stateInfo.code);
+
+    const cityMap = new Map<string, CityData>();
+    for (const c of inState) cityMap.set(c.slug, CITIES[c.slug] ?? buildGenericCityData(c));
+    for (const cd of Object.values(CITIES)) {
+      if (cd.stateCode === stateInfo.code && !cityMap.has(cd.slug)) cityMap.set(cd.slug, cd);
+    }
+
+    const counts: Record<string, number> = Object.fromEntries(inState.map((c) => [c.slug, c.count]));
+    const totalListings = inState.reduce((s, c) => s + (c.count || 0), 0);
+
+    const stateTotals = new Map<string, number>();
+    for (const c of dbCities) {
+      const code = (c.state || "").toUpperCase();
+      if (!code || code === stateInfo.code) continue;
+      stateTotals.set(code, (stateTotals.get(code) ?? 0) + (c.count || 0));
+    }
+    const otherStates = [...stateTotals.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 12)
+      .map(([code]) => ({ name: STATE_NAMES[code] ?? code, slug: stateSlugForCode(code) }))
+      .filter((s) => s.slug);
+
+    return (
+      <StateHub
+        state={stateInfo}
+        cities={[...cityMap.values()]}
+        counts={counts}
+        totalListings={totalListings}
+        otherStates={otherStates}
+      />
+    );
+  }
+
   let city = getCityBySlug(slug);
   if (!city) {
     const dbCities = await fetchAllCities();

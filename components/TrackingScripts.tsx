@@ -1,62 +1,27 @@
 "use client";
 
 import Script from "next/script";
-import { useEffect, useState } from "react";
-import { hasConsent, captureUTMs, captureReferralCode, captureLocation, getStructuredDevice, getStoredUTMs, getStoredReferralCode, getStoredLocation } from "@/lib/tracking";
+import { useEffect, useState, Suspense } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { hasConsent, captureUTMs, captureReferralCode, captureLocation } from "@/lib/tracking";
+import { initTelemetryEngine, trackPageView } from "@/lib/telemetry";
 
-const SESSION_KEY = "hasker_session_id";
-const CAPTURED_KEY = "hasker_visitor_sent";
 
-function getOrCreateSessionId(): string {
-  let id = sessionStorage.getItem(SESSION_KEY);
-  if (!id) {
-    id = crypto.randomUUID();
-    sessionStorage.setItem(SESSION_KEY, id);
-  }
-  return id;
-}
-
-async function sendVisitorSession(): Promise<void> {
-  if (sessionStorage.getItem(CAPTURED_KEY) === "true") return;
-  sessionStorage.setItem(CAPTURED_KEY, "true"); // optimistic — prevent duplicate calls
-
-  const device   = getStructuredDevice();
-  const utms     = getStoredUTMs();
-  const location = getStoredLocation();
-
-  try {
-    await fetch("/api/v1/analytics/visitors/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        session_id:    getOrCreateSessionId(),
-        city:          location.city          ?? "",
-        region:        location.region        ?? "",
-        country_code:  location.country_code  ?? "",
-        browser:       device.browser,
-        os:            device.os,
-        device_type:   device.device_type,
-        screen:        device.screen,
-        language:      device.language,
-        timezone:      device.timezone,
-        referrer:      device.referrer,
-        landing_page:  device.landing_page,
-        utm_source:    utms.utm_source    ?? "",
-        utm_medium:    utms.utm_medium    ?? "",
-        utm_campaign:  utms.utm_campaign  ?? "",
-        referral_code: getStoredReferralCode(),
-      }),
-      keepalive: true,
-    });
-  } catch {
-    // Never block the page — silently swallow errors
-    sessionStorage.removeItem(CAPTURED_KEY); // allow retry on next interaction
-  }
-}
 
 const GTM_ID   = process.env.NEXT_PUBLIC_GTM_ID;
 const GA_ID    = process.env.NEXT_PUBLIC_GA_ID;
 const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+
+function PageViewTracker() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    trackPageView(pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : ""));
+  }, [pathname, searchParams]);
+
+  return null;
+}
 
 export function TrackingScripts() {
   const [consent, setConsent] = useState(false);
@@ -64,47 +29,27 @@ export function TrackingScripts() {
   useEffect(() => {
     captureUTMs();
     captureReferralCode();
-    captureLocation(); // async — populates sessionStorage, ready before sendVisitorSession fires
+    captureLocation().then(() => {
+        // Init telemetry engine once location is potentially captured
+        initTelemetryEngine();
+    });
 
     const consentVal = hasConsent();
     setTimeout(() => setConsent(consentVal), 0);
     const handler = () => setConsent(true);
     window.addEventListener("hasker:consent-granted", handler);
 
-    // ── Visitor session capture ──────────────────────────────────────────────
-    // Fire once per session on first meaningful interaction (scroll, click, or
-    // 8 seconds on page). Waits for captureLocation() to resolve so city is
-    // available. keepalive:true ensures it completes even if user navigates away.
-    let fired = false;
-    const fire = () => {
-      if (fired) return;
-      fired = true;
-      cleanup();
-      // Small delay so captureLocation() has time to populate sessionStorage
-      setTimeout(sendVisitorSession, 800);
-    };
-
-    const timer = setTimeout(fire, 8000);
-    const onScroll = () => fire();
-    const onClick  = () => fire();
-
-    document.addEventListener("scroll",  onScroll, { passive: true, once: true });
-    document.addEventListener("click",   onClick,  { once: true });
-
-    function cleanup() {
-      clearTimeout(timer);
-      document.removeEventListener("scroll", onScroll);
-      document.removeEventListener("click",  onClick);
-    }
-
     return () => {
       window.removeEventListener("hasker:consent-granted", handler);
-      cleanup();
     };
   }, []);
 
   return (
     <>
+      <Suspense fallback={null}>
+        <PageViewTracker />
+      </Suspense>
+
       {/* ── GA4 — fires on every visit, no consent required ─────────── */}
       {GA_ID && (
         <Script

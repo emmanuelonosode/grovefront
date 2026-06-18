@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
-import { fetchPropertiesForSitemap } from "@/lib/properties";
+import { fetchPropertiesForSitemap, fetchProperties } from "@/lib/properties";
 import { fetchPostsForSitemap } from "@/lib/blog";
 import { fetchAgents } from "@/lib/agents";
-import { getAllCitySlugs, fetchAllCities, CITIES } from "@/lib/cities";
+import { fetchAllCities, CITIES } from "@/lib/cities";
+import { stateSlugForCode } from "@/lib/states";
 
 const BASE_URL = "https://haskerrealtygroup.com";
 
@@ -44,10 +45,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/accessibility`, lastModified: new Date(), changeFrequency: "yearly",  priority: 0.3 },
   ];
 
+  // Only list the apartments page once real apartment inventory exists — it
+  // noindexes itself while empty, so we keep it out of the sitemap until then.
+  try {
+    const apt = await fetchProperties({ listing_type: "for-rent", type: "apartment", page_size: "1" });
+    if (apt.count > 0) {
+      staticPages.push({ url: `${BASE_URL}/apartments-for-rent`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 });
+    }
+  } catch {
+    /* API offline — skip apartments URL */
+  }
+
   const FILTER_SLUGS = [
     "condos", "townhouses", "residential-homes", "commercial-spaces", "land-lots",
     "1-bedroom", "2-bedroom", "3-bedroom", "4-bedroom", "5-bedroom",
   ];
+
+  // ── State hub pages (/rentals/[state]) ─────────────────────────────────────
+  const stateCodes = new Set<string>([
+    ...Object.values(CITIES).map((c) => c.stateCode),
+    ...dbCities.map((c) => (c.state || "").toUpperCase()),
+  ]);
+  const stateHubPages: MetadataRoute.Sitemap = [...stateCodes]
+    .map((code) => stateSlugForCode(code))
+    .filter(Boolean)
+    .map((slug) => ({
+      url: `${BASE_URL}/rentals/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: "daily" as const,
+      priority: 0.85,
+    }));
 
   // ── City rental landing pages ──────────────────────────────────────────────
   const cityPages: MetadataRoute.Sitemap = allCitySlugs.map((slug) => ({
@@ -102,6 +129,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Highest-priority pages first so Googlebot sees them soonest
   return [
     ...staticPages,
+    ...stateHubPages,
     ...cityPages,
     ...propertyManagementPages,
     ...cityFilterPages,

@@ -1,17 +1,19 @@
 ﻿import { Suspense } from "react";
 import { fetchProperties, type PropertyListItemAPI } from "@/lib/properties";
 import { PropertiesClient } from "@/components/public/PropertiesClient";
+import { CityDirectory } from "@/components/public/CityDirectory";
+import { CITIES, fetchAllCities, buildGenericCityData, type CityData } from "@/lib/cities";
 
 export const revalidate = 300;
 
 export const metadata = {
-  title: "Homes to Rent & Buy Across America | Hasker & Co. Realty Group",
+  title: "Houses for Rent & Affordable Homes Nationwide | Hasker & Co. Realty Group",
   description:
-    "Browse affordable apartments, rental homes, and homes for sale across America — Atlanta, Charlotte, Houston, Miami, Phoenix, Seattle and more. All homes inspected and move-in ready.",
+    "Browse affordable houses, apartments, and homes for rent across the U.S. — move-in ready, pet-friendly options, transparent pricing, and 24-hour application decisions. Find your next rental by city.",
   alternates: { canonical: "https://haskerrealtygroup.com/houses-for-rent" },
   openGraph: {
-    title: "Homes to Rent & Buy Across America | Hasker & Co. Realty Group",
-    description: "Browse affordable rentals and homes for sale. All homes inspected and move-in ready.",
+    title: "Houses for Rent & Affordable Homes Nationwide | Hasker & Co. Realty Group",
+    description: "Browse affordable houses and apartments for rent — inspected, move-in ready, 24-hour decisions.",
     type: "website",
     url: "https://haskerrealtygroup.com/houses-for-rent",
   },
@@ -67,21 +69,53 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
     /* API offline — render empty state */
   }
 
+  // Cities for the crawlable directory (server-rendered internal links to every city page).
+  let mergedCities: CityData[] = Object.values(CITIES);
+  let cityCounts: Record<string, number> = {};
+  try {
+    const dbCities = await fetchAllCities();
+    mergedCities = [
+      ...Object.values(CITIES),
+      ...dbCities.filter((c) => !CITIES[c.slug]).map((c) => buildGenericCityData(c)),
+    ];
+    cityCounts = Object.fromEntries(dbCities.map((c) => [c.slug, c.count]));
+  } catch {
+    /* keep CITIES fallback */
+  }
+
   const breadcrumb = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home",       item: "https://haskerrealtygroup.com" },
-      { "@type": "ListItem", position: 2, name: "Properties", item: "https://haskerrealtygroup.com/houses-for-rent" },
+      { "@type": "ListItem", position: 2, name: "Houses for Rent", item: "https://haskerrealtygroup.com/houses-for-rent" },
     ],
+  };
+
+  // ItemList of the current results — gives crawlers structured data for the listings on this page.
+  const itemListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Houses & apartments for rent",
+    numberOfItems: results.length,
+    itemListElement: results.slice(0, 24).map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `https://haskerrealtygroup.com/houses-for-rent/${p.slug}`,
+      name: p.title,
+    })),
   };
 
   return (
     <main>
-      <h1 className="sr-only">Affordable Homes &amp; Apartments for Rent | Hasker &amp; Co. Realty Group</h1>
+      <h1 className="sr-only">Houses &amp; Apartments for Rent — Affordable Homes Nationwide | Hasker &amp; Co. Realty Group</h1>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
       />
       <Suspense>
         <PropertiesClient
@@ -101,6 +135,9 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
           initialSort={sort ?? "diverse"}
         />
       </Suspense>
+
+      {/* Crawlable internal-link hub to every city landing page (national SEO). */}
+      <CityDirectory cities={mergedCities} counts={cityCounts} />
     </main>
   );
 }

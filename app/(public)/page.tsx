@@ -4,6 +4,7 @@ import { ArrowRight, Star, ShieldCheck, Users, Home as HomeIcon } from "lucide-r
 import { HeroSearch } from "@/components/public/HeroSearch";
 import { FeaturedPropertiesSection } from "@/components/public/FeaturedPropertiesSection";
 import { WorkersScene, PetScene } from "@/components/public/HomepageIllustrations";
+import { CityDirectory } from "@/components/public/CityDirectory";
 import { fetchHomepageProperties, fetchProperties, toPropertyCardShape } from "@/lib/properties";
 import { CITIES, fetchAllCities, buildGenericCityData, type CityData } from "@/lib/cities";
 
@@ -239,6 +240,10 @@ export default async function HomePage() {
     ...Object.values(CITIES),
     ...dbCities.filter((c) => !CITIES[c.slug]).map((c) => buildGenericCityData(c)),
   ];
+  // Live listing counts per city slug — shown in the crawlable city directory.
+  const cityCounts: Record<string, number> = Object.fromEntries(
+    dbCities.map((c) => [c.slug, c.count])
+  );
 
   return (
     <main>
@@ -429,7 +434,7 @@ export default async function HomePage() {
               </p>
             </div>
             <Link
-              href="/houses-for-rent"
+              href="#all-cities"
               className="shrink-0 inline-flex items-center gap-1.5 text-brand text-[14px] font-medium hover:opacity-80 transition-opacity"
             >
               See all cities <ArrowRight size={14} />
@@ -463,6 +468,9 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* â”€â”€ FULL CITY DIRECTORY (crawlable internal links to every city page) â”€â”€ */}
+      <CityDirectory cities={mergedCities} counts={cityCounts} />
 
       {/* â”€â”€ PET PITCH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="py-[88px] px-8 bg-white border-t border-[#F1F5F9]">

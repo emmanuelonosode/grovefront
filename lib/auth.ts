@@ -1,3 +1,5 @@
+import { trackLogin } from "./telemetry";
+
 // In the browser, we use relative paths so Next.js rewrites can proxy /api/v1/*
 // In SSR (server-side), we must use the absolute URL.
 const API_BASE = typeof window !== "undefined" 
@@ -37,6 +39,9 @@ export function saveTokens(tokens: AuthTokens) {
   localStorage.setItem("refresh_token", tokens.refresh);
   localStorage.setItem("auth_user", JSON.stringify(tokens.user));
   setCookie("access_token", tokens.access, 4 * 60 * 60); // 4 hours — matches JWT expiry
+  
+  // Track login to map fingerprint to user
+  trackLogin();
 }
 
 export function clearTokens() {

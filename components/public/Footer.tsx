@@ -38,14 +38,30 @@ function TikTokIcon() {
   );
 }
 
+// States we serve — links to the /rentals/[state] hub pages (sitewide internal linking for SEO).
+const STATE_LINKS: { name: string; slug: string }[] = [
+  { name: "Georgia", slug: "georgia" },
+  { name: "Florida", slug: "florida" },
+  { name: "Texas", slug: "texas" },
+  { name: "Arizona", slug: "arizona" },
+  { name: "North Carolina", slug: "north-carolina" },
+  { name: "Colorado", slug: "colorado" },
+  { name: "Nevada", slug: "nevada" },
+  { name: "California", slug: "california" },
+  { name: "Washington", slug: "washington" },
+  { name: "Illinois", slug: "illinois" },
+  { name: "Tennessee", slug: "tennessee" },
+  { name: "Minnesota", slug: "minnesota" },
+];
+
 const footerCols = [
   {
     h: "Rent",
     links: [
       { label: "Browse homes",         href: "/houses-for-rent" },
-      { label: "By city",              href: "/houses-for-rent" },
+      { label: "Apartments for rent",  href: "/apartments-for-rent" },
       { label: "Pet-friendly",         href: "/houses-for-rent?q=pet" },
-      { label: "New listings",         href: "/houses-for-rent" },
+      { label: "All cities",           href: "/houses-for-rent#all-cities" },
     ],
   },
   {
@@ -143,6 +159,37 @@ export function Footer() {
               ))}
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Rentals by state */}
+      <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+        <div className="max-w-7xl mx-auto px-8 py-6">
+          <div
+            className="mb-3"
+            style={{ fontFamily: "DM Sans, sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(255,255,255,0.85)" }}
+          >
+            Houses for rent by state
+          </div>
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
+            {STATE_LINKS.map((s) => (
+              <Link
+                key={s.slug}
+                href={`/rentals/${s.slug}`}
+                className="transition-colors hover:text-white"
+                style={{ fontFamily: "DM Sans, sans-serif", fontSize: 13, color: "rgba(255,255,255,0.55)", textDecoration: "none" }}
+              >
+                Houses for Rent in {s.name}
+              </Link>
+            ))}
+            <Link
+              href="/houses-for-rent#all-cities"
+              className="transition-colors hover:text-white"
+              style={{ fontFamily: "DM Sans, sans-serif", fontSize: 13, color: "#7CA9E8", fontWeight: 600, textDecoration: "none" }}
+            >
+              Browse all cities →
+            </Link>
+          </div>
         </div>
       </div>
 
