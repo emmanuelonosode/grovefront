@@ -4,7 +4,7 @@ import { getStructuredDevice, getStoredUTMs, getStoredLocation, getStoredReferra
 export interface TelemetryPayload {
   session_id: string;
   fingerprint_id: string;
-  event_type: "init" | "page_view" | "engagement" | "session_end" | "click" | "form_submit";
+  event_type: "init" | "page_view" | "engagement" | "session_end" | "click" | "form_submit" | "login";
   path: string;
   timestamp: string;
   [key: string]: any;
