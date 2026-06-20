@@ -282,6 +282,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${dmSans.variable} ${poppins.variable} h-full scroll-smooth`}>
       <head>
+        <meta name="referrer" content="no-referrer" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
