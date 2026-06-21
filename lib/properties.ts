@@ -82,6 +82,7 @@ export interface PropertyDetailAPI extends PropertyListItemAPI {
   amenity_categories: AmenityCategoryAPI[];
   agent: PropertyAgentAPI;
   updated_at: string;
+  recent_view_count?: number;
 }
 
 export interface PaginatedProperties {

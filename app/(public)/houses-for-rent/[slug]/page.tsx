@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Bed, Bath, Maximize, MapPin, Calendar, Clock, ArrowRight,
+  Bed, Bath, Maximize, MapPin, Calendar, Clock, ArrowRight, Eye,
   Phone, Mail, Home,
   RotateCcw, Share2, Heart,
   Utensils, Zap, Waves, PawPrint, Thermometer,
@@ -199,6 +199,12 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
       : formatPrice(property.price);
 
   const fullAddress = `${property.address}, ${property.city}, ${property.state} ${property.zip_code}`;
+
+  // Social proof — only shown when genuinely compelling (real distinct-visitor
+  // count from analytics, gated by a minimum so small numbers never appear).
+  const MIN_VIEWS_FOR_SOCIAL_PROOF = 12;
+  const recentViews = property.recent_view_count ?? 0;
+  const showViews = recentViews >= MIN_VIEWS_FOR_SOCIAL_PROOF;
 
   const virtualTourUrl = (property as any).virtual_tour_url || (property as any).tour_360_url;
 
@@ -397,6 +403,13 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   <MapPin size={16} className="text-brand shrink-0" />
                   {property.city}, {property.state} {property.zip_code}
                 </div>
+
+                {showViews && (
+                  <div className="mt-3.5 inline-flex items-center gap-2 rounded-full bg-amber-50 border border-amber-200/70 px-3.5 py-1.5 text-[13px] font-semibold text-amber-800">
+                    <Eye size={15} className="text-amber-600 shrink-0" />
+                    {recentViews} people viewed this home this month
+                  </div>
+                )}
               </div>
 
               {/* Right: price — desktop only */}
@@ -467,11 +480,11 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-14 gap-y-8">
                       {amenityCategories.map((cat: any) => (
                         <div key={cat.id ?? "other"}>
-                          <p className="text-[11px] font-semibold tracking-[0.22em] uppercase text-brand mb-4">{cat.name}</p>
+                          <p className="text-[12px] font-semibold tracking-[0.22em] uppercase text-brand mb-4">{cat.name}</p>
                           <ul className="list-none p-0 m-0">
                             {cat.amenities.map((a: any) => (
-                              <li key={a.id} className="flex items-center gap-2.5 py-2.5 border-t border-[#F1F5F9] text-[13.5px] font-medium text-brand-dark">
-                                {getAmenityIconSVG(a.name, 15, "text-brand shrink-0")}
+                              <li key={a.id} className="flex items-center gap-3 py-3 border-t border-[#F1F5F9] text-[15px] font-medium text-brand-dark">
+                                {getAmenityIconSVG(a.name, 17, "text-brand shrink-0")}
                                 {a.name}
                               </li>
                             ))}
@@ -484,8 +497,8 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                       <div>
                         <ul className="list-none p-0 m-0">
                           {amenities.map((a) => (
-                            <li key={a.id} className="flex items-center gap-2.5 py-2.5 border-t border-[#F1F5F9] text-[13.5px] font-medium text-brand-dark">
-                              {getAmenityIconSVG(a.name, 15, "text-brand shrink-0")}
+                            <li key={a.id} className="flex items-center gap-3 py-3 border-t border-[#F1F5F9] text-[15px] font-medium text-brand-dark">
+                              {getAmenityIconSVG(a.name, 17, "text-brand shrink-0")}
                               {a.name}
                             </li>
                           ))}
@@ -743,47 +756,63 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
         {/* ── MOBILE STICKY BAR ──────────────────────────────────── */}
         <div
-          className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-[#F1F5F9] shadow-xl"
+          className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-[#F1F5F9] shadow-[0_-6px_24px_rgba(11,31,58,0.10)]"
           style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
         >
-          <div className="flex items-center gap-3 px-4 py-3">
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#94A3B8]">{listingLabel}</p>
-              <p className="font-serif text-xl font-bold text-brand-dark leading-tight">{priceDisplay}</p>
-            </div>
+          {/* Context + trust line — price stays visible, but no longer steals button space */}
+          <div className="flex items-center justify-between px-4 pt-2.5">
+            <p className="font-serif text-[19px] font-bold text-brand-dark leading-none">
+              {priceDisplay}
+              <span className="ml-1.5 font-sans text-[11px] font-medium uppercase tracking-wider text-[#94A3B8]">{listingLabel}</span>
+            </p>
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Available now
+            </span>
+          </div>
+          {showViews ? (
+            <p className="px-4 pt-1 flex items-center gap-1.5 text-[11px] font-semibold text-amber-700 leading-tight">
+              <Eye size={13} className="text-amber-600 shrink-0" />
+              {recentViews} people viewed this home this month
+            </p>
+          ) : (
+            <p className="px-4 pt-1 text-[11px] text-[#94A3B8] leading-tight">
+              Free to apply · No hard credit check · 24-hour decision
+            </p>
+          )}
+
+          {/* Full-width CTAs */}
+          <div className="px-4 pt-2.5 pb-3">
             {(property.listing_type === "for-rent" || property.listing_type === "for-lease") ? (
-              <div className="flex-1 max-w-[65%] flex justify-end">
-                <PropertyLeadCTAs
-                  mode="mobile-sticky"
-                  propertyId={property.id}
-                  propertySlug={property.slug}
-                  propertyTitle={property.title}
-                  propertyPrice={Number(property.price)}
-                  propertyCity={property.city}
-                />
-              </div>
+              <PropertyLeadCTAs
+                mode="mobile-sticky"
+                propertyId={property.id}
+                propertySlug={property.slug}
+                propertyTitle={property.title}
+                propertyPrice={Number(property.price)}
+                propertyCity={property.city}
+              />
             ) : (
-              <>
+              <div className="flex items-stretch gap-3 w-full">
                 <BookTourButton
                   label="Book a Tour"
-                  withIcon={false}
-                  className="flex-1 h-12 border-2 border-brand-dark text-brand-dark text-sm font-bold rounded-xl flex items-center justify-center hover:bg-brand-dark hover:text-white transition-all cursor-pointer"
+                  withIcon
+                  className="flex-1 h-13 px-3 border-2 border-brand-dark text-brand-dark text-[15px] font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-brand-dark hover:text-white active:scale-[0.98] transition-all cursor-pointer"
                 />
                 {property.listing_type === "for-sale" && (
                   <Link
                     href={`/contact?property=${property.slug}&inquiry=purchase`}
-                    className="flex-1 h-12 bg-brand text-white text-sm font-bold rounded-xl flex items-center justify-center hover:bg-brand-hover transition-colors shadow-md shadow-brand/20"
+                    className="flex-[1.25] h-13 px-3 bg-brand text-white text-[15px] font-bold rounded-xl flex items-center justify-center gap-1 hover:bg-brand-hover active:scale-[0.98] transition-all shadow-lg shadow-brand/25"
                   >
-                    Inquire Now
+                    Inquire Now <ArrowRight size={17} />
                   </Link>
                 )}
-              </>
+              </div>
             )}
           </div>
         </div>
 
         {/* Spacer for mobile sticky bar */}
-        <div className="lg:hidden h-20" />
+        <div className="lg:hidden h-28" />
 
       </div>
     </main>

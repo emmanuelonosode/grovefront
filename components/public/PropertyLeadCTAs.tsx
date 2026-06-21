@@ -105,21 +105,21 @@ export function PropertyLeadCTAs({
 
   if (mode === "mobile-sticky") {
     return (
-      <div className="flex items-center gap-2.5 w-full">
-        {/* Book a Tour (opens the tour modal) */}
+      <div className="flex items-stretch gap-3 w-full">
+        {/* Book a Tour — low-commitment option (opens the tour modal) */}
         <button
           onClick={openTour}
-          className="flex-1 h-12 border-2 border-brand-dark text-brand-dark text-sm font-bold rounded-xl flex items-center justify-center gap-1.5 hover:bg-brand-dark hover:text-white transition-all cursor-pointer bg-white"
+          className="flex-1 h-13 px-3 border-2 border-brand-dark text-brand-dark text-[15px] font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-brand-dark hover:text-white active:scale-[0.98] transition-all cursor-pointer bg-white"
         >
-          <Calendar size={15} /> Book a Tour
+          <Calendar size={17} /> Book Tour
         </button>
 
-        {/* Apply Now */}
+        {/* Apply Now — primary conversion, given more visual weight */}
         <Link
           href={`/apply?property=${propertySlug}`}
-          className="flex-1 h-12 bg-brand text-white text-sm font-bold rounded-xl flex items-center justify-center hover:bg-brand-hover transition-colors cursor-pointer shadow-md shadow-brand/20"
+          className="flex-[1.25] h-13 px-3 bg-brand text-white text-[15px] font-bold rounded-xl flex items-center justify-center gap-1 hover:bg-brand-hover active:scale-[0.98] transition-all cursor-pointer shadow-lg shadow-brand/25"
         >
-          Apply Now
+          Apply Now <ChevronRight size={17} />
         </Link>
       </div>
     );
