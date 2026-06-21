@@ -4,9 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { Sparkles, ChevronRight, ShieldCheck, Calendar } from "lucide-react";
 import { ActiveSpecialModal } from "./ActiveSpecialModal";
+import { trackClick } from "@/lib/telemetry";
 
 // Opens the shared <PropertyTourModal> mounted on the property page.
-const openTour = () => window.dispatchEvent(new Event("hasker:open-tour"));
+const openTour = (slug: string) => {
+  trackClick("book_tour", { slug });
+  window.dispatchEvent(new Event("hasker:open-tour"));
+};
 
 interface PropertyLeadCTAsProps {
   mode: "banner" | "sidebar" | "mobile-sticky";
@@ -48,7 +52,7 @@ export function PropertyLeadCTAs({
             </div>
 
             <button
-              onClick={() => setSpecialOpen(true)}
+              onClick={() => { trackClick("special_offer_open", { slug: propertySlug }); setSpecialOpen(true); }}
               className="shrink-0 bg-brand hover:bg-brand-hover text-white text-xs font-bold py-3 px-5 rounded-xl transition-all shadow-md shadow-brand/10 cursor-pointer flex items-center gap-1.5 self-start sm:self-auto"
             >
               Claim Special Offer
@@ -82,7 +86,7 @@ export function PropertyLeadCTAs({
 
         {/* Book a Tour — primary (opens the tour modal) */}
         <button
-          onClick={openTour}
+          onClick={() => openTour(propertySlug)}
           className="w-full flex items-center justify-center gap-2 h-13 py-3.5 bg-brand hover:bg-brand-hover text-white text-sm font-bold rounded-xl shadow-lg shadow-brand/15 hover:shadow-brand/25 transition-all cursor-pointer"
         >
           <Calendar size={16} /> Book a Tour
@@ -91,6 +95,7 @@ export function PropertyLeadCTAs({
         {/* Apply Now — secondary */}
         <Link
           href={`/apply?property=${propertySlug}`}
+          onClick={() => trackClick("apply_now", { slug: propertySlug, where: "sidebar" })}
           className="w-full flex items-center justify-center h-13 py-3.5 border-2 border-brand-dark/90 text-brand-dark hover:bg-brand-dark hover:text-white text-sm font-bold rounded-xl transition-all cursor-pointer bg-white"
         >
           Apply Now
@@ -108,7 +113,7 @@ export function PropertyLeadCTAs({
       <div className="flex items-stretch gap-3 w-full">
         {/* Book a Tour — low-commitment option (opens the tour modal) */}
         <button
-          onClick={openTour}
+          onClick={() => openTour(propertySlug)}
           className="flex-1 h-13 px-3 border-2 border-brand-dark text-brand-dark text-[15px] font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-brand-dark hover:text-white active:scale-[0.98] transition-all cursor-pointer bg-white"
         >
           <Calendar size={17} /> Book Tour
@@ -117,6 +122,7 @@ export function PropertyLeadCTAs({
         {/* Apply Now — primary conversion, given more visual weight */}
         <Link
           href={`/apply?property=${propertySlug}`}
+          onClick={() => trackClick("apply_now", { slug: propertySlug, where: "mobile_sticky" })}
           className="flex-[1.25] h-13 px-3 bg-brand text-white text-[15px] font-bold rounded-xl flex items-center justify-center gap-1 hover:bg-brand-hover active:scale-[0.98] transition-all cursor-pointer shadow-lg shadow-brand/25"
         >
           Apply Now <ChevronRight size={17} />

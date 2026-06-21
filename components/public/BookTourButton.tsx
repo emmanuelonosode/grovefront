@@ -1,6 +1,7 @@
 "use client";
 
 import { Calendar } from "lucide-react";
+import { trackClick } from "@/lib/telemetry";
 
 /**
  * Opens the <PropertyTourModal> (mounted on the property page) via the
@@ -19,7 +20,7 @@ export function BookTourButton({
   return (
     <button
       type="button"
-      onClick={() => window.dispatchEvent(new Event("hasker:open-tour"))}
+      onClick={() => { trackClick("book_tour", { where: "detail" }); window.dispatchEvent(new Event("hasker:open-tour")); }}
       className={className}
     >
       {withIcon && <Calendar size={15} />}

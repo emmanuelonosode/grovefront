@@ -10,6 +10,7 @@ import {
   getDeviceContext,
   trackEvent,
 } from "@/lib/tracking";
+import { trackClick } from "@/lib/telemetry";
 
 const CAPTURED_KEY = "hasker_callback_sent";
 
@@ -90,6 +91,7 @@ export function FloatingCallbackButton() {
       }
       sessionStorage.setItem(CAPTURED_KEY, "true");
       trackEvent("generate_lead", { source: "floating_callback", city });
+      trackClick("callback_submit", { city: city || undefined });
       setSubmitted(true);
       setTimeout(() => { setAlreadySent(true); setOpen(false); }, 3500);
     } catch (err) {
@@ -110,7 +112,7 @@ export function FloatingCallbackButton() {
       {/* Floating button — bottom-right, above mobile nav */}
       {showFloating && (
         <button
-          onClick={() => setOpen(true)}
+          onClick={() => { trackClick("callback_open", { where: "floating" }); setOpen(true); }}
           className="fixed bottom-24 right-4 lg:bottom-6 lg:right-6 z-40 flex items-center gap-2 bg-brand hover:bg-brand-hover text-white font-bold text-sm px-4 py-3 lg:px-5 lg:py-3.5 rounded-full shadow-xl shadow-brand/30 hover:shadow-brand/40 transition-all active:scale-95 cursor-pointer group"
           aria-label="Request a callback"
         >
