@@ -103,7 +103,7 @@ export function FloatingCallbackButton() {
   // hidden there — the Call action lives in the bottom toolbar instead, which opens
   // this same modal via the `hasker:open-callback` event. The modal + listener stay
   // mounted on every page so that trigger always works.
-  const showFloating = !alreadySent && pathname !== "/houses-for-rent" && !pathname.startsWith("/apply");
+  const showFloating = !alreadySent && !pathname.startsWith("/houses-for-rent") && !pathname.startsWith("/apply");
 
   return (
     <>

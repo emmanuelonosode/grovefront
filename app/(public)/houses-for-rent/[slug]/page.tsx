@@ -432,22 +432,35 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
         {/* ── SPEC STRIP ─────────────────────────────────────────── */}
         <div className="border-b border-[#F1F5F9]">
           <div className="max-w-7xl mx-auto px-4 lg:px-8">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px bg-[#F1F5F9]">
-              {([
-                { icon: <Bed      size={20} strokeWidth={1.8} />, value: property.bedrooms  ?? "—",                            label: "Bedrooms"   },
-                { icon: <Bath     size={20} strokeWidth={1.8} />, value: property.bathrooms ?? "—",                            label: "Bathrooms"  },
-                { icon: <Maximize size={20} strokeWidth={1.8} />, value: property.sqft ? formatNumber(property.sqft) : "—",   label: "Sq ft"      },
-                { icon: <Car      size={20} strokeWidth={1.8} />, value: property.garage ? `${property.garage}-Car` : "—",    label: "Garage"     },
-                { icon: <Fence    size={20} strokeWidth={1.8} />, value: property.lot_size  ? `${property.lot_size} ac` : "—", label: "Lot size"   },
-                { icon: <Calendar size={20} strokeWidth={1.8} />, value: property.year_built ?? "—",                           label: "Year built" },
-              ] as { icon: React.ReactNode; value: string | number; label: string }[]).map((s) => (
-                <div key={s.label} className="bg-white px-5 py-5">
-                  <div className="text-brand-dark">{s.icon}</div>
-                  <div className="font-serif text-[24px] font-bold text-brand-dark leading-none mt-3">{String(s.value)}</div>
-                  <div className="text-[11px] font-medium tracking-[0.15em] uppercase text-[#94A3B8] mt-1.5">{s.label}</div>
+            {(() => {
+              // Only render specs that actually have a value — no empty "—" cells.
+              const specs = [
+                property.bedrooms   ? { icon: <Bed      size={20} strokeWidth={1.8} />, value: property.bedrooms,               label: "Bedrooms"   } : null,
+                property.bathrooms  ? { icon: <Bath     size={20} strokeWidth={1.8} />, value: String(property.bathrooms),      label: "Bathrooms"  } : null,
+                property.sqft       ? { icon: <Maximize size={20} strokeWidth={1.8} />, value: formatNumber(property.sqft),     label: "Sq ft"      } : null,
+                property.garage     ? { icon: <Car      size={20} strokeWidth={1.8} />, value: `${property.garage}-Car`,        label: "Garage"     } : null,
+                property.lot_size   ? { icon: <Fence    size={20} strokeWidth={1.8} />, value: `${property.lot_size} ac`,       label: "Lot size"   } : null,
+                property.year_built ? { icon: <Calendar size={20} strokeWidth={1.8} />, value: property.year_built,             label: "Year built" } : null,
+              ].filter(Boolean) as { icon: React.ReactNode; value: string | number; label: string }[];
+
+              // Keep the row balanced regardless of how many specs are present.
+              const lgCols: Record<number, string> = {
+                1: "lg:grid-cols-1", 2: "lg:grid-cols-2", 3: "lg:grid-cols-3",
+                4: "lg:grid-cols-4", 5: "lg:grid-cols-5", 6: "lg:grid-cols-6",
+              };
+
+              return (
+                <div className={`grid grid-cols-2 sm:grid-cols-3 ${lgCols[specs.length] ?? "lg:grid-cols-3"} gap-px bg-[#F1F5F9]`}>
+                  {specs.map((s) => (
+                    <div key={s.label} className="bg-white px-5 py-5">
+                      <div className="text-brand-dark">{s.icon}</div>
+                      <div className="font-serif text-[24px] font-bold text-brand-dark leading-none mt-3">{String(s.value)}</div>
+                      <div className="text-[11px] font-medium tracking-[0.15em] uppercase text-[#94A3B8] mt-1.5">{s.label}</div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              );
+            })()}
           </div>
         </div>
 
