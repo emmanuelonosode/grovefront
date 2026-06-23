@@ -1562,7 +1562,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
-  // After submission, the application fee is the final step.
+  // After submission, the application fee is the final, required step.
   if (feePayment) {
     const goSuccess = () =>
       router.push(`/apply/success?ref=${feePayment.id}&name=${encodeURIComponent(feePayment.name)}`);
@@ -1572,7 +1572,6 @@ export function RentalApplicationForm({ propertySlug }: Props) {
         amount={feePayment.amount}
         applicantName={feePayment.name}
         onPaid={() => { toast.success("Payment proof received — we'll verify it shortly."); goSuccess(); }}
-        onSkip={goSuccess}
       />
     );
   }

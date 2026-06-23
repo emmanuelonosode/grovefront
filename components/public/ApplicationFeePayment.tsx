@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { CheckCircle, Camera, ShieldCheck, Lock, ArrowRight } from "lucide-react";
+import { CheckCircle, Camera, ShieldCheck, Lock, RotateCcw, Clock } from "lucide-react";
 import { apiFetch } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
@@ -93,7 +93,6 @@ interface Props {
   amount: number;
   applicantName?: string;
   onPaid: () => void;
-  onSkip: () => void;
 }
 
 /**
@@ -103,7 +102,7 @@ interface Props {
  * shared `submit-proof` endpoint tied to their rental_application. Staff verify
  * it in the admin, which flips `is_fee_paid`.
  */
-export function ApplicationFeePayment({ applicationId, amount, applicantName, onPaid, onSkip }: Props) {
+export function ApplicationFeePayment({ applicationId, amount, applicantName, onPaid }: Props) {
   const [methods, setMethods] = useState<PaymentConfig[]>(FALLBACK_METHODS);
   const [method, setMethod] = useState("VENMO");
   const [refId, setRefId] = useState("");
@@ -187,23 +186,54 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
   return (
     <div className="max-w-lg mx-auto">
       {/* ── Header ─────────────────────────────────────────── */}
-      <div className="mb-6">
-        <p className="text-[12px] font-bold tracking-[0.12em] uppercase text-brand mb-2">Final step</p>
+      <div className="mb-5">
+        <p className="text-[12px] font-bold tracking-[0.12em] uppercase text-brand mb-2">Final step — secure your application</p>
         <h1 className="text-[26px] font-bold text-[#101828] leading-tight">
-          {applicantName ? `Almost there, ${applicantName}.` : "Almost there."}
+          {applicantName ? `You're almost in, ${applicantName}.` : "You're almost in."}
         </h1>
         <p className="mt-2 text-[15px] text-[#667085] leading-relaxed">
-          A one-time application fee secures your spot and covers credit &amp; background screening and processing.
+          One last step completes your application — a one-time, <span className="font-semibold text-[#101828]">fully refundable</span> fee that covers your background &amp; credit check so we can review you fast.
         </p>
       </div>
 
       {/* ── Amount card ─────────────────────────────────────── */}
-      <div className="rounded-2xl bg-[#1E3A5F] text-white px-5 py-5 mb-6 flex items-center justify-between">
-        <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/50">Application fee</p>
-          <p className="text-[13px] text-white/70 mt-1">Credit &amp; background screening + processing</p>
+      <div className="rounded-2xl bg-[#1E3A5F] text-white px-5 py-5 mb-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/50">Application fee</p>
+            <p className="text-[13px] text-white/70 mt-1">Credit &amp; background screening + processing</p>
+          </div>
+          <p className="text-[34px] font-bold tabular-nums leading-none">{fmt(amount)}</p>
         </div>
-        <p className="text-[32px] font-bold tabular-nums leading-none">{fmt(amount)}</p>
+        <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 border border-emerald-300/30 px-3 py-1.5">
+          <RotateCcw size={13} className="text-emerald-300" />
+          <span className="text-[12px] font-bold text-emerald-200">100% refundable</span>
+        </div>
+      </div>
+
+      {/* ── What it covers + refundable reassurance ─────────── */}
+      <div className="rounded-2xl border border-[#E5E5EA] bg-white p-5 mb-6">
+        <p className="text-[13px] font-bold text-[#101828] mb-3.5">What your fee covers</p>
+        <ul className="space-y-3.5">
+          <li className="flex gap-3">
+            <ShieldCheck size={18} className="text-brand shrink-0 mt-0.5" />
+            <p className="text-[13.5px] text-[#475569] leading-snug">
+              <span className="font-semibold text-[#101828]">Credit &amp; background screening</span> — the real cost of verifying every applicant fairly.
+            </p>
+          </li>
+          <li className="flex gap-3">
+            <Clock size={18} className="text-brand shrink-0 mt-0.5" />
+            <p className="text-[13.5px] text-[#475569] leading-snug">
+              <span className="font-semibold text-[#101828]">Priority processing</span> — a decision within 24 hours, not days.
+            </p>
+          </li>
+          <li className="flex gap-3">
+            <RotateCcw size={18} className="text-emerald-500 shrink-0 mt-0.5" />
+            <p className="text-[13.5px] text-[#475569] leading-snug">
+              <span className="font-semibold text-[#101828]">100% refundable.</span> If your application isn&apos;t approved, you get every cent back. Once you&apos;re approved, it goes toward your move-in costs — so it never costs you extra.
+            </p>
+          </li>
+        </ul>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -386,9 +416,14 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
           )}
         </button>
 
-        <div className="flex items-center justify-center gap-2 text-[#667085]">
-          <ShieldCheck size={13} className="text-[#34C759]" />
-          <p className="text-[12px]">Manually verified within 1–2 business hours.</p>
+        <div className="flex flex-col items-center gap-1.5 text-center">
+          <div className="flex items-center justify-center gap-2 text-[#667085]">
+            <ShieldCheck size={13} className="text-[#34C759]" />
+            <p className="text-[12px]">Verified within 1–2 business hours · 100% refundable</p>
+          </div>
+          <p className="text-[11px] text-[#98A2B3] max-w-xs">
+            Your application is only reviewed once your fee is received — this is the last step to lock in your spot.
+          </p>
         </div>
 
       </form>
