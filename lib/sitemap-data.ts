@@ -1,51 +1,40 @@
-import type { MetadataRoute } from "next";
 import { fetchPropertiesForSitemap, fetchProperties } from "@/lib/properties";
 import { fetchPostsForSitemap } from "@/lib/blog";
 import { fetchAgents } from "@/lib/agents";
 import { fetchAllCities, CITIES } from "@/lib/cities";
 import { stateSlugForCode } from "@/lib/states";
 
-const BASE_URL = "https://haskerrealtygroup.com";
+export const BASE_URL = "https://haskerrealtygroup.com";
+export const PROP_CHUNK = 10000;
 
-// Regenerate every 12 hours.
-export const revalidate = 43200;
-
-// Properties per sub-sitemap (well under the 50k URL / 50MB limits).
-const PROP_CHUNK = 10000;
-// Only high-demand bedroom long-tails, only for cities with enough inventory.
 const BEDROOM_FILTERS = ["1-bedroom", "2-bedroom", "3-bedroom", "4-bedroom"];
 const FILTER_MIN_LISTINGS = 12;
 
-/**
- * Split the sitemap into a sitemap index so Google crawls each group
- * systematically (standard for large sites). IDs:
- *   0 = core (static + content), 1 = states, 2 = cities, 3+ = property chunks.
- * Next serves the index at /sitemap.xml and each group at /sitemap/<id>.xml.
- */
-export async function generateSitemaps() {
+export interface SitemapEntry {
+  url: string;
+  lastModified?: Date;
+  changeFrequency?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
+  priority?: number;
+}
+
+// ── How many property sub-sitemaps (10k each) ─────────────────────────────────
+export async function propertyChunkCount(): Promise<number> {
   let count = 0;
   try {
     count = (await fetchProperties({ page_size: "1" })).count;
   } catch {
-    /* API offline — still emit core/states/cities */
+    /* API offline */
   }
-  const propChunks = Math.max(1, Math.ceil(count / PROP_CHUNK));
-  const ids = [{ id: 0 }, { id: 1 }, { id: 2 }];
-  for (let i = 0; i < propChunks; i++) ids.push({ id: 3 + i });
-  return ids;
+  return Math.max(1, Math.ceil(count / PROP_CHUNK));
 }
 
 // ── Group builders ────────────────────────────────────────────────────────────
-
-async function coreSitemap(): Promise<MetadataRoute.Sitemap> {
-  const [postsResult, agentsResult] = await Promise.allSettled([
-    fetchPostsForSitemap(),
-    fetchAgents(),
-  ]);
+export async function buildCore(): Promise<SitemapEntry[]> {
+  const [postsResult, agentsResult] = await Promise.allSettled([fetchPostsForSitemap(), fetchAgents()]);
   const posts = postsResult.status === "fulfilled" ? postsResult.value : [];
   const agents = agentsResult.status === "fulfilled" ? agentsResult.value : [];
 
-  const pages: MetadataRoute.Sitemap = [
+  const pages: SitemapEntry[] = [
     { url: BASE_URL,                      lastModified: new Date(), changeFrequency: "daily",   priority: 1.0 },
     { url: `${BASE_URL}/houses-for-rent`, lastModified: new Date(), changeFrequency: "daily",   priority: 0.9 },
     { url: `${BASE_URL}/apply`,           lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
@@ -58,7 +47,6 @@ async function coreSitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/accessibility`,   lastModified: new Date(), changeFrequency: "yearly",  priority: 0.3 },
   ];
 
-  // Apartments page only once real apartment inventory exists (it noindexes while empty).
   try {
     const apt = await fetchProperties({ listing_type: "for-rent", type: "apartment", page_size: "1" });
     if (apt.count > 0) {
@@ -75,7 +63,7 @@ async function coreSitemap(): Promise<MetadataRoute.Sitemap> {
   return pages;
 }
 
-async function statesSitemap(): Promise<MetadataRoute.Sitemap> {
+export async function buildStates(): Promise<SitemapEntry[]> {
   const dbCities = await fetchAllCities().catch(() => []);
   const stateCodes = new Set<string>([
     ...Object.values(CITIES).map((c) => c.stateCode),
@@ -84,65 +72,60 @@ async function statesSitemap(): Promise<MetadataRoute.Sitemap> {
   return [...stateCodes]
     .map((code) => stateSlugForCode(code))
     .filter(Boolean)
-    .map((slug) => ({
-      url: `${BASE_URL}/rentals/${slug}`,
-      lastModified: new Date(),
-      changeFrequency: "daily" as const,
-      priority: 0.85,
-    }));
+    .map((slug) => ({ url: `${BASE_URL}/rentals/${slug}`, lastModified: new Date(), changeFrequency: "daily" as const, priority: 0.85 }));
 }
 
-async function citiesSitemap(): Promise<MetadataRoute.Sitemap> {
+export async function buildCities(): Promise<SitemapEntry[]> {
   const dbCities = await fetchAllCities().catch(() => []);
   const allCitySlugs = [...new Set([...Object.keys(CITIES), ...dbCities.map((c) => c.slug)])];
 
-  const cityPages: MetadataRoute.Sitemap = allCitySlugs.map((slug) => ({
-    url: `${BASE_URL}/rentals/${slug}`,
-    lastModified: new Date(),
-    changeFrequency: "daily" as const,
-    priority: 0.85,
+  const cityPages: SitemapEntry[] = allCitySlugs.map((slug) => ({
+    url: `${BASE_URL}/rentals/${slug}`, lastModified: new Date(), changeFrequency: "daily" as const, priority: 0.85,
   }));
 
-  // City bedroom-filter pages — substantial cities only.
   const filterCitySlugs = new Set<string>([
     ...Object.keys(CITIES),
     ...dbCities.filter((c) => (c.count ?? 0) >= FILTER_MIN_LISTINGS).map((c) => c.slug),
   ]);
-  const cityFilterPages: MetadataRoute.Sitemap = [...filterCitySlugs].flatMap((slug) =>
+  const cityFilterPages: SitemapEntry[] = [...filterCitySlugs].flatMap((slug) =>
     BEDROOM_FILTERS.map((filter) => ({
-      url: `${BASE_URL}/rentals/${slug}/${filter}`,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.6,
+      url: `${BASE_URL}/rentals/${slug}/${filter}`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.6,
     }))
   );
 
-  const propertyManagementPages: MetadataRoute.Sitemap = allCitySlugs.map((slug) => ({
-    url: `${BASE_URL}/property-management/${slug}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.5,
+  const propertyManagementPages: SitemapEntry[] = allCitySlugs.map((slug) => ({
+    url: `${BASE_URL}/property-management/${slug}`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.5,
   }));
 
   return [...cityPages, ...cityFilterPages, ...propertyManagementPages];
 }
 
-async function propertiesSitemap(chunk: number): Promise<MetadataRoute.Sitemap> {
+export async function buildProperties(chunk: number): Promise<SitemapEntry[]> {
   const all = await fetchPropertiesForSitemap().catch(() => []);
   const start = chunk * PROP_CHUNK;
-  // Property listings are the priority — highest non-homepage priority so Google
-  // crawls and indexes every individual home.
+  // Property listings are the priority — highest non-homepage priority.
   return all.slice(start, start + PROP_CHUNK).map(({ slug, lastModified }) => ({
-    url: `${BASE_URL}/houses-for-rent/${slug}`,
-    lastModified: new Date(lastModified),
-    changeFrequency: "daily" as const,
-    priority: 0.9,
+    url: `${BASE_URL}/houses-for-rent/${slug}`, lastModified: new Date(lastModified), changeFrequency: "daily" as const, priority: 0.9,
   }));
 }
 
-export default async function sitemap({ id }: { id: number }): Promise<MetadataRoute.Sitemap> {
-  if (id === 0) return coreSitemap();
-  if (id === 1) return statesSitemap();
-  if (id === 2) return citiesSitemap();
-  return propertiesSitemap(id - 3);
+// ── XML serializers ───────────────────────────────────────────────────────────
+function escapeXml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+}
+
+export function urlsetXml(entries: SitemapEntry[]): string {
+  const items = entries.map((e) => {
+    const lm = e.lastModified ? `<lastmod>${new Date(e.lastModified).toISOString()}</lastmod>` : "";
+    const cf = e.changeFrequency ? `<changefreq>${e.changeFrequency}</changefreq>` : "";
+    const pr = e.priority != null ? `<priority>${e.priority}</priority>` : "";
+    return `  <url><loc>${escapeXml(e.url)}</loc>${lm}${cf}${pr}</url>`;
+  }).join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${items}\n</urlset>`;
+}
+
+export function sitemapIndexXml(locs: string[]): string {
+  const now = new Date().toISOString();
+  const items = locs.map((loc) => `  <sitemap><loc>${escapeXml(loc)}</loc><lastmod>${now}</lastmod></sitemap>`).join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${items}\n</sitemapindex>`;
 }
