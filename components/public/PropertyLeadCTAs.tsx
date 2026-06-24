@@ -19,7 +19,15 @@ interface PropertyLeadCTAsProps {
   propertyTitle: string;
   propertyPrice: number;
   propertyCity: string;
+  /** When false (home rented/sold/etc.), show "browse similar / notify me" instead of Apply/Tour. */
+  available?: boolean;
 }
+
+// Opens the shared callback/notify modal (FloatingCallbackButton listens for this).
+const openNotify = (city: string) => {
+  trackClick("notify_similar", { city });
+  window.dispatchEvent(new Event("hasker:open-callback"));
+};
 
 export function PropertyLeadCTAs({
   mode,
@@ -28,8 +36,58 @@ export function PropertyLeadCTAs({
   propertyTitle,
   propertyPrice,
   propertyCity,
+  available = true,
 }: PropertyLeadCTAsProps) {
   const [specialOpen, setSpecialOpen] = useState(false);
+
+  const browseHref = `/houses-for-rent?q=${encodeURIComponent(propertyCity || "")}`;
+
+  // ── Home no longer available — redirect intent to similar homes ─────────────
+  if (!available && mode === "sidebar") {
+    return (
+      <div className="space-y-3">
+        <div className="rounded-xl bg-neutral-100 border border-neutral-200 p-4 text-center">
+          <p className="text-sm font-bold text-brand-dark">This home is no longer available</p>
+          <p className="text-xs text-neutral-500 mt-1 leading-snug">
+            It&apos;s been taken — but we can help you find a similar place{propertyCity ? ` in ${propertyCity}` : ""}.
+          </p>
+        </div>
+        <Link
+          href={browseHref}
+          onClick={() => trackClick("browse_similar", { city: propertyCity })}
+          className="w-full flex items-center justify-center gap-1.5 h-13 py-3.5 bg-brand hover:bg-brand-hover text-white text-sm font-bold rounded-xl shadow-lg shadow-brand/15 transition-all cursor-pointer"
+        >
+          Browse similar homes <ChevronRight size={16} />
+        </Link>
+        <button
+          onClick={() => openNotify(propertyCity)}
+          className="w-full flex items-center justify-center h-13 py-3.5 border-2 border-brand-dark/90 text-brand-dark hover:bg-brand-dark hover:text-white text-sm font-bold rounded-xl transition-all cursor-pointer bg-white"
+        >
+          Notify me of new listings
+        </button>
+      </div>
+    );
+  }
+
+  if (!available && mode === "mobile-sticky") {
+    return (
+      <div className="flex items-center gap-2.5 w-full">
+        <button
+          onClick={() => openNotify(propertyCity)}
+          className="flex-1 h-12 border-2 border-brand-dark text-brand-dark text-sm font-bold rounded-xl flex items-center justify-center hover:bg-brand-dark hover:text-white transition-all cursor-pointer bg-white"
+        >
+          Notify me
+        </button>
+        <Link
+          href={browseHref}
+          onClick={() => trackClick("browse_similar", { city: propertyCity })}
+          className="flex-1 h-12 bg-brand text-white text-sm font-bold rounded-xl flex items-center justify-center hover:bg-brand-hover transition-colors cursor-pointer shadow-md shadow-brand/20"
+        >
+          Browse similar
+        </Link>
+      </div>
+    );
+  }
 
   if (mode === "banner") {
     return (

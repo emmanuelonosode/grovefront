@@ -40,18 +40,20 @@ function TikTokIcon() {
 
 // States we serve — links to the /rentals/[state] hub pages (sitewide internal linking for SEO).
 const STATE_LINKS: { name: string; slug: string }[] = [
-  { name: "Georgia", slug: "georgia" },
   { name: "Florida", slug: "florida" },
   { name: "Texas", slug: "texas" },
-  { name: "Arizona", slug: "arizona" },
-  { name: "North Carolina", slug: "north-carolina" },
-  { name: "Colorado", slug: "colorado" },
-  { name: "Nevada", slug: "nevada" },
   { name: "California", slug: "california" },
-  { name: "Washington", slug: "washington" },
+  { name: "Georgia", slug: "georgia" },
+  { name: "New York", slug: "new-york" },
+  { name: "North Carolina", slug: "north-carolina" },
   { name: "Illinois", slug: "illinois" },
-  { name: "Tennessee", slug: "tennessee" },
+  { name: "Massachusetts", slug: "massachusetts" },
+  { name: "Washington", slug: "washington" },
+  { name: "Arizona", slug: "arizona" },
   { name: "Minnesota", slug: "minnesota" },
+  { name: "Colorado", slug: "colorado" },
+  { name: "Tennessee", slug: "tennessee" },
+  { name: "Nevada", slug: "nevada" },
 ];
 
 const footerCols = [

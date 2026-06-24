@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
-import { PropertyInquiryForm } from "./PropertyInquiryForm";
+import { TourBookingForm } from "./TourBookingForm";
 
 interface Props {
   propertySlug: string;
@@ -61,7 +61,7 @@ export function PropertyTourModal(props: Props) {
         >
           <X size={16} />
         </button>
-        <PropertyInquiryForm {...props} />
+        <TourBookingForm {...props} />
       </div>
     </div>
   );

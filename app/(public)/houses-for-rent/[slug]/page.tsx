@@ -5,7 +5,7 @@ import {
   Bed, Bath, Maximize, MapPin, Calendar, Clock, ArrowRight, Eye,
   Phone, Mail, Home,
   RotateCcw, Share2, Heart,
-  Utensils, Zap, Waves, PawPrint, Thermometer,
+  Utensils, Zap, Waves, PawPrint, Thermometer, Info,
   Wind, WashingMachine, Car, Shield, Dumbbell,
   TreePine, CheckCircle2, Refrigerator, Microwave,
   Flame, ShowerHead, Wifi, Fence, ChefHat, Users, Dog, Cat,
@@ -132,6 +132,14 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   } catch {
     notFound();
   }
+
+  const isAvailable = property.status === "available";
+  const unavailableLabel =
+    property.status === "rented" ? "rented" :
+    property.status === "sold" ? "sold" :
+    property.status === "under-contract" ? "under contract" :
+    property.status === "off-market" ? "off the market" :
+    "no longer available";
 
   const images = property.images ?? [];
   const primaryImage = images.find((i) => i.is_primary) ?? images[0];
@@ -367,15 +375,36 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               <span className="text-brand-dark truncate max-w-[200px]">{property.address || property.title}</span>
             </nav>
 
+            {!isAvailable && (
+              <div className="mb-6 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3.5 flex items-start gap-3">
+                <span className="shrink-0 w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+                  <Info size={17} />
+                </span>
+                <div>
+                  <p className="text-[14px] font-bold text-amber-900 leading-snug">
+                    This home has been {unavailableLabel} — it&apos;s no longer accepting applications.
+                  </p>
+                  <p className="text-[13px] text-amber-800/80 mt-0.5 leading-snug">
+                    We have similar homes in {property.city}. Browse the options below, or get notified the moment a match becomes available.
+                  </p>
+                </div>
+              </div>
+            )}
+
             <div className="flex items-start justify-between gap-10">
               {/* Left: badges + address + city */}
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap gap-2 mb-[14px]">
                   <Badge variant={listingBadgeVariant}>{listingLabel}</Badge>
                   {property.is_featured && <Badge variant="featured">Featured</Badge>}
-                  {property.status === "available" && (
+                  {isAvailable && (
                     <span className="inline-flex items-center px-2.5 py-1 rounded-sm text-[10.5px] font-semibold tracking-[0.18em] uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
                       Move-in ready
+                    </span>
+                  )}
+                  {!isAvailable && (
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-sm text-[10.5px] font-semibold tracking-[0.18em] uppercase bg-neutral-200 text-neutral-700 border border-neutral-300">
+                      {unavailableLabel}
                     </span>
                   )}
                   {property.status === "under-contract" && <Badge variant="under-contract">Under Contract</Badge>}
@@ -663,6 +692,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   <div className="bg-white border border-[#F1F5F9] rounded-sm p-5">
                     <PropertyLeadCTAs
                       mode="sidebar"
+                      available={isAvailable}
                       propertyId={property.id}
                       propertySlug={property.slug}
                       propertyTitle={property.title}
@@ -778,9 +808,15 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               {priceDisplay}
               <span className="ml-1.5 font-sans text-[11px] font-medium uppercase tracking-wider text-[#94A3B8]">{listingLabel}</span>
             </p>
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Available now
-            </span>
+            {isAvailable ? (
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Available now
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-neutral-500 capitalize">
+                <span className="w-1.5 h-1.5 rounded-full bg-neutral-400" /> {unavailableLabel}
+              </span>
+            )}
           </div>
           {showViews ? (
             <p className="px-4 pt-1 flex items-center gap-1.5 text-[11px] font-semibold text-amber-700 leading-tight">
@@ -795,9 +831,20 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
           {/* Full-width CTAs */}
           <div className="px-4 pt-2.5 pb-3">
-            {(property.listing_type === "for-rent" || property.listing_type === "for-lease") ? (
+            {!isAvailable ? (
               <PropertyLeadCTAs
                 mode="mobile-sticky"
+                available={false}
+                propertyId={property.id}
+                propertySlug={property.slug}
+                propertyTitle={property.title}
+                propertyPrice={Number(property.price)}
+                propertyCity={property.city}
+              />
+            ) : (property.listing_type === "for-rent" || property.listing_type === "for-lease") ? (
+              <PropertyLeadCTAs
+                mode="mobile-sticky"
+                available={true}
                 propertyId={property.id}
                 propertySlug={property.slug}
                 propertyTitle={property.title}

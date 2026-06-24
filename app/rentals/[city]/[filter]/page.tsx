@@ -113,7 +113,7 @@ export default async function CityFilterPage(
     const fetchParams: import("@/lib/properties").FetchPropertiesParams = {
       q: city.name,
       listing_type: "for-rent",
-      page_size: "12",
+      page_size: "24",
     };
     if (spec.kind === "bedroom") {
       fetchParams.beds = String(spec.count);
