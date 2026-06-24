@@ -273,13 +273,29 @@ export async function fetchAllPropertySlugs(): Promise<string[]> {
 }
 
 /** For sitemap.ts: returns slug + lastModified for all active properties. Throws on failure so sitemap.ts returns a 500 (Googlebot retries) instead of an empty list (Googlebot deindexes). */
-export async function fetchPropertiesForSitemap(): Promise<{ slug: string; lastModified: string }[]> {
+export interface SitemapProperty {
+  slug: string;
+  lastModified: string;
+  image?: string;
+  title?: string;
+  city?: string;
+  state?: string;
+}
+
+export async function fetchPropertiesForSitemap(): Promise<SitemapProperty[]> {
   const res = await fetch(`${API_BASE}/api/v1/properties/sitemap/`, {
     next: { revalidate: 3600 },
   });
   if (!res.ok) throw new Error(`Properties sitemap fetch failed: ${res.status}`);
-  const data: { slug: string; updated_at: string }[] = await res.json();
-  return data.map((p) => ({ slug: p.slug, lastModified: p.updated_at }));
+  const data: { slug: string; updated_at: string; image?: string; title?: string; city?: string; state?: string }[] = await res.json();
+  return data.map((p) => ({
+    slug: p.slug,
+    lastModified: p.updated_at,
+    image: p.image || undefined,
+    title: p.title,
+    city: p.city,
+    state: p.state,
+  }));
 }
 
 // ─── Mapper: API list item → Property type (for PropertyCard) ─────────────

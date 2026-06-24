@@ -15,6 +15,7 @@ export interface SitemapEntry {
   lastModified?: Date;
   changeFrequency?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
   priority?: number;
+  images?: { loc: string; title?: string }[];
 }
 
 // ── How many property sub-sitemaps (10k each) ─────────────────────────────────
@@ -103,9 +104,15 @@ export async function buildCities(): Promise<SitemapEntry[]> {
 export async function buildProperties(chunk: number): Promise<SitemapEntry[]> {
   const all = await fetchPropertiesForSitemap().catch(() => []);
   const start = chunk * PROP_CHUNK;
-  // Property listings are the priority — highest non-homepage priority.
-  return all.slice(start, start + PROP_CHUNK).map(({ slug, lastModified }) => ({
-    url: `${BASE_URL}/houses-for-rent/${slug}`, lastModified: new Date(lastModified), changeFrequency: "daily" as const, priority: 0.9,
+  // Property listings are the priority — highest non-homepage priority — and each
+  // carries its primary photo as an <image:image> so Google indexes listing
+  // images (Google Images + result thumbnails).
+  return all.slice(start, start + PROP_CHUNK).map((p) => ({
+    url: `${BASE_URL}/houses-for-rent/${p.slug}`,
+    lastModified: new Date(p.lastModified),
+    changeFrequency: "daily" as const,
+    priority: 0.9,
+    images: p.image ? [{ loc: p.image, title: p.title }] : undefined,
   }));
 }
 
@@ -119,9 +126,16 @@ export function urlsetXml(entries: SitemapEntry[]): string {
     const lm = e.lastModified ? `<lastmod>${new Date(e.lastModified).toISOString()}</lastmod>` : "";
     const cf = e.changeFrequency ? `<changefreq>${e.changeFrequency}</changefreq>` : "";
     const pr = e.priority != null ? `<priority>${e.priority}</priority>` : "";
-    return `  <url><loc>${escapeXml(e.url)}</loc>${lm}${cf}${pr}</url>`;
+    const imgs = (e.images ?? [])
+      .map((im) =>
+        `<image:image><image:loc>${escapeXml(im.loc)}</image:loc>` +
+        (im.title ? `<image:title>${escapeXml(im.title)}</image:title>` : "") +
+        `</image:image>`
+      )
+      .join("");
+    return `  <url><loc>${escapeXml(e.url)}</loc>${lm}${cf}${pr}${imgs}</url>`;
   }).join("\n");
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${items}\n</urlset>`;
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${items}\n</urlset>`;
 }
 
 export function sitemapIndexXml(locs: string[]): string {

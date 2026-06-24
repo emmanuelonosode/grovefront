@@ -303,12 +303,30 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     }),
   };
 
+  // Virtual tour → VideoObject so the tour can earn a video thumbnail in search.
+  const tourThumb = images[0]?.image_url ? toOgImageUrl(images[0].image_url) : FALLBACK_IMAGE;
+  const videoSchema = virtualTourUrl
+    ? {
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        name: `Virtual tour — ${property.address ?? property.title}`,
+        description: `Take a virtual tour of ${property.address ?? property.title} in ${property.city}, ${property.state}.`,
+        thumbnailUrl: [tourThumb],
+        uploadDate: (property as any).created_at ?? new Date().toISOString(),
+        contentUrl: virtualTourUrl,
+        embedUrl: virtualTourUrl,
+      }
+    : null;
+
   return (
     <main>
       <PropertyIntentCapture city={property.city} listingType={property.listing_type} />
       <PropertyPageTracker slug={property.slug} price={Number(property.price)} listingType={property.listing_type} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(listingSchema) }} />
+      {videoSchema && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(videoSchema) }} />
+      )}
 
       <div className="pt-20 bg-white">
 
