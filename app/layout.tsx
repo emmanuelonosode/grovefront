@@ -22,7 +22,9 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: {
     default: "Hasker & Co. Realty Group | Affordable Rental Homes & Apartments",
-    template: "%s | Hasker & Co. Realty Group",
+    // Pages already include the brand in their own title, so the template must
+    // NOT append it again (that double-printed the brand in every <title>).
+    template: "%s",
   },
   description:
     "Find affordable rental apartments and homes across Atlanta, Charlotte, Houston, Dallas, Nashville & more. Move-in ready homes, fast approvals, 500+ units available.",
