@@ -142,7 +142,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
               </Link>
             </Button>
             <Button variant="outline-white" size="lg" asChild>
-              <Link href="/apply">Apply Free — 10 Minutes</Link>
+              <Link href="/apply">Apply Now — 10 Minutes</Link>
             </Button>
           </div>
 

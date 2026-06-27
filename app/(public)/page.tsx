@@ -1,4 +1,4 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Star, ShieldCheck, Users, Home as HomeIcon } from "lucide-react";
 import { HeroSearch } from "@/components/public/HeroSearch";
@@ -361,7 +361,7 @@ export default async function HomePage() {
               href="/apply"
               className="inline-flex items-center gap-2 bg-brand-dark text-white text-[14px] font-medium tracking-[0.05em] h-[50px] px-7 rounded-sm hover:bg-brand transition-colors"
             >
-              Start a free application <ArrowRight size={14} />
+              Start an application <ArrowRight size={14} />
             </Link>
           </div>
         </div>
@@ -412,7 +412,7 @@ export default async function HomePage() {
                   href="/apply"
                   className="inline-flex items-center justify-center gap-2 border-2 border-brand-dark/80 text-brand-dark hover:bg-brand-dark hover:text-white font-bold text-[15px] px-8 py-4 rounded-xl transition-all"
                 >
-                  Apply Free — 24hr Decision
+                  Apply Now — 24hr Decision
                 </Link>
               </div>
             </div>

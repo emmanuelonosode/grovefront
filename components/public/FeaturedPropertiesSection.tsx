@@ -106,7 +106,7 @@ export function FeaturedPropertiesSection({ properties, totalCount }: Props) {
               <p className="mt-4" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 13, color: "#94A3B8" }}>
                 Ready to apply?{" "}
                 <Link href="/apply" className="text-brand font-medium hover:underline">
-                  Start your free application here
+                  Start your application here
                 </Link>
               </p>
             </div>

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
@@ -327,7 +327,7 @@ export function PropertyInquiryForm({
                 href={`/apply?property=${propertySlug}&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}`}
                 className="flex items-center justify-center gap-2 w-full h-12 bg-brand hover:bg-brand-hover text-white text-[14px] font-[500] rounded-sm tracking-[0.05em] transition-colors duration-150"
               >
-                Start free application
+                Start application
                 <ArrowRight size={15} />
               </Link>
             </div>

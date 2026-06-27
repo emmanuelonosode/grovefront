@@ -507,7 +507,7 @@ export function PropertyEligibilityDrawer({
                     onClick={onClose}
                     className="w-full flex items-center justify-center gap-2 bg-brand text-white font-bold py-4 rounded-xl hover:bg-brand-hover shadow-md shadow-brand/15 transition-all text-sm cursor-pointer"
                   >
-                    Apply Free — Fast Decision <ArrowRight size={15} />
+                    Apply Now — Fast Decision <ArrowRight size={15} />
                   </Link>
                 ) : (
                   <>

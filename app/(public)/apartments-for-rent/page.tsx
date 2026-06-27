@@ -144,7 +144,7 @@ export default async function ApartmentsPage() {
               </Button>
             )}
             <Button variant="outline-white" size="lg" asChild>
-              <Link href="/apply">Apply Free — 10 Minutes</Link>
+              <Link href="/apply">Apply Now — 10 Minutes</Link>
             </Button>
           </div>
           <div className="flex flex-wrap gap-x-6 gap-y-2 mt-10">

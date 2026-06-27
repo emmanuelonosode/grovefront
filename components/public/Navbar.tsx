@@ -143,7 +143,7 @@ export function Navbar() {
                   Sign In
                 </Link>
                 <Button variant="accent" size="sm" asChild>
-                  <Link href="/apply">Apply Free</Link>
+                  <Link href="/apply">Apply Now</Link>
                 </Button>
               </>
             )}
@@ -193,7 +193,7 @@ export function Navbar() {
             onClick={() => setMobileOpen(false)}
             className="flex items-center justify-between bg-brand text-white font-semibold text-sm px-5 py-4 rounded-md mb-4 hover:bg-brand-hover transition-colors"
           >
-            <span>Apply Free — Get a Decision in 24 Hours</span>
+            <span>Apply Now — Get a Decision in 24 Hours</span>
             <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
           </Link>
 
@@ -254,7 +254,7 @@ export function Navbar() {
                 </Link>
                 <Button variant="accent" className="w-full" asChild>
                   <Link href="/apply" onClick={() => setMobileOpen(false)}>
-                    Apply Free
+                    Apply Now
                   </Link>
                 </Button>
               </>

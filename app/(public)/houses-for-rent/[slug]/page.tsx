@@ -469,7 +469,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   )}
                 </div>
                 <div className="text-[12px] text-[#94A3B8] mt-1.5">
-                  {property.sqft ? `${formatPrice(Math.round(Number(property.price) / Number(property.sqft)))}/sq ft · ` : ""}No application fee
+                  {property.sqft ? `${formatPrice(Math.round(Number(property.price) / Number(property.sqft)))}/sq ft` : ""}
                 </div>
               </div>
             </div>
@@ -843,7 +843,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             </p>
           ) : (
             <p className="px-4 pt-1 text-[11px] text-[#94A3B8] leading-tight">
-              Free to apply · No hard credit check · 24-hour decision
+              Apply in minutes · No hard credit check · 24-hour decision
             </p>
           )}
 

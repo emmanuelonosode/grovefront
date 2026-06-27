@@ -1,4 +1,4 @@
-﻿import { notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
@@ -361,7 +361,7 @@ export default async function CityRentalsPage(
             </Button>
             <Button variant="outline-white" size="lg" asChild>
               <Link href="/apply">
-                Apply Free — 10 Minutes
+                Apply Now — 10 Minutes
               </Link>
             </Button>
           </div>
