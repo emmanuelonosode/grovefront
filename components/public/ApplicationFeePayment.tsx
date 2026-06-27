@@ -96,7 +96,7 @@ interface Props {
 }
 
 /**
- * Final step of the rental application: a $100 application fee paid via the same
+ * Final step of the rental application: a $35 application fee paid via the same
  * manual methods the tenant portal uses (Venmo / Cash App / PayPal / Chime /
  * bank). The applicant pays externally, then uploads proof — which posts to the
  * shared `submit-proof` endpoint tied to their rental_application. Staff verify

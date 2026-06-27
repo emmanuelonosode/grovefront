@@ -1095,7 +1095,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
   const [step, setStep]               = useState(0);
   const [submitting, setSubmitting]   = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
-  // After submit, collect the $100 application fee (final step) before /apply/success.
+  // After submit, collect the $35 application fee (final step) before /apply/success.
   const [feePayment, setFeePayment]   = useState<{ id: number; amount: number; name: string } | null>(null);
   const [propertyData, setPropertyData] = useState<any>(null);
   const [autofilledFields, setAutofilledFields] = useState<Set<string>>(new Set());
@@ -1456,7 +1456,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
       toast.success("Application Submitted!");
       // Final step: collect the application fee, then route to success.
       if (data?.id) {
-        setFeePayment({ id: data.id, amount: Number(data.application_fee) || 100, name: d.first_name });
+        setFeePayment({ id: data.id, amount: Number(data.application_fee) || 35, name: d.first_name });
         setSubmitting(false);
         if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
         return;
