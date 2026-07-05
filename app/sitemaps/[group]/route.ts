@@ -27,6 +27,10 @@ export async function GET(_req: Request, { params }: { params: Promise<{ group: 
     return new Response("Not found", { status: 404 });
   }
 
+  if (entries.length === 0) {
+    return new Response("Not found", { status: 404 });
+  }
+
   return new Response(urlsetXml(entries), {
     headers: {
       "Content-Type": "application/xml; charset=utf-8",

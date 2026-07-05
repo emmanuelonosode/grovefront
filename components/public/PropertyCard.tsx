@@ -1,10 +1,8 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import Image from "next/image";
-import { Bed, Bath, Maximize, Home, Calendar, ArrowRight } from "lucide-react";
-import { Badge } from "@/components/ui/Badge";
-import { FavoriteButton } from "@/components/public/FavoriteButton";
+import { Bed, Bath, Maximize, Home } from "lucide-react";
 import { CardImageCarousel } from "@/components/public/CardImageCarousel";
 import { formatPrice, formatNumber } from "@/lib/utils";
 import type { Property } from "@/types";
@@ -23,24 +21,9 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
     .map((i) => i.url)
     .filter(Boolean);
 
-  const listingBadgeVariant =
-    property.listingType === "for-sale"
-      ? "sale"
-      : property.listingType === "for-rent"
-      ? "rent"
-      : "accent";
-
-  const listingLabel =
-    property.listingType === "for-sale"
-      ? "For Sale"
-      : property.listingType === "for-rent"
-      ? "For Rent"
-      : "For Lease";
-
   const isRental = property.listingType === "for-rent" || property.listingType === "for-lease";
 
   const detailHref = `/houses-for-rent/${property.slug}`;
-  const applyHref  = `/apply?property=${property.slug}`;
 
   // ─── Horizontal variant ────────────────────────────────────────────
   if (variant === "horizontal") {
@@ -63,9 +46,6 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
               <Home size={24} className="text-neutral-300" />
             </div>
           )}
-          <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none flex gap-1.5">
-            <Badge variant={listingBadgeVariant}>{listingLabel}</Badge>
-          </div>
         </div>
 
         {/* Body */}
@@ -109,30 +89,6 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
           <Link href={detailHref} className="flex h-full w-full items-center justify-center" aria-label={`View ${property.title}`}>
             <Home size={36} className="text-neutral-300" />
           </Link>
-        )}
-
-        {/* Badges — non-interactive, pointer-events-none */}
-        <div className="absolute top-3 left-3 z-10 flex flex-wrap gap-1.5 pointer-events-none">
-          <Badge variant={listingBadgeVariant}>{listingLabel}</Badge>
-          {property.isFeatured && <Badge variant="featured">Featured</Badge>}
-          {property.status === "under-contract" && (
-            <Badge variant="under-contract">Under Contract</Badge>
-          )}
-        </div>
-
-        {/* Favorite — z-10, fully interactive, independent of card link */}
-        <div className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-white/95 shadow-sm flex items-center justify-center">
-          <FavoriteButton propertyId={Number(property.id)} size={16} className="min-w-0 min-h-0" />
-        </div>
-
-        {/* Available pill */}
-        {isRental && (
-          <div className="absolute bottom-3 right-3 z-10 pointer-events-none">
-            <span className="flex items-center gap-1 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block shrink-0" />
-              Available
-            </span>
-          </div>
         )}
       </div>
 
@@ -183,23 +139,15 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
         </p>
       </Link>
 
-      {/* CTAs — Book Tour + Apply Now (identical to the search-results card) */}
-      <div className="px-4 pb-4 flex gap-2">
-        <Link
-          href={`${detailHref}#schedule-form`}
-          className="flex-1 flex items-center justify-center gap-1.5 py-3 border-2 border-brand-dark/80 text-brand-dark hover:bg-brand-dark hover:text-white text-[12px] font-bold rounded-lg transition-colors duration-150"
-        >
-          <Calendar size={12} /> Book Tour
-        </Link>
-        {isRental && (
-          <Link
-            href={applyHref}
-            className="flex-1 flex items-center justify-center gap-1.5 py-3 bg-brand hover:bg-brand-hover text-white text-[12px] font-bold rounded-lg transition-colors duration-150"
-          >
-            Apply Now <ArrowRight size={11} />
-          </Link>
-        )}
-      </div>
+      {/* Available Now on the bottom */}
+      {isRental && (
+        <div className="px-4 pb-4">
+          <span className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 text-[12px] font-bold px-3 py-1.5 rounded-full">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block shrink-0" />
+            Available Now
+          </span>
+        </div>
+      )}
     </article>
   );
 }
