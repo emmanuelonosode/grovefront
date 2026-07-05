@@ -23,25 +23,9 @@ export const revalidate = 300;
 /* ── Static Params ──────────────────────────────────────────────────── */
 
 export async function generateStaticParams() {
-  // Pre-render hardcoded cities; unknown city slugs are served via ISR on first
-  // request (dynamicParams defaults to true).
-  const citySlugs = getAllCitySlugs().map((city) => ({ city }));
-
-  // Pre-render a state hub for EVERY state we actually have inventory in, so no
-  // state is left as a cold ISR page. Derived from the live cities feed.
-  const stateCodes = new Set<string>(Object.values(CITIES).map((c) => c.stateCode));
-  try {
-    const dbCities = await fetchAllCities();
-    dbCities.forEach((c) => { if (c.state) stateCodes.add(c.state.toUpperCase()); });
-  } catch {
-    // Fall back to the hardcoded set below if the feed is unavailable.
-    ["GA", "FL", "TX", "AZ", "NC", "CO", "NV", "CA", "WA", "IL", "TN", "MN", "UT", "SC"].forEach((s) => stateCodes.add(s));
-  }
-  const stateSlugs = [...stateCodes]
-    .map((code) => stateSlugForCode(code))
-    .filter(Boolean)
-    .map((slug) => ({ city: slug }));
-  return [...citySlugs, ...stateSlugs];
+  // Bypassing build-time generation to avoid backend timeouts.
+  // Pages will be generated on-demand (ISR) instead.
+  return [];
 }
 
 /* ── Dynamic SEO Metadata ───────────────────────────────────────────── */

@@ -44,13 +44,9 @@ function getFilterLabel(spec: FilterSpec): string {
 /* ── Static params ──────────────────────────────────────────────────── */
 
 export async function generateStaticParams() {
-  // Only pre-render hardcoded cities at build time — unknown slugs are served
-  // via ISR on first request (dynamicParams defaults to true).
-  const filters = [
-    "condos", "townhouses", "residential-homes", "commercial-spaces", "land-lots",
-    "1-bedroom", "2-bedroom", "3-bedroom", "4-bedroom", "5-bedroom",
-  ];
-  return getAllCitySlugs().flatMap((city) => filters.map((filter) => ({ city, filter })));
+  // Bypassing build-time generation to avoid backend timeouts.
+  // Pages will be generated on-demand (ISR) instead.
+  return [];
 }
 
 /* ── Metadata ───────────────────────────────────────────────────────── */
