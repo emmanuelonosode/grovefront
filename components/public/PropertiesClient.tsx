@@ -1000,26 +1000,6 @@ function PanelCard({ property, isActive }: { property: PropertyListItemAPI; isAc
         </p>
       </Link>
 
-      {/* Actions — outside the body link */}
-      <div className="px-3 pb-3 flex gap-2">
-        {/* Book Tour — left button, always shown */}
-        <Link
-          href={`${detailHref}#schedule-form`}
-          className="flex-1 flex items-center justify-center gap-1.5 py-3 sm:py-2 border-2 border-brand-dark/80 text-brand-dark hover:bg-brand-dark hover:text-white text-[12px] sm:text-[11px] font-bold rounded-lg transition-colors duration-150"
-        >
-          <Calendar size={12} />
-          Book Tour
-        </Link>
-        {/* Apply Now — right button, rentals only */}
-        {isRental && (
-          <Link
-            href={applyHref}
-            className="flex-1 flex items-center justify-center gap-1.5 py-3 sm:py-2 bg-brand hover:bg-brand-hover active:bg-brand-hover text-white text-[12px] sm:text-[11px] font-bold rounded-lg transition-colors duration-150"
-          >
-            Apply Now <ArrowRight size={11} />
-          </Link>
-        )}
-      </div>
     </article>
   );
 }

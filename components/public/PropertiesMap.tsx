@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import "leaflet/dist/leaflet.css";
 import { useEffect, useRef, type MutableRefObject } from "react";
@@ -147,6 +147,7 @@ export function PropertiesMap({ markers, center, activeSlug, onMarkerClick, onBo
           dot.bindPopup(
             `<a href="/houses-for-rent/${p.slug}"
                 style="text-decoration:none;color:inherit;display:block;font-family:system-ui;min-width:160px">
+              ${p.image_url ? `<img src="${p.image_url}" style="width:248px;height:148px;object-fit:cover;border-radius:8px 8px 0 0;display:block;margin:-14px -14px 10px;max-width:none;"/>` : ""}
               <div style="font-size:15px;font-weight:800;color:${BLUE}">
                 $${Number(p.price).toLocaleString()}${p.price_label ?? ""}
               </div>
@@ -159,7 +160,7 @@ export function PropertiesMap({ markers, center, activeSlug, onMarkerClick, onBo
                 View Property →
               </div>
             </a>`,
-            { maxWidth: 210, closeButton: false, className: "property-popup" }
+            { maxWidth: 276, closeButton: false, className: "property-popup" }
           ).openPopup();
         });
 
@@ -207,7 +208,7 @@ export function PropertiesMap({ markers, center, activeSlug, onMarkerClick, onBo
       } catch { return; }
 
       L.control.zoom({ position: "bottomright" }).addTo(map);
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
         attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
         maxZoom: 19,
       }).addTo(map);
