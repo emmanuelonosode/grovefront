@@ -107,6 +107,7 @@ export interface FetchPropertiesParams {
   is_featured?: string;
   agent?: string;
   state?: string;
+  city?: string;
   sort?: string;
   type?: string;
   page_size?: string;
@@ -134,6 +135,7 @@ export async function fetchProperties(
   if (params?.is_featured) url.searchParams.set("is_featured", params.is_featured);
   if (params?.agent)       url.searchParams.set("agent", params.agent);
   if (params?.state)       url.searchParams.set("state", params.state);
+  if (params?.city)        url.searchParams.set("city__iexact", params.city);
   if (params?.sort)        url.searchParams.set("sort", params.sort);
   if (params?.type)        url.searchParams.set("type", params.type);
   if (params?.page_size)   url.searchParams.set("page_size", params.page_size);

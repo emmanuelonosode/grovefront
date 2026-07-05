@@ -1,4 +1,4 @@
-﻿import { notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
@@ -111,7 +111,8 @@ export default async function CityFilterPage(
   let totalCount = 0;
   try {
     const fetchParams: import("@/lib/properties").FetchPropertiesParams = {
-      q: city.name,
+      city: city.name,
+      state: city.stateCode,
       listing_type: "for-rent",
       page_size: "24",
     };

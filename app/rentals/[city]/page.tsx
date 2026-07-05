@@ -213,7 +213,7 @@ export default async function CityRentalsPage(
   let properties: import("@/types").Property[] = [];
   let totalCount = 0;
   try {
-    const data = await fetchProperties({ q: city.name, listing_type: "for-rent", page_size: "24" });
+    const data = await fetchProperties({ city: city.name, state: city.stateCode, listing_type: "for-rent", page_size: "24" });
     properties = data.results.map(toPropertyCardShape);
     totalCount = data.count;
   } catch {
