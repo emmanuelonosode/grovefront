@@ -30,6 +30,7 @@ interface Props {
   activeSlug?: string | null;
   onMarkerClick?: (slug: string) => void;
   onBoundsChange?: (bounds: MapBounds) => void;
+  searchQuery?: string;
 }
 
 const NAVY = "#1E3A5F";
@@ -106,7 +107,7 @@ function addBubbleMarkers(
   });
 }
 
-export function PropertiesMap({ markers, center, activeSlug, onMarkerClick, onBoundsChange }: Props) {
+export function PropertiesMap({ markers, center, activeSlug, onMarkerClick, onBoundsChange, searchQuery }: Props) {
   const containerRef  = useRef<HTMLDivElement>(null);
   const mapRef        = useRef<any>(null);
   const mountedRef    = useRef(false);
@@ -119,9 +120,10 @@ export function PropertiesMap({ markers, center, activeSlug, onMarkerClick, onBo
   useEffect(() => { onBoundsChangeRef.current = onBoundsChange; }, [onBoundsChange]);
 
   // ── Fetch lightweight map pins and render as dot markers ─────────────────
-  async function loadAllDots(L: any, map: any) {
+  async function loadAllDots(L: any, map: any, currentQuery?: string) {
     try {
-      const res = await fetch(`${API_BASE}/api/v1/properties/map-pins/`);
+      const qs = currentQuery ? `?${currentQuery}` : "";
+      const res = await fetch(`${API_BASE}/api/v1/properties/map-pins/${qs}`);
       if (!res.ok || !mountedRef.current) return;
       const results: any[] = await res.json();
 
@@ -165,14 +167,16 @@ export function PropertiesMap({ markers, center, activeSlug, onMarkerClick, onBo
         });
 
         dot.on("click", () => { window.location.href = `/houses-for-rent/${p.slug}`; });
+        dot.bindTooltip(p.slug, { direction: "top", offset: [0, -4] });
         dot.addTo(layer);
       });
 
-      if (mountedRef.current && mapRef.current) {
-        layer.addTo(map);
-        dotLayerRef.current = layer;
+      if (dotLayerRef.current) {
+        map.removeLayer(dotLayerRef.current);
       }
-    } catch { /* network error — skip dots silently */ }
+      dotLayerRef.current = layer;
+      layer.addTo(map);
+    } catch { return; }
   }
 
   // ── Initialize map ────────────────────────────────────────────────────────
@@ -228,7 +232,7 @@ export function PropertiesMap({ markers, center, activeSlug, onMarkerClick, onBo
       mapRef.current = map;
 
       // Load ALL property dots in background
-      loadAllDots(L, map);
+      loadAllDots(L, map, searchQuery);
 
       // Trigger initial search-as-I-move after layout paints
       setTimeout(() => { map.invalidateSize(); emitBounds(); }, 700);
@@ -245,6 +249,14 @@ export function PropertiesMap({ markers, center, activeSlug, onMarkerClick, onBo
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // ── Reload dots when search query changes ─────────────────────────────────
+  useEffect(() => {
+    if (!mapRef.current) return;
+    import("leaflet").then((L) => {
+      loadAllDots(L, mapRef.current, searchQuery);
+    });
+  }, [searchQuery]);
 
   // ── Rebuild viewport price-bubble markers ─────────────────────────────────
   useEffect(() => {

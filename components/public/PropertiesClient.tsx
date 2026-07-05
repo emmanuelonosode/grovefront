@@ -656,6 +656,24 @@ export function PropertiesClient({
               activeSlug={activeSlug}
               onMarkerClick={handleMarkerClick}
               onBoundsChange={handleBoundsChange}
+              searchQuery={(() => {
+                const p = new URLSearchParams();
+                const [prMin, prMax] = (priceRange || "").split("-");
+                const obj: Record<string, string | undefined> = {
+                  q: q || undefined,
+                  beds: beds || undefined,
+                  baths: baths || undefined,
+                  type: propType || undefined,
+                  pets: pets ? "true" : undefined,
+                  listing_type: listingType || undefined,
+                  min_price: prMin || undefined,
+                  max_price: prMax || undefined,
+                  min_sqft: minSqft || undefined,
+                  max_sqft: maxSqft || undefined,
+                };
+                Object.entries(obj).forEach(([k, v]) => { if (v) p.set(k, v); });
+                return p.toString();
+              })()}
             />
           </div>
 

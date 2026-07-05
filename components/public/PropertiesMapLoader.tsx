@@ -13,9 +13,10 @@ interface Props {
   activeSlug?: string | null;
   onMarkerClick?: (slug: string) => void;
   onBoundsChange?: (bounds: MapBounds) => void;
+  searchQuery?: string;
 }
 
-export function PropertiesMapLoader({ markers, activeSlug, onMarkerClick, onBoundsChange }: Props) {
+export function PropertiesMapLoader({ markers, activeSlug, onMarkerClick, onBoundsChange, searchQuery }: Props) {
   return (
     <div className="w-full h-full">
       <PropertiesMap
@@ -23,6 +24,7 @@ export function PropertiesMapLoader({ markers, activeSlug, onMarkerClick, onBoun
         activeSlug={activeSlug}
         onMarkerClick={onMarkerClick}
         onBoundsChange={onBoundsChange}
+        searchQuery={searchQuery}
       />
     </div>
   );

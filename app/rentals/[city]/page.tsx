@@ -33,7 +33,8 @@ export async function generateStaticParams() {
 export async function generateMetadata(
   { params }: { params: Promise<{ city: string }> }
 ): Promise<Metadata> {
-  const { city: slug } = await params;
+  const { city: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug).toLowerCase().replace(/\s+/g, "-");
 
   // State hub (e.g. /rentals/georgia) — distinct from city pages.
   const stateInfo = getStateBySlug(slug);
@@ -145,7 +146,8 @@ function MarketStats({ city }: { city: CityData }) {
 export default async function CityRentalsPage(
   { params }: { params: Promise<{ city: string }> }
 ) {
-  const { city: slug } = await params;
+  const { city: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug).toLowerCase().replace(/\s+/g, "-");
 
   // ── State hub page (e.g. /rentals/georgia) ──────────────────────────────
   const stateInfo = getStateBySlug(slug);
