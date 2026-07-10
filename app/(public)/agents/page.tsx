@@ -133,7 +133,7 @@ export default async function AgentsPage() {
     <main className="pt-20">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
 
-      {/* ── HERO ─────────────────────────────────────────────────────────── */}
+      {/* ── HERO — clean photo, no overlay; text on a solid card ─────────── */}
       <section className="relative min-h-[560px] lg:min-h-[620px] flex items-end overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=1600&q=80"
@@ -143,26 +143,28 @@ export default async function AgentsPage() {
           className="object-cover object-center"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/70 to-brand-dark/25" />
 
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pb-16 pt-32">
-          <p className="text-brand text-xs font-semibold tracking-[0.35em] uppercase mb-4">Real People, Real Help</p>
-          <h1 className="font-serif text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-[1.05] mb-5 max-w-3xl">
-            Meet Your Housing Specialists
-          </h1>
-          <p className="text-blue-100 text-lg max-w-xl leading-relaxed mb-10">
-            Our team knows every neighbourhood, every price point, every shortcut. We work for
-            families — not commissions — and we find affordable homes fast.
-          </p>
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pb-14 pt-32">
+          <div className="max-w-2xl bg-white rounded-2xl shadow-2xl p-8 lg:p-12">
+            <span className="block w-12 h-1.5 rounded-full bg-accent mb-5" />
+            <p className="text-[#B87400] text-xs font-bold tracking-[0.35em] uppercase mb-4">Real People, Real Help</p>
+            <h1 className="font-serif text-4xl lg:text-5xl xl:text-6xl font-bold text-neutral-900 leading-[1.05] mb-5">
+              Meet Your Housing Specialists
+            </h1>
+            <p className="text-neutral-600 text-lg leading-relaxed mb-9">
+              Our team knows every neighbourhood, every price point, every shortcut. We work for
+              families — not commissions — and we find affordable homes fast.
+            </p>
 
-          {/* Inline stats */}
-          <div className="flex flex-wrap gap-8">
-            {teamStats.map((s) => (
-              <div key={s.label}>
-                <p className="font-serif text-2xl font-bold text-white">{s.value}</p>
-                <p className="text-xs text-blue-200 mt-0.5 tracking-wide">{s.label}</p>
-              </div>
-            ))}
+            {/* Inline stats */}
+            <div className="flex flex-wrap gap-8">
+              {teamStats.map((s) => (
+                <div key={s.label}>
+                  <p className="font-serif text-2xl font-bold text-neutral-900">{s.value}</p>
+                  <p className="text-xs text-neutral-500 mt-0.5 tracking-wide">{s.label}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -210,7 +212,6 @@ export default async function AgentsPage() {
                 <div key={p.name} className="bg-white border border-neutral-100 rounded-sm overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 group cursor-pointer">
                   <div className="relative aspect-[3/2] overflow-hidden">
                     <Image src={p.img} alt={p.name} fill className="object-cover object-top group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 768px) 100vw, 33vw" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/60 to-transparent" />
                   </div>
                   <div className="p-6">
                     <h3 className="font-serif text-xl font-bold text-brand-dark">{p.name}</h3>
@@ -244,7 +245,6 @@ export default async function AgentsPage() {
                         {agent.first_name[0]}{agent.last_name[0]}
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/60 to-transparent" />
                   </div>
                   <div className="p-6">
                     <h3 className="font-serif text-2xl font-bold text-brand-dark">{agent.full_name}</h3>

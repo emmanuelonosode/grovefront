@@ -56,12 +56,10 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
                 ? formatPrice(property.price, { perMonth: true })
                 : formatPrice(property.price, { compact: true })}
             </p>
-            <div className="flex items-center gap-1 text-[12px] text-neutral-500 mb-2">
-              <span className="font-medium text-neutral-700">{property.bedrooms}</span> bed
-              <span className="text-neutral-300 mx-1">·</span>
-              <span className="font-medium text-neutral-700">{property.bathrooms}</span> bath
-              <span className="text-neutral-300 mx-1">·</span>
-              <span className="font-medium text-neutral-700">{formatNumber(property.sqft)}</span> sqft
+            <div className="flex items-center gap-3 text-[13px] text-neutral-500 mb-2">
+              <span className="flex items-center gap-1"><Bed size={14} className="text-brand" /><span className="font-bold text-neutral-900">{property.bedrooms}</span> bed</span>
+              <span className="flex items-center gap-1"><Bath size={14} className="text-brand" /><span className="font-bold text-neutral-900">{property.bathrooms}</span> bath</span>
+              <span className="flex items-center gap-1"><Maximize size={13} className="text-brand" /><span className="font-bold text-neutral-900">{formatNumber(property.sqft)}</span> sqft</span>
             </div>
             <p className="text-[12px] text-neutral-500 truncate">
               {property.address}, {property.city}, {property.state}
@@ -105,27 +103,33 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
           )}
         </p>
 
-        {/* Specs — with icons so the numbers are unmistakable */}
-        <div className="flex items-center gap-3.5 text-[13px] text-neutral-600 mt-2">
-          <span className="flex items-center gap-1">
-            <Bed size={15} className="text-neutral-400" />
-            <span className="font-semibold text-neutral-700">
-              {property.bedrooms === 0 ? "Studio" : property.bedrooms}
-            </span>
-            {property.bedrooms !== 0 && <span className="text-neutral-500">bed</span>}
-          </span>
-          <span className="flex items-center gap-1">
-            <Bath size={15} className="text-neutral-400" />
-            <span className="font-semibold text-neutral-700">{property.bathrooms}</span>
-            <span className="text-neutral-500">bath</span>
-          </span>
-          {property.sqft > 0 && (
-            <span className="flex items-center gap-1">
-              <Maximize size={14} className="text-neutral-400" />
-              <span className="font-semibold text-neutral-700">{formatNumber(property.sqft)}</span>
-              <span className="text-neutral-500">sqft</span>
-            </span>
-          )}
+        {/* Specs — segmented stat strip so beds/baths/sqft read at a glance */}
+        <div className="grid grid-cols-3 mt-2.5 rounded-lg border border-neutral-100 bg-neutral-50/70 divide-x divide-neutral-100 text-center">
+          <div className="py-2 px-1">
+            <div className="flex items-center justify-center gap-1.5">
+              <Bed size={15} className="text-brand shrink-0" />
+              <span className="text-[15px] font-bold text-neutral-900 leading-none">
+                {property.bedrooms === 0 ? "Studio" : property.bedrooms}
+              </span>
+            </div>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500 mt-1">Beds</p>
+          </div>
+          <div className="py-2 px-1">
+            <div className="flex items-center justify-center gap-1.5">
+              <Bath size={15} className="text-brand shrink-0" />
+              <span className="text-[15px] font-bold text-neutral-900 leading-none">{property.bathrooms}</span>
+            </div>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500 mt-1">Baths</p>
+          </div>
+          <div className="py-2 px-1">
+            <div className="flex items-center justify-center gap-1.5">
+              <Maximize size={14} className="text-brand shrink-0" />
+              <span className="text-[15px] font-bold text-neutral-900 leading-none">
+                {property.sqft > 0 ? formatNumber(property.sqft) : "—"}
+              </span>
+            </div>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500 mt-1">Sqft</p>
+          </div>
         </div>
 
         {/* Address */}

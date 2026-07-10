@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { HaskerLogo } from "@/components/ui/HaskerLogo";
+import { CITIES, fetchAllCities } from "@/lib/cities";
+import { STATE_NAMES, stateSlugForCode } from "@/lib/states";
 
 function InstagramIcon() {
   return (
@@ -38,23 +40,23 @@ function TikTokIcon() {
   );
 }
 
-// States we serve — links to the /rentals/[state] hub pages (sitewide internal linking for SEO).
-const STATE_LINKS: { name: string; slug: string }[] = [
-  { name: "Florida", slug: "florida" },
-  { name: "Texas", slug: "texas" },
-  { name: "California", slug: "california" },
-  { name: "Georgia", slug: "georgia" },
-  { name: "New York", slug: "new-york" },
-  { name: "North Carolina", slug: "north-carolina" },
-  { name: "Illinois", slug: "illinois" },
-  { name: "Massachusetts", slug: "massachusetts" },
-  { name: "Washington", slug: "washington" },
-  { name: "Arizona", slug: "arizona" },
-  { name: "Minnesota", slug: "minnesota" },
-  { name: "Colorado", slug: "colorado" },
-  { name: "Tennessee", slug: "tennessee" },
-  { name: "Nevada", slug: "nevada" },
-];
+// States we serve — links to the /rentals/[state] hub pages (sitewide internal
+// linking for SEO). Derived from live inventory so we never link a state whose
+// hub page 404s (states with no listings), with the curated CITIES as fallback
+// when the API is unreachable.
+async function getStateLinks(): Promise<{ name: string; slug: string }[]> {
+  const dbCities = await fetchAllCities().catch(() => []);
+  const codes = new Set<string>(
+    dbCities.length > 0
+      ? dbCities.map((c) => (c.state || "").toUpperCase())
+      : Object.values(CITIES).map((c) => c.stateCode)
+  );
+  return [...codes]
+    .filter((code) => STATE_NAMES[code])
+    .map((code) => ({ name: STATE_NAMES[code], slug: stateSlugForCode(code) }))
+    .filter((s) => s.slug)
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
 
 const footerCols = [
   {
@@ -95,9 +97,10 @@ const footerCols = [
   },
 ];
 
-export function Footer() {
+export async function Footer() {
+  const stateLinks = await getStateLinks();
   return (
-    <footer style={{ background: "#1E3A5F", color: "rgba(255,255,255,0.5)" }}>
+    <footer style={{ background: "#0052FF", color: "rgba(255,255,255,0.5)" }}>
       {/* Main columns */}
       <div className="max-w-7xl mx-auto px-8 pt-14 pb-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.5fr_repeat(4,1fr)] gap-10">
@@ -106,16 +109,16 @@ export function Footer() {
             <Link href="/" className="inline-block opacity-90 hover:opacity-100 transition-opacity">
               <HaskerLogo variant="on-dark" height={30} />
             </Link>
-            <p className="mt-4 leading-[1.6]" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 12.5, color: "rgba(255,255,255,0.45)", maxWidth: 240 }}>
+            <p className="mt-4 leading-[1.6]" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14, color: "rgba(255,255,255,0.45)", maxWidth: 240 }}>
               Good Homes. Fair Prices. No Surprises.<br />Housing 2,400+ families across the U.S. since 2012.
             </p>
-            <p className="mt-3" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 12.5, color: "rgba(255,255,255,0.45)" }}>
+            <p className="mt-3" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14, color: "rgba(255,255,255,0.45)" }}>
               204 Colonial Hills Rd, Winder GA 30680
             </p>
             <Link
               href="/contact"
               className="inline-block mt-2 transition-colors hover:text-white"
-              style={{ fontFamily: "DM Sans, sans-serif", fontSize: 12.5, color: "rgba(255,255,255,0.55)" }}
+              style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14, color: "rgba(255,255,255,0.55)" }}
             >
               Contact us →
             </Link>
@@ -145,7 +148,7 @@ export function Footer() {
             <div key={col.h}>
               <div
                 className="mb-3.5"
-                style={{ fontFamily: "DM Sans, sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(255,255,255,0.85)" }}
+                style={{ fontFamily: "DM Sans, sans-serif", fontSize: 11.5, fontWeight: 600, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(255,255,255,0.85)" }}
               >
                 {col.h}
               </div>
@@ -154,7 +157,7 @@ export function Footer() {
                   key={link.label}
                   href={link.href}
                   className="block py-[5px] transition-colors hover:text-white"
-                  style={{ fontFamily: "DM Sans, sans-serif", fontSize: 13, color: "rgba(255,255,255,0.55)", textDecoration: "none" }}
+                  style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14.5, color: "rgba(255,255,255,0.55)", textDecoration: "none" }}
                 >
                   {link.label}
                 </Link>
@@ -169,17 +172,17 @@ export function Footer() {
         <div className="max-w-7xl mx-auto px-8 py-6">
           <div
             className="mb-3"
-            style={{ fontFamily: "DM Sans, sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(255,255,255,0.85)" }}
+            style={{ fontFamily: "DM Sans, sans-serif", fontSize: 11.5, fontWeight: 600, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(255,255,255,0.85)" }}
           >
             Houses for rent by state
           </div>
           <div className="flex flex-wrap gap-x-5 gap-y-2">
-            {STATE_LINKS.map((s) => (
+            {stateLinks.map((s) => (
               <Link
                 key={s.slug}
                 href={`/rentals/${s.slug}`}
                 className="transition-colors hover:text-white"
-                style={{ fontFamily: "DM Sans, sans-serif", fontSize: 13, color: "rgba(255,255,255,0.55)", textDecoration: "none" }}
+                style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14.5, color: "rgba(255,255,255,0.55)", textDecoration: "none" }}
               >
                 Houses for Rent in {s.name}
               </Link>
@@ -187,7 +190,7 @@ export function Footer() {
             <Link
               href="/houses-for-rent#all-cities"
               className="transition-colors hover:text-white"
-              style={{ fontFamily: "DM Sans, sans-serif", fontSize: 13, color: "#7CA9E8", fontWeight: 600, textDecoration: "none" }}
+              style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14.5, color: "#7CA9E8", fontWeight: 600, textDecoration: "none" }}
             >
               Browse all cities →
             </Link>
@@ -212,7 +215,7 @@ export function Footer() {
               <Image src="/logos/mls.svg" alt="MLS Participant" width={68} height={48} className="object-contain" />
             </div>
           </div>
-          <p style={{ fontFamily: "DM Sans, sans-serif", fontSize: 11, color: "rgba(255,255,255,0.35)", lineHeight: 1.65, maxWidth: "56rem" }}>
+          <p style={{ fontFamily: "DM Sans, sans-serif", fontSize: 12.5, color: "rgba(255,255,255,0.35)", lineHeight: 1.65, maxWidth: "56rem" }}>
             All advertising conforms to the Fair Housing Act. &ldquo;REALTOR&reg;&rdquo; is a registered collective membership mark identifying real estate professionals who are members of the National Association of REALTORS&reg; and subscribe to its Code of Ethics.
           </p>
         </div>
@@ -221,7 +224,7 @@ export function Footer() {
       {/* Bottom bar */}
       <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
         <div className="max-w-7xl mx-auto px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div style={{ fontFamily: "DM Sans, sans-serif", fontSize: 11, color: "rgba(255,255,255,0.35)" }}>
+          <div style={{ fontFamily: "DM Sans, sans-serif", fontSize: 12.5, color: "rgba(255,255,255,0.35)" }}>
             © {new Date().getFullYear()} Hasker &amp; Co. Realty Group · Equal Housing Opportunity
           </div>
           <div className="flex gap-[18px]">
@@ -233,7 +236,7 @@ export function Footer() {
               <Link
                 key={l.label}
                 href={l.href}
-                style={{ fontFamily: "DM Sans, sans-serif", fontSize: 11, color: "rgba(255,255,255,0.4)", textDecoration: "none" }}
+                style={{ fontFamily: "DM Sans, sans-serif", fontSize: 12.5, color: "rgba(255,255,255,0.4)", textDecoration: "none" }}
                 className="hover:text-white/70 transition-colors"
               >
                 {l.label}

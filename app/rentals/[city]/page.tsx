@@ -37,8 +37,16 @@ export async function generateMetadata(
   const slug = decodeURIComponent(rawSlug).toLowerCase().replace(/\s+/g, "-");
 
   // State hub (e.g. /rentals/georgia) — distinct from city pages.
+  // Only states with actual inventory get a page; the other ~40 state slugs
+  // must 404 (they were rendering empty hubs — soft-404s in Search Console).
   const stateInfo = getStateBySlug(slug);
   if (stateInfo) {
+    const dbCities = await fetchAllCities().catch(() => []);
+    const hasInventory =
+      dbCities.some((c) => (c.state || "").toUpperCase() === stateInfo.code) ||
+      Object.values(CITIES).some((c) => c.stateCode === stateInfo.code);
+    if (!hasInventory) return { title: "Not Found" };
+
     const title = `Houses for Rent in ${stateInfo.name} | Hasker & Co. Realty Group`;
     const description = `Browse affordable houses & apartments for rent across ${stateInfo.name} — move-in ready homes in cities and communities statewide. Pet-friendly options, transparent pricing, 24-hour application decisions.`;
     const url = `https://haskerrealtygroup.com/rentals/${stateInfo.slug}`;
@@ -161,6 +169,10 @@ export default async function CityRentalsPage(
       if (cd.stateCode === stateInfo.code && !cityMap.has(cd.slug)) cityMap.set(cd.slug, cd);
     }
 
+    // No cities and no listings in this state → hard 404, not an empty hub.
+    // Previously every one of the 50 state slugs rendered a page (soft 404s).
+    if (cityMap.size === 0) notFound();
+
     const counts: Record<string, number> = Object.fromEntries(inState.map((c) => [c.slug, c.count]));
     const totalListings = inState.reduce((s, c) => s + (c.count || 0), 0);
 
@@ -187,6 +199,7 @@ export default async function CityRentalsPage(
     );
   }
 
+  const isCurated = Boolean(getCityBySlug(slug));
   let city = getCityBySlug(slug);
   if (!city) {
     const dbCities = await fetchAllCities();
@@ -195,16 +208,16 @@ export default async function CityRentalsPage(
     city = buildGenericCityData(stats);
   }
 
-  // Fetch real rental listings for this city from the API
-  let properties: import("@/types").Property[] = [];
-  let totalCount = 0;
-  try {
-    const data = await fetchProperties({ city: city.name, state: city.stateCode, listing_type: "for-rent", page_size: "24" });
-    properties = data.results.map(toPropertyCardShape);
-    totalCount = data.count;
-  } catch {
-    // API may be down — page still renders with empty grid
-  }
+  // Fetch real rental listings for this city from the API.
+  // Do NOT swallow failures: rendering an empty grid on API outage serves
+  // Google a soft 404. Throwing gives a 5xx, which Google retries.
+  const data = await fetchProperties({ city: city.name, state: city.stateCode, listing_type: "for-rent", page_size: "24" });
+  const properties = data.results.map(toPropertyCardShape);
+  const totalCount = data.count;
+
+  // Generic DB-derived city pages are pure listing pages — with zero listings
+  // they're thin soft-404s. Curated CITIES pages keep rendering (rich content).
+  if (totalCount === 0 && !isCurated) notFound();
 
   // JSON-LD: CollectionPage + BreadcrumbList
   const collectionSchema = {
@@ -309,47 +322,48 @@ export default async function CityRentalsPage(
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/70 to-brand-dark/20" />
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pb-12 pt-32">
+          <div className="max-w-2xl bg-white rounded-2xl shadow-2xl p-8 lg:p-12">
+            {/* Breadcrumb */}
+            <nav aria-label="Breadcrumb" className="mb-5">
+              <ol className="flex items-center gap-2 text-xs text-neutral-500">
+                <li><Link href="/" className="hover:text-brand transition-colors">Home</Link></li>
+                <li className="text-neutral-300">/</li>
+                <li><Link href="/houses-for-rent" className="hover:text-brand transition-colors">Properties</Link></li>
+                <li className="text-neutral-300">/</li>
+                <li className="text-neutral-800 font-medium">{city.name}, {city.stateCode}</li>
+              </ol>
+            </nav>
 
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pb-14 pt-32">
-          {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="mb-6">
-            <ol className="flex items-center gap-2 text-xs text-blue-200">
-              <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
-              <li className="text-blue-400">/</li>
-              <li><Link href="/houses-for-rent" className="hover:text-white transition-colors">Properties</Link></li>
-              <li className="text-blue-400">/</li>
-              <li className="text-white font-medium">{city.name}, {city.stateCode}</li>
-            </ol>
-          </nav>
-
-          <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-3 hero-animate" style={{ animationDelay: "0ms" }}>
-            {city.stateCode} Rentals
-          </p>
-          <h1 className="font-serif text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight hero-animate" style={{ animationDelay: "80ms" }}>
-            Homes for Rent in {city.name}, {city.stateCode}
-          </h1>
-          {totalCount > 0 && (
-            <p className="text-brand text-sm font-semibold mt-3 hero-animate" style={{ animationDelay: "130ms" }}>
-              {totalCount} verified {totalCount === 1 ? "listing" : "listings"} · Updated daily
+            <span className="block w-12 h-1.5 rounded-full bg-accent mb-4 hero-animate" style={{ animationDelay: "0ms" }} />
+            <p className="text-[#B87400] text-xs font-bold tracking-[0.2em] uppercase mb-3 hero-animate" style={{ animationDelay: "0ms" }}>
+              {city.stateCode} Rentals
             </p>
-          )}
-          <p className="text-blue-100 text-lg lg:text-xl max-w-2xl mt-4 leading-relaxed hero-animate" style={{ animationDelay: "160ms" }}>
-            {city.tagline} Browse affordable, move-in ready homes and apartments — decisions in 24 hours.
-          </p>
+            <h1 className="font-serif text-4xl lg:text-5xl font-bold text-neutral-900 leading-tight hero-animate" style={{ animationDelay: "80ms" }}>
+              Homes for Rent in {city.name}, {city.stateCode}
+            </h1>
+            {totalCount > 0 && (
+              <p className="text-brand text-sm font-semibold mt-3 hero-animate" style={{ animationDelay: "130ms" }}>
+                {totalCount} verified {totalCount === 1 ? "listing" : "listings"} · Updated daily
+              </p>
+            )}
+            <p className="text-neutral-600 text-lg max-w-2xl mt-4 leading-relaxed hero-animate" style={{ animationDelay: "160ms" }}>
+              {city.tagline} Browse affordable, move-in ready homes and apartments — decisions in 24 hours.
+            </p>
 
-          <div className="flex flex-wrap gap-3 mt-8 hero-animate" style={{ animationDelay: "240ms" }}>
-            <Button variant="accent" size="lg" asChild>
-              <Link href={`/houses-for-rent?q=${encodeURIComponent(city.name)}`}>
-                Browse {city.name} Inventory
-                <ArrowRight size={16} />
-              </Link>
-            </Button>
-            <Button variant="outline-white" size="lg" asChild>
-              <Link href="/apply">
-                Apply Now — 10 Minutes
-              </Link>
-            </Button>
+            <div className="flex flex-wrap gap-3 mt-8 hero-animate" style={{ animationDelay: "240ms" }}>
+              <Button variant="accent" size="lg" asChild>
+                <Link href={`/houses-for-rent?q=${encodeURIComponent(city.name)}`}>
+                  Browse {city.name} Inventory
+                  <ArrowRight size={16} />
+                </Link>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <Link href="/apply">
+                  Apply Now — 10 Minutes
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
@@ -469,7 +483,7 @@ export default async function CityRentalsPage(
       </section>
 
       {/* ── LEAD CAPTURE ─────────────────────────────────────────── */}
-      <section className="bg-[#1E3A5F] py-16 lg:py-20 px-6">
+      <section className="bg-[#0052FF] py-16 lg:py-20 px-6">
         <div className="max-w-xl mx-auto text-center">
           <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-3">Be First</p>
           <h2 className="font-serif text-3xl lg:text-4xl font-bold text-white mb-4">

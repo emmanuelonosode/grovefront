@@ -5,7 +5,6 @@ import { fetchAllCities, CITIES } from "@/lib/cities";
 import { stateSlugForCode } from "@/lib/states";
 
 export const BASE_URL = "https://haskerrealtygroup.com";
-export const PROP_CHUNK = 10000;
 
 const BEDROOM_FILTERS = ["1-bedroom", "2-bedroom", "3-bedroom", "4-bedroom"];
 const FILTER_MIN_LISTINGS = 12;
@@ -16,17 +15,6 @@ export interface SitemapEntry {
   changeFrequency?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
   priority?: number;
   images?: { loc: string; title?: string }[];
-}
-
-// ── How many property sub-sitemaps (10k each) ─────────────────────────────────
-export async function propertyChunkCount(): Promise<number> {
-  let count = 0;
-  try {
-    count = (await fetchProperties({ page_size: "1" })).count;
-  } catch {
-    /* API offline */
-  }
-  return Math.max(1, Math.ceil(count / PROP_CHUNK));
 }
 
 // ── Group builders ────────────────────────────────────────────────────────────
@@ -94,20 +82,24 @@ export async function buildCities(): Promise<SitemapEntry[]> {
     }))
   );
 
-  const propertyManagementPages: SitemapEntry[] = allCitySlugs.map((slug) => ({
+  // Property-management pages use the same inventory gate as bedroom filters —
+  // emitting one for all ~550 cities created hundreds of near-identical thin
+  // pages ("Crawled - currently not indexed" in GSC).
+  const propertyManagementPages: SitemapEntry[] = [...filterCitySlugs].map((slug) => ({
     url: `${BASE_URL}/property-management/${slug}`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.5,
   }));
 
   return [...cityPages, ...cityFilterPages, ...propertyManagementPages];
 }
 
-export async function buildProperties(chunk: number): Promise<SitemapEntry[]> {
-  const all = await fetchPropertiesForSitemap().catch(() => []);
-  const start = chunk * PROP_CHUNK;
+export async function buildProperties(): Promise<SitemapEntry[]> {
+  // No .catch here — a failed fetch must propagate so the sitemap route can
+  // return 503 instead of serving a sitemap missing every property URL.
+  const all = await fetchPropertiesForSitemap();
   // Property listings are the priority — highest non-homepage priority — and each
   // carries its primary photo as an <image:image> so Google indexes listing
   // images (Google Images + result thumbnails).
-  return all.slice(start, start + PROP_CHUNK).map((p) => ({
+  return all.map((p) => ({
     url: `${BASE_URL}/houses-for-rent/${p.slug}`,
     lastModified: new Date(p.lastModified),
     changeFrequency: "daily" as const,
@@ -136,10 +128,4 @@ export function urlsetXml(entries: SitemapEntry[]): string {
     return `  <url><loc>${escapeXml(e.url)}</loc>${lm}${cf}${pr}${imgs}</url>`;
   }).join("\n");
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${items}\n</urlset>`;
-}
-
-export function sitemapIndexXml(locs: string[]): string {
-  const now = new Date().toISOString();
-  const items = locs.map((loc) => `  <sitemap><loc>${escapeXml(loc)}</loc><lastmod>${now}</lastmod></sitemap>`).join("\n");
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${items}\n</sitemapindex>`;
 }

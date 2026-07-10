@@ -187,40 +187,41 @@ export default async function PropertyManagementCityPage(
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/70 to-brand-dark/20" />
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pb-12 pt-32">
+          <div className="max-w-2xl bg-white rounded-2xl shadow-2xl p-8 lg:p-12">
+            <nav aria-label="Breadcrumb" className="mb-5">
+              <ol className="flex items-center gap-2 text-xs text-neutral-500">
+                <li><Link href="/" className="hover:text-brand">Home</Link></li>
+                <li className="text-neutral-300">/</li>
+                <li className="text-neutral-800 font-medium">Property Management — {city.name}, {city.stateCode}</li>
+              </ol>
+            </nav>
 
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pb-14 pt-32">
-          <nav aria-label="Breadcrumb" className="mb-5">
-            <ol className="flex items-center gap-2 text-xs text-blue-200">
-              <li><Link href="/" className="hover:text-white">Home</Link></li>
-              <li className="text-blue-400">/</li>
-              <li className="text-white font-medium">Property Management — {city.name}, {city.stateCode}</li>
-            </ol>
-          </nav>
+            <span className="block w-12 h-1.5 rounded-full bg-accent mb-4" />
+            <p className="text-[#B87400] text-xs font-bold tracking-[0.2em] uppercase mb-3">
+              {city.stateCode} Property Management
+            </p>
+            <h1 className="font-serif text-4xl lg:text-5xl font-bold text-neutral-900 leading-tight">
+              Let Us Manage Your {city.name} Property
+            </h1>
+            <p className="text-neutral-600 text-lg mt-4 leading-relaxed">
+              From tenant screening to maintenance to monthly reporting — we handle everything so you can focus on growing your portfolio.
+            </p>
 
-          <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-3">
-            {city.stateCode} Property Management
-          </p>
-          <h1 className="font-serif text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight max-w-3xl">
-            Let Us Manage Your {city.name} Property
-          </h1>
-          <p className="text-blue-100 text-lg max-w-2xl mt-4 leading-relaxed">
-            From tenant screening to maintenance to monthly reporting — we handle everything so you can focus on growing your portfolio.
-          </p>
-
-          <div className="flex flex-wrap gap-3 mt-8">
-            <Button variant="accent" size="lg" asChild>
-              <Link href={`/contact?service=property-management&city=${slug}`}>
-                Get a Free Property Analysis
-                <ArrowRight size={16} />
-              </Link>
-            </Button>
-            <Button variant="outline-white" size="lg" asChild>
-              <Link href="tel:+17572082767">
-                <Phone size={16} />
-                Call Us Now
-              </Link>
-            </Button>
+            <div className="flex flex-wrap gap-3 mt-8">
+              <Button variant="accent" size="lg" asChild>
+                <Link href={`/contact?service=property-management&city=${slug}`}>
+                  Get a Free Property Analysis
+                  <ArrowRight size={16} />
+                </Link>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <Link href="tel:+17572082767">
+                  <Phone size={16} />
+                  Call Us Now
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>

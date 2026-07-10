@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
+import { Cookie } from "lucide-react";
 import { consentDecided, grantConsent, denyConsent } from "@/lib/tracking";
 
 export function CookieConsentBanner() {
@@ -28,32 +29,36 @@ export function CookieConsentBanner() {
     <div
       role="dialog"
       aria-label="Cookie consent"
-      className="fixed bottom-0 left-0 right-0 z-[9999] bg-[#1E3A5F] border-t border-[#2563EB]/40 shadow-[0_-4px_24px_rgba(0,0,0,0.4)]"
+      className="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:left-6 sm:bottom-6 z-[9999] sm:max-w-sm bg-white rounded-2xl shadow-[0_16px_48px_rgba(0,20,80,0.22)] ring-1 ring-black/5 p-5 menu-animate"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <p className="text-sm text-slate-300 leading-relaxed">
-          We use cookies to improve your experience and understand how you found us.{" "}
-          <a
-            href="/privacy"
-            className="text-[#4A90E2] underline underline-offset-2 hover:text-blue-300 transition-colors"
-          >
-            Privacy Policy
-          </a>
-        </p>
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={handleDecline}
-            className="cursor-pointer px-4 py-2 text-sm text-slate-400 border border-slate-600 rounded-md hover:border-slate-400 hover:text-slate-200 transition-colors"
-          >
-            Decline
-          </button>
-          <button
-            onClick={handleAccept}
-            className="cursor-pointer px-5 py-2 text-sm font-semibold bg-[#2563EB] text-white rounded-md hover:bg-blue-500 transition-colors"
-          >
-            Accept All
-          </button>
+      <div className="flex items-start gap-3">
+        <span className="w-9 h-9 rounded-full bg-brand-light flex items-center justify-center shrink-0">
+          <Cookie size={17} className="text-brand" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-[14.5px] font-bold text-neutral-900">Cookies &amp; privacy</p>
+          <p className="mt-1 text-[13px] text-neutral-600 leading-relaxed">
+            We use cookies to improve your experience and understand how you found us.{" "}
+            <a href="/privacy" className="text-brand font-semibold underline underline-offset-2 hover:text-brand-hover transition-colors">
+              Privacy Policy
+            </a>
+          </p>
         </div>
+      </div>
+
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        <button
+          onClick={handleDecline}
+          className="cursor-pointer h-10 text-[13.5px] font-semibold text-neutral-600 border border-neutral-200 rounded-lg hover:bg-neutral-50 hover:text-neutral-800 transition-colors"
+        >
+          Decline
+        </button>
+        <button
+          onClick={handleAccept}
+          className="cursor-pointer h-10 text-[13.5px] font-bold bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors"
+        >
+          Accept All
+        </button>
       </div>
     </div>
   );

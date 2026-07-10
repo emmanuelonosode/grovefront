@@ -33,8 +33,8 @@ const PRIORITIES = [
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ElementType }> = {
   SUBMITTED:    { label: "Submitted",    color: "#FF9F0A", icon: Clock },
-  ACKNOWLEDGED: { label: "Acknowledged", color: "#2563EB", icon: CheckCircle },
-  IN_PROGRESS:  { label: "In Progress",  color: "#2563EB", icon: Settings },
+  ACKNOWLEDGED: { label: "Acknowledged", color: "#0052FF", icon: CheckCircle },
+  IN_PROGRESS:  { label: "In Progress",  color: "#0052FF", icon: Settings },
   RESOLVED:     { label: "Resolved",     color: "#34C759", icon: CheckCircle },
   CLOSED:       { label: "Closed",       color: "#6E6E73", icon: X },
 };
@@ -303,7 +303,7 @@ export default function MaintenancePage() {
                         className={cn(
                           "flex items-center gap-2 px-3 py-2.5 rounded-xl text-[12px] font-semibold transition-all",
                           category === value
-                            ? "bg-[#1E3A5F] text-white"
+                            ? "bg-[#0052FF] text-white"
                             : "bg-[#F5F5F7] text-[#3C3C43] hover:bg-[#EBEBED]"
                         )}
                       >

@@ -2,8 +2,8 @@
 // Brand-aligned: navy stroke, brand-blue uniforms, warm + sage accents.
 
 const HC = {
-  brand:      '#2563EB',
-  brandDark:  '#1E3A5F',
+  brand:      '#0052FF',
+  brandDark:  '#0052FF',
   brandLight: '#EFF4FF',
   brandMuted: '#DBEAFE',
   terracotta: '#C97757',

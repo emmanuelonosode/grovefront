@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 const colors = [
   { name: "Brand Blue",  hex: "#1A56DB", use: "CTAs Â· Links Â· Accents",        dark: false },
-  { name: "Dark Navy",   hex: "#1E3A5F", use: "Headers Â· Dark backgrounds",     dark: true  },
+  { name: "Dark Navy",   hex: "#0052FF", use: "Headers Â· Dark backgrounds",     dark: true  },
   { name: "Mid Navy",    hex: "#0D2550", use: "Alt dark sections Â· Footers",    dark: true  },
   { name: "Pale Blue",   hex: "#EFF4FF", use: "Section backgrounds",            dark: false },
   { name: "Muted Blue",  hex: "#DBEAFE", use: "Badges Â· Tags Â· Chips",          dark: false },
@@ -242,7 +242,7 @@ export default function DesignHandoffPage() {
             <p><span className="font-semibold text-brand-dark">Subject:</span> Real families in real homes. Bright interiors, welcoming front doors, families unpacking or relaxing. Not staged magazine shoots.</p>
             <p><span className="font-semibold text-brand-dark">Mood:</span> Warm, hopeful, attainable. Natural light. Clutter-free but lived-in.</p>
             <p><span className="font-semibold text-brand-dark">Avoid:</span> Luxury penthouses, crystal chandeliers, marble everything. We are affordable — show it.</p>
-            <p><span className="font-semibold text-brand-dark">Overlay:</span> On hero images use a dark navy gradient (<code className="bg-neutral-100 px-1.5 py-0.5 rounded text-xs">#1E3A5F at 55”“85% opacity</code>) so white text stays readable.</p>
+            <p><span className="font-semibold text-brand-dark">Overlay:</span> On hero images use a dark navy gradient (<code className="bg-neutral-100 px-1.5 py-0.5 rounded text-xs">#0052FF at 55”“85% opacity</code>) so white text stays readable.</p>
             <p><span className="font-semibold text-brand-dark">Stock sources:</span> Unsplash, Pexels. Search terms: "family home interior", "affordable apartment", "house rental", "moving in family".</p>
           </div>
         </section>

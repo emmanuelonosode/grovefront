@@ -1,11 +1,12 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   Clock, ShieldCheck, PawPrint, Home, ArrowRight, MapPin, Building2, TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { CityLeadCapture } from "@/components/public/CityLeadCapture";
 import { TrustSignals } from "@/components/public/TrustSignals";
-import type { CityData } from "@/lib/cities";
+import { CITIES, type CityData } from "@/lib/cities";
 import type { StateInfo } from "@/lib/states";
 
 interface Props {
@@ -38,6 +39,13 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
     const cb = counts[b.slug] ?? 0;
     return cb - ca || a.name.localeCompare(b.name);
   });
+
+  // Hero photo: the state's best curated city skyline, falling back to any
+  // city image (mirrors the StateDirectory card logic).
+  const curated = sortedCities.find((c) => CITIES[c.slug]?.heroImage);
+  const heroImage =
+    (curated ? CITIES[curated.slug].heroImage : sortedCities[0]?.heroImage) ??
+    "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1600&q=80";
 
   const topCityNames = sortedCities.slice(0, 5).map((c) => c.name).join(", ");
 
@@ -106,71 +114,79 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
-      {/* ── HERO ─────────────────────────────────────────────── */}
-      <section className="relative bg-brand-dark overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-[0.07]"
-          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, #fff 1px, transparent 0)", backgroundSize: "32px 32px" }}
+      {/* ── HERO — clean state photo, text on a solid card ─────── */}
+      <section className="relative flex items-end overflow-hidden min-h-[540px] lg:min-h-[600px]">
+        <Image
+          src={heroImage}
+          alt={`Homes for rent in ${state.name}`}
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
         />
-        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-32 pb-16 lg:pb-20">
-          <nav aria-label="Breadcrumb" className="mb-6">
-            <ol className="flex items-center gap-2 text-xs text-blue-200">
-              <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
-              <li className="text-blue-400">/</li>
-              <li><Link href="/houses-for-rent" className="hover:text-white transition-colors">Houses for Rent</Link></li>
-              <li className="text-blue-400">/</li>
-              <li className="text-white font-medium">{state.name}</li>
-            </ol>
-          </nav>
 
-          <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-3">
-            {state.name} Rentals
-          </p>
-          <h1 className="font-serif text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight max-w-3xl">
-            Houses for Rent in {state.name}
-          </h1>
-          <p className="text-blue-100 text-lg max-w-2xl mt-4 leading-relaxed">
-            Browse affordable, move-in ready houses and apartments for rent across {state.name}
-            {totalListings > 0 ? ` — ${totalListings} verified listings in ${cityCount} cities and communities` : ""}.
-            Transparent pricing, pet-friendly options, and decisions in 24 hours.
-          </p>
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pb-12 pt-32">
+          <div className="max-w-2xl bg-white rounded-2xl shadow-2xl p-8 lg:p-12">
+            <nav aria-label="Breadcrumb" className="mb-5">
+              <ol className="flex items-center gap-2 text-xs text-neutral-500">
+                <li><Link href="/" className="hover:text-brand transition-colors">Home</Link></li>
+                <li className="text-neutral-300">/</li>
+                <li><Link href="/houses-for-rent" className="hover:text-brand transition-colors">Houses for Rent</Link></li>
+                <li className="text-neutral-300">/</li>
+                <li className="text-neutral-800 font-medium">{state.name}</li>
+              </ol>
+            </nav>
 
-          <div className="flex flex-wrap gap-3 mt-8">
-            <Button variant="accent" size="lg" asChild>
-              <Link href={`/houses-for-rent?q=${encodeURIComponent(state.name)}`}>
-                Browse {state.code} Listings <ArrowRight size={16} />
-              </Link>
-            </Button>
-            <Button variant="outline-white" size="lg" asChild>
-              <Link href="/apply">Apply Now — 10 Minutes</Link>
-            </Button>
-          </div>
+            <span className="block w-12 h-1.5 rounded-full bg-accent mb-4" />
+            <p className="text-[#B87400] text-xs font-bold tracking-[0.2em] uppercase mb-3">
+              {state.name} Rentals
+            </p>
+            <h1 className="font-serif text-4xl lg:text-5xl font-bold text-neutral-900 leading-tight">
+              Houses for Rent in {state.name}
+            </h1>
+            <p className="text-neutral-600 text-lg mt-4 leading-relaxed">
+              Browse affordable, move-in ready houses and apartments for rent across {state.name}
+              {totalListings > 0 ? ` — ${totalListings} verified listings in ${cityCount} cities and communities` : ""}.
+              Transparent pricing, pet-friendly options, and decisions in 24 hours.
+            </p>
 
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-4 mt-12 max-w-xl">
-            {[
-              { icon: Building2, value: `${cityCount}`, label: "Cities & Communities" },
-              { icon: Home, value: totalListings > 0 ? `${totalListings}` : "Daily", label: totalListings > 0 ? "Listings" : "New Listings" },
-              { icon: Clock, value: "24 hr", label: "Decisions" },
-            ].map((s) => (
-              <div key={s.label} className="border-l-2 border-brand pl-3">
-                <s.icon size={16} className="text-brand mb-1.5" />
-                <p className="text-xl font-bold text-white tabular-nums">{s.value}</p>
-                <p className="text-[11px] text-blue-200 uppercase tracking-wide mt-0.5">{s.label}</p>
-              </div>
-            ))}
+            <div className="flex flex-wrap gap-3 mt-8">
+              <Button variant="accent" size="lg" asChild>
+                <Link href={`/houses-for-rent?q=${encodeURIComponent(state.name)}`}>
+                  Browse {state.code} Listings <ArrowRight size={16} />
+                </Link>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <Link href="/apply">Apply Now — 10 Minutes</Link>
+              </Button>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-4 mt-10">
+              {[
+                { icon: Building2, value: `${cityCount}`, label: "Cities & Communities" },
+                { icon: Home, value: totalListings > 0 ? `${totalListings}` : "Daily", label: totalListings > 0 ? "Listings" : "New Listings" },
+                { icon: Clock, value: "24 hr", label: "Decisions" },
+              ].map((s) => (
+                <div key={s.label} className="border-l-2 border-accent pl-3">
+                  <s.icon size={16} className="text-brand mb-1.5" />
+                  <p className="text-xl font-bold text-neutral-900 tabular-nums">{s.value}</p>
+                  <p className="text-[11px] text-neutral-500 uppercase tracking-wide mt-0.5">{s.label}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* ── TRUST BAR ────────────────────────────────────────── */}
-      <section className="bg-brand-dark border-t border-white/10">
+      <section className="bg-white border-b border-neutral-100">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-5">
           <div className="flex items-center justify-between gap-6 overflow-x-auto scrollbar-hide">
             {TRUST_BADGES.map((b) => (
               <div key={b.label} className="flex items-center gap-2.5 shrink-0">
                 <b.icon size={16} className="text-brand" />
-                <span className="text-white/80 text-xs font-medium tracking-wide whitespace-nowrap">{b.label}</span>
+                <span className="text-neutral-600 text-xs font-semibold tracking-wide whitespace-nowrap">{b.label}</span>
               </div>
             ))}
           </div>
@@ -296,7 +312,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
       />
 
       {/* ── LEAD CAPTURE ─────────────────────────────────────── */}
-      <section className="bg-[#1E3A5F] py-16 lg:py-20 px-6">
+      <section className="bg-[#0052FF] py-16 lg:py-20 px-6">
         <div className="max-w-xl mx-auto text-center">
           <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-3">Be First</p>
           <h2 className="font-serif text-3xl lg:text-4xl font-bold text-white mb-4">

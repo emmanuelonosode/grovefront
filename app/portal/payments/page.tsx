@@ -260,7 +260,7 @@ function PaymentModal({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center">
-      <div className="absolute inset-0 bg-[#1E3A5F]/60 backdrop-blur-sm" onClick={loading ? undefined : onClose} />
+      <div className="absolute inset-0 bg-[#0052FF]/60 backdrop-blur-sm" onClick={loading ? undefined : onClose} />
 
       <div className="relative w-full sm:max-w-lg bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[88vh] overflow-hidden">
         {/* Mobile drag handle */}
@@ -388,7 +388,7 @@ function PaymentModal({
               </div>
 
               {/* Running total / CTA bar */}
-              <div className="mt-5 bg-[#1E3A5F] rounded-2xl px-5 py-4 flex items-center justify-between gap-4">
+              <div className="mt-5 bg-[#0052FF] rounded-2xl px-5 py-4 flex items-center justify-between gap-4">
                 <div className="min-w-0">
                   <p className={cn(
                     "text-[13px] font-bold leading-tight",
@@ -414,7 +414,7 @@ function PaymentModal({
                     type="button"
                     disabled={selectedIndices.size === 0}
                     onClick={() => setStep("form")}
-                    className="mt-1.5 text-[12px] font-bold bg-white text-[#1E3A5F] px-4 py-2 rounded-xl disabled:opacity-40 transition-all hover:bg-[#F5F5F7] cursor-pointer disabled:cursor-not-allowed whitespace-nowrap"
+                    className="mt-1.5 text-[12px] font-bold bg-white text-[#0052FF] px-4 py-2 rounded-xl disabled:opacity-40 transition-all hover:bg-[#F5F5F7] cursor-pointer disabled:cursor-not-allowed whitespace-nowrap"
                   >
                     {allSelected ? "Pay Full Balance â†’" : "Continue with Selection â†’"}
                   </button>
@@ -575,7 +575,7 @@ function PaymentModal({
                 </div>
               ) : (
                 /* P2P — dark send-to card with break-all handle + Copy pill */
-                <div className="bg-[#1E3A5F] rounded-2xl p-5 text-white">
+                <div className="bg-[#0052FF] rounded-2xl p-5 text-white">
                   <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Send to</p>
                   <div className="flex items-start gap-3 mb-4">
                     <div className="w-11 h-11 rounded-xl overflow-hidden shrink-0 shadow-md mt-0.5">

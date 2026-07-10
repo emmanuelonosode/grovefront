@@ -13,7 +13,7 @@ export function HaskerLogo({
   variant?: "on-white" | "on-dark";
   height?: number;
 }) {
-  const textColor = variant === "on-dark" ? "#FFFFFF" : "#1E3A5F";
+  const textColor = variant === "on-dark" ? "#FFFFFF" : "#0052FF";
   const width = Math.round(height * (192 / 44));
 
   return (
@@ -26,7 +26,7 @@ export function HaskerLogo({
       aria-label="Hasker &amp; Co. Realty Group"
     >
       {/* â”€â”€ Icon circle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <circle cx="22" cy="22" r="22" fill="#1E3A5F" />
+      <circle cx="22" cy="22" r="22" fill="#0052FF" />
 
       {/*
         House mark — original coords live in a 320Ã—320 coordinate space,
@@ -37,13 +37,13 @@ export function HaskerLogo({
       */}
       <g transform="translate(22,22) scale(0.173) translate(-160,-160)">
         {/* Outer diamond (house silhouette) */}
-        <polygon points="76,160 160,56 244,160 160,264" fill="#2563EB" />
+        <polygon points="76,160 160,56 244,160 160,264" fill="#0052FF" />
         {/* Roof cutout */}
         <polygon points="120,160 160,104 200,160" fill="#FFFFFF" />
         {/* Body */}
         <rect x="124" y="160" width="72" height="50" rx="4" fill="#FFFFFF" />
         {/* Door */}
-        <rect x="146" y="170" width="28" height="40" rx="4" fill="#2563EB" />
+        <rect x="146" y="170" width="28" height="40" rx="4" fill="#0052FF" />
       </g>
 
       {/* â”€â”€ Wordmark â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
@@ -67,7 +67,7 @@ export function HaskerLogo({
         fontFamily="'Helvetica Neue', Helvetica, Arial, sans-serif"
         fontWeight="400"
         fontSize="8.5"
-        fill="#2563EB"
+        fill="#0052FF"
         letterSpacing="2.6"
       >
         REALTY GROUP

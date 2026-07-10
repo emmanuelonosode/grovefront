@@ -155,17 +155,18 @@ export default async function BlogPage({ searchParams }: PageProps) {
           className="object-cover object-center"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/72 to-brand-dark/25" />
-
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pb-16 pt-32">
-          <p className="text-brand text-xs font-semibold tracking-[0.35em] uppercase mb-4">Free Resources</p>
-          <h1 className="font-serif text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-[1.05] mb-5 max-w-3xl">
-            Renter&apos;s Guide &amp; Housing Tips
-          </h1>
-          <p className="text-blue-100 text-lg max-w-xl leading-relaxed">
-            Practical advice written by our team for real families — budgeting guides, moving
-            checklists, lease explainers, and local market updates.
-          </p>
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pb-14 pt-32">
+          <div className="max-w-2xl bg-white rounded-2xl shadow-2xl p-8 lg:p-12">
+            <span className="block w-12 h-1.5 rounded-full bg-accent mb-5" />
+            <p className="text-[#B87400] text-xs font-bold tracking-[0.35em] uppercase mb-4">Free Resources</p>
+            <h1 className="font-serif text-4xl lg:text-5xl xl:text-6xl font-bold text-neutral-900 leading-[1.05] mb-5">
+              Renter&apos;s Guide &amp; Housing Tips
+            </h1>
+            <p className="text-neutral-600 text-lg leading-relaxed">
+              Practical advice written by our team for real families — budgeting guides, moving
+              checklists, lease explainers, and local market updates.
+            </p>
+          </div>
         </div>
       </section>
 

@@ -95,52 +95,56 @@ export default async function BlogPostPage({ params }: Props) {
     <div className="pt-20">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
-      {/* Hero */}
-      <div className="relative h-[50vh] min-h-[360px] bg-brand-dark overflow-hidden">
-        {post.featured_image_url && (
-          <Image
-            src={post.featured_image_url}
-            alt={post.title}
-            fill
-            className="object-cover opacity-40"
-            priority
-            sizes="100vw"
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/60 to-transparent" />
-        <div className="absolute inset-0 flex flex-col justify-end max-w-4xl mx-auto px-6 lg:px-8 pb-12">
+      {/* Hero — clean white article header; featured photo shown full-color below */}
+      <div className="bg-white border-b border-neutral-100">
+        <div className="max-w-4xl mx-auto px-6 lg:px-8 pt-12 pb-10">
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 text-blue-300 text-xs font-medium mb-6 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-neutral-500 text-xs font-medium mb-6 hover:text-brand transition-colors"
           >
             <ArrowLeft size={14} />
             Back to Renter&apos;s Guide
           </Link>
-          <span className="text-brand text-xs font-semibold tracking-widest uppercase mb-3">
+          <span className="block w-12 h-1.5 rounded-full bg-accent mb-4" />
+          <span className="block text-[#B87400] text-xs font-bold tracking-widest uppercase mb-3">
             {post.category_display}
           </span>
-          <h1 className="font-serif text-3xl lg:text-5xl font-bold text-white leading-snug">
+          <h1 className="font-serif text-3xl lg:text-5xl font-bold text-neutral-900 leading-snug">
             {post.title}
           </h1>
-          <div className="flex flex-wrap items-center gap-5 mt-5 text-sm text-blue-100">
+          <div className="flex flex-wrap items-center gap-5 mt-5 text-sm text-neutral-500">
             <div className="flex items-center gap-2">
               <div>
-                <span className="font-medium text-white">{post.author_name}</span>
-                <span className="text-blue-200 text-xs block">{post.author_role}</span>
+                <span className="font-medium text-neutral-900">{post.author_name}</span>
+                <span className="text-neutral-400 text-xs block">{post.author_role}</span>
               </div>
             </div>
             {post.published_at && (
-              <div className="flex items-center gap-1.5 text-blue-200 text-xs">
+              <div className="flex items-center gap-1.5 text-neutral-400 text-xs">
                 <Calendar size={13} />
                 {formatDate(post.published_at)}
               </div>
             )}
-            <div className="flex items-center gap-1.5 text-blue-200 text-xs">
+            <div className="flex items-center gap-1.5 text-neutral-400 text-xs">
               <Clock size={13} />
               {post.read_time_minutes} min read
             </div>
           </div>
         </div>
+        {post.featured_image_url && (
+          <div className="max-w-4xl mx-auto px-6 lg:px-8 pb-12">
+            <div className="relative aspect-[16/8] rounded-2xl overflow-hidden">
+              <Image
+                src={post.featured_image_url}
+                alt={post.title}
+                fill
+                className="object-cover"
+                priority
+                sizes="(max-width: 896px) 100vw, 896px"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Content */}

@@ -131,19 +131,19 @@ export function ExitIntentPopup() {
       {/* Soft backdrop */}
       <div
         onClick={() => setVisible(false)}
-        className="absolute inset-0 bg-brand-dark/55 backdrop-blur-md"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         aria-hidden="true"
       />
 
       {/* Card */}
       <div
         role="dialog" aria-modal="true" aria-labelledby="exit-popup-title"
-        className="relative w-full max-w-md bg-white rounded-[28px] overflow-hidden shadow-[0_24px_70px_-12px_rgba(30,58,95,0.4)] ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-200"
+        className="relative w-full max-w-md bg-white rounded-[28px] overflow-hidden shadow-[0_24px_70px_-12px_rgba(0,20,60,0.35)] ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-200"
       >
         {/* Close */}
         <button
           onClick={() => setVisible(false)}
-          className="absolute top-4 right-4 z-10 text-neutral-400 hover:text-brand-dark bg-neutral-100 hover:bg-neutral-200 p-2 rounded-full transition-all cursor-pointer"
+          className="absolute top-4 right-4 z-10 text-neutral-400 hover:text-neutral-800 bg-neutral-100 hover:bg-neutral-200 p-2 rounded-full transition-all cursor-pointer"
           aria-label="Close"
         >
           <X size={15} />
@@ -156,10 +156,11 @@ export function ExitIntentPopup() {
               <div className="mx-auto w-14 h-14 rounded-2xl bg-brand-light ring-1 ring-brand/10 flex items-center justify-center mb-4">
                 <PhoneCall size={22} className="text-brand" />
               </div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-brand mb-2">
+              <span className="block mx-auto w-10 h-1.5 rounded-full bg-accent mb-3" />
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#B87400] mb-2">
                 {city ? `New homes in ${city}` : "Still searching?"}
               </p>
-              <h3 id="exit-popup-title" className="font-serif text-[26px] leading-tight font-bold text-brand-dark">
+              <h3 id="exit-popup-title" className="font-serif text-[26px] leading-tight font-bold text-neutral-900">
                 Let an agent do<br />the searching.
               </h3>
               <p className="text-[13.5px] text-neutral-500 mt-2.5 leading-relaxed max-w-[19rem] mx-auto">
@@ -240,14 +241,14 @@ export function ExitIntentPopup() {
             <div className="mx-auto w-16 h-16 rounded-2xl bg-emerald-50 ring-1 ring-emerald-200 flex items-center justify-center mb-5">
               <Check size={30} className="text-emerald-500" />
             </div>
-            <h4 className="font-serif text-2xl font-bold text-brand-dark">You&apos;re all set</h4>
+            <h4 className="font-serif text-2xl font-bold text-neutral-900">You&apos;re all set</h4>
             <p className="text-[14px] text-neutral-500 mt-2.5 leading-relaxed max-w-[18rem] mx-auto">
-              An agent will call <strong className="text-brand-dark">{phone}</strong> shortly
-              {city ? <> with homes in <strong className="text-brand-dark">{city}</strong></> : null}.
+              An agent will call <strong className="text-neutral-900">{phone}</strong> shortly
+              {city ? <> with homes in <strong className="text-neutral-900">{city}</strong></> : null}.
             </p>
             <button
               onClick={() => setVisible(false)}
-              className="mt-6 inline-flex h-11 items-center justify-center px-6 rounded-2xl border border-neutral-200 text-brand-dark text-sm font-semibold hover:bg-neutral-50 transition-colors cursor-pointer"
+              className="mt-6 inline-flex h-11 items-center justify-center px-6 rounded-2xl border border-neutral-200 text-neutral-800 text-sm font-semibold hover:bg-neutral-50 transition-colors cursor-pointer"
             >
               Keep browsing
             </button>

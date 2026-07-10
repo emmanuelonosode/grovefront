@@ -13,7 +13,7 @@ const buttonVariants = cva(
         primary:
           "bg-brand-dark text-white hover:bg-brand focus-visible:ring-brand-dark",
         accent:
-          "bg-brand text-white hover:bg-brand-hover focus-visible:ring-brand",
+          "bg-accent text-neutral-900 font-semibold hover:bg-accent-hover focus-visible:ring-accent",
         outline:
           "border border-brand-dark text-brand-dark hover:bg-brand-dark hover:text-white focus-visible:ring-brand-dark",
         "outline-white":

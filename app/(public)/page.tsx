@@ -4,19 +4,21 @@ import { ArrowRight, Star, ShieldCheck, Users, Home as HomeIcon } from "lucide-r
 import { HeroSearch } from "@/components/public/HeroSearch";
 import { FeaturedPropertiesSection } from "@/components/public/FeaturedPropertiesSection";
 import { WorkersScene, PetScene } from "@/components/public/HomepageIllustrations";
-import { CityDirectory } from "@/components/public/CityDirectory";
+import { StateDirectory } from "@/components/public/StateDirectory";
 import { fetchHomepageProperties, fetchProperties, toPropertyCardShape } from "@/lib/properties";
 import { CITIES, fetchAllCities, buildGenericCityData, type CityData } from "@/lib/cities";
 
 // Hero background rotates every 2 hours (recomputed on each ISR regeneration, revalidate=300)
 // so the homepage feels fresh. All curated, verified, and bandwidth-optimized (webp).
+// All bright daylight exteriors — no dusk/night shots (visually audited).
 const HERO_IMAGES = [
   "https://images.unsplash.com/photo-1560184897-ae75f418493e?w=1600&q=75&fm=webp&auto=format",
-  "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1600&q=75&fm=webp&auto=format",
+  "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=1600&q=75&fm=webp&auto=format",
   "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1600&q=75&fm=webp&auto=format",
   "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1600&q=75&fm=webp&auto=format",
   "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=1600&q=75&fm=webp&auto=format",
   "https://images.unsplash.com/photo-1576941089067-2de3c901e126?w=1600&q=75&fm=webp&auto=format",
+  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600&q=75&fm=webp&auto=format",
 ];
 
 export const metadata = {
@@ -257,7 +259,7 @@ export default async function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(HOW_IT_WORKS_SCHEMA) }} />
 
       {/* â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="relative flex flex-col items-center justify-center overflow-hidden text-center" style={{ minHeight: 620 }}>
+      <section className="relative flex flex-col items-center justify-center overflow-hidden text-center" style={{ minHeight: 660 }}>
         <Image
           src={heroImage}
           alt="Beautiful home available through Hasker & Co. Realty Group"
@@ -267,45 +269,56 @@ export default async function HomePage() {
           priority
           fetchPriority="high"
         />
-        {/* Readability overlay — keeps white text crisp over any photo */}
-        <div
-          className="absolute inset-0"
-          style={{ background: "linear-gradient(180deg, rgba(15,32,54,0.66) 0%, rgba(15,32,54,0.50) 42%, rgba(15,32,54,0.74) 100%)" }}
-        />
-
         <div className="relative z-10 w-full flex flex-col items-center px-5 sm:px-8 pt-28 pb-16">
-          {/* H1 */}
+          {/* H1 — no overlay on the photo; readability comes from text shadows */}
           <h1
-            className="font-serif font-bold text-white leading-[1.05] mb-[18px] text-[2.6rem] sm:text-[3.5rem] lg:text-[4.5rem]"
-            style={{ letterSpacing: "-0.02em", maxWidth: 900, textShadow: "0 2px 18px rgba(0,0,0,0.45)" }}
+            className="hero-animate font-serif font-bold text-white leading-[1.04] mb-5 text-[2.8rem] sm:text-[3.9rem] lg:text-[5rem]"
+            style={{ letterSpacing: "-0.025em", maxWidth: 980, textShadow: "0 2px 10px rgba(0,0,0,0.55), 0 4px 34px rgba(0,0,0,0.45)" }}
           >
             Best-maintained houses for rent,<br className="hidden sm:block" /> in 12+ U.S. cities.
           </h1>
 
           {/* Subhead */}
           <p
-            className="text-[18px] leading-[1.55] mb-9 max-w-[540px] text-white/90"
-            style={{ textShadow: "0 1px 10px rgba(0,0,0,0.4)" }}
+            className="hero-animate text-[17px] sm:text-[19px] leading-[1.55] mb-10 max-w-[560px] text-white"
+            style={{ textShadow: "0 1px 6px rgba(0,0,0,0.6), 0 2px 18px rgba(0,0,0,0.4)", animationDelay: "80ms" }}
           >
             Well-maintained rentals at honest prices. No hidden fees. Decisions in 24 hours.
           </p>
 
           {/* Search */}
-          <div className="w-full max-w-[760px] mb-7">
+          <div className="hero-animate w-full max-w-[760px] mb-6" style={{ animationDelay: "160ms" }}>
             <HeroSearch />
           </div>
 
-          {/* Trust badges */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5">
+          {/* Clear next steps — browse or apply */}
+          <div className="hero-animate flex flex-col sm:flex-row items-center justify-center gap-3 mb-9 w-full sm:w-auto px-2" style={{ animationDelay: "200ms" }}>
+            <Link
+              href="/houses-for-rent"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 h-12 px-7 bg-brand hover:bg-brand-hover text-white font-bold text-[15px] rounded-xl shadow-lg shadow-black/20 transition-colors"
+            >
+              Browse Available Homes
+              <ArrowRight size={16} />
+            </Link>
+            <Link
+              href="/apply"
+              className="w-full sm:w-auto flex items-center justify-center h-12 px-7 bg-accent hover:bg-accent-hover text-neutral-900 font-bold text-[15px] rounded-xl shadow-lg shadow-black/20 transition-colors"
+            >
+              Apply Now — 24h Decision
+            </Link>
+          </div>
+
+          {/* Trust badges — solid, crisp */}
+          <div className="hero-animate flex flex-wrap items-center justify-center gap-2.5" style={{ animationDelay: "240ms" }}>
             {[
-              { icon: <Star size={14} className="text-amber-300 fill-amber-300" />, label: "4.9 on Trustpilot" },
-              { icon: <ShieldCheck size={14} className="text-emerald-300" />,        label: "BBB A+ Accredited" },
-              { icon: <Users size={14} className="text-white/80" />,                 label: "2,400+ families housed" },
-              { icon: <HomeIcon size={14} className="text-white/80" />,              label: "Equal Housing Opportunity" },
+              { icon: <Star size={14} className="text-amber-500 fill-amber-500" />, label: "4.9 on Trustpilot" },
+              { icon: <ShieldCheck size={14} className="text-emerald-600" />,        label: "BBB A+ Accredited" },
+              { icon: <Users size={14} className="text-brand" />,                    label: "2,400+ families housed" },
+              { icon: <HomeIcon size={14} className="text-brand" />,                 label: "Equal Housing Opportunity" },
             ].map((b) => (
               <div
                 key={b.label}
-                className="flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 px-3.5 py-2 text-[12.5px] font-medium text-white/90"
+                className="flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[13px] font-semibold text-neutral-800 shadow-md shadow-black/15"
               >
                 {b.icon}
                 {b.label}
@@ -316,7 +329,7 @@ export default async function HomePage() {
       </section>
 
       {/* â”€â”€ STATS STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section style={{ background: "#1E3A5F", color: "#fff" }}>
+      <section style={{ background: "#0052FF", color: "#fff" }}>
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4">
             {[
@@ -393,7 +406,7 @@ export default async function HomePage() {
                       </svg>
                     </div>
                     <div>
-                      <div className="font-semibold mb-[3px]" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14.5, color: "#1E3A5F" }}>{pr.h}</div>
+                      <div className="font-semibold mb-[3px]" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14.5, color: "#0052FF" }}>{pr.h}</div>
                       <div className="leading-[1.55]" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 13, color: "#475569" }}>{pr.d}</div>
                     </div>
                   </div>
@@ -456,7 +469,7 @@ export default async function HomePage() {
                   className="object-cover object-center"
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
                 />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(30,58,95,0) 40%, rgba(30,58,95,0.85) 100%)" }} />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,64,214,0) 40%, rgba(0,64,214,0.85) 100%)" }} />
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                   <div className="font-serif font-bold leading-[1.1]" style={{ fontSize: 20 }}>{city.name}</div>
                   <div className="mt-0.5" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 11, color: "rgba(255,255,255,0.6)" }}>
@@ -469,8 +482,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* â”€â”€ FULL CITY DIRECTORY (crawlable internal links to every city page) â”€â”€ */}
-      <CityDirectory cities={mergedCities} counts={cityCounts} />
+      {/* â”€â”€ STATE DIRECTORY (cards with search; links to state hubs + top cities) â”€â”€ */}
+      <StateDirectory cities={mergedCities} counts={cityCounts} />
 
       {/* â”€â”€ PET PITCH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="py-[88px] px-8 bg-white border-t border-[#F1F5F9]">
@@ -489,7 +502,7 @@ export default async function HomePage() {
                   <span
                     key={tag}
                     className="inline-flex items-center border border-[#F1F5F9] rounded-sm"
-                    style={{ background: "#FBF9F4", color: "#1E3A5F", fontFamily: "DM Sans, sans-serif", fontSize: 12.5, fontWeight: 500, padding: "7px 12px" }}
+                    style={{ background: "#FBF9F4", color: "#0052FF", fontFamily: "DM Sans, sans-serif", fontSize: 12.5, fontWeight: 500, padding: "7px 12px" }}
                   >
                     {tag}
                   </span>
@@ -573,7 +586,7 @@ export default async function HomePage() {
       </section>
 
       {/* â”€â”€ FINAL CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-[88px] px-8 text-center" style={{ background: "#1E3A5F", color: "#fff" }}>
+      <section className="py-[88px] px-8 text-center" style={{ background: "#0052FF", color: "#fff" }}>
         <div className="max-w-7xl mx-auto">
           <p className="text-[11px] font-semibold tracking-[0.3em] uppercase" style={{ color: "#A9C5F6" }}>Ready when you are</p>
           <h2 className="font-serif font-bold text-white leading-[1.05] mt-3.5" style={{ fontSize: 48, letterSpacing: "-0.02em" }}>

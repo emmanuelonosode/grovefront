@@ -62,7 +62,7 @@ export default async function ApplyPage({ searchParams }: Props) {
                 Hasker &amp; Co. Realty Group
               </p>
               <h1
-                className="hero-animate font-sans font-bold text-[#1E3A5F] leading-[1.12] tracking-tight mb-4"
+                className="hero-animate font-sans font-bold text-[#0052FF] leading-[1.12] tracking-tight mb-4"
                 style={{
                   fontSize: "clamp(28px, 5vw, 46px)",
                   animationDelay: "60ms",
@@ -77,7 +77,7 @@ export default async function ApplyPage({ searchParams }: Props) {
                 {TRUST.map(({ icon: Icon, text }) => (
                   <span
                     key={text}
-                    className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#1E3A5F] bg-white border border-[#DBEAFE] rounded-full px-3.5 py-1.5 shadow-sm"
+                    className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#0052FF] bg-white border border-[#DBEAFE] rounded-full px-3.5 py-1.5 shadow-sm"
                   >
                     <Icon size={12} className="text-brand shrink-0" strokeWidth={2.5} />
                     {text}

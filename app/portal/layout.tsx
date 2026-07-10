@@ -52,7 +52,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
     <div className="min-h-screen bg-[#F5F5F7] flex">
 
       {/* â”€â”€ Sidebar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <aside className="hidden lg:flex flex-col w-60 bg-[#1E3A5F] shrink-0">
+      <aside className="hidden lg:flex flex-col w-60 bg-[#0052FF] shrink-0">
 
         {/* Logo */}
         <div className="px-5 py-7">
@@ -133,7 +133,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
       </aside>
 
       {/* â”€â”€ Mobile header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div className="lg:hidden fixed top-0 inset-x-0 z-50 bg-[#1E3A5F]/95 backdrop-blur-xl px-4 py-3 flex items-center justify-between">
+      <div className="lg:hidden fixed top-0 inset-x-0 z-50 bg-[#0052FF]/95 backdrop-blur-xl px-4 py-3 flex items-center justify-between">
         <Link href="/">
           <Image
             src="/logo.svg"

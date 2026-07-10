@@ -124,31 +124,32 @@ export function FloatingCallbackButton() {
       {/* Modal */}
       {open && (
         <div className="fixed inset-0 z-[9997] flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div onClick={() => setOpen(false)} className="absolute inset-0 bg-brand-dark/70 backdrop-blur-sm" aria-hidden="true" />
+          <div onClick={() => setOpen(false)} className="absolute inset-0 bg-black/50 backdrop-blur-sm" aria-hidden="true" />
 
           <div
             role="dialog" aria-modal="true" aria-labelledby="callback-modal-title"
             className="relative w-full sm:max-w-sm bg-white sm:rounded-3xl rounded-t-3xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-200"
           >
             {/* Header */}
-            <div className="bg-brand-dark px-5 py-5 flex items-start justify-between gap-3">
+            <div className="px-5 pt-5 pb-4 border-b border-neutral-100 flex items-start justify-between gap-3">
               <div>
+                <span className="block w-10 h-1.5 rounded-full bg-accent mb-3" />
                 <div className="flex items-center gap-2 mb-1.5">
-                  <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center">
-                    <PhoneCall size={14} className="text-white" />
+                  <div className="w-7 h-7 rounded-lg bg-brand-light flex items-center justify-center">
+                    <PhoneCall size={14} className="text-brand" />
                   </div>
-                  <p className="text-[10px] font-black tracking-[0.2em] uppercase text-white/50">Free Callback</p>
+                  <p className="text-[10px] font-black tracking-[0.2em] uppercase text-[#B87400]">Free Callback</p>
                 </div>
-                <h3 id="callback-modal-title" className="font-serif text-xl font-bold text-white leading-tight">
+                <h3 id="callback-modal-title" className="font-serif text-xl font-bold text-neutral-900 leading-tight">
                   We&apos;ll call you with<br />available homes.
                 </h3>
-                <p className="text-white/55 text-xs mt-1.5 leading-relaxed">
+                <p className="text-neutral-500 text-xs mt-1.5 leading-relaxed">
                   Real agent · within 1 hour · no pressure
                 </p>
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="shrink-0 text-white/50 hover:text-white bg-white/10 hover:bg-white/20 p-1.5 rounded-lg transition-all cursor-pointer mt-0.5"
+                className="shrink-0 text-neutral-400 hover:text-neutral-700 bg-neutral-100 hover:bg-neutral-200 p-1.5 rounded-lg transition-all cursor-pointer mt-0.5"
                 aria-label="Close"
               >
                 <X size={14} />
@@ -219,9 +220,9 @@ export function FloatingCallbackButton() {
                   <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto">
                     <Check size={24} className="text-emerald-500" />
                   </div>
-                  <p className="font-serif font-bold text-brand-dark">Expect a call soon!</p>
+                  <p className="font-serif font-bold text-neutral-900">Expect a call soon!</p>
                   <p className="text-xs text-neutral-500 leading-relaxed">
-                    An agent will call <strong className="text-brand-dark">{phone}</strong> within the hour.
+                    An agent will call <strong className="text-neutral-900">{phone}</strong> within the hour.
                   </p>
                 </div>
               )}

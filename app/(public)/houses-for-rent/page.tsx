@@ -1,10 +1,10 @@
-﻿import { Suspense } from "react";
+import { Suspense } from "react";
 import { fetchProperties, type PropertyListItemAPI } from "@/lib/properties";
 import { PropertiesClient } from "@/components/public/PropertiesClient";
 import { CityDirectory } from "@/components/public/CityDirectory";
 import { CITIES, fetchAllCities, buildGenericCityData, type CityData } from "@/lib/cities";
 
-export const revalidate = 300;
+export const revalidate = 0;
 
 export const metadata = {
   title: "Houses for Rent & Affordable Homes Nationwide | Hasker & Co. Realty Group",

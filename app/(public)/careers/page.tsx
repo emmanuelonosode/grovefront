@@ -263,59 +263,61 @@ export default function CareersPage() {
         <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jp) }} />
       ))}
 
-      {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section className="relative min-h-[580px] lg:min-h-[640px] flex flex-col justify-end overflow-hidden bg-brand-dark">
+      {/* ── HERO — clean photo, no overlay; text on a solid card ─────────── */}
+      <section className="relative min-h-[580px] lg:min-h-[640px] flex flex-col justify-end overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1600&q=80"
           alt="Hasker & Co. Realty Group team at work"
           fill
           priority
-          className="object-cover object-center opacity-30"
+          className="object-cover object-center"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/70 to-brand-dark/30" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pb-16 lg:pb-24 pt-16 w-full">
-          <p className="text-brand text-xs font-semibold tracking-[0.35em] uppercase mb-4">
-            Now Hiring · Virginia Beach
-          </p>
-          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight mb-5 max-w-3xl">
-            Help Families Find a Place to Call Home
-          </h1>
-          <p className="text-white/60 text-base max-w-xl leading-relaxed mb-8">
-            Affordable homes, honest prices, real people. If that&apos;s the work you want to do,
-            we want to hear from you.
-          </p>
-          <div className="flex flex-col sm:flex-row items-start gap-4">
-            <a
-              href="#open-roles"
-              className="inline-flex items-center gap-2.5 bg-brand text-white text-sm font-semibold px-7 py-3.5 rounded-sm hover:bg-brand/90 transition-colors duration-200"
-            >
-              View Open Roles
-              <ArrowRight size={15} />
-            </a>
-            <a
-              href="mailto:careers@haskerrealtygroup.com"
-              className="inline-flex items-center gap-2 text-white/50 hover:text-white text-sm transition-colors duration-200"
-            >
-              <Mail size={14} />
-              careers@haskerrealtygroup.com
-            </a>
+        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pb-12 lg:pb-16 pt-16 w-full">
+          <div className="max-w-2xl bg-white rounded-2xl shadow-2xl p-8 lg:p-12">
+            <span className="block w-12 h-1.5 rounded-full bg-accent mb-5" />
+            <p className="text-[#B87400] text-xs font-bold tracking-[0.35em] uppercase mb-4">
+              Now Hiring · Virginia Beach
+            </p>
+            <h1 className="font-serif text-4xl sm:text-5xl font-bold text-neutral-900 leading-tight tracking-tight mb-5">
+              Help Families Find a Place to Call Home
+            </h1>
+            <p className="text-neutral-600 text-base leading-relaxed mb-8">
+              Affordable homes, honest prices, real people. If that&apos;s the work you want to do,
+              we want to hear from you.
+            </p>
+            <div className="flex flex-col sm:flex-row items-start gap-4">
+              <a
+                href="#open-roles"
+                className="inline-flex items-center gap-2.5 bg-accent text-neutral-900 text-sm font-bold px-7 py-3.5 rounded-sm hover:bg-accent-hover transition-colors duration-200"
+              >
+                View Open Roles
+                <ArrowRight size={15} />
+              </a>
+              <a
+                href="mailto:careers@haskerrealtygroup.com"
+                className="inline-flex items-center gap-2 text-neutral-500 hover:text-brand text-sm transition-colors duration-200 py-3.5"
+              >
+                <Mail size={14} />
+                careers@haskerrealtygroup.com
+              </a>
+            </div>
           </div>
         </div>
 
         {/* Stats bar */}
-        <div className="relative z-10 border-t border-white/10 bg-white/[0.04]">
+        <div className="relative z-10 border-t border-neutral-100 bg-white">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="grid grid-cols-3 divide-x divide-white/10">
+            <div className="grid grid-cols-3 divide-x divide-neutral-100">
               {[
                 { value: "2,000+", label: "Families Housed" },
                 { value: "12+", label: "Cities Served" },
                 { value: "Since 2012", label: "Building Trust" },
               ].map((s) => (
                 <div key={s.label} className="px-4 sm:px-8 py-5 text-center">
-                  <p className="font-serif text-2xl font-bold text-white">{s.value}</p>
-                  <p className="text-[11px] text-white/40 mt-1 tracking-widest uppercase">{s.label}</p>
+                  <p className="font-serif text-2xl font-bold text-neutral-900">{s.value}</p>
+                  <p className="text-[11px] text-neutral-400 mt-1 tracking-widest uppercase">{s.label}</p>
                 </div>
               ))}
             </div>

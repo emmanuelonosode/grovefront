@@ -49,7 +49,7 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
         width: '1200px',
         height: '630px',
         display: 'flex',
-        background: '#1E3A5F',
+        background: '#0052FF',
         fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
         position: 'relative',
         overflow: 'hidden',
@@ -61,7 +61,7 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
           position: 'absolute',
           left: 0, top: 0, bottom: 0,
           width: '6px',
-          background: '#2563EB',
+          background: '#0052FF',
           display: 'flex',
         }}
       />
@@ -133,7 +133,7 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
               HASKER &amp; CO.
             </div>
             <div style={{
-              color: '#2563EB',
+              color: '#0052FF',
               fontSize: '11px',
               fontWeight: 400,
               letterSpacing: '3.5px',
@@ -149,7 +149,7 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
         <div style={{
           width: '56px',
           height: '3px',
-          background: '#2563EB',
+          background: '#0052FF',
           borderRadius: '2px',
           marginBottom: '28px',
           display: 'flex',
@@ -216,7 +216,7 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
         {/* Website */}
         <div style={{
           display: 'flex',
-          color: '#2563EB',
+          color: '#0052FF',
           fontSize: '18px',
           fontWeight: 700,
           letterSpacing: '0.3px',

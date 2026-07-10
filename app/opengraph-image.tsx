@@ -52,7 +52,7 @@ export default function Image() {
           width: 1200,
           height: 630,
           display: 'flex',
-          background: '#1E3A5F',
+          background: '#0052FF',
           fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
           position: 'relative',
           overflow: 'hidden',
@@ -83,7 +83,7 @@ export default function Image() {
               position: 'absolute',
               inset: 0,
               background:
-                'linear-gradient(to right, #1E3A5F 0%, rgba(30,58,95,0.72) 35%, rgba(30,58,95,0.18) 70%, rgba(30,58,95,0.08) 100%)',
+                'linear-gradient(to right, #0052FF 0%, rgba(0,64,214,0.72) 35%, rgba(0,64,214,0.18) 70%, rgba(0,64,214,0.08) 100%)',
               display: 'flex',
             }}
           />
@@ -93,7 +93,7 @@ export default function Image() {
               position: 'absolute',
               inset: 0,
               background:
-                'linear-gradient(to bottom, rgba(30,58,95,0.45) 0%, transparent 25%, transparent 75%, rgba(30,58,95,0.55) 100%)',
+                'linear-gradient(to bottom, rgba(0,64,214,0.45) 0%, transparent 25%, transparent 75%, rgba(0,64,214,0.55) 100%)',
               display: 'flex',
             }}
           />
@@ -107,7 +107,7 @@ export default function Image() {
             top: 0,
             bottom: 0,
             width: 6,
-            background: 'linear-gradient(to bottom, #2563EB, #3B82F6)',
+            background: 'linear-gradient(to bottom, #0052FF, #3B82F6)',
             display: 'flex',
           }}
         />
@@ -158,7 +158,7 @@ export default function Image() {
               </div>
               <div
                 style={{
-                  color: '#2563EB',
+                  color: '#0052FF',
                   fontSize: 10,
                   fontWeight: 500,
                   letterSpacing: '3.5px',
@@ -176,7 +176,7 @@ export default function Image() {
             style={{
               width: 48,
               height: 3,
-              background: '#2563EB',
+              background: '#0052FF',
               borderRadius: 2,
               marginBottom: 24,
               display: 'flex',
@@ -323,13 +323,13 @@ export default function Image() {
                 width: 6,
                 height: 6,
                 borderRadius: '50%',
-                background: '#2563EB',
+                background: '#0052FF',
                 display: 'flex',
               }}
             />
             <span
               style={{
-                color: '#2563EB',
+                color: '#0052FF',
                 fontSize: 15,
                 fontWeight: 700,
                 letterSpacing: 0.5,
@@ -361,7 +361,7 @@ export default function Image() {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                background: 'rgba(30,58,95,0.82)',
+                background: 'rgba(0,64,214,0.82)',
                 border: '1px solid rgba(255,255,255,0.14)',
                 borderRadius: 8,
                 padding: '10px 18px',

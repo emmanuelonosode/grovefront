@@ -33,8 +33,8 @@ interface Props {
   searchQuery?: string;
 }
 
-const NAVY = "#1E3A5F";
-const BLUE = "#2563EB";
+const NAVY = "#0052FF";
+const BLUE = "#0052FF";
 // Always use relative path — Next.js rewrites proxy /api/v1/* to the backend.
 // Never call the backend directly from the browser (breaks in production).
 const API_BASE = "";

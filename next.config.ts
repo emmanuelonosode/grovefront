@@ -36,8 +36,8 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       // Fonts
       "font-src 'self' https://fonts.gstatic.com",
-      // Images: same origin, Cloudinary, Unsplash, InvitationHomes, Rently CDN + S3, CARTO tiles, Meta Pixel noscript
-      "img-src 'self' data: blob: https://admin.haskerrealtygroup.com https://res.cloudinary.com https://images.unsplash.com https://images.invitationhomes.com https://*.invitationhomes.com https://*.zillowstatic.com https://d39tc8gklidfbm.cloudfront.net https://s3.amazonaws.com https://maps.gstatic.com https://maps.googleapis.com https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com https://unpkg.com https://www.facebook.com https://www.googletagmanager.com",
+      // Images: same origin, Cloudinary, Unsplash, InvitationHomes, Rently CDN + S3, CARTO tiles, Meta Pixel noscript, HAR static
+      "img-src 'self' data: blob: https://admin.haskerrealtygroup.com https://res.cloudinary.com https://images.unsplash.com https://images.invitationhomes.com https://*.invitationhomes.com https://*.zillowstatic.com https://d39tc8gklidfbm.cloudfront.net https://s3.amazonaws.com https://maps.gstatic.com https://maps.googleapis.com https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com https://unpkg.com https://www.facebook.com https://www.googletagmanager.com https://*.harstatic.com",
       // API connections: same origin + backend API + CARTO + Cloudinary + GTM + GA4 + Meta Pixel + IP geolocation
       "connect-src 'self' https://admin.haskerrealtygroup.com https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com https://api.cloudinary.com https://www.googletagmanager.com https://www.google-analytics.com https://analytics.google.com https://connect.facebook.net https://www.facebook.com https://ipapi.co",
       // Media
@@ -58,6 +58,12 @@ const nextConfig: NextConfig = {
   // Prevent Next.js from redirecting /api/v1/auth/token/ → /api/v1/auth/token
   // before the rewrite proxy runs. Without this, POST bodies are lost on 308.
   skipTrailingSlashRedirect: true,
+
+  // Disable streamed metadata for ALL user agents. With streaming enabled,
+  // notFound() thrown from generateMetadata/page lands after the 200 status is
+  // committed, so missing listings return 200 + <meta noindex> instead of a
+  // real 404 — polluting Search Console. Blocking metadata restores true 404s.
+  htmlLimitedBots: /.*/,
 
   async redirects() {
     return [
@@ -88,6 +94,13 @@ const nextConfig: NextConfig = {
       {
         source: "/homes-for-rent/:slug*",
         destination: "/houses-for-rent/:slug*",
+        permanent: true,
+      },
+      // Legacy grouped sub-sitemaps → the single central sitemap. Keeps stale
+      // GSC/crawler references resolving instead of 404ing.
+      {
+        source: "/sitemaps/:path*",
+        destination: "/sitemap.xml",
         permanent: true,
       },
     ];
@@ -136,6 +149,12 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "s3.amazonaws.com",
+        pathname: "/**",
+      },
+      // HAR listing and agent photos
+      {
+        protocol: "https",
+        hostname: "*.harstatic.com",
         pathname: "/**",
       },
     ],

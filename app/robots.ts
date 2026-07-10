@@ -13,12 +13,13 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        // Disallow private portal routes, internal Next.js paths, and any URL with
-        // query parameters (?). The canonical tags already point Google to the clean
-        // URLs — disallowing ?* stops crawl budget being spent on filter/search variants
-        // like /properties?q=... and /contact?inquiry=... that were causing 9000+
-        // "Alternate page with proper canonical tag" GSC errors.
-        disallow: ["/dashboard", "/portal", "/api", "/_next", "/*?*"],
+        // Private portal routes and internal Next.js paths only. Deliberately NOT
+        // blocking query-param URLs (/*?*): blocked URLs can never be recrawled, so
+        // Google froze thousands as "Duplicate without user-selected canonical".
+        // Param variants carry canonical tags pointing at the clean URLs — letting
+        // Google crawl them resolves them as "Alternate page with proper canonical",
+        // which is the correct, harmless end state.
+        disallow: ["/dashboard", "/portal", "/api", "/_next"],
       },
       {
         // Explicitly allow known LLM/AI crawlers to index the site

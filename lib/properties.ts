@@ -145,9 +145,17 @@ export async function fetchProperties(
   if (params?.lng_min)     url.searchParams.set("lng_min", params.lng_min);
   if (params?.lng_max)     url.searchParams.set("lng_max", params.lng_max);
 
+  // ISR-compatible: pages that call this export `revalidate = 300`, and a
+  // `cache: "no-store"` fetch inside a static/ISR page is a hard error in
+  // production (DYNAMIC_SERVER_USAGE → 500). In the browser the option is
+  // ignored, so client-side search behaves the same.
   const res = await fetch(url.toString(), { next: { revalidate: 300 } });
   if (!res.ok) throw new Error(`fetchProperties: ${res.status}`);
-  return res.json();
+  const data = await res.json();
+  if (data?.results) {
+    data.results = data.results.map(cleanPropertyListItem);
+  }
+  return data;
 }
 
 // ─── Smart (AI) Search ──────────────────────────────────────────────────────
@@ -219,8 +227,8 @@ export async function fetchFeaturedProperties(): Promise<PropertyListItemAPI[]> 
     });
     if (!res.ok) return [];
     const data: PropertyListItemAPI[] | PaginatedProperties = await res.json();
-    if (Array.isArray(data)) return data;
-    return (data as PaginatedProperties).results ?? [];
+    const list = Array.isArray(data) ? data : (data as PaginatedProperties).results ?? [];
+    return list.map(cleanPropertyListItem);
   } catch (err) {
     console.error("fetchFeaturedProperties failed:", err);
     return [];
@@ -238,8 +246,8 @@ export async function fetchHomepageProperties(): Promise<PropertyListItemAPI[]> 
     });
     if (!res.ok) return [];
     const data: PropertyListItemAPI[] | PaginatedProperties = await res.json();
-    if (Array.isArray(data)) return data;
-    return (data as PaginatedProperties).results ?? [];
+    const list = Array.isArray(data) ? data : (data as PaginatedProperties).results ?? [];
+    return list.map(cleanPropertyListItem);
   } catch (err) {
     console.error("fetchHomepageProperties failed:", err);
     return [];
@@ -247,6 +255,8 @@ export async function fetchHomepageProperties(): Promise<PropertyListItemAPI[]> 
 }
 
 export async function fetchPropertyBySlug(slug: string): Promise<PropertyDetailAPI> {
+  // ISR-compatible (see fetchProperties): no-store inside the ISR detail page
+  // 500s in production. 300s matches the page's `revalidate`.
   const res = await fetch(`${API_BASE}/api/v1/properties/${slug}/`, {
     next: { revalidate: 300 },
   });
@@ -256,7 +266,8 @@ export async function fetchPropertyBySlug(slug: string): Promise<PropertyDetailA
     throw err;
   }
   if (!res.ok) throw new Error(`fetchPropertyBySlug: ${res.status}`);
-  return res.json();
+  const data = await res.json();
+  return cleanPropertyListItem(data);
 }
 
 export async function fetchAllPropertySlugs(): Promise<string[]> {
@@ -300,39 +311,67 @@ export async function fetchPropertiesForSitemap(): Promise<SitemapProperty[]> {
   }));
 }
 
+export function cleanImageUrl(url: string | null | undefined): string {
+  if (!url) return "";
+  if (url.startsWith("image/upload/http")) {
+    return url.replace("image/upload/", "");
+  }
+  return url;
+}
+
+export function cleanPropertyListItem<T>(p: T): T {
+  if (!p) return p;
+  const anyP = p as any;
+  if (anyP.primary_image_url) {
+    anyP.primary_image_url = cleanImageUrl(anyP.primary_image_url);
+  }
+  if (anyP.image_urls) {
+    anyP.image_urls = anyP.image_urls.map(cleanImageUrl);
+  }
+  if (anyP.images) {
+    anyP.images = anyP.images.map((img: any) => ({
+      ...img,
+      image_url: cleanImageUrl(img.image_url ?? img.url ?? img.image)
+    }));
+  }
+  return p;
+}
+
 // ─── Mapper: API list item → Property type (for PropertyCard) ─────────────
 
 import type { Property } from "@/types";
 
 export function toPropertyCardShape(p: PropertyListItemAPI): Property {
+  // Ensure the list item is fully cleaned before mapping
+  const cleaned = cleanPropertyListItem(p);
   return {
-    id:          String(p.id),
-    slug:        p.slug,
-    title:       p.title,
+    id:          String(cleaned.id),
+    slug:        cleaned.slug,
+    title:       cleaned.title,
     description: "",
-    type:        p.type as Property["type"],
-    listingType: p.listing_type as Property["listingType"],
-    status:      p.status as Property["status"],
-    price:       p.price,
-    priceLabel:  p.price_label || undefined,
-    bedrooms:    p.bedrooms,
-    bathrooms:   p.bathrooms,
-    sqft:        p.sqft,
-    address:     p.address,
-    city:        p.city,
-    state:       p.state,
+    type:        cleaned.type as Property["type"],
+    listingType: cleaned.listing_type as Property["listingType"],
+    status:      cleaned.status as Property["status"],
+    price:       cleaned.price,
+    priceLabel:  cleaned.price_label || undefined,
+    bedrooms:    cleaned.bedrooms,
+    bathrooms:   cleaned.bathrooms,
+    sqft:        cleaned.sqft,
+    address:     cleaned.address,
+    city:        cleaned.city,
+    state:       cleaned.state,
     zip:         "",
-    neighborhood: p.neighborhood ?? undefined,
-    images:      (p.image_urls && p.image_urls.length)
-      ? p.image_urls.map((url, i) => ({ id: `img-${i}`, url, caption: p.title, isPrimary: i === 0 }))
-      : p.primary_image_url
-      ? [{ id: "primary", url: p.primary_image_url, caption: p.title, isPrimary: true }]
+    neighborhood: cleaned.neighborhood ?? undefined,
+    images:      (cleaned.image_urls && cleaned.image_urls.length)
+      ? cleaned.image_urls.map((url, i) => ({ id: `img-${i}`, url: cleanImageUrl(url), caption: cleaned.title, isPrimary: i === 0 }))
+      : cleaned.primary_image_url
+      ? [{ id: "primary", url: cleanImageUrl(cleaned.primary_image_url), caption: cleaned.title, isPrimary: true }]
       : [],
     amenities:   [],
-    isFeatured:  p.is_featured,
+    isFeatured:  cleaned.is_featured,
     isPublished: true,
     agentId:     "",
-    createdAt:   p.created_at,
-    updatedAt:   p.created_at,
+    createdAt:   cleaned.created_at,
+    updatedAt:   cleaned.created_at,
   };
 }

@@ -18,12 +18,13 @@ const PropertyDetailMap = dynamic(
 interface Props {
   current: DetailMarker;
   nearby: DetailMarker[];
+  satellite?: boolean;
 }
 
-export function PropertyDetailMapLoader({ current, nearby }: Props) {
+export function PropertyDetailMapLoader({ current, nearby, satellite }: Props) {
   return (
     <div className="w-full h-full">
-      <PropertyDetailMap current={current} nearby={nearby} />
+      <PropertyDetailMap current={current} nearby={nearby} satellite={satellite} />
     </div>
   );
 }

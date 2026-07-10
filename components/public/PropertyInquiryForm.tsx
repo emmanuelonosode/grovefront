@@ -59,7 +59,7 @@ const CONTACT_METHODS = [
 const labelCls = "block text-[10px] font-semibold tracking-[0.18em] uppercase text-[#475569] mb-2.5";
 
 const inputBaseCls =
-  "w-full h-11 bg-white border border-[#E2E8F0] rounded-sm text-[13.5px] text-[#1E3A5F] " +
+  "w-full h-11 bg-white border border-[#E2E8F0] rounded-sm text-[13.5px] text-[#0052FF] " +
   "placeholder:text-[#94A3B8] outline-none transition-[border-color,box-shadow] duration-100 " +
   "focus:border-brand focus:ring-2 focus:ring-brand/10";
 
@@ -73,7 +73,7 @@ function StepLine({ step, label }: { step: number; label: string }) {
           <span
             key={i}
             className="block h-[2px] w-[18px] rounded-full transition-colors duration-200"
-            style={{ background: i <= step ? "#1E3A5F" : "#E2E8F0" }}
+            style={{ background: i <= step ? "#0052FF" : "#E2E8F0" }}
           />
         ))}
       </span>
@@ -108,7 +108,7 @@ function HeaderBar({
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-[#1E3A5F] flex items-center justify-center">
+          <div className="w-full h-full bg-[#0052FF] flex items-center justify-center">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="20 6 9 17 4 12" />
             </svg>
@@ -119,7 +119,7 @@ function HeaderBar({
         <p className="text-[10px] font-semibold tracking-[0.28em] uppercase text-brand mb-1.5">
           {eyebrow}
         </p>
-        <h2 className="font-serif text-[22px] font-bold text-[#1E3A5F] leading-[1.1] m-0">
+        <h2 className="font-serif text-[22px] font-bold text-[#0052FF] leading-[1.1] m-0">
           {title}
         </h2>
       </div>
@@ -147,8 +147,8 @@ function OptCard({
       className={[
         "border rounded-sm cursor-pointer transition-all duration-100 font-sans",
         selected
-          ? "bg-[#1E3A5F] border-[#1E3A5F] text-white"
-          : "bg-white border-[#E2E8F0] text-[#1E3A5F] hover:border-[#94A3B8]",
+          ? "bg-[#0052FF] border-[#0052FF] text-white"
+          : "bg-white border-[#E2E8F0] text-[#0052FF] hover:border-[#94A3B8]",
         className,
       ].join(" ")}
     >
@@ -274,13 +274,13 @@ export function PropertyInquiryForm({
   /* â”€â”€ Success â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   if (success) {
     return (
-      <div className="bg-white border border-[#F1F5F9] rounded-sm shadow-[0_1px_3px_rgba(30,58,95,0.04)] overflow-hidden">
+      <div className="bg-white border border-[#F1F5F9] rounded-sm shadow-[0_1px_3px_rgba(0,64,214,0.04)] overflow-hidden">
         <HeaderBar mode="check" eyebrow="Request Confirmed" title="Tour request sent." />
 
         <div className="p-[22px] flex flex-col gap-[18px]">
           <p className="text-[13px] leading-[1.55] text-[#475569] m-0">
             A specialist will review your{" "}
-            <strong className="text-[#1E3A5F] font-semibold">
+            <strong className="text-[#0052FF] font-semibold">
               {selectedTourObj?.label.toLowerCase()}
             </strong>{" "}
             request and be in touch within 24 hours.
@@ -305,7 +305,7 @@ export function PropertyInquiryForm({
                   style={{ borderTop: i ? "1px solid #F1F5F9" : "none" }}
                 >
                   <span className="text-[12px] text-[#64748B]">{row.k}</span>
-                  <span className="text-[12.5px] font-semibold text-[#1E3A5F] flex items-center gap-1.5">
+                  <span className="text-[12.5px] font-semibold text-[#0052FF] flex items-center gap-1.5">
                     {row.Icon && <row.Icon size={12} className="text-brand" />}
                     {row.v}
                   </span>
@@ -349,7 +349,7 @@ export function PropertyInquiryForm({
   if (step === 2) {
     const canSubmit = name.trim().length > 0 && /^\S+@\S+\.\S+$/.test(email);
     return (
-      <div className="bg-white border border-[#F1F5F9] rounded-sm shadow-[0_1px_3px_rgba(30,58,95,0.04)] overflow-hidden">
+      <div className="bg-white border border-[#F1F5F9] rounded-sm shadow-[0_1px_3px_rgba(0,64,214,0.04)] overflow-hidden">
         <HeaderBar mode="key" eyebrow="Schedule a Tour" title="Tell us how to reach you." />
 
         <form onSubmit={handleSubmit} noValidate className="p-[22px] flex flex-col gap-[18px]">
@@ -462,7 +462,7 @@ export function PropertyInquiryForm({
               rows={2}
               className={
                 "w-full px-3 py-2.5 bg-white border border-[#E2E8F0] rounded-sm " +
-                "text-[13px] text-[#1E3A5F] placeholder:text-[#94A3B8] outline-none resize-none " +
+                "text-[13px] text-[#0052FF] placeholder:text-[#94A3B8] outline-none resize-none " +
                 "leading-[1.5] transition-[border-color,box-shadow] duration-100 " +
                 "focus:border-brand focus:ring-2 focus:ring-brand/10"
               }
@@ -482,7 +482,7 @@ export function PropertyInquiryForm({
               type="button"
               onClick={() => setStep(1)}
               disabled={loading}
-              className="flex items-center justify-center gap-1 h-12 bg-white border border-[#E2E8F0] rounded-sm text-[#1E3A5F] text-[13px] font-[500] hover:border-[#94A3B8] transition-colors duration-100 cursor-pointer"
+              className="flex items-center justify-center gap-1 h-12 bg-white border border-[#E2E8F0] rounded-sm text-[#0052FF] text-[13px] font-[500] hover:border-[#94A3B8] transition-colors duration-100 cursor-pointer"
             >
               <ChevronLeft size={14} />
               Back
@@ -490,7 +490,7 @@ export function PropertyInquiryForm({
             <button
               type="submit"
               disabled={loading || !canSubmit}
-              className="flex items-center justify-center gap-2 h-12 bg-[#1E3A5F] hover:bg-brand text-white text-[14px] font-[500] rounded-sm tracking-[0.05em] transition-colors duration-150 cursor-pointer disabled:bg-[#CBD5E1] disabled:cursor-not-allowed"
+              className="flex items-center justify-center gap-2 h-12 bg-[#0052FF] hover:bg-brand text-white text-[14px] font-[500] rounded-sm tracking-[0.05em] transition-colors duration-150 cursor-pointer disabled:bg-[#CBD5E1] disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>
@@ -512,7 +512,7 @@ export function PropertyInquiryForm({
 
   /* â”€â”€ Step 1: Tour preferences â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   return (
-    <div className="bg-white border border-[#F1F5F9] rounded-sm shadow-[0_1px_3px_rgba(30,58,95,0.04)] overflow-hidden">
+    <div className="bg-white border border-[#F1F5F9] rounded-sm shadow-[0_1px_3px_rgba(0,64,214,0.04)] overflow-hidden">
       <HeaderBar mode="key" eyebrow="Schedule a Tour" title="Pick a time to visit." />
 
       <div className="p-[22px] flex flex-col gap-[22px]">
@@ -531,11 +531,11 @@ export function PropertyInquiryForm({
                   onClick={() => setTourType(t.id)}
                   className="flex flex-col items-center gap-2 py-3.5 px-2 text-center"
                 >
-                  <t.Icon size={19} color={selected ? "#fff" : "#1E3A5F"} strokeWidth={1.8} />
+                  <t.Icon size={19} color={selected ? "#fff" : "#0052FF"} strokeWidth={1.8} />
                   <div className="flex flex-col gap-0.5">
                     <span
                       className="text-[12px] font-semibold leading-[1.15]"
-                      style={{ color: selected ? "#fff" : "#1E3A5F" }}
+                      style={{ color: selected ? "#fff" : "#0052FF" }}
                     >
                       {t.label}
                     </span>
@@ -585,7 +585,7 @@ export function PropertyInquiryForm({
                   </span>
                   <span
                     className="font-serif text-[22px] font-bold leading-[1]"
-                    style={{ color: selected ? "#fff" : "#1E3A5F" }}
+                    style={{ color: selected ? "#fff" : "#0052FF" }}
                   >
                     {day.dayNum}
                   </span>
@@ -623,7 +623,7 @@ export function PropertyInquiryForm({
                   <div className="flex flex-col gap-0.5">
                     <span
                       className="text-[13px] font-semibold leading-[1.15]"
-                      style={{ color: selected ? "#fff" : "#1E3A5F" }}
+                      style={{ color: selected ? "#fff" : "#0052FF" }}
                     >
                       {ts.label}
                     </span>
@@ -644,7 +644,7 @@ export function PropertyInquiryForm({
         <button
           type="button"
           onClick={() => setStep(2)}
-          className="flex items-center justify-center gap-2 w-full h-12 bg-[#1E3A5F] hover:bg-brand text-white text-[14px] font-[500] rounded-sm tracking-[0.05em] transition-colors duration-150 cursor-pointer"
+          className="flex items-center justify-center gap-2 w-full h-12 bg-[#0052FF] hover:bg-brand text-white text-[14px] font-[500] rounded-sm tracking-[0.05em] transition-colors duration-150 cursor-pointer"
         >
           Continue to contact
           <ArrowRight size={15} />

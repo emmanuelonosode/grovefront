@@ -82,7 +82,7 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "relative text-sm font-medium tracking-wide transition-colors hover:text-brand pb-0.5",
+                  "relative text-[15.5px] font-bold tracking-wide transition-colors hover:text-brand pb-0.5",
                   solidBg ? "text-brand-dark" : "text-white/90",
                   isActive(link.href) && solidBg && "text-brand",
                   isActive(link.href) && !solidBg && "text-white",
@@ -101,11 +101,11 @@ export function Navbar() {
             <button
               onClick={() => window.dispatchEvent(new Event("hasker:open-callback"))}
               className={cn(
-                "flex items-center gap-1.5 text-sm font-semibold transition-colors hover:text-brand cursor-pointer",
+                "flex items-center gap-1.5 text-[15px] font-bold transition-colors hover:text-brand cursor-pointer",
                 solidBg ? "text-brand-dark" : "text-white/90"
               )}
             >
-              <Phone size={14} />
+              <Phone size={15} />
               Call Me
             </button>
             {user ? (
@@ -113,11 +113,11 @@ export function Navbar() {
                 <Link
                   href="/portal/profile"
                   className={cn(
-                    "flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-brand",
+                    "flex items-center gap-1.5 text-[15px] font-semibold transition-colors hover:text-brand",
                     solidBg ? "text-brand-dark" : "text-white/90"
                   )}
                 >
-                  <User size={14} />
+                  <User size={15} />
                   My Profile
                 </Link>
                 <button
@@ -136,7 +136,7 @@ export function Navbar() {
                 <Link
                   href="/login"
                   className={cn(
-                    "text-sm font-medium transition-colors hover:text-brand",
+                    "text-[15px] font-semibold transition-colors hover:text-brand",
                     solidBg ? "text-brand-dark" : "text-white/90"
                   )}
                 >
@@ -203,9 +203,9 @@ export function Navbar() {
               href={link.href}
               onClick={() => setMobileOpen(false)}
               className={cn(
-                "flex items-center justify-between py-3.5 text-base font-medium tracking-wide transition-colors border-b border-neutral-100 last:border-0",
+                "flex items-center justify-between py-3.5 text-[17px] font-semibold tracking-wide transition-colors border-b border-neutral-100 last:border-0",
                 isActive(link.href)
-                  ? "text-brand font-semibold"
+                  ? "text-brand font-bold"
                   : "text-brand-dark hover:text-brand"
               )}
             >
@@ -219,7 +219,7 @@ export function Navbar() {
           <div className="pt-5 mt-2 border-t border-neutral-100 flex flex-col gap-3">
             <a
               href="mailto:info@haskerrealtygroup.com"
-              className="flex items-center gap-2 text-brand-dark font-medium text-sm py-1"
+              className="flex items-center gap-2 text-brand-dark font-medium text-[15px] py-1"
             >
               <Phone size={15} className="text-brand" />
               Email Us
@@ -229,14 +229,14 @@ export function Navbar() {
                 <Link
                   href="/portal/profile"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-2 text-brand font-medium text-sm py-1"
+                  className="flex items-center gap-2 text-brand font-medium text-[15px] py-1"
                 >
                   <User size={15} className="text-brand" />
                   My Profile
                 </Link>
                 <button
                   onClick={() => { logout(); setMobileOpen(false); }}
-                  className="flex items-center gap-2 text-red-500 font-medium text-sm py-1 text-left"
+                  className="flex items-center gap-2 text-red-500 font-medium text-[15px] py-1 text-left"
                 >
                   <LogOut size={15} />
                   Sign Out
@@ -247,7 +247,7 @@ export function Navbar() {
                 <Link
                   href="/login"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-2 text-brand-dark font-medium text-sm py-1"
+                  className="flex items-center gap-2 text-brand-dark font-medium text-[15px] py-1"
                 >
                   <User size={15} className="text-brand" />
                   Sign In

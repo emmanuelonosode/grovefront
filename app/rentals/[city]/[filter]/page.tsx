@@ -102,27 +102,26 @@ export default async function CityFilterPage(
   const filterLabel = getFilterLabel(spec);
   const pageUrl = `https://haskerrealtygroup.com/rentals/${slug}/${filter}`;
 
-  // Fetch filtered properties
-  let properties: import("@/types").Property[] = [];
-  let totalCount = 0;
-  try {
-    const fetchParams: import("@/lib/properties").FetchPropertiesParams = {
-      city: city.name,
-      state: city.stateCode,
-      listing_type: "for-rent",
-      page_size: "24",
-    };
-    if (spec.kind === "bedroom") {
-      fetchParams.beds = String(spec.count);
-    } else {
-      fetchParams.type = spec.apiType;
-    }
-    const data = await fetchProperties(fetchParams);
-    properties = data.results.map(toPropertyCardShape);
-    totalCount = data.count;
-  } catch {
-    // API down — renders empty state
+  // Fetch filtered properties. No try/catch: an API outage must surface as a
+  // 5xx (Google retries) rather than render an empty page (soft 404).
+  const fetchParams: import("@/lib/properties").FetchPropertiesParams = {
+    city: city.name,
+    state: city.stateCode,
+    listing_type: "for-rent",
+    page_size: "24",
+  };
+  if (spec.kind === "bedroom") {
+    fetchParams.beds = String(spec.count);
+  } else {
+    fetchParams.type = spec.apiType;
   }
+  const data = await fetchProperties(fetchParams);
+  const properties = data.results.map(toPropertyCardShape);
+  const totalCount = data.count;
+
+  // A filter page with zero matching listings is thin duplicate content —
+  // 404 it so Google drops it instead of flagging a soft 404.
+  if (totalCount === 0) notFound();
 
   // Sibling filter links
   const siblingFilters = [
@@ -210,44 +209,45 @@ export default async function CityFilterPage(
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/70 to-brand-dark/20" />
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pb-10 pt-28">
+          <div className="max-w-2xl bg-white rounded-2xl shadow-2xl p-8 lg:p-10">
+            {/* Breadcrumb */}
+            <nav aria-label="Breadcrumb" className="mb-5">
+              <ol className="flex items-center gap-2 text-xs text-neutral-500">
+                <li><Link href="/" className="hover:text-brand transition-colors">Home</Link></li>
+                <li className="text-neutral-300">/</li>
+                <li><Link href="/houses-for-rent" className="hover:text-brand transition-colors">Properties</Link></li>
+                <li className="text-neutral-300">/</li>
+                <li><Link href={`/rentals/${slug}`} className="hover:text-brand transition-colors">{city.name}, {city.stateCode}</Link></li>
+                <li className="text-neutral-300">/</li>
+                <li className="text-neutral-800 font-medium">{filterLabel}</li>
+              </ol>
+            </nav>
 
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pb-12 pt-28">
-          {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="mb-5">
-            <ol className="flex items-center gap-2 text-xs text-blue-200">
-              <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
-              <li className="text-blue-400">/</li>
-              <li><Link href="/houses-for-rent" className="hover:text-white transition-colors">Properties</Link></li>
-              <li className="text-blue-400">/</li>
-              <li><Link href={`/rentals/${slug}`} className="hover:text-white transition-colors">{city.name}, {city.stateCode}</Link></li>
-              <li className="text-blue-400">/</li>
-              <li className="text-white font-medium">{filterLabel}</li>
-            </ol>
-          </nav>
-
-          <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-2">
-            {city.stateCode} · {filterLabel}
-          </p>
-          <h1 className="font-serif text-4xl lg:text-5xl font-bold text-white leading-tight">
-            {filterLabel} Rentals in {city.name}, {city.stateCode}
-          </h1>
-          {totalCount > 0 && (
-            <p className="text-blue-200 text-base mt-3">
-              {totalCount} listing{totalCount !== 1 ? "s" : ""} available now
+            <span className="block w-12 h-1.5 rounded-full bg-accent mb-3" />
+            <p className="text-[#B87400] text-xs font-bold tracking-[0.2em] uppercase mb-2">
+              {city.stateCode} · {filterLabel}
             </p>
-          )}
+            <h1 className="font-serif text-4xl lg:text-5xl font-bold text-neutral-900 leading-tight">
+              {filterLabel} Rentals in {city.name}, {city.stateCode}
+            </h1>
+            {totalCount > 0 && (
+              <p className="text-neutral-500 text-base mt-3">
+                {totalCount} listing{totalCount !== 1 ? "s" : ""} available now
+              </p>
+            )}
 
-          <div className="flex flex-wrap gap-3 mt-6">
-            <Button variant="accent" size="lg" asChild>
-              <Link href={`/houses-for-rent?q=${encodeURIComponent(city.name)}&type=${spec.kind === "property_type" ? spec.apiType : ""}&beds=${spec.kind === "bedroom" ? spec.count : ""}`}>
-                Browse {filterLabel} Listings
-                <ArrowRight size={16} />
-              </Link>
-            </Button>
-            <Button variant="outline-white" size="lg" asChild>
-              <Link href="/apply">Apply Now</Link>
-            </Button>
+            <div className="flex flex-wrap gap-3 mt-6">
+              <Button variant="accent" size="lg" asChild>
+                <Link href={`/houses-for-rent?q=${encodeURIComponent(city.name)}&type=${spec.kind === "property_type" ? spec.apiType : ""}&beds=${spec.kind === "bedroom" ? spec.count : ""}`}>
+                  Browse {filterLabel} Listings
+                  <ArrowRight size={16} />
+                </Link>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <Link href="/apply">Apply Now</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>

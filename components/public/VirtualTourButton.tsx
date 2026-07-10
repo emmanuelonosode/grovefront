@@ -57,6 +57,46 @@ function TourModal({ url, onClose }: { url: string; onClose: () => void }) {
   );
 }
 
+/**
+ * Unmissable amber pill overlaid on the photo gallery (top-left) — the primary
+ * discovery point for the 360° tour, styled to stand out against any photo.
+ */
+export function VirtualTourBadge({ url }: { url: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-accent hover:bg-accent-hover text-neutral-900 text-[13px] font-bold pl-3 pr-4 py-2.5 rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.35)] transition-all hover:scale-105 cursor-pointer"
+        aria-label="Open the 360° virtual tour"
+      >
+        <RotateCcw size={16} className="animate-[spin_6s_linear_infinite]" />
+        360° Virtual Tour
+      </button>
+      {open && <TourModal url={url} onClose={() => setOpen(false)} />}
+    </>
+  );
+}
+
+/** Compact chip for the gallery controls strip — opens the same tour modal. */
+export function VirtualTourChip({ url }: { url: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="bg-accent hover:bg-accent-hover text-neutral-900 text-xs font-bold px-3.5 py-2 rounded flex items-center gap-1.5 transition-colors cursor-pointer"
+      >
+        <RotateCcw size={13} />
+        360° Virtual Tour
+      </button>
+      {open && <TourModal url={url} onClose={() => setOpen(false)} />}
+    </>
+  );
+}
+
 export function VirtualTourButton({ url, thumbnailUrl, mobile }: Props) {
   const [open, setOpen] = useState(false);
 

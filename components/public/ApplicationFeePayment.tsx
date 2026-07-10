@@ -197,7 +197,7 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
       </div>
 
       {/* ── Amount card ─────────────────────────────────────── */}
-      <div className="rounded-2xl bg-[#1E3A5F] text-white px-5 py-5 mb-4">
+      <div className="rounded-2xl bg-[#0052FF] text-white px-5 py-5 mb-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/50">Application fee</p>
@@ -323,7 +323,7 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
             )}
           </div>
         ) : (
-          <div className="bg-[#1E3A5F] rounded-2xl p-5 text-white">
+          <div className="bg-[#0052FF] rounded-2xl p-5 text-white">
             <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Send {fmt(amount)} to</p>
             <div className="flex items-start gap-3">
               <div className="w-11 h-11 rounded-xl overflow-hidden shrink-0 shadow-md mt-0.5">{PAYMENT_LOGOS[current.method]}</div>

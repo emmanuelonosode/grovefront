@@ -59,7 +59,7 @@ export function HeroSearch() {
       {/* Single unified search bar */}
       <form
         onSubmit={handleSearch}
-        className="flex items-center bg-white rounded-2xl shadow-[0_8px_48px_rgba(0,0,0,0.22)] overflow-hidden h-[60px] sm:h-[64px]"
+        className="flex items-center bg-white rounded-2xl shadow-[0_8px_48px_rgba(0,0,0,0.22)] overflow-hidden h-15 sm:h-16"
       >
         <Search size={18} className="ml-5 text-neutral-400 shrink-0" />
 
@@ -86,7 +86,7 @@ export function HeroSearch() {
         <button
           type="submit"
           disabled={aiLoading}
-          className="m-2 px-6 sm:px-8 h-[44px] sm:h-[48px] bg-brand hover:bg-brand-hover text-white font-bold text-[14px] rounded-xl transition-colors duration-150 shrink-0 cursor-pointer whitespace-nowrap disabled:opacity-70 flex items-center gap-2"
+          className="m-2 px-6 sm:px-8 h-11 sm:h-12 bg-brand hover:bg-brand-hover text-white font-bold text-[14px] rounded-xl transition-colors duration-150 shrink-0 cursor-pointer whitespace-nowrap disabled:opacity-70 flex items-center gap-2"
         >
           {aiLoading && <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
           {aiLoading ? "Thinking…" : "Search"}
