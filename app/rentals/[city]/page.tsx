@@ -452,7 +452,7 @@ export default async function CityRentalsPage(
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
-                <div className="absolute inset-0 bg-brand-dark/35" />
+                <div className="absolute inset-0 bg-black/35" />
               </div>
               <div className="bg-white p-10 lg:p-12 flex flex-col justify-center">
                 <Home size={32} className="text-brand mb-5" />
@@ -483,7 +483,7 @@ export default async function CityRentalsPage(
       </section>
 
       {/* ── LEAD CAPTURE ─────────────────────────────────────────── */}
-      <section className="bg-[#0052FF] py-16 lg:py-20 px-6">
+      <section className="bg-[#0F1E3D] py-16 lg:py-20 px-6">
         <div className="max-w-xl mx-auto text-center">
           <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-3">Be First</p>
           <h2 className="font-serif text-3xl lg:text-4xl font-bold text-white mb-4">

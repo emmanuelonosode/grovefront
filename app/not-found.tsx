@@ -15,7 +15,7 @@ export default function NotFound() {
       <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#C97757] mb-3">
         404 — Page Not Found
       </p>
-      <h1 className="font-serif text-4xl lg:text-5xl font-bold text-[#0052FF] mb-4 leading-tight">
+      <h1 className="font-serif text-4xl lg:text-5xl font-bold text-[#0F1E3D] mb-4 leading-tight">
         This door&apos;s locked.
       </h1>
       <p className="text-[#475569] text-base leading-relaxed max-w-sm mb-10">

@@ -2,15 +2,18 @@
 
 /* ─── Brand Design Tokens (Tailwind v4 CSS-first @theme) ──────────── */
 @theme {
-  /* Electric Cobalt Palette */
-  --color-brand:       #0052FF;   /* electric cobalt — CTAs, accents, icons          */
-  --color-brand-hover: #0041D6;   /* deeper hover state                              */
-  --color-brand-dark:  #0052FF;   /* electric cobalt — headers, footer, stat bars    */
-  --color-brand-navy:  #0041CC;   /* deep cobalt — alternate dark sections           */
-  --color-brand-light: #EEF4FF;   /* cobalt pale tint — section backgrounds          */
-  --color-brand-muted: #C5D9FF;   /* light cobalt — badges, tags, chips              */
-  --color-accent:       #FFAD00;  /* amber — complement to cobalt; CTAs, highlights  */
-  --color-accent-hover: #E89C00;  /* deeper amber hover state                        */
+  /* Cobalt accent + calm ink palette.
+     Cobalt is an ACCENT: buttons, links, icons, small highlights only.
+     Large surfaces (footer, stat bars) and headings use ink — a near-black
+     navy that reads calm instead of glowing. */
+  --color-brand:       #0052FF;   /* electric cobalt — CTAs, links, icons (small doses) */
+  --color-brand-hover: #0041D6;   /* deeper hover state                                 */
+  --color-brand-dark:  #0F1E3D;   /* ink — headings, footer, stat bars, dark sections   */
+  --color-brand-navy:  #16295C;   /* lighter ink — alternate dark sections              */
+  --color-brand-light: #EEF4FF;   /* cobalt pale tint — section backgrounds             */
+  --color-brand-muted: #C5D9FF;   /* light cobalt — badges, tags, chips                 */
+  --color-accent:       #FFAD00;  /* amber — complement; CTAs, highlights               */
+  --color-accent-hover: #E89C00;  /* deeper amber hover state                           */
 
   /* Fonts — DM Sans for body, Poppins for headings */
   --font-sans:  var(--font-dm-sans), system-ui, sans-serif;
@@ -33,11 +36,11 @@
     transform      100ms ease-out;
 }
 
-/* ─── Scrollbar ───────────────────────────────────────────────────── */
+/* ─── Scrollbar — neutral; the scrollbar is chrome, not brand space ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #f1f5f9; }
-::-webkit-scrollbar-thumb { background: #0052FF; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #0041D6; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
 
 /* ─── Selection ──────────────────────────────────────────────────── */
 ::selection { background: #0052FF; color: white; }

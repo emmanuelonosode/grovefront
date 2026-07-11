@@ -87,12 +87,12 @@ function SplitScreenLogin() {
       `}} />
 
       {/* LEFT SIDE: Visual Hook (60%) */}
-      <div className="hidden lg:flex w-[60%] flex-col gap-6 justify-center bg-[#0052FF] relative overflow-hidden">
+      <div className="hidden lg:flex w-[60%] flex-col gap-6 justify-center bg-[#0F1E3D] relative overflow-hidden">
         
         {/* Subtle overlay gradients for smooth edge fading */}
-        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#0052FF] to-transparent z-10 pointer-events-none" />
-        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#0052FF] to-transparent z-10 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0052FF]/60 via-transparent to-[#0052FF]/60 z-10 pointer-events-none" />
+        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#0F1E3D] to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#0F1E3D] to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0F1E3D]/60 via-transparent to-[#0F1E3D]/60 z-10 pointer-events-none" />
 
         {/* Floating Grid */}
         <div className="flex flex-col gap-6 transform rotate-[-4deg] scale-110 opacity-80">

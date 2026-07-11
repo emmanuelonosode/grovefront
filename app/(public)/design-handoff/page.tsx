@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 const colors = [
   { name: "Brand Blue",  hex: "#1A56DB", use: "CTAs Â· Links Â· Accents",        dark: false },
-  { name: "Dark Navy",   hex: "#0052FF", use: "Headers Â· Dark backgrounds",     dark: true  },
+  { name: "Ink Navy",    hex: "#0F1E3D", use: "Headers Â· Dark backgrounds",     dark: true  },
   { name: "Mid Navy",    hex: "#0D2550", use: "Alt dark sections Â· Footers",    dark: true  },
   { name: "Pale Blue",   hex: "#EFF4FF", use: "Section backgrounds",            dark: false },
   { name: "Muted Blue",  hex: "#DBEAFE", use: "Badges Â· Tags Â· Chips",          dark: false },

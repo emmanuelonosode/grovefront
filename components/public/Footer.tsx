@@ -100,7 +100,7 @@ const footerCols = [
 export async function Footer() {
   const stateLinks = await getStateLinks();
   return (
-    <footer style={{ background: "#0052FF", color: "rgba(255,255,255,0.5)" }}>
+    <footer style={{ background: "#0F1E3D", color: "rgba(255,255,255,0.5)" }}>
       {/* Main columns */}
       <div className="max-w-7xl mx-auto px-8 pt-14 pb-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.5fr_repeat(4,1fr)] gap-10">

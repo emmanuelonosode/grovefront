@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   ChevronRight, ChevronLeft, Check, AlertCircle, Building2,
-  Lock, Eye, EyeOff, RotateCcw, Trash2, Plus, PawPrint,
+  Eye, EyeOff, RotateCcw, Trash2, Plus, PawPrint, ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
@@ -36,23 +36,15 @@ const US_STATES = [
 ];
 
 // Step 0–10 are content steps; 11 = account (guest); review = 11 (user) / 12 (guest)
+// 4 content steps + Review & Pay. Deferred to the tenant portal after approval:
+// emergency contact, driver's license, address-history details, landlord refs,
+// vehicle details, employer phone/title/start date (backend fields are blank=True).
 const STEP_TITLES = [
-  "Your Name",           // 0
-  "Contact Info",        // 1
-  "Emergency Contact",   // 2
-  "Identity & License",  // 3
-  "Income & Employment", // 4
-  "Your Address",        // 5
-  "Address History",     // 6
-  "Move-In Plans",       // 7
-  "Household",           // 8
-  "Pets",                // 9
-  "Background",          // 10
+  "About You",             // 0
+  "Your Move",             // 1
+  "Income & Current Home", // 2
+  "Identity & Consent",    // 3
 ];
-
-const SHORT_LABELS = ["Name","Contact","Emergency","Identity","Income","Address","History","Move-In","Household","Pets","Background"];
-const STEP_LABELS_GUEST = [...SHORT_LABELS, "Account", "Review"];
-const STEP_LABELS_USER  = [...SHORT_LABELS, "Review"];
 
 // ── Zod Schema (unchanged) ────────────────────────────────────────────────────
 
@@ -68,16 +60,16 @@ const schema = z.object({
   first_name:                     z.string().min(1, "Required"),
   middle_name:                    z.string().optional(),
   last_name:                      z.string().min(1, "Required"),
-  marital_status:                 z.string().min(1, "Required"),
+  marital_status:                 z.string().optional(),
   email:                          z.string().email("Enter a valid email"),
   cell_phone:                     z.string().min(1, "Required"),
   phone_type:                     z.string().min(1, "Required"),
   home_phone:                     z.string().optional(),
   preferred_contact:              z.enum(["email", "phone"], { error: "Select a preference" }),
-  emergency_contact_name:         z.string().min(1, "Required"),
-  emergency_contact_relationship: z.string().min(1, "Required"),
-  emergency_contact_phone:        z.string().min(1, "Required"),
-  emergency_contact_phone_type:   z.string().min(1, "Required"),
+  emergency_contact_name:         z.string().optional(),
+  emergency_contact_relationship: z.string().optional(),
+  emergency_contact_phone:        z.string().optional(),
+  emergency_contact_phone_type:   z.string().optional(),
   date_of_birth:                  z.string().min(1, "Required"),
   id_type:                        z.enum(["ssn", "ein", "neither"], { error: "Required" }),
   ssn:                            z.string().optional(),
@@ -96,7 +88,7 @@ const schema = z.object({
   state:                          z.string().length(2, "Use 2-letter code"),
   zip_code:                       z.string().min(5, "Enter a valid ZIP"),
   how_long_at_address:            z.string().min(1, "Required"),
-  reason_for_leaving:             z.string().min(1, "Required"),
+  reason_for_leaving:             z.string().optional(),
   current_landlord_name:          z.string().optional(),
   current_landlord_phone:         z.string().optional(),
   move_in_date:                   z.string().min(1, "Required"),
@@ -121,12 +113,6 @@ const schema = z.object({
     if (d.ein !== d.ein_confirm)
       ctx.addIssue({ code: "custom", path: ["ein_confirm"], message: "EIN does not match" });
   }
-  if (d.has_drivers_license) {
-    if (!d.drivers_license_number?.trim())
-      ctx.addIssue({ code: "custom", path: ["drivers_license_number"], message: "Required" });
-    if (!d.drivers_license_state?.trim())
-      ctx.addIssue({ code: "custom", path: ["drivers_license_state"], message: "Required" });
-  }
   if (d.has_kids && !d.number_of_kids)
     ctx.addIssue({ code: "custom", path: ["number_of_kids"], message: "Specify number" });
   if (d.has_vehicles && !d.number_of_vehicles)
@@ -137,19 +123,13 @@ type FormData = z.infer<typeof schema>;
 
 // Fields validated per step
 const STEP_FIELDS: (keyof FormData)[][] = [
-  ["first_name", "last_name", "marital_status"],                                               // 0 Name
-  ["email", "cell_phone", "phone_type", "preferred_contact"],                                  // 1 Contact
-  ["emergency_contact_name", "emergency_contact_relationship",
-   "emergency_contact_phone", "emergency_contact_phone_type"],                                 // 2 Emergency
-  ["date_of_birth", "id_type", "ssn", "ein", "ein_confirm",
-   "has_drivers_license", "drivers_license_number", "drivers_license_state"],                 // 3 Identity
-  ["gross_monthly_income"],                                                                    // 4 Income
-  ["present_address", "city", "state", "zip_code"],                                           // 5 Address
-  ["how_long_at_address", "reason_for_leaving"],                                              // 6 History
-  ["move_in_date", "intended_stay_duration", "months_rent_upfront"],                          // 7 Move-In
-  ["has_kids", "number_of_kids", "has_vehicles", "number_of_vehicles"],  // 8 Household
-  ["has_pets"],                                                                               // 9 Pets
-  ["has_housing_assistance"],        // 10 Background
+  ["first_name", "last_name", "email", "cell_phone"],                                          // 0 About You
+  ["move_in_date", "intended_stay_duration", "months_rent_upfront",
+   "has_kids", "number_of_kids", "has_vehicles", "number_of_vehicles",
+   "has_pets", "has_housing_assistance"],                                                      // 1 Your Move
+  ["gross_monthly_income", "present_address", "city", "state", "zip_code",
+   "how_long_at_address"],                                                                     // 2 Income & Home
+  ["date_of_birth", "id_type", "ssn", "ein", "ein_confirm"],                                   // 3 Identity
 ];
 
 const DEFAULT_VALUES: FormData = {
@@ -396,107 +376,34 @@ function NavButtons({
   );
 }
 
-// ── Step 0: Name ──────────────────────────────────────────────────────────────
+// ── Step 0: About You ─────────────────────────────────────────────────────────
 
-function Step0_Name() {
+function StepAboutYou() {
   const { register, formState: { errors } } = useFormContext<FormData>();
   return (
     <div className="space-y-6">
       <FieldGroup label="First Name" required error={errors.first_name?.message}>
         <BigInput {...register("first_name")} placeholder="Jane" autoFocus />
       </FieldGroup>
-      <FieldGroup label="Middle Name">
-        <BigInput {...register("middle_name")} placeholder="Optional" />
-      </FieldGroup>
       <FieldGroup label="Last Name" required error={errors.last_name?.message}>
         <BigInput {...register("last_name")} placeholder="Smith" />
       </FieldGroup>
-      <FieldGroup label="Marital Status" required error={errors.marital_status?.message}>
-        <BigSelect {...register("marital_status")}>
-          <option value="">Select your status...</option>
-          {["Single", "Married", "Divorced", "Separated", "Widowed"].map(s => (
-            <option key={s} value={s.toLowerCase()}>{s}</option>
-          ))}
-        </BigSelect>
-      </FieldGroup>
-    </div>
-  );
-}
-
-// ── Step 1: Contact ───────────────────────────────────────────────────────────
-
-function Step1_Contact() {
-  const { register, control, formState: { errors } } = useFormContext<FormData>();
-  return (
-    <div className="space-y-6">
       <FieldGroup label="Email Address" required error={errors.email?.message}>
         <BigInput type="email" {...register("email")} placeholder="you@example.com" />
       </FieldGroup>
       <FieldGroup label="Cell Phone Number" required error={errors.cell_phone?.message}>
         <BigInput type="tel" {...register("cell_phone")} placeholder="(555) 000-0000" />
       </FieldGroup>
-      <FieldGroup label="Phone Type" required error={errors.phone_type?.message}>
-        <Controller
-          control={control} name="phone_type"
-          render={({ field }) => (
-            <BigRadioGroup
-              options={[{ value: "mobile", label: "Mobile" }, { value: "home", label: "Home" }, { value: "work", label: "Work" }]}
-              value={field.value} onChange={field.onChange}
-            />
-          )}
-        />
-      </FieldGroup>
-      <FieldGroup label="Home Phone" hint="Optional">
-        <BigInput type="tel" {...register("home_phone")} placeholder="(555) 000-0000" />
-      </FieldGroup>
-      <FieldGroup label="How would you like us to contact you?" required>
-        <Controller
-          control={control} name="preferred_contact"
-          render={({ field }) => (
-            <BigRadioGroup
-              options={[{ value: "email", label: "Email" }, { value: "phone", label: "Phone" }]}
-              value={field.value} onChange={field.onChange}
-              error={errors.preferred_contact?.message}
-            />
-          )}
-        />
-      </FieldGroup>
-    </div>
-  );
-}
 
-// ── Step 2: Emergency Contact ─────────────────────────────────────────────────
-
-function Step2_Emergency() {
-  const { register, control, formState: { errors } } = useFormContext<FormData>();
-  return (
-    <div className="space-y-6">
-      <p className="text-[16px] text-[#667085]">Who should we contact in case of an emergency?</p>
-      <FieldGroup label="Their Full Name" required error={errors.emergency_contact_name?.message}>
-        <BigInput {...register("emergency_contact_name")} placeholder="Contact's full name" />
-      </FieldGroup>
-      <FieldGroup label="Relationship to You" required error={errors.emergency_contact_relationship?.message}>
-        <BigSelect {...register("emergency_contact_relationship")}>
-          <option value="">Select relationship...</option>
-          {["Spouse", "Parent", "Sibling", "Child", "Friend", "Other"].map(r => (
-            <option key={r} value={r.toLowerCase()}>{r}</option>
-          ))}
-        </BigSelect>
-      </FieldGroup>
-      <FieldGroup label="Their Phone Number" required error={errors.emergency_contact_phone?.message}>
-        <BigInput type="tel" {...register("emergency_contact_phone")} placeholder="(555) 000-0000" />
-      </FieldGroup>
-      <FieldGroup label="Phone Type" required error={errors.emergency_contact_phone_type?.message}>
-        <Controller
-          control={control} name="emergency_contact_phone_type"
-          render={({ field }) => (
-            <BigRadioGroup
-              options={[{ value: "mobile", label: "Mobile" }, { value: "home", label: "Home" }, { value: "work", label: "Work" }]}
-              value={field.value} onChange={field.onChange}
-            />
-          )}
-        />
-      </FieldGroup>
+      {/* Upfront fee disclosure — the fee must never be a surprise at the end */}
+      <div className="rounded-xl bg-[#F9FAFB] border-2 border-[#EAECF0] px-5 py-4 flex items-start gap-3">
+        <ShieldCheck size={18} className="text-brand shrink-0 mt-0.5" />
+        <p className="text-[14px] text-[#475467] leading-relaxed">
+          Takes about <strong className="text-[#101828]">4 minutes</strong>. A one-time{" "}
+          <strong className="text-[#101828]">$35 application fee</strong> is due at the final
+          step — no other charges, and your decision arrives within 24 hours.
+        </p>
+      </div>
     </div>
   );
 }
@@ -506,7 +413,6 @@ function Step2_Emergency() {
 function Step3_Identity() {
   const { register, control, watch, formState: { errors } } = useFormContext<FormData>();
   const idType = watch("id_type");
-  const hasDL  = watch("has_drivers_license");
   const [maxDob, setMaxDob] = useState("");
   useEffect(() => {
     const dobStr = new Date(Date.now() - 18 * 365.25 * 86400000).toISOString().split("T")[0];
@@ -558,29 +464,6 @@ function Step3_Identity() {
         </>
       )}
 
-      <div>
-        <p className="text-[17px] font-semibold text-[#101828] mb-4">Do you have a driver&apos;s license?</p>
-        <Controller
-          control={control} name="has_drivers_license"
-          render={({ field }) => (
-            <BigYesNo value={field.value} onChange={field.onChange} />
-          )}
-        />
-      </div>
-
-      {hasDL && (
-        <>
-          <FieldGroup label="Driver&apos;s License Number" required error={errors.drivers_license_number?.message}>
-            <BigInput {...register("drivers_license_number")} placeholder="License number" />
-          </FieldGroup>
-          <FieldGroup label="Issuing State" required error={errors.drivers_license_state?.message}>
-            <BigSelect {...register("drivers_license_state")}>
-              <option value="">Select state...</option>
-              {US_STATES.map(s => <option key={s} value={s}>{s}</option>)}
-            </BigSelect>
-          </FieldGroup>
-        </>
-      )}
     </div>
   );
 }
@@ -607,15 +490,6 @@ function Step4_Income() {
       <FieldGroup label="Employer / Company Name" hint="Optional">
         <BigInput {...register("employer_name")} placeholder="Company name" />
       </FieldGroup>
-      <FieldGroup label="Employer Phone" hint="Optional">
-        <BigInput type="tel" {...register("employer_phone")} placeholder="(555) 000-0000" />
-      </FieldGroup>
-      <FieldGroup label="Job Title" hint="Optional">
-        <BigInput {...register("job_title")} placeholder="e.g. Registered Nurse" />
-      </FieldGroup>
-      <FieldGroup label="Employment Start Date" hint="Optional">
-        <BigInput type="date" {...register("employment_start_date")} />
-      </FieldGroup>
     </div>
   );
 }
@@ -641,16 +515,6 @@ function Step5_Address() {
       <FieldGroup label="ZIP Code" required error={errors.zip_code?.message}>
         <BigInput {...register("zip_code")} placeholder="30301" inputMode="numeric" maxLength={10} />
       </FieldGroup>
-    </div>
-  );
-}
-
-// ── Step 6: Address History ───────────────────────────────────────────────────
-
-function Step6_History() {
-  const { register, formState: { errors } } = useFormContext<FormData>();
-  return (
-    <div className="space-y-6">
       <FieldGroup label="How long have you lived there?" required error={errors.how_long_at_address?.message}>
         <BigSelect {...register("how_long_at_address")}>
           <option value="">Select...</option>
@@ -659,26 +523,6 @@ function Step6_History() {
           ))}
         </BigSelect>
       </FieldGroup>
-      <FieldGroup label="Why are you leaving?" required error={errors.reason_for_leaving?.message}>
-        <BigSelect {...register("reason_for_leaving")}>
-          <option value="">Select reason...</option>
-          {["End of lease", "Relocation", "Better home", "Price increase", "Building sold", "Buying a home", "Other"].map(v => (
-            <option key={v} value={v}>{v}</option>
-          ))}
-        </BigSelect>
-      </FieldGroup>
-      <div className="pt-2 border-t border-[#EAECF0]">
-        <p className="text-[17px] font-semibold text-[#101828] mt-4 mb-1">Current Landlord</p>
-        <p className="text-[15px] text-[#667085] mb-5">Optional — helps speed up the process</p>
-        <div className="space-y-6">
-          <FieldGroup label="Landlord or Property Manager Name">
-            <BigInput {...register("current_landlord_name")} placeholder="Name or company" />
-          </FieldGroup>
-          <FieldGroup label="Landlord Phone">
-            <BigInput type="tel" {...register("current_landlord_phone")} placeholder="(555) 000-0000" />
-          </FieldGroup>
-        </div>
-      </div>
     </div>
   );
 }
@@ -729,6 +573,7 @@ function Step8_Household() {
   const { control, watch, register, formState: { errors } } = useFormContext<FormData>();
   const hasKids     = watch("has_kids");
   const hasVehicles = watch("has_vehicles");
+  const errHA       = (errors.has_housing_assistance as { message?: string } | undefined)?.message;
   return (
     <div className="space-y-8">
       <div>
@@ -770,7 +615,21 @@ function Step8_Household() {
         )}
       </div>
 
-
+      <div className="border-t border-[#EAECF0] pt-8">
+        <p className="text-[17px] font-semibold text-[#101828] mb-4 leading-snug">
+          Will you receive housing assistance such as Section 8?
+        </p>
+        <Controller
+          control={control} name="has_housing_assistance"
+          render={({ field }) => (
+            <BigYesNo
+              value={field.value as boolean | undefined}
+              onChange={field.onChange}
+              error={errHA}
+            />
+          )}
+        />
+      </div>
     </div>
   );
 }
@@ -860,41 +719,6 @@ function Step9_Pets({
   );
 }
 
-// ── Step 10: Background ───────────────────────────────────────────────────────
-
-function Step10_Background() {
-  const { control, formState: { errors } } = useFormContext<FormData>();
-  const questions = [
-
-    {
-      name: "has_housing_assistance" as const,
-      label: "Will you receive housing assistance such as Section 8?",
-    },
-  ];
-  return (
-    <div className="space-y-8">
-      <p className="text-[16px] text-[#667085]">
-        These disclosures are required for all applicants.
-      </p>
-      {questions.map(({ name, label }) => (
-        <div key={name} className="pt-2">
-          <p className="text-[17px] font-semibold text-[#101828] mb-4 leading-snug">{label}</p>
-          <Controller
-            control={control} name={name}
-            render={({ field }) => (
-              <BigYesNo
-                value={field.value as boolean | undefined}
-                onChange={field.onChange}
-                error={(errors[name] as any)?.message}
-              />
-            )}
-          />
-        </div>
-      ))}
-    </div>
-  );
-}
-
 // ── Review Step ───────────────────────────────────────────────────────────────
 
 function ReviewStep({
@@ -908,28 +732,36 @@ function ReviewStep({
 
   const sections = [
     {
-      title: "Name", step: 0,
+      title: "About You", step: 0,
       rows: [
         ["Full Name", [f.first_name, f.middle_name, f.last_name].filter(Boolean).join(" ")],
-        ["Marital Status", f.marital_status],
-      ] as [string, string][],
-    },
-    {
-      title: "Contact", step: 1,
-      rows: [
         ["Email", f.email],
-        ["Cell Phone", `${f.cell_phone} (${f.phone_type})`],
-        f.home_phone ? ["Home Phone", f.home_phone] : null,
-        ["Preferred Contact", f.preferred_contact],
-      ].filter(Boolean) as [string, string][],
+        ["Cell Phone", f.cell_phone],
+      ] as [string, string][],
     },
     {
-      title: "Emergency Contact", step: 2,
+      title: "Your Move", step: 1,
       rows: [
-        ["Name", f.emergency_contact_name],
-        ["Relationship", f.emergency_contact_relationship],
-        ["Phone", `${f.emergency_contact_phone} (${f.emergency_contact_phone_type})`],
+        ["Move-In Date", f.move_in_date ? new Date(f.move_in_date + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : ""],
+        ["Duration", f.intended_stay_duration],
+        ["Months Upfront", `${f.months_rent_upfront} month${f.months_rent_upfront > 1 ? "s" : ""}`],
+        ["Children", f.has_kids ? `Yes — ${f.number_of_kids}` : "No"],
+        ["Vehicles", f.has_vehicles ? `Yes — ${f.number_of_vehicles}` : "No"],
+        ["Animals", f.has_pets && f.animals.length
+          ? f.animals.map(a => `${a.name} (${a.type}${a.is_service_animal ? ", service" : ""})`).join("; ")
+          : "None"],
+        ["Housing Assistance", f.has_housing_assistance === true ? "Yes" : f.has_housing_assistance === false ? "No" : "—"],
       ] as [string, string][],
+    },
+    {
+      title: "Income & Current Home", step: 2,
+      rows: [
+        ["Monthly Income", f.gross_monthly_income ? `$${f.gross_monthly_income}` : "—"],
+        f.employer_name ? ["Employer", f.employer_name] : null,
+        ["Street", f.present_address],
+        ["City / State / ZIP", `${f.city}, ${(f.state ?? "").toUpperCase()} ${f.zip_code}`],
+        ["Time at Address", f.how_long_at_address],
+      ].filter(Boolean) as [string, string][],
     },
     {
       title: "Identity", step: 3,
@@ -938,62 +770,7 @@ function ReviewStep({
         ["ID Type", (f.id_type ?? "").toUpperCase()],
         f.id_type === "ssn" ? ["SSN", "•••-••-" + (f.ssn ?? "").replace(/\D/g, "").slice(-4)] : null,
         f.id_type === "ein" ? ["EIN", f.ein ?? ""] : null,
-        ["Driver's License", f.has_drivers_license ? `${f.drivers_license_number} (${f.drivers_license_state})` : "None"],
       ].filter(Boolean) as [string, string][],
-    },
-    {
-      title: "Income", step: 4,
-      rows: [
-        ["Monthly Income", f.gross_monthly_income ? `$${f.gross_monthly_income}` : "—"],
-        f.employer_name ? ["Employer", f.employer_name] : null,
-        f.job_title ? ["Job Title", f.job_title] : null,
-      ].filter(Boolean) as [string, string][],
-    },
-    {
-      title: "Address", step: 5,
-      rows: [
-        ["Street", f.present_address],
-        ["City / State / ZIP", `${f.city}, ${(f.state ?? "").toUpperCase()} ${f.zip_code}`],
-      ] as [string, string][],
-    },
-    {
-      title: "History", step: 6,
-      rows: [
-        ["Time at Address", f.how_long_at_address],
-        ["Reason for Leaving", f.reason_for_leaving],
-        f.current_landlord_name ? ["Landlord", f.current_landlord_name] : null,
-      ].filter(Boolean) as [string, string][],
-    },
-    {
-      title: "Move-In", step: 7,
-      rows: [
-        ["Move-In Date", f.move_in_date ? new Date(f.move_in_date + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : ""],
-        ["Duration", f.intended_stay_duration],
-        ["Months Upfront", `${f.months_rent_upfront} month${f.months_rent_upfront > 1 ? "s" : ""}`],
-      ] as [string, string][],
-    },
-    {
-      title: "Household", step: 8,
-      rows: [
-        ["Children", f.has_kids ? `Yes — ${f.number_of_kids}` : "No"],
-        ["Vehicles", f.has_vehicles ? `Yes — ${f.number_of_vehicles}` : "No"],
-
-      ] as [string, string][],
-    },
-    {
-      title: "Pets", step: 9,
-      rows: [
-        ["Animals", f.has_pets && f.animals.length
-          ? f.animals.map(a => `${a.name} (${a.type}${a.is_service_animal ? ", service" : ""})`).join("; ")
-          : "None"],
-      ] as [string, string][],
-    },
-    {
-      title: "Background", step: 10,
-      rows: [
-
-        ["Housing Assistance", f.has_housing_assistance === true ? "Yes" : f.has_housing_assistance === false ? "No" : "—"],
-      ] as [string, string][],
     },
   ];
 
@@ -1040,6 +817,17 @@ function ReviewStep({
           ))}
         </div>
       ))}
+
+      {/* Fee — visible on the same screen as Submit, no surprises */}
+      <div className="rounded-xl border-2 border-[#EAECF0] px-5 py-4 flex items-center justify-between gap-4">
+        <div>
+          <p className="text-[15px] font-bold text-[#101828]">Application fee</p>
+          <p className="text-[13px] text-[#667085] mt-0.5">
+            One-time, due after you submit — Venmo, Cash App, PayPal, Chime, or bank transfer.
+          </p>
+        </div>
+        <p className="text-[24px] font-black text-[#101828] shrink-0">$35</p>
+      </div>
 
       {/* Certification */}
       <div className="rounded-xl border-2 border-brand/20 bg-[#EFF4FF] px-5 py-5">
@@ -1114,10 +902,12 @@ export function RentalApplicationForm({ propertySlug }: Props) {
   const [otpCode, setOtpCode]         = useState(["", "", "", "", "", ""]);
   const [resendCooldown, setResendCooldown] = useState(0);
 
-  // Content steps 0–10, then account (guest only at 11), then review
-  const ACCOUNT_STEP = 11;
-  const REVIEW_STEP  = user ? 11 : 12;
-  const TOTAL_STEPS  = user ? 12 : 13;
+  // Content steps 0–3, then Review & Pay (4). The account step lives AFTER
+  // payment for guests, so it can never block submission or the fee.
+  const REVIEW_STEP  = 4;
+  const TOTAL_STEPS  = 5;
+  // Post-payment phase: guests are offered account creation, then success.
+  const [postPayment, setPostPayment] = useState(false);
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -1209,9 +999,13 @@ export function RentalApplicationForm({ propertySlug }: Props) {
     }
   }, [user]); // eslint-disable-line
 
+  // Post-payment: as soon as the guest finishes creating an account (or logs
+  // in), route to the success page.
   useEffect(() => {
-    if (user && step === ACCOUNT_STEP) setStep(REVIEW_STEP);
-  }, [user, step, ACCOUNT_STEP, REVIEW_STEP]);
+    if (postPayment && user && feePayment) {
+      router.push(`/apply/success?ref=${feePayment.id}&name=${encodeURIComponent(feePayment.name)}`);
+    }
+  }, [postPayment, user, feePayment, router]);
 
   useEffect(() => {
     if (!user && !sessionStorage.getItem(STORAGE_KEY)) {
@@ -1264,52 +1058,26 @@ export function RentalApplicationForm({ propertySlug }: Props) {
 
     if (currentStep >= 0) Object.assign(payload, {
       first_name: d.first_name, middle_name: d.middle_name, last_name: d.last_name,
-      marital_status: d.marital_status,
+      cell_phone: d.cell_phone,
     });
     if (currentStep >= 1) Object.assign(payload, {
-      cell_phone: d.cell_phone, home_phone: d.home_phone,
-      phone_type: d.phone_type, preferred_contact: d.preferred_contact,
+      move_in_date: d.move_in_date, intended_stay_duration: d.intended_stay_duration,
+      months_rent_upfront: d.months_rent_upfront,
+      has_kids: d.has_kids, number_of_kids: d.number_of_kids,
+      has_vehicles: d.has_vehicles, number_of_vehicles: d.number_of_vehicles,
+      has_pets: d.has_pets, animals: d.animals,
+      has_housing_assistance: d.has_housing_assistance,
+      ...(d.rental_property ? { rental_property: d.rental_property } : {}),
     });
     if (currentStep >= 2) Object.assign(payload, {
-      emergency_contact_name: d.emergency_contact_name,
-      emergency_contact_relationship: d.emergency_contact_relationship,
-      emergency_contact_phone: d.emergency_contact_phone,
-      emergency_contact_phone_type: d.emergency_contact_phone_type,
+      gross_monthly_income: d.gross_monthly_income, employer_name: d.employer_name,
+      present_address: d.present_address, city: d.city, state: d.state, zip_code: d.zip_code,
+      how_long_at_address: d.how_long_at_address,
     });
     if (currentStep >= 3) Object.assign(payload, {
       date_of_birth: d.date_of_birth, id_type: d.id_type,
       ssn_last4: d.id_type === "ssn" ? (d.ssn ?? "").replace(/\D/g, "").slice(-4) : "",
       ein: d.id_type === "ein" ? d.ein : "",
-      has_drivers_license: d.has_drivers_license,
-      drivers_license_number: d.has_drivers_license ? d.drivers_license_number : "",
-      drivers_license_state:  d.has_drivers_license ? d.drivers_license_state  : "",
-    });
-    if (currentStep >= 4) Object.assign(payload, {
-      gross_monthly_income: d.gross_monthly_income,
-      employer_name: d.employer_name, employer_phone: d.employer_phone,
-      job_title: d.job_title, employment_start_date: d.employment_start_date,
-    });
-    if (currentStep >= 5) Object.assign(payload, {
-      present_address: d.present_address, city: d.city, state: d.state, zip_code: d.zip_code,
-    });
-    if (currentStep >= 6) Object.assign(payload, {
-      how_long_at_address: d.how_long_at_address, reason_for_leaving: d.reason_for_leaving,
-      current_landlord_name: d.current_landlord_name, current_landlord_phone: d.current_landlord_phone,
-    });
-    if (currentStep >= 7) Object.assign(payload, {
-      move_in_date: d.move_in_date, intended_stay_duration: d.intended_stay_duration,
-      months_rent_upfront: d.months_rent_upfront,
-      ...(d.rental_property ? { rental_property: d.rental_property } : {}),
-    });
-    if (currentStep >= 8) Object.assign(payload, {
-      has_kids: d.has_kids, number_of_kids: d.number_of_kids,
-      has_vehicles: d.has_vehicles, number_of_vehicles: d.number_of_vehicles,
-    });
-    if (currentStep >= 9) Object.assign(payload, {
-      has_pets: d.has_pets, animals: d.animals,
-    });
-    if (currentStep >= 10) Object.assign(payload, {
-      has_housing_assistance: d.has_housing_assistance,
     });
 
     const utms = getStoredUTMs();
@@ -1334,8 +1102,6 @@ export function RentalApplicationForm({ propertySlug }: Props) {
 
   function goBack() {
     setServerError(null);
-    if (step === REVIEW_STEP)  { setStep(user ? 10 : ACCOUNT_STEP); return; }
-    if (!user && step === ACCOUNT_STEP) { setStep(10); return; }
     setStep(s => Math.max(0, s - 1));
   }
 
@@ -1347,12 +1113,11 @@ export function RentalApplicationForm({ propertySlug }: Props) {
     }
 
     if (step === REVIEW_STEP) { await handleSubmit(); return; }
-    if (step === ACCOUNT_STEP) return;
 
     const stepFields = STEP_FIELDS[step] ?? [];
     let valid = await trigger(stepFields);
 
-    if (step === 9 && watch("has_pets")) {
+    if (step === 1 && watch("has_pets")) {
       if (animalFields.length === 0) { toast.error("Please add at least one animal"); return; }
       const paths = animalFields.flatMap((_, i) =>
         [`animals.${i}.type`, `animals.${i}.breed`, `animals.${i}.weight`, `animals.${i}.name`]
@@ -1363,9 +1128,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
     if (!valid) return;
 
     saveDraftToBackend(step);
-
-    if (!user && step === 10) { setStep(ACCOUNT_STEP); return; }
-    if (user  && step === 10) { setStep(REVIEW_STEP);  return; }
+    trackEvent("application_step_completed", { step, title: STEP_TITLES[step] ?? "review" });
     setStep(s => s + 1);
   }
 
@@ -1424,15 +1187,13 @@ export function RentalApplicationForm({ propertySlug }: Props) {
         const data = await res.json().catch(() => ({}));
         const { message, fields } = parseBackendError(data);
         const first = Object.keys(fields)[0] ?? "";
-        if (["first_name", "last_name", "marital_status"].includes(first))             setStep(0);
-        else if (["email", "cell_phone", "phone_type"].includes(first))               setStep(1);
-        else if (first.startsWith("emergency_contact"))                                setStep(2);
-        else if (["date_of_birth", "id_type", "ssn_last4", "ein"].includes(first))    setStep(3);
-        else if (first === "gross_monthly_income")                                     setStep(4);
-        else if (["present_address", "city", "state", "zip_code"].includes(first))    setStep(5);
-        else if (["how_long_at_address", "reason_for_leaving"].includes(first))       setStep(6);
-        else if (["move_in_date", "intended_stay_duration"].includes(first))          setStep(7);
-        else if (["has_housing_assistance"].includes(first)) setStep(10);
+        if (["first_name", "last_name", "email", "cell_phone"].includes(first))                       setStep(0);
+        else if (["move_in_date", "intended_stay_duration", "months_rent_upfront",
+                  "has_kids", "number_of_kids", "has_vehicles", "number_of_vehicles",
+                  "has_pets", "animals", "has_housing_assistance"].includes(first))                   setStep(1);
+        else if (["gross_monthly_income", "employer_name", "present_address",
+                  "city", "state", "zip_code", "how_long_at_address"].includes(first))                setStep(2);
+        else if (["date_of_birth", "id_type", "ssn", "ssn_last4", "ein"].includes(first))             setStep(3);
         toast.error("Please fix the errors in the form", { description: message });
         setServerError(message);
         return;
@@ -1555,23 +1316,29 @@ export function RentalApplicationForm({ propertySlug }: Props) {
     toast.info("Form cleared. You can start fresh.");
   }
 
-  const currentTitle = step < STEP_TITLES.length
-    ? STEP_TITLES[step]
-    : step === ACCOUNT_STEP ? "Create Account"
-    : "Review Application";
+  const currentTitle = step < STEP_TITLES.length ? STEP_TITLES[step] : "Review & Pay";
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
-  // After submission, the application fee is the final, required step.
-  if (feePayment) {
-    const goSuccess = () =>
-      router.push(`/apply/success?ref=${feePayment.id}&name=${encodeURIComponent(feePayment.name)}`);
+  const goSuccess = () => {
+    if (!feePayment) return;
+    router.push(`/apply/success?ref=${feePayment.id}&name=${encodeURIComponent(feePayment.name)}`);
+  };
+
+  // After submission, the application fee completes the Review & Pay step.
+  if (feePayment && !postPayment) {
     return (
       <ApplicationFeePayment
         applicationId={feePayment.id}
         amount={feePayment.amount}
         applicantName={feePayment.name}
-        onPaid={() => { toast.success("Payment proof received — we'll verify it shortly."); goSuccess(); }}
+        onPaid={() => {
+          toast.success("Payment reference received — we'll verify it shortly.");
+          trackEvent("application_fee_submitted", { application_id: feePayment.id });
+          if (user) { goSuccess(); return; }
+          setPostPayment(true); // guests: offer account creation, then success
+          if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
       />
     );
   }
@@ -1581,37 +1348,44 @@ export function RentalApplicationForm({ propertySlug }: Props) {
       <div className="max-w-lg mx-auto">
 
         {/* Step header */}
-        {step !== ACCOUNT_STEP && (
+        {!postPayment && (
           <StepHeader step={step} total={TOTAL_STEPS} title={currentTitle} />
         )}
 
         {/* Step content */}
-        {step === 0  && <Step0_Name />}
-        {step === 1  && <Step1_Contact />}
-        {step === 2  && <Step2_Emergency />}
-        {step === 3  && <Step3_Identity />}
-        {step === 4  && <Step4_Income />}
-        {step === 5  && <Step5_Address />}
-        {step === 6  && <Step6_History />}
-        {step === 7  && <Step7_MoveIn />}
-        {step === 8  && <Step8_Household />}
-        {step === 9  && (
-          <Step9_Pets
-            animalFields={animalFields}
-            appendAnimal={appendAnimal}
-            removeAnimal={removeAnimal}
-          />
+        {!postPayment && step === 0 && <StepAboutYou />}
+        {!postPayment && step === 1 && (
+          <div className="space-y-10">
+            <Step7_MoveIn />
+            <Step9_Pets
+              animalFields={animalFields}
+              appendAnimal={appendAnimal}
+              removeAnimal={removeAnimal}
+            />
+            <Step8_Household />
+          </div>
         )}
-        {step === 10 && <Step10_Background />}
+        {!postPayment && step === 2 && (
+          <div className="space-y-10">
+            <Step4_Income />
+            <Step5_Address />
+          </div>
+        )}
+        {!postPayment && step === 3 && <Step3_Identity />}
 
-        {/* Account gate */}
-        {step === ACCOUNT_STEP && !user && (
+        {/* Account offer — AFTER payment, so it can never block the fee */}
+        {postPayment && !user && (
           <>
-            <StepHeader step={step} total={TOTAL_STEPS} title={
-              authMode === "register" ? "Create Your Account"
+            <div className="mb-8">
+              <p className="text-[12px] font-bold tracking-[0.12em] uppercase text-emerald-600 mb-2">
+                Application & payment received
+              </p>
+              <h1 className="text-[26px] font-bold text-[#101828] leading-tight">{
+              authMode === "register" ? "Create an account to track your application"
               : authMode === "verify" ? "Verify Your Email"
               : "Sign In to Continue"
-            } />
+            }</h1>
+            </div>
 
             {authError && (
               <div className="mb-5 bg-red-50 border-2 border-red-200 text-red-700 text-[15px] rounded-xl px-5 py-4 flex items-start gap-2">
@@ -1649,7 +1423,8 @@ export function RentalApplicationForm({ propertySlug }: Props) {
                   <div className="bg-[#F0FDF4] border-2 border-[#BBF7D0] rounded-xl px-5 py-4 flex items-start gap-3">
                     <Check size={18} className="text-[#16a34a] mt-0.5 shrink-0" />
                     <p className="text-[15px] text-[#101828]">
-                      Your application details are saved. Create an account to track your application.
+                      Your application and payment reference are in. Create a password to
+                      track your application status and get your decision faster.
                     </p>
                   </div>
                 )}
@@ -1703,19 +1478,24 @@ export function RentalApplicationForm({ propertySlug }: Props) {
               </div>
             )}
 
-            <button type="button" onClick={
-              authMode === "verify"
-                ? () => { setAuthMode("login"); setOtpCode(["", "", "", "", "", ""]); setAuthError(null); }
-                : goBack
-            }
-              className="mt-6 flex items-center gap-1.5 text-[16px] font-semibold text-[#667085] hover:text-[#101828] transition-colors">
-              <ChevronLeft size={18} strokeWidth={2.5} /> Back
-            </button>
+            <div className="mt-6 flex items-center justify-between">
+              {authMode === "verify" ? (
+                <button type="button"
+                  onClick={() => { setAuthMode("login"); setOtpCode(["", "", "", "", "", ""]); setAuthError(null); }}
+                  className="flex items-center gap-1.5 text-[16px] font-semibold text-[#667085] hover:text-[#101828] transition-colors">
+                  <ChevronLeft size={18} strokeWidth={2.5} /> Back
+                </button>
+              ) : <span />}
+              <button type="button" onClick={goSuccess}
+                className="text-[15px] font-semibold text-[#667085] hover:text-[#101828] underline underline-offset-4 transition-colors">
+                Skip for now →
+              </button>
+            </div>
           </>
         )}
 
         {/* Review */}
-        {step === REVIEW_STEP && (
+        {!postPayment && step === REVIEW_STEP && (
           <ReviewStep
             propertyData={propertyData}
             onEdit={setStep}
@@ -1725,12 +1505,12 @@ export function RentalApplicationForm({ propertySlug }: Props) {
           />
         )}
 
-        {/* Nav buttons — hidden on account step */}
-        {(step !== ACCOUNT_STEP || user) && (
+        {/* Nav buttons — hidden during the post-payment account offer */}
+        {!postPayment && (
           <NavButtons
             step={step} total={TOTAL_STEPS}
             onBack={goBack} onNext={goNext}
-            nextLabel={step === REVIEW_STEP ? "Submit Application" : "Save & Continue"}
+            nextLabel={step === REVIEW_STEP ? "Submit & Continue to Payment" : "Save & Continue"}
             loading={submitting}
           />
         )}

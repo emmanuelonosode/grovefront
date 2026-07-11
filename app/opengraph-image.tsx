@@ -52,7 +52,7 @@ export default function Image() {
           width: 1200,
           height: 630,
           display: 'flex',
-          background: '#0052FF',
+          background: '#0F1E3D',
           fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
           position: 'relative',
           overflow: 'hidden',
@@ -83,7 +83,7 @@ export default function Image() {
               position: 'absolute',
               inset: 0,
               background:
-                'linear-gradient(to right, #0052FF 0%, rgba(0,64,214,0.72) 35%, rgba(0,64,214,0.18) 70%, rgba(0,64,214,0.08) 100%)',
+                'linear-gradient(to right, #0F1E3D 0%, rgba(15,30,61,0.72) 35%, rgba(15,30,61,0.18) 70%, rgba(15,30,61,0.08) 100%)',
               display: 'flex',
             }}
           />
@@ -93,7 +93,7 @@ export default function Image() {
               position: 'absolute',
               inset: 0,
               background:
-                'linear-gradient(to bottom, rgba(0,64,214,0.45) 0%, transparent 25%, transparent 75%, rgba(0,64,214,0.55) 100%)',
+                'linear-gradient(to bottom, rgba(15,30,61,0.45) 0%, transparent 25%, transparent 75%, rgba(15,30,61,0.55) 100%)',
               display: 'flex',
             }}
           />
@@ -176,7 +176,7 @@ export default function Image() {
             style={{
               width: 48,
               height: 3,
-              background: '#0052FF',
+              background: '#0F1E3D',
               borderRadius: 2,
               marginBottom: 24,
               display: 'flex',
@@ -323,7 +323,7 @@ export default function Image() {
                 width: 6,
                 height: 6,
                 borderRadius: '50%',
-                background: '#0052FF',
+                background: '#0F1E3D',
                 display: 'flex',
               }}
             />
@@ -361,7 +361,7 @@ export default function Image() {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                background: 'rgba(0,64,214,0.82)',
+                background: 'rgba(15,30,61,0.82)',
                 border: '1px solid rgba(255,255,255,0.14)',
                 borderRadius: 8,
                 padding: '10px 18px',

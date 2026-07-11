@@ -62,7 +62,7 @@ export default async function ApplyPage({ searchParams }: Props) {
                 Hasker &amp; Co. Realty Group
               </p>
               <h1
-                className="hero-animate font-sans font-bold text-[#0052FF] leading-[1.12] tracking-tight mb-4"
+                className="hero-animate font-sans font-bold text-[#0F1E3D] leading-[1.12] tracking-tight mb-4"
                 style={{
                   fontSize: "clamp(28px, 5vw, 46px)",
                   animationDelay: "60ms",

@@ -74,7 +74,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
             position: "absolute",
             inset: 0,
             background:
-              "linear-gradient(to bottom, rgba(0,64,214,0.15) 0%, rgba(0,64,214,0.3) 40%, rgba(0,64,214,0.88) 75%, rgba(0,64,214,0.96) 100%)",
+              "linear-gradient(to bottom, rgba(15,30,61,0.15) 0%, rgba(15,30,61,0.3) 40%, rgba(15,30,61,0.88) 75%, rgba(15,30,61,0.96) 100%)",
             display: "flex",
           }}
         />
@@ -88,7 +88,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
             display: "flex",
             alignItems: "center",
             gap: 12,
-            background: "rgba(0,64,214,0.82)",
+            background: "rgba(15,30,61,0.82)",
             border: "1px solid rgba(255,255,255,0.18)",
             borderRadius: 6,
             padding: "10px 20px 10px 12px",

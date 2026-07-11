@@ -329,7 +329,7 @@ export default async function HomePage() {
       </section>
 
       {/* â”€â”€ STATS STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section style={{ background: "#0052FF", color: "#fff" }}>
+      <section style={{ background: "#0F1E3D", color: "#fff" }}>
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4">
             {[
@@ -406,7 +406,7 @@ export default async function HomePage() {
                       </svg>
                     </div>
                     <div>
-                      <div className="font-semibold mb-[3px]" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14.5, color: "#0052FF" }}>{pr.h}</div>
+                      <div className="font-semibold mb-[3px]" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14.5, color: "#0F1E3D" }}>{pr.h}</div>
                       <div className="leading-[1.55]" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 13, color: "#475569" }}>{pr.d}</div>
                     </div>
                   </div>
@@ -586,7 +586,7 @@ export default async function HomePage() {
       </section>
 
       {/* â”€â”€ FINAL CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-[88px] px-8 text-center" style={{ background: "#0052FF", color: "#fff" }}>
+      <section className="py-[88px] px-8 text-center" style={{ background: "#0F1E3D", color: "#fff" }}>
         <div className="max-w-7xl mx-auto">
           <p className="text-[11px] font-semibold tracking-[0.3em] uppercase" style={{ color: "#A9C5F6" }}>Ready when you are</p>
           <h2 className="font-serif font-bold text-white leading-[1.05] mt-3.5" style={{ fontSize: 48, letterSpacing: "-0.02em" }}>

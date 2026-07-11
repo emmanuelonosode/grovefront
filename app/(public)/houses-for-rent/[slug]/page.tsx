@@ -230,13 +230,6 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   const daysOnMarket = Math.max(1, diffDays);
 
-  const listedDate = property.created_at
-    ? new Date(property.created_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
-    : null;
-  const updatedDate = (property as any).updated_at
-    ? new Date((property as any).updated_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
-    : null;
-
   const CONDITION_LABELS: Record<string, string> = {
     new: "New Construction",
     excellent: "Excellent",
@@ -750,18 +743,6 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                     </div>
                   )}
 
-                  {listedDate && (
-                    <div>
-                      <div className="text-[12px] font-bold text-[#6A6C70] mb-0.5">Listed</div>
-                      <div className="text-[#2A2B2D] font-semibold">{listedDate}</div>
-                    </div>
-                  )}
-                  {updatedDate && (
-                    <div>
-                      <div className="text-[12px] font-bold text-[#6A6C70] mb-0.5">Last Updated</div>
-                      <div className="text-[#2A2B2D] font-semibold">{updatedDate}</div>
-                    </div>
-                  )}
                 </div>
               </div>
             </section>

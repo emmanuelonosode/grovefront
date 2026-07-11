@@ -191,7 +191,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                     sizes="(max-width: 768px) 100vw, 20vw"
                   />
-                  <div className="absolute inset-0 bg-brand-dark/50" />
+                  <div className="absolute inset-0 bg-black/45" />
                   <div className="absolute bottom-3 left-4">
                     <div className="w-8 h-8 rounded-sm bg-white/15 backdrop-blur-sm flex items-center justify-center">
                       <topic.icon size={16} className="text-white" />

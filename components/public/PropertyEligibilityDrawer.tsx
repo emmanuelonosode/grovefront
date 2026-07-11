@@ -295,7 +295,7 @@ export function PropertyEligibilityDrawer({
       <div
         onClick={handleClose}
         aria-hidden="true"
-        className={`fixed inset-0 z-50 bg-brand-dark/50 backdrop-blur-sm transition-opacity duration-300 ${
+        className={`fixed inset-0 z-50 bg-white/70 backdrop-blur-md transition-opacity duration-300 ${
           open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       />

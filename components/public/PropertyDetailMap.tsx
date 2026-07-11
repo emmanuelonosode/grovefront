@@ -23,7 +23,7 @@ interface Props {
   satellite?: boolean;
 }
 
-const NAVY = "#0052FF";
+const NAVY = "#0F1E3D";
 const BLUE = "#0052FF";
 const GREEN = "#16a34a";
 

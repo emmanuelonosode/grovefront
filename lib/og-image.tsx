@@ -49,7 +49,7 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
         width: '1200px',
         height: '630px',
         display: 'flex',
-        background: '#0052FF',
+        background: '#0F1E3D',
         fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
         position: 'relative',
         overflow: 'hidden',
@@ -61,7 +61,7 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
           position: 'absolute',
           left: 0, top: 0, bottom: 0,
           width: '6px',
-          background: '#0052FF',
+          background: '#0F1E3D',
           display: 'flex',
         }}
       />
@@ -149,7 +149,7 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
         <div style={{
           width: '56px',
           height: '3px',
-          background: '#0052FF',
+          background: '#0F1E3D',
           borderRadius: '2px',
           marginBottom: '28px',
           display: 'flex',

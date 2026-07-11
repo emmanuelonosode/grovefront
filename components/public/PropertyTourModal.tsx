@@ -45,14 +45,14 @@ export function PropertyTourModal(props: Props) {
     <div className="fixed inset-0 z-[9996] flex items-start sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
       <div
         onClick={() => setOpen(false)}
-        className="absolute inset-0 bg-brand-dark/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-white/70 backdrop-blur-md"
         aria-hidden="true"
       />
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Book a tour"
-        className="relative w-full sm:max-w-md my-0 sm:my-8 max-h-[100vh] sm:max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200"
+        className="relative w-full sm:max-w-md my-0 sm:my-8 max-h-[100vh] sm:max-h-[90vh] overflow-y-auto sm:rounded-3xl shadow-[0_24px_70px_-12px_rgba(0,20,60,0.35)] ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-200"
       >
         <button
           onClick={() => setOpen(false)}

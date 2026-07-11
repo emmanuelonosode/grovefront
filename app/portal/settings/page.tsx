@@ -369,7 +369,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Contact info card */}
-        <div className="bg-[#0052FF] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="bg-[#0F1E3D] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <p className="text-[13px] font-semibold text-white tracking-tight">Need to update your email?</p>
             <p className="text-[12px] text-white/40 mt-0.5">Contact our team — email changes require verification.</p>

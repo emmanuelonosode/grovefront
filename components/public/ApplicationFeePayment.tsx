@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { CheckCircle, Camera, ShieldCheck, Lock, RotateCcw, Clock } from "lucide-react";
-import { apiFetch } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 const API_BASE = typeof window !== "undefined"
@@ -32,7 +31,7 @@ const EMPTY_BANK = {
 const FALLBACK_METHODS: PaymentConfig[] = [
   { method: "VENMO",         display_name: "Venmo",         handle: "@HaskerRealty",                  extra_instructions: "",                                          ...EMPTY_BANK },
   { method: "CASHAPP",       display_name: "Cash App",      handle: "$HaskerRealty",                  extra_instructions: "",                                          ...EMPTY_BANK },
-  { method: "PAYPAL",        display_name: "PayPal",        handle: "payments@haskerrealtygroup.com", extra_instructions: "Use Friends & Family to avoid delays.",      ...EMPTY_BANK },
+  { method: "PAYPAL",        display_name: "PayPal",        handle: "payments@haskerrealtygroup.com", extra_instructions: "",                                          ...EMPTY_BANK },
   { method: "CHIME",         display_name: "Chime",         handle: "@Hasker-Realty",                 extra_instructions: "",                                          ...EMPTY_BANK },
   { method: "BANK_TRANSFER", display_name: "Bank Transfer", handle: "info@haskerrealtygroup.com",     extra_instructions: "Contact us for full wire transfer details.", ...EMPTY_BANK },
 ];
@@ -157,7 +156,6 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!refId.trim()) { setError("Enter your transaction reference (your username or confirmation ID)."); return; }
-    if (!file) { setError("Please upload a screenshot of your payment."); return; }
     setLoading(true); setError("");
     try {
       const formData = new FormData();
@@ -165,11 +163,17 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
       formData.append("amount", String(amount));
       formData.append("payment_method", method);
       formData.append("reference_id", refId.trim());
-      formData.append("proof_file", file);
+      if (file) formData.append("proof_file", file);
       formData.append("allocated_items", JSON.stringify(["Application Fee"]));
 
-      const res = await apiFetch(`${API_BASE}/api/v1/transactions/my-payments/submit-proof/`, {
-        method: "POST", body: formData,
+      // Guests reach this step BEFORE creating an account (the account step now
+      // follows payment), so don't use apiFetch: it would send "Bearer null"
+      // (rejected by JWT auth) and bounce the applicant to /login mid-payment.
+      const token = typeof localStorage !== "undefined" ? localStorage.getItem("access_token") : null;
+      const res = await fetch(`${API_BASE}/api/v1/transactions/my-payments/submit-proof/`, {
+        method: "POST",
+        body: formData,
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -197,7 +201,7 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
       </div>
 
       {/* ── Amount card ─────────────────────────────────────── */}
-      <div className="rounded-2xl bg-[#0052FF] text-white px-5 py-5 mb-4">
+      <div className="rounded-2xl bg-[#0F1E3D] text-white px-5 py-5 mb-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/50">Application fee</p>
@@ -323,7 +327,7 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
             )}
           </div>
         ) : (
-          <div className="bg-[#0052FF] rounded-2xl p-5 text-white">
+          <div className="bg-[#0F1E3D] rounded-2xl p-5 text-white">
             <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Send {fmt(amount)} to</p>
             <div className="flex items-start gap-3">
               <div className="w-11 h-11 rounded-xl overflow-hidden shrink-0 shadow-md mt-0.5">{PAYMENT_LOGOS[current.method]}</div>
@@ -371,7 +375,7 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
         {/* ── Proof upload ──────────────────────────────────── */}
         <div>
           <label className="block text-[11px] font-semibold text-[#667085] uppercase tracking-wide mb-1.5 px-1">
-            Payment screenshot
+            Payment screenshot <span className="normal-case font-normal">(optional — speeds up verification)</span>
           </label>
           <label className={cn(
             "flex items-center justify-center gap-3 w-full py-5 rounded-2xl border-2 border-dashed cursor-pointer transition-colors",
@@ -391,12 +395,29 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
               <>
                 <Camera size={20} className="text-[#667085] opacity-50 shrink-0" />
                 <div>
-                  <p className="text-[13px] font-medium text-[#667085]">Upload payment screenshot</p>
+                  <p className="text-[13px] font-medium text-[#667085]">Add a screenshot if you have one</p>
                   <p className="text-[11px] text-[#667085] opacity-60">PNG, JPG — up to 10 MB</p>
                 </div>
               </>
             )}
           </label>
+        </div>
+
+        {/* ── What happens next ─────────────────────────────── */}
+        <div className="rounded-2xl border border-[#E5E5EA] bg-white p-5">
+          <p className="text-[13px] font-bold text-[#101828] mb-3">What happens next</p>
+          <ol className="space-y-2.5">
+            {[
+              `Send ${fmt(amount)} with your chosen method above`,
+              "We verify your payment — usually within 2 business hours",
+              "Screening starts immediately; your decision arrives within 24 hours",
+            ].map((t, i) => (
+              <li key={t} className="flex gap-3 items-start">
+                <span className="w-5 h-5 rounded-full bg-brand-light text-brand text-[11px] font-black flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
+                <p className="text-[13.5px] text-[#475569] leading-snug">{t}</p>
+              </li>
+            ))}
+          </ol>
         </div>
 
         {error && (

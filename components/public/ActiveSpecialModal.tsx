@@ -186,7 +186,7 @@ export function ActiveSpecialModal({
       {/* Backdrop */}
       <div
         onClick={onClose}
-        className="absolute inset-0 bg-brand-dark/75 backdrop-blur-md"
+        className="absolute inset-0 bg-white/70 backdrop-blur-md"
         aria-hidden="true"
       />
 

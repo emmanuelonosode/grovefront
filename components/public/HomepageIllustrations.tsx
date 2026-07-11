@@ -3,7 +3,7 @@
 
 const HC = {
   brand:      '#0052FF',
-  brandDark:  '#0052FF',
+  brandDark:  '#0F1E3D',
   brandLight: '#EFF4FF',
   brandMuted: '#DBEAFE',
   terracotta: '#C97757',

@@ -181,7 +181,7 @@ export default async function ApartmentsPage() {
         </section>
       ) : (
         /* ── COMING SOON / NOTIFY ───────────────────────────── */
-        <section className="bg-[#0052FF] py-16 lg:py-20 px-6">
+        <section className="bg-[#0F1E3D] py-16 lg:py-20 px-6">
           <div className="max-w-xl mx-auto text-center">
             <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center mx-auto mb-5">
               <BellRing size={22} className="text-brand" />

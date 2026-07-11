@@ -89,7 +89,7 @@ export function QuickApplyDrawer({ open, onClose, roleId, roleTitle }: Props) {
       <div
         onClick={handleClose}
         aria-hidden="true"
-        className={`fixed inset-0 z-40 bg-brand-dark/60 backdrop-blur-sm transition-opacity duration-300 ${
+        className={`fixed inset-0 z-40 bg-white/70 backdrop-blur-md transition-opacity duration-300 ${
           open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       />
