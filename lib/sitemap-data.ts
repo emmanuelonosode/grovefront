@@ -1,4 +1,4 @@
-import { fetchPropertiesForSitemap, fetchProperties } from "@/lib/properties";
+import { fetchPropertiesForSitemap, fetchProperties, cleanImageUrl } from "@/lib/properties";
 import { fetchPostsForSitemap } from "@/lib/blog";
 import { fetchAgents } from "@/lib/agents";
 import { fetchAllCities, CITIES } from "@/lib/cities";
@@ -99,13 +99,19 @@ export async function buildProperties(): Promise<SitemapEntry[]> {
   // Property listings are the priority — highest non-homepage priority — and each
   // carries its primary photo as an <image:image> so Google indexes listing
   // images (Google Images + result thumbnails).
-  return all.map((p) => ({
-    url: `${BASE_URL}/houses-for-rent/${p.slug}`,
-    lastModified: new Date(p.lastModified),
-    changeFrequency: "daily" as const,
-    priority: 0.9,
-    images: p.image ? [{ loc: p.image, title: p.title }] : undefined,
-  }));
+  return all.map((p) => {
+    // Some stored image values carry a stray Cloudinary "image/upload/" prefix
+    // in front of an absolute URL; <image:loc> must be a fully-qualified URL,
+    // so clean it and drop anything still not absolute (GSC rejects it otherwise).
+    const image = cleanImageUrl(p.image);
+    return {
+      url: `${BASE_URL}/houses-for-rent/${p.slug}`,
+      lastModified: new Date(p.lastModified),
+      changeFrequency: "daily" as const,
+      priority: 0.9,
+      images: image.startsWith("http") ? [{ loc: image, title: p.title }] : undefined,
+    };
+  });
 }
 
 // ── XML serializers ───────────────────────────────────────────────────────────
