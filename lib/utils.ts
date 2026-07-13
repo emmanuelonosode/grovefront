@@ -70,3 +70,54 @@ export function toCardImageUrl(url: string): string {
   }
   return url;
 }
+
+/**
+ * Downscale + re-encode an image File in the browser before upload. Phone
+ * cameras produce 5–12MB photos that blow past proxy body limits
+ * (nginx client_max_body_size defaults to 1MB) — a dropped connection surfaces
+ * in the browser as an opaque "Load failed". Shrinking to ~maxDim px JPEG puts
+ * a government-ID photo well under 1MB while staying readable.
+ *
+ * Non-images (e.g. a PDF/HEIC the canvas can't decode) are returned untouched
+ * so the caller's own size guard still applies.
+ */
+export async function compressImageFile(
+  file: File,
+  { maxDim = 1600, quality = 0.72 }: { maxDim?: number; quality?: number } = {},
+): Promise<File> {
+  if (typeof window === "undefined" || !file.type.startsWith("image/")) return file;
+
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error("read-failed"));
+    reader.readAsDataURL(file);
+  });
+
+  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const el = new Image();
+    el.onload = () => resolve(el);
+    el.onerror = () => reject(new Error("decode-failed"));
+    el.src = dataUrl;
+  }).catch(() => null);
+  if (!img) return file; // browser couldn't decode (e.g. HEIC) — send original
+
+  const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+  const w = Math.round(img.width * scale);
+  const h = Math.round(img.height * scale);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return file;
+  ctx.drawImage(img, 0, 0, w, h);
+
+  const blob = await new Promise<Blob | null>((resolve) =>
+    canvas.toBlob(resolve, "image/jpeg", quality),
+  );
+  if (!blob || blob.size >= file.size) return file; // never upsize
+
+  const name = file.name.replace(/\.[^.]+$/, "") + ".jpg";
+  return new File([blob], name, { type: "image/jpeg", lastModified: Date.now() });
+}

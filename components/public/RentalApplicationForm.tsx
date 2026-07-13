@@ -823,10 +823,10 @@ function ReviewStep({
         <div>
           <p className="text-[15px] font-bold text-[#101828]">Application fee</p>
           <p className="text-[13px] text-[#667085] mt-0.5">
-            One-time, due after you submit — Venmo, Cash App, PayPal, Chime, or bank transfer.
+            One-time, due after you submit — Through Stripe.
           </p>
         </div>
-        <p className="text-[24px] font-black text-[#101828] shrink-0">$35</p>
+        <p className="text-[24px] font-black text-[#101828] shrink-0">$2</p>
       </div>
 
       {/* Certification */}
@@ -1381,7 +1381,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
                 Application & payment received
               </p>
               <h1 className="text-[26px] font-bold text-[#101828] leading-tight">{
-              authMode === "register" ? "Create an account to track your application"
+              authMode === "register" ? "Last step — verify your email"
               : authMode === "verify" ? "Verify Your Email"
               : "Sign In to Continue"
             }</h1>
@@ -1423,8 +1423,9 @@ export function RentalApplicationForm({ propertySlug }: Props) {
                   <div className="bg-[#F0FDF4] border-2 border-[#BBF7D0] rounded-xl px-5 py-4 flex items-start gap-3">
                     <Check size={18} className="text-[#16a34a] mt-0.5 shrink-0" />
                     <p className="text-[15px] text-[#101828]">
-                      Your application and payment reference are in. Create a password to
-                      track your application status and get your decision faster.
+                      Your application and payment reference are in. Set a password and
+                      confirm the code we email you — this verifies your email so we can
+                      send your decision, then unlocks your tenant portal.
                     </p>
                   </div>
                 )}
@@ -1478,19 +1479,17 @@ export function RentalApplicationForm({ propertySlug }: Props) {
               </div>
             )}
 
-            <div className="mt-6 flex items-center justify-between">
-              {authMode === "verify" ? (
+            {/* Email verification is required — no skip. This is the only step
+                that confirms the applicant gave us a real, reachable email. */}
+            {authMode === "verify" && (
+              <div className="mt-6">
                 <button type="button"
                   onClick={() => { setAuthMode("login"); setOtpCode(["", "", "", "", "", ""]); setAuthError(null); }}
                   className="flex items-center gap-1.5 text-[16px] font-semibold text-[#667085] hover:text-[#101828] transition-colors">
                   <ChevronLeft size={18} strokeWidth={2.5} /> Back
                 </button>
-              ) : <span />}
-              <button type="button" onClick={goSuccess}
-                className="text-[15px] font-semibold text-[#667085] hover:text-[#101828] underline underline-offset-4 transition-colors">
-                Skip for now →
-              </button>
-            </div>
+              </div>
+            )}
           </>
         )}
 

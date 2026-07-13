@@ -5,7 +5,7 @@ import {
   Calendar, Clock, User, Phone, Mail, ShieldCheck, Camera,
   CheckCircle, ChevronLeft, Loader2, Lock,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, compressImageFile } from "@/lib/utils";
 import { trackEvent, getStoredUTMs } from "@/lib/tracking";
 import { trackClick } from "@/lib/telemetry";
 
@@ -99,12 +99,35 @@ export function TourBookingForm({ propertySlug, propertyTitle, propertyId, prope
     if (!idFront) return setError("Please add a photo of your ID.");
     setLoading(true); setError("");
     try {
+      // Shrink camera photos in the browser first — a raw phone image (5–12MB)
+      // exceeds proxy body limits and the upload dies as an opaque "Load failed".
+      const [front, back] = await Promise.all([
+        compressImageFile(idFront),
+        idBack ? compressImageFile(idBack) : Promise.resolve(null),
+      ]);
+
+      // Final guard: if it's still too big to have compressed (e.g. an unusual
+      // format the browser couldn't decode), tell the user plainly instead of
+      // letting the request drop silently.
+      const MAX_BYTES = 10 * 1024 * 1024;
+      if (front.size > MAX_BYTES || (back && back.size > MAX_BYTES)) {
+        throw new Error("That image is too large to upload. Please use a smaller photo (under 10MB).");
+      }
+
       const fd = new FormData();
-      fd.append("id_front", idFront);
-      if (idBack) fd.append("id_back", idBack);
-      const res = await fetch(`${API_BASE}/api/v1/viewings/tour-requests/${publicId}/verify-id/`, {
-        method: "POST", body: fd,
-      });
+      fd.append("id_front", front);
+      if (back) fd.append("id_back", back);
+
+      let res: Response;
+      try {
+        res = await fetch(`${API_BASE}/api/v1/viewings/tour-requests/${publicId}/verify-id/`, {
+          method: "POST", body: fd,
+        });
+      } catch {
+        // fetch() itself rejected — network drop, offline, or the request body
+        // was refused before a response ("Load failed" in Safari).
+        throw new Error("Upload failed — please check your connection and try again with a clear, well-lit photo.");
+      }
       if (!res.ok) {
         const data = await res.json().catch(() => null);
         throw new Error(data?.detail ?? "Upload failed. Please try again.");
