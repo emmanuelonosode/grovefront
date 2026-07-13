@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { toCardImageUrl } from "@/lib/utils";
 
 interface Props {
   images: string[];
@@ -96,7 +97,7 @@ export function CardImageCarousel({ images, alt, href, sizes = "(max-width:640px
         {images.map((src, i) => (
           <Link key={i} href={href} aria-label={alt} className={`relative block h-full w-full shrink-0 snap-center transition-transform duration-300 ease-out ${peeking ? "-translate-x-8" : "translate-x-0"}`}>
             <Image
-              src={src}
+              src={toCardImageUrl(src)}
               alt={i === 0 ? alt : ""}
               fill
               sizes={sizes}

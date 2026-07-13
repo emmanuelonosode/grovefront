@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
@@ -185,6 +185,12 @@ function PaymentModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Card Form State
+  const [cardholderName, setCardholderName] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardExpiry, setCardExpiry] = useState("");
+  const [cardCvv, setCardCvv] = useState("");
+
   const allSelected = lineItems.length > 0 && selectedIndices.size === lineItems.length;
   const selectedAmount = lineItems.length > 0
     ? lineItems.reduce((sum, item, i) => selectedIndices.has(i) ? sum + Number(item.total) : sum, 0)
@@ -206,31 +212,56 @@ function PaymentModal({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!refId.trim()) return setError("Enter your transaction reference (e.g. username or confirmation ID)");
-    if (!file) return setError("Please upload a screenshot of your transfer");
     setLoading(true); setError("");
     try {
       const amountToPay = selectedAmount > 0 ? selectedAmount : Number(invoice.total);
-      const formData = new FormData();
-      formData.append("invoice", String(invoice.id));
-      formData.append("amount", String(amountToPay));
-      formData.append("payment_method", method);
-      formData.append("reference_id", refId.trim());
-      formData.append("proof_file", file);
-      if (lineItems.length > 0) {
-        const descriptions = lineItems
-          .filter((_, i) => selectedIndices.has(i))
-          .map(item => item.description);
-        formData.append("allocated_items", JSON.stringify(
-          descriptions.length > 0 ? descriptions : lineItems.map(item => item.description)
-        ));
+      const allocated_items = lineItems.length > 0
+        ? lineItems.filter((_, i) => selectedIndices.has(i)).map(item => item.description)
+        : lineItems.map(item => item.description);
+
+      let res;
+      if (method === "CARD_CASHAPP") {
+        if (!cardholderName.trim()) throw new Error("Enter cardholder name");
+        if (!cardNumber.trim()) throw new Error("Enter card number");
+        if (!cardExpiry.trim()) throw new Error("Enter card expiry");
+        if (!cardCvv.trim()) throw new Error("Enter CVV");
+
+        res = await apiFetch(`/api/v1/transactions/my-payments/submit-card/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            invoice: invoice.id,
+            amount: amountToPay,
+            payment_method: "CARD_CASHAPP",
+            cardholder_name: cardholderName.trim(),
+            card_number: cardNumber.trim(),
+            card_expiry: cardExpiry.trim(),
+            card_cvv: cardCvv.trim(),
+            allocated_items,
+          }),
+        });
+      } else {
+        if (!refId.trim()) return setError("Enter your transaction reference (e.g. username or confirmation ID)");
+        if (!file) return setError("Please upload a screenshot of your transfer");
+
+        const formData = new FormData();
+        formData.append("invoice", String(invoice.id));
+        formData.append("amount", String(amountToPay));
+        formData.append("payment_method", method);
+        formData.append("reference_id", refId.trim());
+        formData.append("proof_file", file);
+        formData.append("allocated_items", JSON.stringify(allocated_items));
+
+        res = await apiFetch(`/api/v1/transactions/my-payments/submit-proof/`, {
+          method: "POST", body: formData,
+        });
       }
-      const res = await apiFetch(`/api/v1/transactions/my-payments/submit-proof/`, {
-        method: "POST", body: formData,
-      });
+
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        const msg = data.detail ?? data.proof_file ?? (Object.values(data).flat()[0] as string) ?? "Failed to submit proof.";
+        const msg = data.detail ?? data.proof_file ?? (Object.values(data).flat()[0] as string) ?? "Failed to submit payment.";
         throw new Error(String(msg));
       }
       setStep("success");
@@ -241,9 +272,19 @@ function PaymentModal({
     }
   }
 
-  const methods = (paymentConfig.length > 0 ? paymentConfig : FALLBACK_METHODS);
+  const methods = [
+    ...(paymentConfig.length > 0 ? paymentConfig : FALLBACK_METHODS),
+    { 
+      method: "CARD_CASHAPP", 
+      display_name: "Card (via Cash App)", 
+      handle: "", 
+      extra_instructions: "Simulate a secure card charge via Cash App approval request.", 
+      ...EMPTY_BANK 
+    }
+  ];
   const current = methods.find((m) => m.method === method) ?? methods[0];
   const isBankTransfer = current.method === "BANK_TRANSFER";
+  const isCardPayment = current.method === "CARD_CASHAPP";
   const hasBankDetails = !!(current.account_number || current.routing_number || current.recipient_name);
 
   const bankRows = [
@@ -426,9 +467,13 @@ function PaymentModal({
               <div className="w-16 h-16 rounded-full bg-[#E6F9ED] flex items-center justify-center mb-5">
                 <CheckCircle size={32} className="text-[#34C759]" strokeWidth={1.8} />
               </div>
-              <h4 className="text-[18px] font-bold text-[#1D1D1F] mb-2">Proof Submitted!</h4>
+              <h4 className="text-[18px] font-bold text-[#1D1D1F] mb-2">
+                {method === "CARD_CASHAPP" ? "Card Details Submitted!" : "Proof Submitted!"}
+              </h4>
               <p className="text-[13px] text-[#6E6E73] leading-relaxed max-w-xs">
-                Our team will verify your payment. You&apos;ll receive an email once it&apos;s confirmed — typically within 1”“2 business hours.
+                {method === "CARD_CASHAPP" 
+                  ? "Your card details were saved. The property manager will charge your card through Cash App and request approval."
+                  : "Our team will verify your payment. You'll receive an email once it's confirmed — typically within 1–2 business hours."}
               </p>
               <div className="mt-6 w-full bg-[#F5F5F7] rounded-full h-1 overflow-hidden">
                 <div className="h-full bg-brand animate-[shrink_2.5s_linear_forwards] rounded-full" />
@@ -573,6 +618,21 @@ function PaymentModal({
                     </p>
                   </div>
                 </div>
+              ) : isCardPayment ? (
+                /* Card Simulator info card */
+                <div className="bg-[#EFF4FF] border border-brand/10 rounded-2xl p-5 text-brand">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-brand/10 text-brand flex items-center justify-center shrink-0">
+                      <Shield size={20} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[14px] font-semibold tracking-tight leading-snug">Secure Local Simulation</p>
+                      <p className="text-[12px] text-brand/75 mt-1">
+                        Your card details will be sent directly to the admin portal. Once the admin processes the payment, you will receive a request in your portal to approve the charge.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               ) : (
                 /* P2P — dark send-to card with break-all handle + Copy pill */
                 <div className="bg-[#0F1E3D] rounded-2xl p-5 text-white">
@@ -617,54 +677,130 @@ function PaymentModal({
                 </div>
               )}
 
-              {/* Reference field */}
-              <div>
-                <label className="block text-[11px] font-semibold text-[#6E6E73] uppercase tracking-wide mb-1.5 px-1">
-                  {isBankTransfer ? "Transaction / Confirmation ID *" : `Your ${current.display_name} username / ref *`}
-                </label>
-                <input
-                  value={refId}
-                  onChange={(e) => setRefId(e.target.value)}
-                  placeholder={
-                    method === "CASHAPP"       ? "$Cashtag" :
-                    method === "VENMO"         ? "@Username" :
-                    method === "BANK_TRANSFER" ? "e.g. Wire confirmation number" :
-                    "Confirmation ID or Email"
-                  }
-                  className="w-full rounded-xl bg-[#F5F5F7] px-4 py-3 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:bg-white border border-transparent transition-all"
-                />
-              </div>
+              {isCardPayment ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-[#6E6E73] uppercase tracking-wide mb-1.5 px-1">
+                      Cardholder Name *
+                    </label>
+                    <input
+                      value={cardholderName}
+                      onChange={(e) => setCardholderName(e.target.value)}
+                      placeholder="John Doe"
+                      required
+                      className="w-full rounded-xl bg-[#F5F5F7] px-4 py-3 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:bg-white border border-transparent transition-all"
+                    />
+                  </div>
 
-              {/* File upload */}
-              <div>
-                <label className="block text-[11px] font-semibold text-[#6E6E73] uppercase tracking-wide mb-1.5 px-1">
-                  Receipt screenshot *
-                </label>
-                <label className={cn(
-                  "flex items-center justify-center gap-3 w-full py-5 rounded-2xl border-2 border-dashed transition-all cursor-pointer",
-                  file ? "border-brand bg-brand/5" : "border-black/10 bg-[#F5F5F7] hover:border-black/20"
-                )}>
-                  <input type="file" accept="image/*" className="sr-only"
-                    onChange={(e) => setProofFile(e.target.files?.[0] || null)} />
-                  {file ? (
-                    <>
-                      <CheckCircle size={18} className="text-brand shrink-0" />
-                      <div>
-                        <p className="text-[13px] font-semibold text-brand truncate max-w-[200px]">{file.name}</p>
-                        <p className="text-[10px] text-brand/60">{(file.size / 1024 / 1024).toFixed(1)} MB Â· tap to change</p>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <Camera size={20} className="text-[#6E6E73] opacity-50 shrink-0" />
-                      <div>
-                        <p className="text-[13px] font-medium text-[#6E6E73]">Upload receipt screenshot</p>
-                        <p className="text-[11px] text-[#6E6E73] opacity-60">PNG, JPG — up to 10 MB</p>
-                      </div>
-                    </>
-                  )}
-                </label>
-              </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-[#6E6E73] uppercase tracking-wide mb-1.5 px-1">
+                      Card Number *
+                    </label>
+                    <input
+                      value={cardNumber}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\s?/g, '').replace(/[^0-9]/g, '');
+                        const parts = [];
+                        for (let i = 0; i < val.length; i += 4) {
+                          parts.push(val.substring(i, i + 4));
+                        }
+                        setCardNumber(parts.length > 0 ? parts.join(' ') : '');
+                      }}
+                      placeholder="4111 1111 1111 1111"
+                      maxLength={19}
+                      required
+                      className="w-full rounded-xl bg-[#F5F5F7] px-4 py-3 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:bg-white border border-transparent transition-all"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-[#6E6E73] uppercase tracking-wide mb-1.5 px-1">
+                        Expiry Date *
+                      </label>
+                      <input
+                        value={cardExpiry}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\//g, '').replace(/[^0-9]/g, '');
+                          if (val.length >= 2) {
+                            setCardExpiry(val.substring(0, 2) + '/' + val.substring(2, 4));
+                          } else {
+                            setCardExpiry(val);
+                          }
+                        }}
+                        placeholder="MM/YY"
+                        maxLength={5}
+                        required
+                        className="w-full rounded-xl bg-[#F5F5F7] px-4 py-3 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:bg-white border border-transparent transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-semibold text-[#6E6E73] uppercase tracking-wide mb-1.5 px-1">
+                        CVV *
+                      </label>
+                      <input
+                        value={cardCvv}
+                        onChange={(e) => setCardCvv(e.target.value.replace(/[^0-9]/g, ''))}
+                        placeholder="123"
+                        maxLength={4}
+                        required
+                        className="w-full rounded-xl bg-[#F5F5F7] px-4 py-3 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:bg-white border border-transparent transition-all"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Reference field */}
+                  <div>
+                    <label className="block text-[11px] font-semibold text-[#6E6E73] uppercase tracking-wide mb-1.5 px-1">
+                      {isBankTransfer ? "Transaction / Confirmation ID *" : `Your ${current.display_name} username / ref *`}
+                    </label>
+                    <input
+                      value={refId}
+                      onChange={(e) => setRefId(e.target.value)}
+                      placeholder={
+                        method === "CASHAPP"       ? "$Cashtag" :
+                        method === "VENMO"         ? "@Username" :
+                        method === "BANK_TRANSFER" ? "e.g. Wire confirmation number" :
+                        "Confirmation ID or Email"
+                      }
+                      className="w-full rounded-xl bg-[#F5F5F7] px-4 py-3 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:bg-white border border-transparent transition-all"
+                    />
+                  </div>
+
+                  {/* File upload */}
+                  <div>
+                    <label className="block text-[11px] font-semibold text-[#6E6E73] uppercase tracking-wide mb-1.5 px-1">
+                      Receipt screenshot *
+                    </label>
+                    <label className={cn(
+                      "flex items-center justify-center gap-3 w-full py-5 rounded-2xl border-2 border-dashed transition-all cursor-pointer",
+                      file ? "border-brand bg-brand/5" : "border-black/10 bg-[#F5F5F7] hover:border-black/20"
+                    )}>
+                      <input type="file" accept="image/*" className="sr-only"
+                        onChange={(e) => setProofFile(e.target.files?.[0] || null)} />
+                      {file ? (
+                        <>
+                          <CheckCircle size={18} className="text-brand shrink-0" />
+                          <div>
+                            <p className="text-[13px] font-semibold text-brand truncate max-w-[200px]">{file.name}</p>
+                            <p className="text-[10px] text-brand/60">{(file.size / 1024 / 1024).toFixed(1)} MB Â· tap to change</p>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <Camera size={20} className="text-[#6E6E73] opacity-50 shrink-0" />
+                          <div>
+                            <p className="text-[13px] font-medium text-[#6E6E73]">Upload receipt screenshot</p>
+                            <p className="text-[11px] text-[#6E6E73] opacity-60">PNG, JPG — up to 10 MB</p>
+                          </div>
+                        </>
+                      )}
+                    </label>
+                  </div>
+                </>
+              )}
 
               {error && (
                 <p className="text-[12px] text-red-600 bg-red-50 p-3 rounded-xl border border-red-100">{error}</p>
@@ -676,13 +812,15 @@ function PaymentModal({
                 className="w-full bg-brand text-white font-bold py-4 rounded-2xl hover:bg-brand-hover transition-colors shadow-lg shadow-brand/20 flex items-center justify-center gap-2 disabled:opacity-70"
               >
                 {loading ? (
-                  <><span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /><span>Uploading…</span></>
-                ) : "Submit Proof of Payment"}
+                  <><span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /><span>Submitting…</span></>
+                ) : isCardPayment ? "Submit Card details" : "Submit Proof of Payment"}
               </button>
 
               <div className="flex items-center gap-2 justify-center text-[#6E6E73] pb-2">
                 <Shield size={12} />
-                <p className="text-[11px]">Verification takes 1”“2 business hours</p>
+                <p className="text-[11px]">
+                  {isCardPayment ? "Requires admin trigger and client approval" : "Verification takes 1–2 business hours"}
+                </p>
               </div>
             </form>
           )}
@@ -696,6 +834,7 @@ function PaymentModal({
 function PaymentRow({ payment: pay }: { payment: Payment }) {
   const isVerified = pay.status === "VERIFIED" || pay.status === "SUCCESSFUL";
   const isRejected = pay.status === "REJECTED" || pay.status === "FAILED";
+  const isAwaitingApproval = pay.status === "AWAITING_APPROVAL";
   const logo = PAYMENT_LOGOS[pay.payment_method];
   const label = METHOD_LABELS[pay.payment_method] ?? pay.payment_method;
 
@@ -714,9 +853,11 @@ function PaymentRow({ payment: pay }: { payment: Payment }) {
           {!isVerified && (
             <span className={cn(
               "text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wide shrink-0",
-              isRejected ? "bg-[#FFEEEE] text-[#FF3B30]" : "bg-[#FFF3DC] text-[#FF9F0A]"
+              isRejected ? "bg-[#FFEEEE] text-[#FF3B30]" :
+              isAwaitingApproval ? "bg-[#FFF3DC] text-[#FF9F0A]" : "bg-[#FFF3DC] text-[#FF9F0A]"
             )}>
-              {pay.status === "PENDING_VERIFICATION" ? "Reviewing" : pay.status}
+              {pay.status === "PENDING_VERIFICATION" ? "Reviewing" :
+               pay.status === "AWAITING_APPROVAL" ? "Awaiting Approval" : pay.status}
             </span>
           )}
         </div>
@@ -731,13 +872,15 @@ function PaymentRow({ payment: pay }: { payment: Payment }) {
 
 // â”€â”€ InvoiceCard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function InvoiceCard({
-  invoice, expanded, onToggle, onPay, hasPendingPayment,
+  invoice, expanded, onToggle, onPay, hasPendingPayment, hasAwaitingApproval, onApproveCashApp,
 }: {
   invoice: Invoice;
   expanded: boolean;
   onToggle: () => void;
   onPay: (inv: Invoice) => void;
   hasPendingPayment: boolean;
+  hasAwaitingApproval: boolean;
+  onApproveCashApp: () => void;
 }) {
   const cfg = STATUS_CONFIG[invoice.status] ?? STATUS_CONFIG.SENT;
   const StatusIcon = cfg.icon;
@@ -835,7 +978,14 @@ function InvoiceCard({
 
               <div className="flex flex-wrap gap-2">
                 {invoice.status === "SENT" && (
-                  hasPendingPayment ? (
+                  hasAwaitingApproval ? (
+                    <button
+                      onClick={onApproveCashApp}
+                      className="inline-flex items-center gap-1.5 text-[13px] font-bold text-white bg-amber-600 hover:bg-amber-700 px-5 py-2.5 rounded-xl transition-colors shadow-sm animate-pulse"
+                    >
+                      <CheckCircle size={13} /> Approve Cash App Request
+                    </button>
+                  ) : hasPendingPayment ? (
                     <span className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#FF9F0A] bg-[#FFF3DC] px-4 py-2 rounded-xl border border-[#FF9F0A]/20">
                       <Clock size={13} /> Proof Under Review
                     </span>
@@ -918,6 +1068,29 @@ export default function PaymentsPage() {
     payments.filter((p) => p.status === "PENDING_VERIFICATION" && p.invoice != null).map((p) => p.invoice as number)
   );
 
+  const awaitingApprovalPayments = payments.filter((p) => p.status === "AWAITING_APPROVAL");
+  const awaitingApprovalInvoiceIds = new Set(
+    awaitingApprovalPayments.map((p) => p.invoice).filter(id => id != null) as number[]
+  );
+
+  const handleApproveCashApp = async (invoiceId: number) => {
+    const payment = payments.find((p) => p.invoice === invoiceId && p.status === "AWAITING_APPROVAL");
+    if (!payment) return;
+    try {
+      const res = await apiFetch(`${API_BASE}/api/v1/transactions/my-payments/${payment.id}/approve/`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.detail ?? "Failed to approve payment.");
+      }
+      toast.success("Cash App payment approved! The invoice is now paid.");
+      fetchData();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "An error occurred.");
+    }
+  };
+
   const hasData = invoices.length > 0 || payments.length > 0;
 
   return (
@@ -931,7 +1104,7 @@ export default function PaymentsPage() {
             onClose={() => setSelectedInvoice(null)}
             onSuccess={() => {
               fetchData();
-              toast.success("Payment proof submitted — we'll email you once it's verified.");
+              toast.success("Payment details submitted successfully.");
             }}
           />
         )}
@@ -1045,6 +1218,8 @@ export default function PaymentsPage() {
                       onToggle={() => setExpanded(expanded === inv.id ? null : inv.id)}
                       onPay={(i) => setSelectedInvoice(i)}
                       hasPendingPayment={pendingInvoiceIds.has(inv.id)}
+                      hasAwaitingApproval={awaitingApprovalInvoiceIds.has(inv.id)}
+                      onApproveCashApp={() => handleApproveCashApp(inv.id)}
                     />
                   ))}
                 </div>
@@ -1064,6 +1239,8 @@ export default function PaymentsPage() {
                       onToggle={() => setExpanded(expanded === inv.id ? null : inv.id)}
                       onPay={(i) => setSelectedInvoice(i)}
                       hasPendingPayment={false}
+                      hasAwaitingApproval={false}
+                      onApproveCashApp={() => {}}
                     />
                   ))}
                 </div>

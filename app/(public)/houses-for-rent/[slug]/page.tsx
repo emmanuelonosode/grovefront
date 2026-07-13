@@ -164,8 +164,12 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const finalAmenities = allAmenities.length > 0 ? allAmenities : (property.amenities ?? []);
   const agent = property.agent;
 
-  // Similar homes from same city (used for the nearby-homes carousel + map)
-  const similarRaw = await fetchProperties({ q: property.city, listing_type: property.listing_type, page_size: "12" }).catch(() => null);
+  // Similar homes + city list are independent — fetch in parallel (they were
+  // serial round-trips, a noticeable chunk of TTFB on uncached renders).
+  const [similarRaw, allCities] = await Promise.all([
+    fetchProperties({ q: property.city, listing_type: property.listing_type, page_size: "12" }).catch(() => null),
+    fetchAllCities(),
+  ]);
   const similarResults = (similarRaw?.results ?? []).filter((p) => p.slug !== property.slug);
   const similar = similarResults.slice(0, 10).map(toPropertyCardShape);
 
@@ -173,8 +177,6 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   // "houses for rent in X" queries, so every property page must link to them —
   // but only when the target actually resolves (a city with zero active
   // listings 404s), otherwise fall back to the query-param search view.
-  // fetchAllCities is cached (revalidate 3600) so this is effectively free.
-  const allCities = await fetchAllCities();
   const citySlug = cityToSlug(property.city, property.state);
   const cityPageExists = allCities.some((c) => c.slug === citySlug);
   const stateSlug = stateSlugForCode(property.state);

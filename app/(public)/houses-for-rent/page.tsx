@@ -44,11 +44,12 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
   let results: PropertyListItemAPI[] = [];
   let total = 0;
 
-  try {
-    // When no sort is specified by the user, use "diverse" so properties from
-    // the same street/estate don't cluster together on the default browse page.
-    const effectiveSort = sort ?? "diverse";
-    const data = await fetchProperties({
+  // When no sort is specified by the user, use "diverse" so properties from
+  // the same street/estate don't cluster together on the default browse page.
+  // Search results + city directory are independent — fetch in parallel.
+  const effectiveSort = sort ?? "diverse";
+  const [propertiesResult, citiesResult] = await Promise.allSettled([
+    fetchProperties({
       listing_type: listingType,
       q,
       beds,
@@ -62,26 +63,25 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
       sort: effectiveSort,
       page_size: String(PAGE_SIZE),
       page: String(currentPage),
-    });
-    results = data.results;
-    total   = data.count;
-  } catch {
-    /* API offline — render empty state */
-  }
+    }),
+    fetchAllCities(),
+  ]);
+  if (propertiesResult.status === "fulfilled") {
+    results = propertiesResult.value.results;
+    total   = propertiesResult.value.count;
+  } /* else: API offline — render empty state */
 
   // Cities for the crawlable directory (server-rendered internal links to every city page).
   let mergedCities: CityData[] = Object.values(CITIES);
   let cityCounts: Record<string, number> = {};
-  try {
-    const dbCities = await fetchAllCities();
+  if (citiesResult.status === "fulfilled") {
+    const dbCities = citiesResult.value;
     mergedCities = [
       ...Object.values(CITIES),
       ...dbCities.filter((c) => !CITIES[c.slug]).map((c) => buildGenericCityData(c)),
     ];
     cityCounts = Object.fromEntries(dbCities.map((c) => [c.slug, c.count]));
-  } catch {
-    /* keep CITIES fallback */
-  }
+  } /* else: keep CITIES fallback */
 
   const breadcrumb = {
     "@context": "https://schema.org",

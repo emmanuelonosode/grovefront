@@ -50,3 +50,23 @@ export function timeAgo(date: string): string {
 export function truncate(str: string, length: number): string {
   return str.length > length ? str.slice(0, length) + "…" : str;
 }
+
+/**
+ * Downscale a listing photo URL for card/thumbnail contexts. Images arrive
+ * sized for hero display (1500px+) but cards render at ~200–500px — with
+ * `images.unoptimized` in next.config, the full-size file ships to the
+ * browser. Only URL patterns we recognize are rewritten; anything else is
+ * returned untouched so an upstream format change can never break images.
+ */
+export function toCardImageUrl(url: string): string {
+  if (!url) return url;
+  if (url.includes("images.invitationhomes.com")) {
+    return url
+      .replace("/w_1500,h_1000,", "/w_640,h_427,")
+      .replace("/c_fill,w_1200/", "/c_fill,w_640/");
+  }
+  if (url.includes("images.unsplash.com")) {
+    return url.replace("w=1600", "w=800");
+  }
+  return url;
+}

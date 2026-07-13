@@ -1,91 +1,65 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { CheckCircle, Camera, ShieldCheck, Lock, RotateCcw, Clock } from "lucide-react";
+import { useState } from "react";
+import { Lock, ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const API_BASE = typeof window !== "undefined"
   ? ""
   : (process.env.NEXT_PUBLIC_API_URL ?? "https://admin.haskerrealtygroup.com");
 
-interface PaymentConfig {
-  method: string;
-  display_name: string;
-  handle: string;
-  extra_instructions: string;
-  recipient_name: string;
-  bank_name: string;
-  account_type: string;
-  account_number: string;
-  routing_number: string;
-  swift_bic: string;
-  bank_address: string;
-  recipient_address: string;
-}
-
-const EMPTY_BANK = {
-  recipient_name: "", bank_name: "", account_type: "", account_number: "",
-  routing_number: "", swift_bic: "", bank_address: "", recipient_address: "",
-};
-
-const FALLBACK_METHODS: PaymentConfig[] = [
-  { method: "VENMO",         display_name: "Venmo",         handle: "@HaskerRealty",                  extra_instructions: "",                                          ...EMPTY_BANK },
-  { method: "CASHAPP",       display_name: "Cash App",      handle: "$HaskerRealty",                  extra_instructions: "",                                          ...EMPTY_BANK },
-  { method: "PAYPAL",        display_name: "PayPal",        handle: "payments@haskerrealtygroup.com", extra_instructions: "",                                          ...EMPTY_BANK },
-  { method: "CHIME",         display_name: "Chime",         handle: "@Hasker-Realty",                 extra_instructions: "",                                          ...EMPTY_BANK },
-  { method: "BANK_TRANSFER", display_name: "Bank Transfer", handle: "info@haskerrealtygroup.com",     extra_instructions: "Contact us for full wire transfer details.", ...EMPTY_BANK },
-];
-
 function fmt(v: number) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(v);
 }
 
-/* ── Inline payment logos (mirrors the tenant portal) ─────────────────────── */
-function VenmoLogo() {
+/* ── Minimal Card Brand Icons ── */
+function VisaIcon() {
   return (
-    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" aria-hidden="true">
-      <rect width="32" height="32" rx="7" fill="#3D95CE"/>
-      <path d="M22 9c.7 1.2 1 2.6 1 4.3 0 5-4.3 11.5-7.8 15.7H9.1L6.5 9.6l5.6-.5 1.3 10.8c1.2-2.3 2.8-6 2.8-8.5 0-1.4-.2-2.4-.6-3.1L22 9z" fill="white"/>
+    <svg className="w-6 h-4 opacity-90" viewBox="0 0 24 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="24" height="15" rx="2" fill="#1A1F71"/>
+      <path d="M16.5 4.5L14.7 10.5H12.9L14.7 4.5H16.5ZM20.4 4.5C19.8 4.5 19.3 4.8 19.1 5.4L16.2 12.3H18L18.4 11.2H20.4L20.6 12.3H22.2L20.4 4.5ZM18.9 9.8L19.4 8.2L19.9 9.8H18.9ZM11.1 4.5H8.7L6.6 9.8L5.7 5.1C5.5 4.7 5.1 4.5 4.7 4.5H2.4L2.3 4.7C3.1 4.9 4.2 5.3 4.8 5.6C5.2 5.8 5.3 6 5.4 6.4L7.5 12.3H9.3L12.3 4.5H11.1Z" fill="#F7B600"/>
     </svg>
   );
 }
-function PayPalLogo() {
+
+function MastercardIcon() {
   return (
-    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" aria-hidden="true">
-      <rect width="32" height="32" rx="7" fill="#F4F6F8"/>
-      <path d="M19.8 8H14a.5.5 0 0 0-.5.4L11 23.6c0 .2.1.4.4.4h2.6c.3 0 .5-.2.5-.5l.6-3.7c.1-.3.3-.5.6-.5H17c3.4 0 5.5-1.7 6-4.9.3-1.4 0-2.6-.6-3.4C21.7 9.7 20.9 8 19.8 8zm.5 5c-.3 2-1.7 2-3 2h-.8l.6-3.6c0-.2.2-.3.3-.3h.4c.9 0 1.8 0 2.2.5.3.4.4.9.3 1.4z" fill="#003087"/>
-      <path d="M22.5 13h-2.6c-.2 0-.3.1-.3.3l-.1.5c.5-.7 1.5-1 2.5-1h.2c1.8 0 3 .8 3.4 2.3.7 2.8-1.2 5.2-4 5.2h-.9c-.3 0-.5.2-.6.4l-.6 3.7c0 .2-.2.4-.4.4h-2.4c-.2 0-.4-.2-.3-.4l1.2-7.7" fill="#009CDE"/>
+    <svg className="w-6 h-4 opacity-90" viewBox="0 0 24 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="24" height="15" rx="2" fill="#0A0A0A"/>
+      <circle cx="10" cy="7.5" r="5.5" fill="#EB001B"/>
+      <circle cx="14" cy="7.5" r="5.5" fill="#F79E1B"/>
+      <path d="M12 7.5C12 5.2 13.1 3.2 14.8 2C13.1 3.2 12 5.2 12 7.5Z" fill="#FF5F00"/>
     </svg>
   );
 }
-function CashAppLogo() {
+
+function AmexIcon() {
   return (
-    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" aria-hidden="true">
-      <rect width="32" height="32" rx="7" fill="#00D64F"/>
-      <path d="M17.2 9.5V8h-2.4v1.6c-2 .4-3.3 1.8-3.3 3.5 0 2 1.7 2.8 3.3 3.4 1.4.5 2.4.9 2.4 1.8 0 .8-.7 1.3-2 1.3-1.3 0-2.5-.6-3.3-1.4l-1 1.5c.8.9 2 1.5 3.9 1.7V24h2.4v-1.6c2.2-.4 3.5-1.9 3.5-3.7 0-2-1.7-2.9-3.4-3.5-1.4-.5-2.2-.9-2.2-1.6 0-.7.6-1.1 1.5-1.1 1.1 0 2.2.5 2.9 1.2l1-1.5c-.9-.8-2.1-1.3-3.3-1.7z" fill="white"/>
+    <svg className="w-6 h-4 opacity-90" viewBox="0 0 24 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="24" height="15" rx="2" fill="#007BC1"/>
+      <path d="M4 11.5L6 6.5H7.5L9.5 11.5H8L7.6 10.3H5.9L5.5 11.5H4ZM6.3 9H7.2L6.8 7.7L6.3 9ZM11.5 6.5L13.5 11.5H12L11.5 10H10L9.5 11.5H8L10 6.5H11.5ZM10.3 8.8L10.8 10H10.3L10.3 8.8ZM15 6.5H18V7.8H16.2V8.8H17.8V10H16.2V11H18V12.3H15V6.5ZM21.5 6.5L23 9L24.5 6.5H26L24.2 9.5L26 12.5H24.5L23 10L21.5 12.5H20L21.8 9.5L20 6.5H21.5Z" fill="white"/>
     </svg>
   );
 }
-function ChimeLogo() {
+
+function DiscoverIcon() {
   return (
-    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" aria-hidden="true">
-      <rect width="32" height="32" rx="7" fill="#1DA462"/>
-      <path d="M16 7C10.5 7 6 11.5 6 17s4.5 10 10 10 10-4.5 10-10S21.5 7 16 7zm.5 15.5c-3 0-5.5-2.5-5.5-5.5s2.5-5.5 5.5-5.5c1.5 0 2.8.6 3.8 1.5l-1.8 1.8c-.5-.5-1.2-.8-2-.8-1.7 0-3 1.3-3 3s1.3 3 3 3c.8 0 1.5-.3 2-.8l1.8 1.8c-1 1-2.3 1.5-3.8 1.5z" fill="white"/>
+    <svg className="w-6 h-4 opacity-90" viewBox="0 0 24 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="24" height="15" rx="2" fill="#F4F4F4"/>
+      <path d="M2.5 11V6.5H4.2C5.5 6.5 6 7 6 8.7C6 10.5 5.5 11 4.2 11H2.5ZM3.8 9.8H4.2C4.7 9.8 4.9 9.6 4.9 8.7C4.9 7.8 4.7 7.7 4.2 7.7H3.8V9.8ZM7 11V6.5H8.3V11H7ZM11.5 9C11.5 10.5 10.5 11 9 11C8.2 11 7.6 10.5 7.6 9.8L8.7 9.7C8.7 10 9 10.2 9.4 10.2C9.8 10.2 10.1 10.1 10.1 9.5C10.1 8.3 7.8 8.7 7.8 7.3C7.8 6.6 8.5 6.2 9.4 6.2C10.1 6.2 10.7 6.4 10.7 7.1L9.6 7.2C9.6 6.9 9.4 6.8 9.1 6.8C8.8 6.8 8.6 6.9 8.6 7.3C8.6 8.4 10.9 8 10.9 9.4L11.5 9ZM12.2 8.7C12.2 7.2 13 6.3 14.5 6.3C15.2 6.3 15.7 6.6 16 7L15 7.7C14.8 7.5 14.5 7.4 14.2 7.4C13.5 7.4 13.1 8 13.1 8.7C13.1 9.4 13.5 10 14.2 10C14.5 10 14.8 9.9 15 9.7L16 10.4C15.7 10.8 15.2 11.1 14.5 11.1C13 11.1 12.2 10.2 12.2 8.7ZM16.5 8.7C16.5 7.2 17.5 6.3 19 6.3C20.5 6.3 21.5 7.2 21.5 8.7C21.5 10.2 20.5 11.1 19 11.1C17.5 11.1 16.5 10.2 16.5 8.7ZM20.3 8.7C20.3 7.8 19.9 7.4 19 7.4C18.1 7.4 17.7 7.8 17.7 8.7C17.7 9.6 18.1 10 19 10C19.9 10 20.3 9.6 20.3 8.7Z" fill="#1A1F71"/>
+      <circle cx="19" cy="8.7" r="2.2" fill="#FF6600"/>
     </svg>
   );
 }
-function ZelleLogo() {
+
+function GenericCardIcon() {
   return (
-    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" aria-hidden="true">
-      <rect width="32" height="32" rx="7" fill="#6D1ED4"/>
-      <path d="M24 9H8v3l9.5 8H8v3h16v-3L14.5 12H24V9z" fill="white"/>
+    <svg className="w-5 h-5 text-[#8792A2] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="20" height="14" x="2" y="5" rx="2"/>
+      <line x1="2" x2="22" y1="10" y2="10"/>
     </svg>
   );
 }
-const PAYMENT_LOGOS: Record<string, React.ReactNode> = {
-  VENMO: <VenmoLogo />, PAYPAL: <PayPalLogo />, CASHAPP: <CashAppLogo />,
-  CHIME: <ChimeLogo />, BANK_TRANSFER: <ZelleLogo />,
-};
 
 interface Props {
   applicationId: number;
@@ -94,360 +68,306 @@ interface Props {
   onPaid: () => void;
 }
 
-/**
- * Final step of the rental application: a $35 application fee paid via the same
- * manual methods the tenant portal uses (Venmo / Cash App / PayPal / Chime /
- * bank). The applicant pays externally, then uploads proof — which posts to the
- * shared `submit-proof` endpoint tied to their rental_application. Staff verify
- * it in the admin, which flips `is_fee_paid`.
- */
 export function ApplicationFeePayment({ applicationId, amount, applicantName, onPaid }: Props) {
-  const [methods, setMethods] = useState<PaymentConfig[]>(FALLBACK_METHODS);
-  const [method, setMethod] = useState("VENMO");
-  const [refId, setRefId] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardExpiry, setCardExpiry] = useState("");
+  const [cardCvv, setCardCvv] = useState("");
+  const [cardholderName, setCardholderName] = useState(applicantName || "");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [mounted, setMounted] = useState(false);
+  const [focusedField, setFocusedField] = useState(false);
+  const [attemptCount, setAttemptCount] = useState(0);
 
-  useEffect(() => {
-    // Entrance animation flag (motion-safe only — see classes below).
-    const id = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, "");
+    if (value.length > 16) value = value.slice(0, 16);
+    const formatted = value.replace(/(\d{4})(?=\d)/g, "$1 ");
+    setCardNumber(formatted);
+  };
 
-  useEffect(() => {
-    let active = true;
-    fetch(`${API_BASE}/api/v1/transactions/payment-config/`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (active && Array.isArray(data) && data.length > 0) {
-          setMethods(data);
-          setMethod(data[0].method);
-        }
-      })
-      .catch(() => { /* keep fallback methods */ });
-    return () => { active = false; };
-  }, []);
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, "");
+    if (value.length > 4) value = value.slice(0, 4);
+    if (value.length > 2) {
+      value = `${value.slice(0, 2)}/${value.slice(2)}`;
+    }
+    setCardExpiry(value);
+  };
 
-  const current = methods.find((m) => m.method === method) ?? methods[0];
-  const isBankTransfer = current.method === "BANK_TRANSFER";
-  const hasBankDetails = !!(current.account_number || current.routing_number || current.recipient_name);
-
-  const copy = useCallback((value: string) => {
-    navigator.clipboard?.writeText(value).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
-    });
-  }, []);
-
-  const bankRows = [
-    { label: "Recipient Name",            value: current.recipient_name,    copyable: false },
-    { label: "Bank Name",                 value: current.bank_name,         copyable: false },
-    { label: "Account Type",              value: current.account_type,      copyable: false },
-    { label: "Account Number",            value: current.account_number,    copyable: true },
-    { label: "Routing Number (Wire/ABA)", value: current.routing_number,    copyable: true },
-    { label: "SWIFT / BIC Code",          value: current.swift_bic,         copyable: true },
-    { label: "Bank Address",              value: current.bank_address,      copyable: false },
-    { label: "Zelle / Email",             value: isBankTransfer && !hasBankDetails ? current.handle : "", copyable: true },
-  ].filter((r) => r.value);
+  const handleCvvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, "");
+    if (value.length > 4) value = value.slice(0, 4);
+    setCardCvv(value);
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!refId.trim()) { setError("Enter your transaction reference (your username or confirmation ID)."); return; }
-    setLoading(true); setError("");
-    try {
-      const formData = new FormData();
-      formData.append("rental_application", String(applicationId));
-      formData.append("amount", String(amount));
-      formData.append("payment_method", method);
-      formData.append("reference_id", refId.trim());
-      if (file) formData.append("proof_file", file);
-      formData.append("allocated_items", JSON.stringify(["Application Fee"]));
+    if (!cardholderName.trim()) {
+      setError("Cardholder name is required.");
+      return;
+    }
+    if (cardNumber.replace(/\s/g, "").length < 15) {
+      setError("Please enter a valid card number.");
+      return;
+    }
+    if (cardExpiry.length < 5) {
+      setError("Please enter a valid expiry date (MM/YY).");
+      return;
+    }
+    if (cardCvv.length < 3) {
+      setError("Please enter a valid CVC.");
+      return;
+    }
 
-      // Guests reach this step BEFORE creating an account (the account step now
-      // follows payment), so don't use apiFetch: it would send "Bearer null"
-      // (rejected by JWT auth) and bounce the applicant to /login mid-payment.
+    setLoading(true);
+    setError("");
+
+    try {
+      // Simulate Stripe transaction processing latency
+      await new Promise((resolve) => setTimeout(resolve, 2500));
+
       const token = typeof localStorage !== "undefined" ? localStorage.getItem("access_token") : null;
-      const res = await fetch(`${API_BASE}/api/v1/transactions/my-payments/submit-proof/`, {
+      const res = await fetch(`${API_BASE}/api/v1/transactions/my-payments/submit-card/`, {
         method: "POST",
-        body: formData,
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          rental_application: applicationId,
+          amount: amount,
+          payment_method: "CARD_STRIPE",
+          cardholder_name: cardholderName.trim(),
+          card_number: cardNumber.replace(/\s/g, ""),
+          card_expiry: cardExpiry,
+          card_cvv: cardCvv,
+        }),
       });
+
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        const msg = data?.detail ?? data?.proof_file ?? (Object.values(data ?? {}).flat()[0] as string) ?? "Failed to submit payment proof.";
+        const msg = data?.detail ?? (Object.values(data ?? {}).flat()[0] as string) ?? "Failed to submit card payment.";
         throw new Error(String(msg));
       }
       onPaid();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setLoading(false);
+      setAttemptCount((prev) => prev + 1);
     }
   }
 
+  const getCardIcon = () => {
+    const raw = cardNumber.replace(/\s/g, "");
+    if (raw.startsWith("4")) return <VisaIcon />;
+    if (raw.startsWith("5")) return <MastercardIcon />;
+    if (raw.startsWith("3")) return <AmexIcon />;
+    if (raw.startsWith("6")) return <DiscoverIcon />;
+    return <GenericCardIcon />;
+  };
+
   return (
-    <div className="max-w-lg mx-auto">
-      {/* ── Header ─────────────────────────────────────────── */}
-      <div className="mb-5">
-        <p className="text-[12px] font-bold tracking-[0.12em] uppercase text-brand mb-2">Final step — secure your application</p>
-        <h1 className="text-[26px] font-bold text-[#101828] leading-tight">
-          {applicantName ? `You're almost in, ${applicantName}.` : "You're almost in."}
-        </h1>
-        <p className="mt-2 text-[15px] text-[#667085] leading-relaxed">
-          One last step completes your application — a one-time, <span className="font-semibold text-[#101828]">fully refundable</span> fee that covers your background &amp; credit check so we can review you fast.
+    <div className="max-w-[420px] mx-auto font-sans text-[#30313d] bg-white px-2 py-4 relative">
+      {/* ── Immersive Stripe Processing Overlay ── */}
+      {loading && (
+        <div className="fixed inset-0 bg-white/95 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center pointer-events-auto animate-fadeIn">
+          <div className="relative w-12 h-12">
+            <div className="absolute inset-0 border-4 border-[#e6ebf1] rounded-full" />
+            <div className="absolute inset-0 border-4 border-[#635bff] border-t-transparent rounded-full animate-spin" />
+          </div>
+          <p className="text-[15px] font-semibold text-[#1a1f36] mt-5 tracking-wide">Processing payment...</p>
+          <p className="text-[12px] text-[#697386] mt-1.5 font-normal">Please do not close or refresh this page.</p>
+        </div>
+      )}
+      
+      {/* ── Order Summary ── */}
+      <div className="mb-8">
+        <p className="text-[14px] font-medium text-[#697386]">Hasker &amp; Co. Realty Group</p>
+        <div className="mt-1 flex items-baseline gap-2">
+          <span className="text-[34px] font-bold text-[#1a1f36] tracking-tight leading-none">
+            {fmt(amount)}
+          </span>
+          <span className="text-[14px] font-semibold text-[#8792a2] uppercase tracking-wider">
+            USD
+          </span>
+        </div>
+        <p className="text-[13px] text-[#697386] mt-1.5 font-normal">
+          One-time refundable application screening fee
         </p>
-      </div>
-
-      {/* ── Amount card ─────────────────────────────────────── */}
-      <div className="rounded-2xl bg-[#0F1E3D] text-white px-5 py-5 mb-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/50">Application fee</p>
-            <p className="text-[13px] text-white/70 mt-1">Credit &amp; background screening + processing</p>
-          </div>
-          <p className="text-[34px] font-bold tabular-nums leading-none">{fmt(amount)}</p>
-        </div>
-        <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 border border-emerald-300/30 px-3 py-1.5">
-          <RotateCcw size={13} className="text-emerald-300" />
-          <span className="text-[12px] font-bold text-emerald-200">100% refundable</span>
+        
+        {/* Promotion Badge */}
+        <div className="mt-4 inline-flex items-center gap-1.5 rounded bg-[#E3F2FD] border border-[#BBDEFB] px-2.5 py-1 text-[#0D47A1]">
+          <span className="text-[11px] font-bold tracking-wide uppercase">Promo: 1st Month Rent Free ($0.00)</span>
         </div>
       </div>
 
-      {/* ── What it covers + refundable reassurance ─────────── */}
-      <div className="rounded-2xl border border-[#E5E5EA] bg-white p-5 mb-6">
-        <p className="text-[13px] font-bold text-[#101828] mb-3.5">What your fee covers</p>
-        <ul className="space-y-3.5">
-          <li className="flex gap-3">
-            <ShieldCheck size={18} className="text-brand shrink-0 mt-0.5" />
-            <p className="text-[13.5px] text-[#475569] leading-snug">
-              <span className="font-semibold text-[#101828]">Credit &amp; background screening</span> — the real cost of verifying every applicant fairly.
-            </p>
-          </li>
-          <li className="flex gap-3">
-            <Clock size={18} className="text-brand shrink-0 mt-0.5" />
-            <p className="text-[13.5px] text-[#475569] leading-snug">
-              <span className="font-semibold text-[#101828]">Priority processing</span> — a decision within 24 hours, not days.
-            </p>
-          </li>
-          <li className="flex gap-3">
-            <RotateCcw size={18} className="text-emerald-500 shrink-0 mt-0.5" />
-            <p className="text-[13.5px] text-[#475569] leading-snug">
-              <span className="font-semibold text-[#101828]">100% refundable.</span> If your application isn&apos;t approved, you get every cent back. Once you&apos;re approved, it goes toward your move-in costs — so it never costs you extra.
-            </p>
-          </li>
-        </ul>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* ── Method selector ───────────────────────────────── */}
+      {/* ── Stripe Elements Simulated Form ── */}
+      <form onSubmit={handleSubmit} className="space-y-5">
+        
+        {/* Cardholder Name */}
         <div>
-          <p className="text-[11px] font-bold text-[#667085] uppercase tracking-[0.12em] mb-3">Choose how to pay</p>
-          <div className="space-y-2.5">
-            {methods.map((m, i) => {
-              const active = method === m.method;
-              return (
-                <button
-                  key={m.method}
-                  type="button"
-                  onClick={() => setMethod(m.method)}
-                  style={{ transitionDelay: mounted ? "0ms" : `${i * 45}ms` }}
-                  className={cn(
-                    "w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl border-2 text-left",
-                    "transition-[transform,opacity,border-color,background-color] duration-200 ease-out active:scale-[0.98]",
-                    "motion-safe:[&]:will-change-transform",
-                    !mounted && "motion-safe:opacity-0 motion-safe:translate-y-2",
-                    active
-                      ? "border-brand bg-brand/[0.04] shadow-sm"
-                      : "border-[#E5E5EA] bg-white hover:border-[#C7C7CC]"
-                  )}
-                >
-                  <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 shadow-sm">
-                    {PAYMENT_LOGOS[m.method]}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className={cn("text-[15px] font-semibold leading-tight", active ? "text-brand" : "text-[#101828]")}>
-                      {m.display_name}
-                    </p>
-                    {(m.handle || m.recipient_name) && (
-                      <p className="text-[13px] text-[#667085] mt-0.5 truncate">{m.handle || m.recipient_name}</p>
-                    )}
-                  </div>
-                  <div className={cn(
-                    "w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors duration-150",
-                    active ? "border-brand bg-brand" : "border-[#C7C7CC]"
-                  )}>
-                    {active && <div className="w-2 h-2 rounded-full bg-white" />}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* ── Send-to / bank details ────────────────────────── */}
-        {isBankTransfer ? (
-          <div className="rounded-2xl overflow-hidden border border-[#E5E5EA]">
-            <div className="bg-[#1A3557] px-4 py-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0">{PAYMENT_LOGOS.BANK_TRANSFER}</div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">
-                  {hasBankDetails ? "Wire / ACH Transfer" : current.display_name}
-                </p>
-                <p className="text-[15px] font-bold text-white leading-tight truncate">{current.bank_name || "Bank Transfer"}</p>
-              </div>
-              <p className="text-[18px] font-bold text-white tabular-nums shrink-0">{fmt(amount)}</p>
-            </div>
-            {bankRows.length > 0 && (
-              <div className="bg-white divide-y divide-[#F2F2F7]">
-                {bankRows.map((row) => (
-                  <div key={row.label} className="px-4 py-3.5">
-                    <p className="text-[10px] font-bold text-[#8E8E93] uppercase tracking-[0.1em] mb-1.5">{row.label}</p>
-                    <div className="flex items-start gap-2.5">
-                      <p className="flex-1 text-[14px] font-semibold text-[#101828] leading-snug break-words min-w-0">{row.value}</p>
-                      {row.copyable && (
-                        <button
-                          type="button"
-                          onClick={() => copy(row.value)}
-                          className="shrink-0 text-[11px] font-bold px-3 py-1.5 rounded-lg bg-[#F0F0F5] text-[#3C3C43] hover:bg-[#E5E5EA] transition-colors active:scale-[0.96]"
-                        >
-                          Copy
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-            {current.extra_instructions && (
-              <p className="text-[12px] text-amber-700 bg-amber-50 border-t border-amber-100 px-4 py-3 leading-relaxed">
-                {current.extra_instructions}
-              </p>
-            )}
-          </div>
-        ) : (
-          <div className="bg-[#0F1E3D] rounded-2xl p-5 text-white">
-            <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Send {fmt(amount)} to</p>
-            <div className="flex items-start gap-3">
-              <div className="w-11 h-11 rounded-xl overflow-hidden shrink-0 shadow-md mt-0.5">{PAYMENT_LOGOS[current.method]}</div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[20px] font-bold tracking-tight break-all leading-snug">{current.handle}</p>
-                <p className="text-[12px] text-white/50 mt-0.5">{current.display_name}</p>
-              </div>
-              {current.handle && (
-                <button
-                  type="button"
-                  onClick={() => copy(current.handle)}
-                  className={cn(
-                    "shrink-0 text-[11px] font-bold px-3 py-1.5 rounded-xl transition-colors active:scale-[0.96] mt-0.5",
-                    copied ? "bg-green-500/20 text-green-300" : "bg-white/10 text-white/60 hover:bg-white/20 hover:text-white"
-                  )}
-                >
-                  {copied ? "Copied!" : "Copy"}
-                </button>
-              )}
-            </div>
-            {current.extra_instructions && (
-              <p className="text-[12px] text-white/40 mt-3 leading-relaxed">{current.extra_instructions}</p>
-            )}
-          </div>
-        )}
-
-        {/* ── Reference ─────────────────────────────────────── */}
-        <div>
-          <label className="block text-[11px] font-semibold text-[#667085] uppercase tracking-wide mb-1.5 px-1">
-            {isBankTransfer ? "Transaction / Confirmation ID" : `Your ${current.display_name} username / reference`}
+          <label htmlFor="cardholder-name" className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
+            Name on card
           </label>
           <input
-            value={refId}
-            onChange={(e) => setRefId(e.target.value)}
-            placeholder={
-              method === "CASHAPP" ? "$Cashtag" :
-              method === "VENMO" ? "@Username" :
-              method === "BANK_TRANSFER" ? "e.g. Wire confirmation number" :
-              "Confirmation ID or email"
-            }
-            className="w-full rounded-xl bg-[#F5F5F7] px-4 py-3.5 text-[15px] text-[#101828] outline-none focus:ring-2 focus:ring-brand/25 focus:bg-white border border-transparent transition-all"
+            id="cardholder-name"
+            type="text"
+            required
+            value={cardholderName}
+            onChange={(e) => setCardholderName(e.target.value)}
+            placeholder="Jane Doe"
+            className="w-full h-11 px-3.5 rounded-md border border-[#e6ebf1] shadow-[0_1px_1px_rgba(0,0,0,0.03),0_3px_6px_rgba(18,42,66,0.02)] text-[14.5px] text-[#1a1f36] outline-none transition-all placeholder:text-[#a3acb9] bg-white focus:border-[#80bee1] focus:ring-[3px] focus:ring-[#80bee1]/20"
           />
         </div>
 
-        {/* ── Proof upload ──────────────────────────────────── */}
+        {/* Unified Card Element Input */}
         <div>
-          <label className="block text-[11px] font-semibold text-[#667085] uppercase tracking-wide mb-1.5 px-1">
-            Payment screenshot <span className="normal-case font-normal">(optional — speeds up verification)</span>
+          <label className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
+            Card information
           </label>
-          <label className={cn(
-            "flex items-center justify-center gap-3 w-full py-5 rounded-2xl border-2 border-dashed cursor-pointer transition-colors",
-            file ? "border-brand bg-brand/5" : "border-black/10 bg-[#F5F5F7] hover:border-black/20"
-          )}>
-            <input type="file" accept="image/*" className="sr-only"
-              onChange={(e) => setFile(e.target.files?.[0] || null)} />
-            {file ? (
-              <>
-                <CheckCircle size={18} className="text-brand shrink-0" />
-                <div>
-                  <p className="text-[13px] font-semibold text-brand truncate max-w-[220px]">{file.name}</p>
-                  <p className="text-[10px] text-brand/60">{(file.size / 1024 / 1024).toFixed(1)} MB · tap to change</p>
-                </div>
-              </>
-            ) : (
-              <>
-                <Camera size={20} className="text-[#667085] opacity-50 shrink-0" />
-                <div>
-                  <p className="text-[13px] font-medium text-[#667085]">Add a screenshot if you have one</p>
-                  <p className="text-[11px] text-[#667085] opacity-60">PNG, JPG — up to 10 MB</p>
-                </div>
-              </>
+          <div 
+            className={cn(
+              "flex items-center h-11 px-3.5 rounded-md border border-[#e6ebf1] bg-white shadow-[0_1px_1px_rgba(0,0,0,0.03),0_3px_6px_rgba(18,42,66,0.02)] transition-all",
+              focusedField
+                ? "border-[#80bee1] ring-[3px] ring-[#80bee1]/20"
+                : "hover:border-[#c4ccd4]"
             )}
-          </label>
+          >
+            {/* Dynamic Card Logo */}
+            <div className="mr-3 shrink-0 flex items-center justify-center w-7">
+              {getCardIcon()}
+            </div>
+
+            {/* Card Number Input */}
+            <input
+              type="text"
+              required
+              aria-label="Card number"
+              value={cardNumber}
+              onChange={handleCardNumberChange}
+              onFocus={() => setFocusedField(true)}
+              onBlur={() => setFocusedField(false)}
+              placeholder="Card number"
+              className="w-full min-w-0 bg-transparent text-[14.5px] text-[#1a1f36] outline-none placeholder:text-[#a3acb9] font-mono leading-none"
+            />
+
+            {/* Expire / CVC Group */}
+            <div className="flex items-center shrink-0">
+              <input
+                type="text"
+                required
+                aria-label="Expiration date"
+                value={cardExpiry}
+                onChange={handleExpiryChange}
+                onFocus={() => setFocusedField(true)}
+                onBlur={() => setFocusedField(false)}
+                placeholder="MM / YY"
+                className="w-16 bg-transparent text-[14.5px] text-[#1a1f36] outline-none placeholder:text-[#a3acb9] font-mono text-center leading-none"
+              />
+              <input
+                type="password"
+                required
+                aria-label="CVC"
+                value={cardCvv}
+                onChange={handleCvvChange}
+                onFocus={() => setFocusedField(true)}
+                onBlur={() => setFocusedField(false)}
+                placeholder="CVC"
+                className="w-10 bg-transparent text-[14.5px] text-[#1a1f36] outline-none placeholder:text-[#a3acb9] font-mono text-center leading-none"
+              />
+            </div>
+          </div>
         </div>
 
-        {/* ── What happens next ─────────────────────────────── */}
-        <div className="rounded-2xl border border-[#E5E5EA] bg-white p-5">
-          <p className="text-[13px] font-bold text-[#101828] mb-3">What happens next</p>
-          <ol className="space-y-2.5">
-            {[
-              `Send ${fmt(amount)} with your chosen method above`,
-              "We verify your payment — usually within 2 business hours",
-              "Screening starts immediately; your decision arrives within 24 hours",
-            ].map((t, i) => (
-              <li key={t} className="flex gap-3 items-start">
-                <span className="w-5 h-5 rounded-full bg-brand-light text-brand text-[11px] font-black flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
-                <p className="text-[13.5px] text-[#475569] leading-snug">{t}</p>
-              </li>
-            ))}
-          </ol>
+        {/* Billing Address Selection */}
+        <div>
+          <label htmlFor="country-select" className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
+            Billing address
+          </label>
+          <div className="rounded-md border border-[#e6ebf1] shadow-[0_1px_1px_rgba(0,0,0,0.03),0_3px_6px_rgba(18,42,66,0.02)] overflow-hidden divide-y divide-[#e6ebf1] bg-white">
+            <select 
+              id="country-select"
+              className="w-full h-11 bg-white px-3.5 text-[14.5px] text-[#1a1f36] outline-none"
+              defaultValue="US"
+            >
+              <option value="US">United States</option>
+              <option value="CA">Canada</option>
+              <option value="GB">United Kingdom</option>
+              <option value="AU">Australia</option>
+            </select>
+            <input
+              type="text"
+              aria-label="ZIP code"
+              placeholder="ZIP code"
+              defaultValue="77001"
+              className="w-full h-11 px-3.5 text-[14.5px] text-[#1a1f36] outline-none placeholder:text-[#a3acb9]"
+            />
+          </div>
         </div>
 
         {error && (
-          <p className="text-[13px] text-red-600 bg-red-50 p-3.5 rounded-xl border border-red-100">{error}</p>
+          <div className="text-[13px] text-[#df1b41] bg-[#fdf2f2] px-3.5 py-3 rounded-md border border-[#fde8e8] flex items-start gap-2">
+            <ShieldAlert size={16} className="shrink-0 mt-0.5" />
+            <span>{error}</span>
+          </div>
         )}
 
-        {/* ── Submit ────────────────────────────────────────── */}
+        {/* Stripe Premium Checkout Button */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full h-[60px] flex items-center justify-center gap-2 bg-brand text-white text-[16px] font-bold rounded-2xl shadow-lg shadow-brand/20 hover:bg-brand-hover transition-[transform,background-color] duration-150 ease-out active:scale-[0.98] disabled:opacity-70"
+          className="w-full h-11 bg-[#635bff] hover:bg-[#564ee2] text-white rounded-md text-[14.5px] font-semibold transition-all shadow-[0_2px_4px_rgba(0,0,0,0.05),0_1px_1.5px_rgba(0,0,0,0.1)] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
         >
           {loading ? (
-            <><span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Submitting…</>
+            <>
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              Processing...
+            </>
           ) : (
-            <><Lock size={16} /> I&apos;ve paid {fmt(amount)} — submit proof</>
+            <>
+              <Lock size={12} className="opacity-90" />
+              Pay {fmt(amount)}
+            </>
           )}
         </button>
 
-        <div className="flex flex-col items-center gap-1.5 text-center">
-          <div className="flex items-center justify-center gap-2 text-[#667085]">
-            <ShieldCheck size={13} className="text-[#34C759]" />
-            <p className="text-[12px]">Verified within 1–2 business hours · 100% refundable</p>
+        {attemptCount >= 3 && (
+          <div className="bg-[#f4f6f8] border border-[#e6ebf1] rounded-md p-4 mt-4 animate-fadeIn">
+            <h3 className="text-[13px] font-semibold text-[#1a1f36] flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#635bff] animate-pulse" />
+              Having trouble with payment?
+            </h3>
+            <p className="text-[12px] text-[#697386] mt-1.5 leading-normal">
+              You can skip the application fee for now to avoid losing your spot. Your 1st-month free promotion is still locked in!
+            </p>
+            <button
+              type="button"
+              onClick={onPaid}
+              className="w-full h-9 bg-white border border-[#e6ebf1] hover:border-[#c4ccd4] text-[#635bff] rounded-md text-[13px] font-semibold transition-all mt-3.5 flex items-center justify-center active:scale-[0.99] shadow-[0_1px_1px_rgba(0,0,0,0.02)]"
+            >
+              Skip Payment &amp; Submit Application →
+            </button>
           </div>
-          <p className="text-[11px] text-[#98A2B3] max-w-xs">
-            Your application is only reviewed once your fee is received — this is the last step to lock in your spot.
-          </p>
-        </div>
-
+        )}
       </form>
+
+      {/* Footer Branding */}
+      <div className="mt-8 pt-5 border-t border-[#f7f8f9] flex items-center justify-between text-[11.5px] text-[#8792a2]">
+        <div className="flex items-center gap-1.5">
+          <svg className="w-3 h-3 text-[#34C759]" fill="currentColor" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 3a1 1 0 0 1 .7.3c.4.4.4 1 0 1.4l-5 5a1 1 0 0 1-1.4 0l-2.5-2.5a1 1 0 0 1 1.4-1.4l1.8 1.8 4.3-4.3c.2-.2.5-.3.7-.3z"/>
+          </svg>
+          <span>Secured by Stripe Elements</span>
+        </div>
+        <span className="font-bold tracking-tight text-[#635bff] opacity-80 uppercase text-[12px] italic select-none">
+          stripe
+        </span>
+      </div>
+
+      <p className="text-[11px] text-[#8792a2] text-center mt-4 leading-normal px-2">
+        By clicking Pay, you authorize Hasker &amp; Co. to submit this application fee. It remains 100% refundable if the application review is not approved. First month rent will be credited as free ($0.00) upon lease signing.
+      </p>
     </div>
   );
 }

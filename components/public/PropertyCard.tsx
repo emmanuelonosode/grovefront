@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Bed, Bath, Maximize, Home } from "lucide-react";
 import { CardImageCarousel } from "@/components/public/CardImageCarousel";
-import { formatPrice, formatNumber } from "@/lib/utils";
+import { formatPrice, formatNumber, toCardImageUrl } from "@/lib/utils";
 import type { Property } from "@/types";
 
 interface PropertyCardProps {
@@ -34,7 +34,7 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
           <Link href={detailHref} className="absolute inset-0 z-0 block" tabIndex={-1} aria-hidden="true" />
           {primaryImage ? (
             <Image
-              src={primaryImage.url}
+              src={toCardImageUrl(primaryImage.url)}
               alt={property.title}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"
