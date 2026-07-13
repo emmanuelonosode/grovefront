@@ -7,6 +7,7 @@ import { WorkersScene, PetScene } from "@/components/public/HomepageIllustration
 import { StateDirectory } from "@/components/public/StateDirectory";
 import { fetchHomepageProperties, fetchProperties, toPropertyCardShape } from "@/lib/properties";
 import { CITIES, fetchAllCities, buildGenericCityData, type CityData } from "@/lib/cities";
+import { BUSINESS, postalAddressSchema } from "@/lib/business";
 
 // Hero background rotates every 2 hours (recomputed on each ISR regeneration, revalidate=300)
 // so the homepage feels fresh. All curated, verified, and bandwidth-optimized (webp).
@@ -76,18 +77,11 @@ const LOCAL_BUSINESS_SCHEMA = {
   logo: `${BASE_URL}/logo.svg`,
   image: `${BASE_URL}/opengraph-image`,
   description: "Hasker & Co. Realty Group — affordable homes to rent and buy. Quality homes, move-in ready, fast decisions. 2,000+ families housed across 12+ US cities since 2012.",
-  email: "info@haskerrealtygroup.com",
+  email: BUSINESS.email,
+  telephone: BUSINESS.telephone,
   priceRange: "$$",
   foundingDate: "2012",
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "204 Colonial Hills Rd",
-    addressLocality: "Winder",
-    addressRegion: "GA",
-    postalCode: "30680",
-    addressCountry: "US",
-  },
-  geo: { "@type": "GeoCoordinates", latitude: 33.9940, longitude: -83.7196 },
+  address: postalAddressSchema(),
   openingHoursSpecification: [
     { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday"], opens: "09:00", closes: "18:00" },
     { "@type": "OpeningHoursSpecification", dayOfWeek: ["Saturday"], opens: "10:00", closes: "16:00" },
@@ -126,16 +120,10 @@ const ORGANIZATION_SCHEMA = {
   alternateName: ["Hasker Realty Group", "Hasker Realty", "Hasker and Co Realty Group", "Hasker & Co Realty"],
   url: BASE_URL,
   logo: `${BASE_URL}/logo.svg`,
-  email: "info@haskerrealtygroup.com",
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "204 Colonial Hills Rd",
-    addressLocality: "Winder",
-    addressRegion: "GA",
-    postalCode: "30680",
-    addressCountry: "US",
-  },
-  contactPoint: { "@type": "ContactPoint", email: "info@haskerrealtygroup.com", contactType: "customer service", availableLanguage: "English" },
+  email: BUSINESS.email,
+  telephone: BUSINESS.telephone,
+  address: postalAddressSchema(),
+  contactPoint: { "@type": "ContactPoint", email: BUSINESS.email, telephone: BUSINESS.telephone, contactType: "customer service", availableLanguage: "English" },
   sameAs: [
     "https://www.instagram.com/haskerrealty",
     "https://www.linkedin.com/company/haskerrealty",
@@ -148,7 +136,7 @@ const FAQ_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: [
-    { "@type": "Question", name: "What is Hasker Realty Group?", acceptedAnswer: { "@type": "Answer", text: "Hasker Realty Group — officially named Hasker & Co. Realty Group — is a licensed US real estate company founded in 2012 and headquartered in Winder, GA. The company specializes in affordable rental homes and budget-friendly properties for sale across 12+ US cities." } },
+    { "@type": "Question", name: "What is Hasker Realty Group?", acceptedAnswer: { "@type": "Answer", text: "Hasker Realty Group — officially named Hasker & Co. Realty Group — is a licensed US real estate company founded in 2012 and headquartered in Virginia Beach, VA. The company specializes in affordable rental homes and budget-friendly properties for sale across 12+ US cities." } },
     { "@type": "Question", name: "How long does it take to get approved for a rental?", acceptedAnswer: { "@type": "Answer", text: "Hasker & Co. Realty Group reviews every rental application within 24 hours. You can apply online in under 10 minutes at haskerrealtygroup.com/apply." } },
     { "@type": "Question", name: "Does Hasker & Co. Realty Group charge hidden fees?", acceptedAnswer: { "@type": "Answer", text: "No. The listed price is what you pay. No administrative processing fees or convenience surcharges beyond the standard security deposit." } },
     { "@type": "Question", name: "Can I rent with bad credit through Hasker & Co. Realty Group?", acceptedAnswer: { "@type": "Answer", text: "Hasker & Co. Realty Group reviews applications individually and works with renters who have imperfect credit or limited rental history." } },
@@ -160,15 +148,6 @@ const BREADCRUMB_HOME = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: BASE_URL }],
-};
-
-const AGGREGATE_RATING_SCHEMA = {
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "@id": `${BASE_URL}/#aggregate-rating`,
-  name: "Hasker & Co. Realty Group",
-  url: BASE_URL,
-  aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", bestRating: "5", worstRating: "1", ratingCount: "2400", reviewCount: "2400" },
 };
 
 const HOW_IT_WORKS_SCHEMA = {
@@ -255,7 +234,6 @@ export default async function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_SCHEMA) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_HOME) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_SCHEMA) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(AGGREGATE_RATING_SCHEMA) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(HOW_IT_WORKS_SCHEMA) }} />
 
       {/* â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
@@ -311,8 +289,8 @@ export default async function HomePage() {
           {/* Trust badges — solid, crisp */}
           <div className="hero-animate flex flex-wrap items-center justify-center gap-2.5" style={{ animationDelay: "240ms" }}>
             {[
-              { icon: <Star size={14} className="text-amber-500 fill-amber-500" />, label: "4.9 on Trustpilot" },
-              { icon: <ShieldCheck size={14} className="text-emerald-600" />,        label: "BBB A+ Accredited" },
+              { icon: <Star size={14} className="text-amber-500 fill-amber-500" />, label: "Verified Listings Only" },
+              { icon: <ShieldCheck size={14} className="text-emerald-600" />,        label: "Equal Housing Provider" },
               { icon: <Users size={14} className="text-brand" />,                    label: "2,400+ families housed" },
               { icon: <HomeIcon size={14} className="text-brand" />,                 label: "Equal Housing Opportunity" },
             ].map((b) => (

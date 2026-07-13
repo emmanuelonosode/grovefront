@@ -8,6 +8,7 @@ import { CityLeadCapture } from "@/components/public/CityLeadCapture";
 import { TrustSignals } from "@/components/public/TrustSignals";
 import { CITIES, type CityData } from "@/lib/cities";
 import type { StateInfo } from "@/lib/states";
+import { realEstateAgentSchema } from "@/lib/business";
 
 interface Props {
   state: StateInfo;
@@ -61,12 +62,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
       name: state.name,
       containedInPlace: { "@type": "Country", name: "United States" },
     },
-    provider: {
-      "@type": "RealEstateAgent",
-      name: "Hasker & Co. Realty Group",
-      url: BASE,
-      telephone: "+14045550182",
-    },
+    provider: realEstateAgentSchema(),
   };
 
   const breadcrumb = {

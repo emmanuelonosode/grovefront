@@ -7,10 +7,11 @@ import {
   Bed, Star, TrendingUp, Users, Building,
 } from "lucide-react";
 import {
-  CITIES, getAllCitySlugs, getCityBySlug,
-  fetchAllCities, buildGenericCityData,
+  CITIES, getCityBySlug,
+  fetchAllCities, buildGenericCityData, buildCityFaqs,
   type CityData,
 } from "@/lib/cities";
+import { realEstateAgentSchema } from "@/lib/business";
 import { fetchProperties, toPropertyCardShape } from "@/lib/properties";
 import { PropertyCard } from "@/components/public/PropertyCard";
 import { Button } from "@/components/ui/Button";
@@ -118,7 +119,7 @@ const TRUST_BADGES = [
   { icon: Clock,       label: "24-Hour Decisions" },
   { icon: ShieldCheck, label: "Move-In Ready" },
   { icon: PawPrint,    label: "Pet-Friendly Options" },
-  { icon: Star,        label: "4.9★ Trustpilot" },
+  { icon: Star,        label: "Transparent Pricing" },
   { icon: Users,       label: "2,000+ Families Housed" },
   { icon: Home,        label: "Verified Listings Only" },
 ];
@@ -126,9 +127,19 @@ const TRUST_BADGES = [
 /* ── Market stats ───────────────────────────────────────────────────── */
 
 function MarketStats({ city }: { city: CityData }) {
+  // Generic (DB-derived) cities have no population figure — show a real
+  // inventory stat instead of the old "Metro Pop. N/A".
+  const beds = city.stats?.bedrooms
+    ? Object.keys(city.stats.bedrooms).map(Number).sort((a, b) => a - b)
+    : [];
+  const middle = city.population
+    ? { icon: Users, label: "Metro Pop.", value: city.population }
+    : beds.length > 0
+      ? { icon: Bed, label: "Bedroom Sizes", value: beds.length === 1 ? `${beds[0]} BR` : `${beds[0]}–${beds[beds.length - 1]} BR` }
+      : { icon: Clock, label: "Decision Time", value: "24 hours" };
   const stats = [
     { icon: TrendingUp, label: "Avg. Rent",   value: city.avgRent + "/mo" },
-    { icon: Users,      label: "Metro Pop.",   value: city.population },
+    middle,
     { icon: Building,   label: "Market",       value: city.marketHighlight },
   ];
 
@@ -199,11 +210,16 @@ export default async function CityRentalsPage(
     );
   }
 
+  // Always fetch live city stats (cached 1h) — generic cities are built from
+  // them, curated cities carry them for FAQ/stat blocks, and the sibling-city
+  // links below need the full list either way.
+  const dbCities = await fetchAllCities();
+  const stats = dbCities.find((c) => c.slug === slug);
   const isCurated = Boolean(getCityBySlug(slug));
   let city = getCityBySlug(slug);
-  if (!city) {
-    const dbCities = await fetchAllCities();
-    const stats = dbCities.find((c) => c.slug === slug);
+  if (city) {
+    if (stats) city = { ...city, stats };
+  } else {
     if (!stats) notFound();
     city = buildGenericCityData(stats);
   }
@@ -232,14 +248,16 @@ export default async function CityRentalsPage(
       name: city.name,
       containedInPlace: { "@type": "State", name: city.state, containedInPlace: { "@type": "Country", name: "United States" } },
     },
-    provider: {
-      "@type": "RealEstateAgent",
-      name: "Hasker & Co. Realty Group",
-      url: "https://haskerrealtygroup.com",
-      telephone: "+14045550182",
-      address: { "@type": "PostalAddress", streetAddress: "204 Colonial Hills Rd", addressLocality: "Winder", addressRegion: "GA", postalCode: "30680", addressCountry: "US" },
-    },
+    provider: realEstateAgentSchema(),
   };
+
+  const stateSlug = stateSlugForCode(city.stateCode);
+
+  // Same-state sibling cities, biggest inventory first.
+  const siblingCities = dbCities
+    .filter((c) => (c.state || "").toUpperCase() === city.stateCode && c.slug !== slug)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 12);
 
   const breadcrumb = {
     "@context": "https://schema.org",
@@ -247,63 +265,22 @@ export default async function CityRentalsPage(
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: "https://haskerrealtygroup.com" },
       { "@type": "ListItem", position: 2, name: "Properties", item: "https://haskerrealtygroup.com/houses-for-rent" },
-      { "@type": "ListItem", position: 3, name: `${city.name}, ${city.stateCode}`, item: `https://haskerrealtygroup.com/rentals/${slug}` },
+      { "@type": "ListItem", position: 3, name: city.state, item: `https://haskerrealtygroup.com/rentals/${stateSlug}` },
+      { "@type": "ListItem", position: 4, name: `${city.name}, ${city.stateCode}`, item: `https://haskerrealtygroup.com/rentals/${slug}` },
     ],
   };
 
+  // Single FAQ source for both the JSON-LD and the visible section — Google
+  // requires FAQPage markup to match on-page content.
+  const faqs = buildCityFaqs(city);
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: `How much does it cost to rent a home in ${city.name}?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `The average rent in ${city.name} starts around ${city.avgRent}/month. Hasker & Co. Realty Group offers affordable, move-in ready rentals across ${city.name} with transparent pricing on every listing.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: `How do I apply for a rental in ${city.name}?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `You can apply online at haskerrealtygroup.com/apply in under 10 minutes. Hasker & Co. Realty Group reviews every application within 24 hours. No paper forms required.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: `Does Hasker & Co. Realty Group have pet-friendly rentals in ${city.name}?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `Yes. Several of our ${city.name} listings are pet-friendly. Pet policies are disclosed upfront on every listing. You can filter for pet-friendly homes at haskerrealtygroup.com/houses-for-rent.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: `Are there any hidden fees when renting through Hasker & Co. in ${city.name}?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `No. Hasker & Co. Realty Group does not charge hidden administrative or processing fees. The price listed is the price you pay. Standard upfront costs are a security deposit (typically 1–2 months rent) and the first month's rent.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: `Are there 2-bedroom and 3-bedroom homes for rent in ${city.name}?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `Yes. Hasker & Co. Realty Group lists 1, 2, 3, and 4-bedroom homes for rent in ${city.name}, ${city.stateCode}. Family-sized homes typically start around ${city.avgRent}/month. Browse available bedrooms at haskerrealtygroup.com/rentals/${slug}.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: `How soon can I move into a rental in ${city.name}?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `Most move-ins happen within days of approval. Apply online, get a decision within 24 hours, and once approved you can sign and move in on your preferred date — many ${city.name} homes are move-in ready immediately.`,
-        },
-      },
-    ],
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
   };
 
   return (
@@ -330,6 +307,8 @@ export default async function CityRentalsPage(
                 <li><Link href="/" className="hover:text-brand transition-colors">Home</Link></li>
                 <li className="text-neutral-300">/</li>
                 <li><Link href="/houses-for-rent" className="hover:text-brand transition-colors">Properties</Link></li>
+                <li className="text-neutral-300">/</li>
+                <li><Link href={`/rentals/${stateSlug}`} className="hover:text-brand transition-colors">{city.state}</Link></li>
                 <li className="text-neutral-300">/</li>
                 <li className="text-neutral-800 font-medium">{city.name}, {city.stateCode}</li>
               </ol>
@@ -594,24 +573,7 @@ export default async function CityRentalsPage(
             </h2>
           </div>
           <div className="space-y-3">
-            {[
-              {
-                q: `How much does it cost to rent a home in ${city.name}?`,
-                a: `The average rent in ${city.name} starts around ${city.avgRent}/month. Hasker & Co. Realty Group offers affordable, move-in ready rentals with transparent pricing on every listing.`,
-              },
-              {
-                q: `How do I apply for a rental in ${city.name}?`,
-                a: `Apply online at haskerrealtygroup.com/apply in under 10 minutes. We review every application within 24 hours. No paper forms, no runaround.`,
-              },
-              {
-                q: `Does Hasker & Co. have pet-friendly rentals in ${city.name}?`,
-                a: `Yes. Several of our ${city.name} listings are pet-friendly. Pet policies are disclosed upfront on every listing so you never waste time on a home that won't accept your pet.`,
-              },
-              {
-                q: `Are there any hidden fees when renting through Hasker & Co. in ${city.name}?`,
-                a: `No. The price listed is the price you pay. Standard upfront costs are a security deposit (typically 1–2 months rent) and the first month's rent. All fees are shown before you apply.`,
-              },
-            ].map((faq) => (
+            {faqs.map((faq) => (
               <details key={faq.q} className="group border border-white/10 rounded-sm overflow-hidden bg-white/5 hover:bg-white/8 transition-colors">
                 <summary className="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer list-none hover:bg-white/5 transition-colors">
                   <span className="font-medium text-sm text-white leading-snug">{faq.q}</span>
@@ -630,17 +592,48 @@ export default async function CityRentalsPage(
         </div>
       </section>
 
+      {/* ── MORE CITIES IN THIS STATE ────────────────────────────── */}
+      {/* Same-state sibling links build the topical cluster Google needs to
+          rank every city in a state — not just the 8 curated ones. */}
+      {siblingCities.length > 0 && (
+        <section className="bg-white border-t border-neutral-100">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16 lg:py-20">
+            <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-2">Explore More</p>
+            <h2 className="font-serif text-2xl lg:text-3xl font-bold text-brand-dark mb-8">
+              More Cities in {city.state}
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {siblingCities.map((c) => (
+                <Link
+                  key={c.slug}
+                  href={`/rentals/${c.slug}`}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-200 text-sm font-medium text-brand-dark hover:border-brand hover:text-brand hover:bg-brand-light transition-colors"
+                >
+                  {c.city}
+                  <span className="text-xs text-neutral-400">{c.count}</span>
+                </Link>
+              ))}
+              <Link
+                href={`/rentals/${stateSlug}`}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-hover transition-colors"
+              >
+                All {city.state} rentals <ArrowRight size={14} />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ── EXPLORE OTHER CITIES ─────────────────────────────────── */}
       <section className="bg-white border-t border-neutral-100">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16 lg:py-20">
-          <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-2">Explore More</p>
           <h2 className="font-serif text-2xl lg:text-3xl font-bold text-brand-dark mb-8">
             Affordable Rentals in Other Cities
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {Object.values(CITIES)
               .filter((c) => c.slug !== slug)
-              .slice(0, 8)
+              .slice(0, 4)
               .map((c) => (
                 <Link
                   key={c.slug}

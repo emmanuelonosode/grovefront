@@ -52,24 +52,45 @@ export async function buildCore(): Promise<SitemapEntry[]> {
   return pages;
 }
 
+// Honest <lastmod>: use the newest listing update per city (from the API);
+// omit the tag entirely when unknown. Emitting `new Date()` on every
+// regeneration told Google every page changed constantly — it learns to
+// distrust lastmod sitewide.
+function cityLastMod(c: { last_updated?: string | null }): Date | undefined {
+  if (!c.last_updated) return undefined;
+  const d = new Date(c.last_updated);
+  return isNaN(d.getTime()) ? undefined : d;
+}
+
 export async function buildStates(): Promise<SitemapEntry[]> {
   const dbCities = await fetchAllCities().catch(() => []);
   const stateCodes = new Set<string>([
     ...Object.values(CITIES).map((c) => c.stateCode),
     ...dbCities.map((c) => (c.state || "").toUpperCase()),
   ]);
+  const stateLastMod = new Map<string, Date>();
+  for (const c of dbCities) {
+    const code = (c.state || "").toUpperCase();
+    const lm = cityLastMod(c);
+    if (!code || !lm) continue;
+    const prev = stateLastMod.get(code);
+    if (!prev || lm > prev) stateLastMod.set(code, lm);
+  }
   return [...stateCodes]
-    .map((code) => stateSlugForCode(code))
-    .filter(Boolean)
-    .map((slug) => ({ url: `${BASE_URL}/rentals/${slug}`, lastModified: new Date(), changeFrequency: "daily" as const, priority: 0.85 }));
+    .map((code) => ({ slug: stateSlugForCode(code), lastModified: stateLastMod.get(code) }))
+    .filter((s) => s.slug)
+    .map(({ slug, lastModified }) => ({
+      url: `${BASE_URL}/rentals/${slug}`, lastModified, changeFrequency: "daily" as const, priority: 0.85,
+    }));
 }
 
 export async function buildCities(): Promise<SitemapEntry[]> {
   const dbCities = await fetchAllCities().catch(() => []);
+  const lastModBySlug = new Map(dbCities.map((c) => [c.slug, cityLastMod(c)]));
   const allCitySlugs = [...new Set([...Object.keys(CITIES), ...dbCities.map((c) => c.slug)])];
 
   const cityPages: SitemapEntry[] = allCitySlugs.map((slug) => ({
-    url: `${BASE_URL}/rentals/${slug}`, lastModified: new Date(), changeFrequency: "daily" as const, priority: 0.85,
+    url: `${BASE_URL}/rentals/${slug}`, lastModified: lastModBySlug.get(slug), changeFrequency: "daily" as const, priority: 0.85,
   }));
 
   const filterCitySlugs = new Set<string>([
@@ -78,15 +99,16 @@ export async function buildCities(): Promise<SitemapEntry[]> {
   ]);
   const cityFilterPages: SitemapEntry[] = [...filterCitySlugs].flatMap((slug) =>
     BEDROOM_FILTERS.map((filter) => ({
-      url: `${BASE_URL}/rentals/${slug}/${filter}`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.6,
+      url: `${BASE_URL}/rentals/${slug}/${filter}`, lastModified: lastModBySlug.get(slug), changeFrequency: "weekly" as const, priority: 0.6,
     }))
   );
 
   // Property-management pages use the same inventory gate as bedroom filters —
   // emitting one for all ~550 cities created hundreds of near-identical thin
-  // pages ("Crawled - currently not indexed" in GSC).
+  // pages ("Crawled - currently not indexed" in GSC). Their content doesn't
+  // track listing churn, so they carry no lastmod.
   const propertyManagementPages: SitemapEntry[] = [...filterCitySlugs].map((slug) => ({
-    url: `${BASE_URL}/property-management/${slug}`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.5,
+    url: `${BASE_URL}/property-management/${slug}`, changeFrequency: "monthly" as const, priority: 0.5,
   }));
 
   return [...cityPages, ...cityFilterPages, ...propertyManagementPages];

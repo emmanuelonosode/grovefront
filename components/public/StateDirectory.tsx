@@ -141,14 +141,17 @@ export function StateDirectory({ cities, counts = {} }: Props) {
               const topCities = [...matched, ...rest].slice(0, 4);
               const moreCount = state.cities.length - topCities.length;
 
+              // The card is a <div>, not one big <Link>: each city chip is its
+              // own crawlable anchor to /rentals/[city] (they used to be plain
+              // spans — zero link equity), and nesting <a> inside <a> is
+              // invalid HTML that browsers break apart unpredictably.
               return (
-                <Link
+                <div
                   key={state.code}
-                  href={`/rentals/${state.slug}`}
                   className="group flex flex-col rounded-2xl border border-neutral-200 bg-white overflow-hidden transition-all duration-200 hover:border-brand hover:shadow-[0_14px_40px_rgba(0,82,255,0.14)] hover:-translate-y-1"
                 >
-                  {/* Landmark photo header */}
-                  <div className="relative h-40 overflow-hidden bg-neutral-100">
+                  {/* Landmark photo header — links to the state hub */}
+                  <Link href={`/rentals/${state.slug}`} className="relative block h-40 overflow-hidden bg-neutral-100">
                     {state.image && (
                       <Image
                         src={state.image}
@@ -171,35 +174,42 @@ export function StateDirectory({ cities, counts = {} }: Props) {
                         {state.cities.length} {state.cities.length === 1 ? "city" : "cities"}
                       </p>
                     </div>
-                  </div>
+                  </Link>
 
                   <div className="flex flex-col flex-1 p-5">
                     <div className="flex flex-wrap gap-2">
                       {topCities.map((city) => (
-                        <span
+                        <Link
                           key={city.slug}
-                          className="inline-flex items-center gap-1.5 rounded-full bg-neutral-50 border border-neutral-200 px-3 py-1.5 text-[13.5px] text-[#3F4650]"
+                          href={`/rentals/${city.slug}`}
+                          className="inline-flex items-center gap-1.5 rounded-full bg-neutral-50 border border-neutral-200 px-3 py-1.5 text-[13.5px] text-[#3F4650] hover:border-brand hover:text-brand hover:bg-brand-light transition-colors"
                         >
                           <MapPin size={12} className="text-brand/60 shrink-0" />
                           {city.name}
                           {counts[city.slug] ? (
                             <span className="tabular-nums font-semibold text-brand">{counts[city.slug]}</span>
                           ) : null}
-                        </span>
+                        </Link>
                       ))}
                       {moreCount > 0 && (
-                        <span className="inline-flex items-center rounded-full bg-neutral-50 border border-neutral-200 px-3 py-1.5 text-[13.5px] text-neutral-400">
+                        <Link
+                          href={`/rentals/${state.slug}`}
+                          className="inline-flex items-center rounded-full bg-neutral-50 border border-neutral-200 px-3 py-1.5 text-[13.5px] text-neutral-400 hover:border-brand hover:text-brand transition-colors"
+                        >
                           +{moreCount} more
-                        </span>
+                        </Link>
                       )}
                     </div>
 
-                    <span className="mt-auto pt-4 flex items-center justify-between text-[14.5px] font-bold text-brand">
+                    <Link
+                      href={`/rentals/${state.slug}`}
+                      className="mt-auto pt-4 flex items-center justify-between text-[14.5px] font-bold text-brand hover:underline"
+                    >
                       View all {state.name} rentals
                       <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" />
-                    </span>
+                    </Link>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>

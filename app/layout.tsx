@@ -163,7 +163,7 @@ const jsonLd = {
       "image": { "@id": "https://haskerrealtygroup.com/#logo" },
       "description": "Hasker & Co. Realty Group is a licensed US real estate company founded in 2012, specializing in affordable rental homes and budget-friendly properties for sale across 12+ US cities. Well-maintained, move-in ready homes. 24-hour application decisions. 2,000+ families housed.",
       "foundingDate": "2012",
-      "telephone": "+14045550182",
+      "telephone": "+17572082767",
       "email": "info@haskerrealtygroup.com",
       "address": {
         "@type": "PostalAddress",
@@ -177,7 +177,7 @@ const jsonLd = {
         {
           "@type": "ContactPoint",
           "contactType": "customer service",
-          "telephone": "+14045550182",
+          "telephone": "+17572082767",
           "email": "info@haskerrealtygroup.com",
           "availableLanguage": ["English"],
           "hoursAvailable": {
@@ -199,10 +199,7 @@ const jsonLd = {
       "slogan": "Quality Homes. Well-Maintained. Move-In Ready.",
       "numberOfEmployees": { "@type": "QuantitativeValue", "minValue": 10, "maxValue": 50 },
       "award": [
-        "BBB A+ Accredited Business",
-        "NAR Member — National Association of Realtors",
-        "Equal Housing Opportunity Provider",
-        "Trustpilot 4.9/5 — 2,400+ Reviews"
+        "Equal Housing Opportunity Provider"
       ],
       "hasCredential": [
         { "@type": "EducationalOccupationalCredential", "name": "Licensed Real Estate Broker — Virginia", "credentialCategory": "license" },

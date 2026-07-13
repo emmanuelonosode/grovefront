@@ -3,6 +3,7 @@ import Image from "next/image";
 import { HaskerLogo } from "@/components/ui/HaskerLogo";
 import { CITIES, fetchAllCities } from "@/lib/cities";
 import { STATE_NAMES, stateSlugForCode } from "@/lib/states";
+import { BUSINESS } from "@/lib/business";
 
 function InstagramIcon() {
   return (
@@ -113,7 +114,7 @@ export async function Footer() {
               Good Homes. Fair Prices. No Surprises.<br />Housing 2,400+ families across the U.S. since 2012.
             </p>
             <p className="mt-3" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14, color: "rgba(255,255,255,0.45)" }}>
-              204 Colonial Hills Rd, Winder GA 30680
+              {BUSINESS.address.streetAddress}, {BUSINESS.address.addressLocality} {BUSINESS.address.addressRegion} {BUSINESS.address.postalCode}
             </p>
             <Link
               href="/contact"

@@ -1,5 +1,7 @@
 /** City market data for SEO landing pages */
 
+import { STATE_NAMES } from "@/lib/states";
+
 export interface CityData {
   slug: string;
   name: string;
@@ -11,6 +13,8 @@ export interface CityData {
   population: string;
   marketHighlight: string;
   seoContent: string;
+  /** Live inventory stats — present for DB-derived cities, absent for curated-only. */
+  stats?: CityStats;
 }
 
 export const CITIES: Record<string, CityData> = {
@@ -131,6 +135,30 @@ export interface CityStats {
   min_price: number | null;
   max_price: number | null;
   listing_types: string[];
+  // Enriched fields (optional — older backend deploys omit them).
+  bedrooms?: Record<string, number>;
+  types?: Record<string, number>;
+  sqft?: { min: number; max: number; avg: number } | null;
+  zips?: string[];
+  neighborhoods?: string[];
+  newest_listed?: string | null;
+  last_updated?: string | null;
+  image?: string;
+}
+
+/**
+ * Mirrors Django's slugify(f"{city}-{state}") byte-for-byte — the backend
+ * generates city slugs this way, and every internal link to /rentals/[city]
+ * must agree with it. Never hand-build city slugs anywhere else.
+ */
+export function cityToSlug(city: string, state: string): string {
+  return `${city}-${state}`
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[-\s]+/g, "-")
+    .replace(/^[-_]+|[-_]+$/g, "");
 }
 
 const API_BASE =
@@ -152,31 +180,221 @@ export async function fetchAllCities(): Promise<CityStats[]> {
   }
 }
 
+// ── Generic city content engine ───────────────────────────────────────────────
+// Every non-curated city page used to share one 2-paragraph template and one
+// stock hero photo — 550+ near-duplicate thin pages that Google left unindexed.
+// Content is now composed from the city's real inventory facts, with phrasing
+// picked by a hash of the slug: deterministic (stable across ISR regenerations)
+// but different city to city.
+
+function slugHash(slug: string): number {
+  let h = 0;
+  for (let i = 0; i < slug.length; i++) h = (h * 31 + slug.charCodeAt(i)) >>> 0;
+  return h;
+}
+
+const pickVariant = <T,>(variants: T[], seed: number, salt: number): T =>
+  variants[(seed + salt) % variants.length];
+
+const usd = (n: number) => `$${Math.round(n).toLocaleString("en-US")}`;
+const num = (n: number) => n.toLocaleString("en-US");
+
+const BEDROOM_WORDS: Record<string, string> = {
+  "1": "one", "2": "two", "3": "three", "4": "four", "5": "five",
+  "6": "six", "7": "seven", "8": "eight",
+};
+
+const TYPE_LABELS: Record<string, [string, string]> = {
+  residential: ["single-family home", "single-family homes"],
+  apartment: ["apartment", "apartments"],
+  townhouse: ["townhouse", "townhouses"],
+  condo: ["condo", "condos"],
+};
+
+function listJoin(items: string[]): string {
+  if (items.length <= 1) return items[0] ?? "";
+  if (items.length === 2) return `${items[0]} and ${items[1]}`;
+  return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
+}
+
+function bedroomPhrase(bedrooms: Record<string, number>): string {
+  const parts = Object.entries(bedrooms)
+    .sort(([a], [b]) => Number(a) - Number(b))
+    .map(([bed, n]) => {
+      const word = BEDROOM_WORDS[bed] ?? bed;
+      return `${num(n)} ${word}-bedroom ${n === 1 ? "home" : "homes"}`;
+    });
+  return listJoin(parts);
+}
+
+function typePhrase(types: Record<string, number>): string {
+  const parts = Object.entries(types)
+    .sort(([, a], [, b]) => b - a)
+    .map(([t, n]) => {
+      const label = TYPE_LABELS[t] ?? [t, `${t}s`];
+      return `${num(n)} ${n === 1 ? label[0] : label[1]}`;
+    });
+  return listJoin(parts);
+}
+
+function buildSeoContent(stats: CityStats, seed: number): string {
+  const { city } = stats;
+  const stateName = STATE_NAMES[stats.state] ?? stats.state;
+  const listingWord = stats.count === 1 ? "rental listing" : "rental listings";
+  const hasRange =
+    stats.min_price != null && stats.max_price != null && stats.max_price > stats.min_price;
+
+  const paragraphs: string[] = [];
+
+  // Intro — inventory + price range
+  const priceClause = hasRange
+    ? ` priced from ${usd(stats.min_price!)} to ${usd(stats.max_price!)} per month`
+    : stats.avg_price
+      ? ` averaging ${usd(stats.avg_price)} per month`
+      : "";
+  paragraphs.push(pickVariant([
+    `Looking for a house or apartment to rent in ${city}, ${stateName}? Hasker & Co. Realty Group has ${num(stats.count)} verified ${listingWord}${priceClause} available right now. Every home is inspected and move-in ready, with transparent pricing and no hidden administrative fees.`,
+    `Hasker & Co. Realty Group currently lists ${num(stats.count)} verified ${listingWord} in ${city}, ${stateName}${priceClause}. Each one is inspected, move-in ready, and priced transparently — the rent you see is the rent you pay.`,
+    `${city}, ${stateName} renters can choose from ${num(stats.count)} verified ${listingWord} with Hasker & Co. Realty Group${priceClause}. All of our ${city} homes are inspected and move-in ready, with no hidden administrative fees at any step.`,
+  ], seed, 0));
+
+  // Inventory make-up — bedrooms, property types, square footage
+  const mixSentences: string[] = [];
+  if (stats.bedrooms && Object.keys(stats.bedrooms).length > 0) {
+    mixSentences.push(pickVariant([
+      `Current availability includes ${bedroomPhrase(stats.bedrooms)}.`,
+      `Right now that inventory breaks down into ${bedroomPhrase(stats.bedrooms)}.`,
+    ], seed, 1));
+  }
+  if (stats.types && Object.keys(stats.types).length > 1) {
+    mixSentences.push(`By property type, you'll find ${typePhrase(stats.types)}.`);
+  }
+  if (stats.sqft) {
+    mixSentences.push(pickVariant([
+      `Homes range from ${num(stats.sqft.min)} to ${num(stats.sqft.max)} square feet, averaging about ${num(stats.sqft.avg)} sq ft.`,
+      `Living space runs between ${num(stats.sqft.min)} and ${num(stats.sqft.max)} square feet — around ${num(stats.sqft.avg)} sq ft on average.`,
+    ], seed, 2));
+  }
+  if (mixSentences.length > 0) paragraphs.push(mixSentences.join(" "));
+
+  // Coverage — ZIP codes and neighborhoods
+  const areaSentences: string[] = [];
+  const zips = stats.zips ?? [];
+  if (zips.length > 1) {
+    areaSentences.push(pickVariant([
+      `Our ${city} listings span ZIP ${zips.length === 2 ? "codes" : "codes including"} ${listJoin(zips.slice(0, 6))}.`,
+      `You'll find our ${city} homes across ZIP codes ${listJoin(zips.slice(0, 6))}.`,
+    ], seed, 3));
+  }
+  const hoods = (stats.neighborhoods ?? []).filter(
+    (n) => n.toLowerCase() !== city.toLowerCase()
+  );
+  if (hoods.length > 0) {
+    areaSentences.push(`Popular areas include ${listJoin(hoods.slice(0, 5))}.`);
+  }
+  if (areaSentences.length > 0) paragraphs.push(areaSentences.join(" "));
+
+  // Closer — recency + application CTA
+  const newest = stats.newest_listed ? new Date(stats.newest_listed) : null;
+  const newestClause =
+    newest && !isNaN(newest.getTime())
+      ? ` Our newest ${city} listing was added in ${newest.toLocaleString("en-US", { month: "long", year: "numeric", timeZone: "UTC" })}, and inventory updates daily.`
+      : "";
+  paragraphs.push(pickVariant([
+    `Apply online in under 10 minutes and get a decision within 24 hours.${newestClause} Once approved, you can sign and move in on your schedule.`,
+    `Every listing accepts online applications — under 10 minutes to complete, with decisions within 24 hours.${newestClause}`,
+    `When you find a fit, apply online in about 10 minutes; we review every application within 24 hours.${newestClause} Move-in dates are flexible once you're approved.`,
+  ], seed, 4));
+
+  return paragraphs.join("\n\n");
+}
+
 /**
  * Builds a CityData object from DB stats for cities not in the CITIES constant.
  */
 export function buildGenericCityData(stats: CityStats): CityData {
-  const avgRent = stats.avg_price
-    ? `$${Math.round(stats.avg_price).toLocaleString()}`
-    : "Contact us";
+  const seed = slugHash(stats.slug);
+  const stateName = STATE_NAMES[stats.state] ?? stats.state;
+  const avgRent = stats.avg_price ? usd(stats.avg_price) : "Contact us";
   const listingWord = stats.count !== 1 ? "listings" : "listing";
-  const priceRange =
-    stats.min_price && stats.max_price && stats.max_price > stats.min_price
-      ? ` priced from $${Math.round(stats.min_price).toLocaleString()} to $${Math.round(stats.max_price).toLocaleString()}/month`
-      : "";
+  const highlight =
+    stats.min_price && stats.count > 1
+      ? `${num(stats.count)} homes from ${usd(stats.min_price)}/mo`
+      : `${num(stats.count)} active rental ${listingWord}`;
   return {
     slug: stats.slug,
     name: stats.city,
-    state: stats.state,
+    state: stateName,
     stateCode: stats.state,
-    tagline: `Houses and apartments for rent in ${stats.city}, ${stats.state}.`,
+    tagline: pickVariant([
+      `Houses and apartments for rent in ${stats.city}, ${stateName}.`,
+      `Move-in ready rental homes across ${stats.city}, ${stateName}.`,
+      `Verified, affordable rentals in ${stats.city}, ${stateName}.`,
+    ], seed, 5),
     heroImage:
+      stats.image ||
       "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1600&q=80",
     avgRent,
-    population: "N/A",
-    marketHighlight: `${stats.count} active rental ${listingWord}`,
-    seoContent: `Looking for a house or apartment to rent in ${stats.city}, ${stats.state}? Hasker & Co. Realty Group has ${stats.count} verified rental ${listingWord}${priceRange} available right now. Every home is inspected and move-in ready, with transparent pricing and no hidden administrative fees.\n\nOur ${stats.city} rentals span a range of bedroom counts and property types — from 1-bedroom apartments to spacious family homes — so you can narrow down to exactly what fits your budget and lifestyle. Apply online in under 10 minutes, get a decision the same business day, and move in on your schedule.`,
+    population: "",
+    marketHighlight: highlight,
+    seoContent: buildSeoContent(stats, seed),
+    stats,
   };
+}
+
+/**
+ * City FAQ content — single source for BOTH the FAQPage JSON-LD and the visible
+ * FAQ section (Google requires the markup to match what's on the page). Answers
+ * use the city's real inventory numbers when stats are available.
+ */
+export function buildCityFaqs(city: CityData): { q: string; a: string }[] {
+  const s = city.stats;
+  const faqs: { q: string; a: string }[] = [];
+
+  faqs.push({
+    q: `How much does it cost to rent a home in ${city.name}?`,
+    a:
+      s?.min_price && s?.max_price && s.max_price > s.min_price
+        ? `Rentals in ${city.name} currently range from ${usd(s.min_price)} to ${usd(s.max_price)} per month, with an average around ${city.avgRent}/month. Hasker & Co. Realty Group shows transparent pricing on every listing — no hidden fees.`
+        : `The average rent in ${city.name} starts around ${city.avgRent}/month. Hasker & Co. Realty Group offers affordable, move-in ready rentals across ${city.name} with transparent pricing on every listing.`,
+  });
+
+  if (s?.bedrooms && Object.keys(s.bedrooms).length > 0) {
+    const beds = Object.keys(s.bedrooms).sort((a, b) => Number(a) - Number(b));
+    const bedList = beds.length === 1 ? `${beds[0]}-bedroom` : `${beds.slice(0, -1).join(", ")} and ${beds[beds.length - 1]}-bedroom`;
+    faqs.push({
+      q: `What size homes are available for rent in ${city.name}?`,
+      a: `Hasker & Co. Realty Group currently lists ${bedList} homes in ${city.name}, ${city.stateCode} — ${bedroomPhrase(s.bedrooms)} in total${s.sqft ? `, ranging from ${num(s.sqft.min)} to ${num(s.sqft.max)} square feet` : ""}.`,
+    });
+  } else {
+    faqs.push({
+      q: `Are there 2-bedroom and 3-bedroom homes for rent in ${city.name}?`,
+      a: `Yes. Hasker & Co. Realty Group lists 1, 2, 3, and 4-bedroom homes for rent in ${city.name}, ${city.stateCode}. Family-sized homes typically start around ${city.avgRent}/month.`,
+    });
+  }
+
+  const zips = (s?.zips ?? []).filter(Boolean);
+  if (zips.length > 1) {
+    faqs.push({
+      q: `Which areas of ${city.name} have homes for rent?`,
+      a: `Our ${city.name} inventory spans ZIP codes ${listJoin(zips)}. Every listing shows its exact address and neighborhood before you apply.`,
+    });
+  }
+
+  faqs.push({
+    q: `How do I apply for a rental in ${city.name}?`,
+    a: `Apply online at haskerrealtygroup.com/apply in under 10 minutes. We review every application within 24 hours. No paper forms, no runaround.`,
+  });
+  faqs.push({
+    q: `Does Hasker & Co. have pet-friendly rentals in ${city.name}?`,
+    a: `Yes. Several of our ${city.name} listings are pet-friendly. Pet policies are disclosed upfront on every listing so you never waste time on a home that won't accept your pet.`,
+  });
+  faqs.push({
+    q: `Are there any hidden fees when renting through Hasker & Co. in ${city.name}?`,
+    a: `No. The price listed is the price you pay. Standard upfront costs are a security deposit (typically 1–2 months rent) and the first month's rent. All fees are shown before you apply.`,
+  });
+
+  return faqs;
 }
 
 /**
@@ -184,9 +402,11 @@ export function buildGenericCityData(stats: CityStats): CityData {
  * Returns null if the slug doesn't exist in either source.
  */
 export async function resolveCityData(slug: string): Promise<CityData | null> {
-  const hardcoded = getCityBySlug(slug);
-  if (hardcoded) return hardcoded;
   const dbCities = await fetchAllCities();
   const stats = dbCities.find((c) => c.slug === slug);
+  const hardcoded = getCityBySlug(slug);
+  // Curated cities keep their hand-written prose but still carry live stats
+  // (used for FAQ answers and market stat blocks).
+  if (hardcoded) return stats ? { ...hardcoded, stats } : hardcoded;
   return stats ? buildGenericCityData(stats) : null;
 }

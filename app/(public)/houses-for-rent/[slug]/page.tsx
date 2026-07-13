@@ -9,6 +9,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { fetchPropertyBySlug, fetchProperties, toPropertyCardShape } from "@/lib/properties";
+import { fetchAllCities, cityToSlug } from "@/lib/cities";
+import { stateFullName, stateSlugForCode } from "@/lib/states";
 import { PropertyIntentCapture } from "@/components/public/PropertyIntentCapture";
 import { VirtualTourButton, VirtualTourBadge, VirtualTourChip } from "@/components/public/VirtualTourButton";
 import { PropertyImageGallery } from "@/components/public/PropertyImageGallery";
@@ -167,6 +169,26 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const similarResults = (similarRaw?.results ?? []).filter((p) => p.slug !== property.slug);
   const similar = similarResults.slice(0, 10).map(toPropertyCardShape);
 
+  // City/state landing-page links. These pages carry the SEO weight for
+  // "houses for rent in X" queries, so every property page must link to them —
+  // but only when the target actually resolves (a city with zero active
+  // listings 404s), otherwise fall back to the query-param search view.
+  // fetchAllCities is cached (revalidate 3600) so this is effectively free.
+  const allCities = await fetchAllCities();
+  const citySlug = cityToSlug(property.city, property.state);
+  const cityPageExists = allCities.some((c) => c.slug === citySlug);
+  const stateSlug = stateSlugForCode(property.state);
+  const statePageExists =
+    Boolean(stateSlug) &&
+    allCities.some((c) => (c.state || "").toUpperCase() === property.state?.toUpperCase());
+  const cityHref = cityPageExists
+    ? `/rentals/${citySlug}`
+    : `/houses-for-rent?q=${encodeURIComponent(property.city)}`;
+  const stateHref = statePageExists
+    ? `/rentals/${stateSlug}`
+    : `/houses-for-rent?state=${property.state}`;
+  const stateName = stateFullName(property.state);
+
   // Only use real coordinates from the backend — never approximate the pin location.
   const dbLat = Number((property as any).latitude ?? 0);
   const dbLng = Number((property as any).longitude ?? 0);
@@ -259,9 +281,11 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: "https://haskerrealtygroup.com" },
       { "@type": "ListItem", position: 2, name: "Properties", item: "https://haskerrealtygroup.com/houses-for-rent" },
+      { "@type": "ListItem", position: 3, name: stateName, item: `https://haskerrealtygroup.com${stateHref}` },
+      { "@type": "ListItem", position: 4, name: `${property.city}, ${property.state}`, item: `https://haskerrealtygroup.com${cityHref}` },
       {
         "@type": "ListItem",
-        position: 3,
+        position: 5,
         // Use address in breadcrumb so it appears in Google's breadcrumb trail for address searches
         name: property.address
           ? `${property.address}, ${property.city}, ${property.state}`
@@ -364,11 +388,11 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
       <div className="pt-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 lg:px-8 py-3">
           <nav className="flex items-center gap-1.5 text-[13px] text-[#5C5E62] overflow-x-auto whitespace-nowrap">
-            <Link href={`/houses-for-rent?state=${property.state}`} className="hover:text-blue-600 cursor-pointer">
-              {property.state === "TX" ? "Texas" : property.state === "GA" ? "Georgia" : property.state}
+            <Link href={stateHref} className="hover:text-blue-600 cursor-pointer">
+              {stateName}
             </Link>
             <span className="text-neutral-400 font-normal">&gt;</span>
-            <Link href={`/houses-for-rent?q=${encodeURIComponent(property.city)}`} className="hover:text-blue-600 cursor-pointer">
+            <Link href={cityHref} className="hover:text-blue-600 cursor-pointer">
               {property.city}
             </Link>
             <span className="text-neutral-400 font-normal">&gt;</span>
@@ -482,7 +506,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                 <Info size={16} className="mt-0.5 shrink-0" />
                 <span>
                   This home is currently <strong>{unavailableLabel}</strong>.{" "}
-                  <Link href={`/houses-for-rent?q=${encodeURIComponent(property.city)}`} className="font-bold underline">
+                  <Link href={cityHref} className="font-bold underline">
                     See similar homes in {property.city}
                   </Link>
                 </span>
@@ -656,13 +680,15 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
                   <div>
                     <div className="text-[12px] font-bold text-[#6A6C70] mb-0.5">City</div>
-                    <Link href={`/houses-for-rent?q=${encodeURIComponent(property.city)}`} className="text-[#1A73E8] hover:underline cursor-pointer font-bold">
+                    <Link href={cityHref} className="text-[#1A73E8] hover:underline cursor-pointer font-bold">
                       {property.city}
                     </Link>
                   </div>
                   <div>
                     <div className="text-[12px] font-bold text-[#6A6C70] mb-0.5">State</div>
-                    <div className="text-[#2A2B2D] font-semibold">{property.state}</div>
+                    <Link href={stateHref} className="text-[#1A73E8] hover:underline cursor-pointer font-bold">
+                      {stateName}
+                    </Link>
                   </div>
                   <div>
                     <div className="text-[12px] font-bold text-[#6A6C70] mb-0.5">Zip Code</div>
@@ -866,6 +892,21 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                 </div>
               </section>
             )}
+
+            {/* 6. BROWSE THE AREA — links into the city/state landing pages */}
+            <section className="pt-8 border-t border-neutral-100">
+              <h2 className="text-[15px] font-black text-[#2A2B2D] mb-3">
+                Keep Browsing
+              </h2>
+              <div className="flex flex-wrap gap-x-6 gap-y-2 text-[14px] font-semibold">
+                <Link href={cityHref} className="text-[#1A73E8] hover:underline">
+                  All homes for rent in {property.city}, {property.state} →
+                </Link>
+                <Link href={stateHref} className="text-[#1A73E8] hover:underline">
+                  All {stateName} rentals →
+                </Link>
+              </div>
+            </section>
 
           </div>
 

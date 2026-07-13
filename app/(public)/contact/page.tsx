@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import ContactForm from "./ContactForm";
+import { BUSINESS } from "@/lib/business";
 
 export const metadata = {
   title: "Contact Us | Hasker & Co. Realty Group",
@@ -13,9 +14,9 @@ export const metadata = {
 const offices = [
   {
     city: "Main Office",
-    address: "204 Colonial Hills Rd\nWinder, GA 30680",
-    phone: "",
-    email: "info@haskerrealtygroup.com",
+    address: `${BUSINESS.address.streetAddress}\n${BUSINESS.address.addressLocality}, ${BUSINESS.address.addressRegion} ${BUSINESS.address.postalCode}`,
+    phone: BUSINESS.telephoneDisplay,
+    email: BUSINESS.email,
     hours: "Mon – Fri: 9am – 6pm ET\nSat: 10am – 4pm ET",
   },
   {
