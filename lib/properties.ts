@@ -296,8 +296,10 @@ export interface SitemapProperty {
 }
 
 export async function fetchPropertiesForSitemap(): Promise<SitemapProperty[]> {
+  // Match the sitemap route's 5-min window — otherwise the route could rebuild
+  // with hour-stale property data and keep deleted homes in the sitemap.
   const res = await fetch(`${API_BASE}/api/v1/properties/sitemap/`, {
-    next: { revalidate: 3600 },
+    next: { revalidate: 300 },
   });
   if (!res.ok) throw new Error(`Properties sitemap fetch failed: ${res.status}`);
   const data: { slug: string; updated_at: string; image?: string; title?: string; city?: string; state?: string }[] = await res.json();

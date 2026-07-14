@@ -1,7 +1,10 @@
 import { buildCore, buildStates, buildCities, buildProperties, urlsetXml } from "@/lib/sitemap-data";
 
-// Regenerate every 12 hours.
-export const revalidate = 43200;
+// Regenerate every 5 minutes so newly-added homes appear — and deleted ones
+// disappear — almost immediately. The sitemap is only rebuilt when it's actually
+// requested after this window, and Google fetches it infrequently, so the
+// backend cost of a short window is negligible.
+export const revalidate = 300;
 
 /**
  * THE single central sitemap, served at /sitemap.xml — the only sitemap URL
@@ -30,7 +33,9 @@ export async function GET() {
   return new Response(urlsetXml([...core, ...states, ...cities, ...properties]), {
     headers: {
       "Content-Type": "application/xml; charset=utf-8",
-      "Cache-Control": "public, max-age=0, s-maxage=43200, stale-while-revalidate=86400",
+      // Short shared-cache window so a CDN (or Google's fetch cache) can't pin a
+      // stale sitemap for hours after inventory changes.
+      "Cache-Control": "public, max-age=0, s-maxage=300, stale-while-revalidate=600",
     },
   });
 }

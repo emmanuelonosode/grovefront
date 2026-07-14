@@ -29,9 +29,12 @@ export function middleware(request: NextRequest) {
     !pathname.startsWith("/_next/") &&
     !pathname.includes(".")
   ) {
-    const url = request.nextUrl.clone();
-    url.pathname = pathname.slice(0, -1);
-    return NextResponse.redirect(url, { status: 301 });
+    // Build the target from a fresh URL off request.url, NOT request.nextUrl.clone():
+    // cloning nextUrl re-applies Next's trailing-slash normalization and re-adds
+    // the slash, so the redirect target equals the source → infinite 301 loop.
+    const stripped = pathname.replace(/\/+$/, "");
+    const target = new URL(stripped + request.nextUrl.search, request.url);
+    return NextResponse.redirect(target, { status: 301 });
   }
 
   const response = NextResponse.next();
