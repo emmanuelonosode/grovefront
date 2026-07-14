@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { MapPin } from "lucide-react";
-import type { CityData } from "@/lib/cities";
+import type { DirectoryCity } from "@/lib/cities";
 import { STATE_NAMES } from "@/lib/states";
 
 interface Props {
-  cities: CityData[];
+  cities: DirectoryCity[];
   /** Live listing counts keyed by city slug (optional — shown next to each city). */
   counts?: Record<string, number>;
   heading?: string;
@@ -20,7 +20,7 @@ interface Props {
 export function CityDirectory({ cities, counts = {}, heading, intro }: Props) {
   // De-dupe by slug, then group by full state name.
   const seen = new Set<string>();
-  const groups = new Map<string, CityData[]>();
+  const groups = new Map<string, DirectoryCity[]>();
 
   for (const city of cities) {
     if (!city.slug || seen.has(city.slug)) continue;

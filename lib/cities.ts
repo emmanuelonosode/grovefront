@@ -1,6 +1,7 @@
 /** City market data for SEO landing pages */
 
 import { STATE_NAMES } from "@/lib/states";
+import { toCardImageUrl } from "@/lib/utils";
 
 export interface CityData {
   slug: string;
@@ -395,6 +396,46 @@ export function buildCityFaqs(city: CityData): { q: string; a: string }[] {
   });
 
   return faqs;
+}
+
+// ── Directory projection ───────────────────────────────────────────────────────
+// The homepage/listing directory components (StateDirectory, CityDirectory) only
+// render a name, count, and photo — but were being handed full CityData for all
+// ~565 cities, which serialized every city's multi-paragraph seoContent + stats
+// into the page (≈1MB of the homepage). Pass this slim shape instead.
+
+export interface DirectoryCity {
+  slug: string;
+  name: string;
+  state: string;
+  stateCode: string;
+  heroImage: string;
+  avgRent: string;
+}
+
+/** Curated cities first (with their editorial photos), then every DB city — slim. */
+export function toDirectoryCities(dbCities: CityStats[]): DirectoryCity[] {
+  const out: DirectoryCity[] = [];
+  const seen = new Set<string>();
+  for (const c of Object.values(CITIES)) {
+    out.push({
+      slug: c.slug, name: c.name, state: c.state, stateCode: c.stateCode,
+      heroImage: toCardImageUrl(c.heroImage), avgRent: c.avgRent,
+    });
+    seen.add(c.slug);
+  }
+  for (const c of dbCities) {
+    if (seen.has(c.slug)) continue;
+    out.push({
+      slug: c.slug,
+      name: c.city,
+      state: STATE_NAMES[c.state] ?? c.state,
+      stateCode: c.state,
+      heroImage: c.image ? toCardImageUrl(c.image) : "",
+      avgRent: c.avg_price ? usd(c.avg_price) : "",
+    });
+  }
+  return out;
 }
 
 /**

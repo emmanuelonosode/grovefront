@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { fetchProperties, type PropertyListItemAPI } from "@/lib/properties";
 import { PropertiesClient } from "@/components/public/PropertiesClient";
 import { CityDirectory } from "@/components/public/CityDirectory";
-import { CITIES, fetchAllCities, buildGenericCityData, type CityData } from "@/lib/cities";
+import { fetchAllCities, toDirectoryCities } from "@/lib/cities";
 
 export const revalidate = 0;
 
@@ -71,15 +71,13 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
     total   = propertiesResult.value.count;
   } /* else: API offline — render empty state */
 
-  // Cities for the crawlable directory (server-rendered internal links to every city page).
-  let mergedCities: CityData[] = Object.values(CITIES);
+  // Cities for the crawlable directory (server-rendered internal links to every
+  // city page). Slim projection only — never ship full seoContent to the client.
+  let mergedCities = toDirectoryCities([]);
   let cityCounts: Record<string, number> = {};
   if (citiesResult.status === "fulfilled") {
     const dbCities = citiesResult.value;
-    mergedCities = [
-      ...Object.values(CITIES),
-      ...dbCities.filter((c) => !CITIES[c.slug]).map((c) => buildGenericCityData(c)),
-    ];
+    mergedCities = toDirectoryCities(dbCities);
     cityCounts = Object.fromEntries(dbCities.map((c) => [c.slug, c.count]));
   } /* else: keep CITIES fallback */
 

@@ -4,11 +4,11 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Search, X, ArrowRight, MapPin } from "lucide-react";
-import { CITIES, type CityData } from "@/lib/cities";
+import { CITIES, type DirectoryCity } from "@/lib/cities";
 import { STATE_NAMES, stateSlugForCode } from "@/lib/states";
 
 interface Props {
-  cities: CityData[];
+  cities: DirectoryCity[];
   /** Live listing counts keyed by city slug (optional — used for totals and city ordering). */
   counts?: Record<string, number>;
 }
@@ -17,18 +17,17 @@ interface StateGroup {
   code: string;
   name: string;
   slug: string;
-  cities: CityData[];
+  cities: DirectoryCity[];
   totalHomes: number;
   /** Landmark/skyline photo — taken from the state's best curated city page. */
   image: string;
 }
 
 /** Prefer a curated city's skyline photo (distinctive landmark) over the generic default. */
-function pickStateImage(stateCities: CityData[]): string {
+function pickStateImage(stateCities: DirectoryCity[]): string {
   const curated = stateCities.find((c) => CITIES[c.slug]?.heroImage);
-  const src = curated ? CITIES[curated.slug].heroImage : stateCities[0]?.heroImage ?? "";
-  // Card-sized rendition — the source URLs are w=1600 hero images.
-  return src.replace("w=1600", "w=800");
+  // heroImage is already a card-sized rendition (see toDirectoryCities).
+  return curated ? curated.heroImage : stateCities[0]?.heroImage ?? "";
 }
 
 /**

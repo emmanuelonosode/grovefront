@@ -362,19 +362,18 @@ export default async function PropertyManagementPage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {/* Plain text links — no per-row icons. Rendering two inline SVGs
+                across all ~565 rows serialized ~1MB into this page. */}
             {allCities.map((city) => (
               <Link
                 key={city.slug}
                 href={`/property-management/${city.slug}`}
-                className="bg-white border border-neutral-200/70 p-4 hover:border-brand hover:shadow-md transition-all group flex items-center justify-between"
+                className="bg-white border border-neutral-200/70 p-4 hover:border-brand hover:shadow-md transition-all group flex items-center gap-2.5 min-w-0"
               >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <MapPin size={15} className="text-brand shrink-0" />
-                  <span className="text-sm font-semibold text-[#0B1F3A] truncate group-hover:text-brand transition-colors">
-                    {city.name}, {city.stateCode}
-                  </span>
-                </div>
-                <ArrowRight size={13} className="text-neutral-300 group-hover:text-brand group-hover:translate-x-0.5 transition-all" />
+                <span className="text-brand shrink-0" aria-hidden="true">·</span>
+                <span className="text-sm font-semibold text-[#0B1F3A] truncate group-hover:text-brand transition-colors">
+                  {city.name}, {city.stateCode}
+                </span>
               </Link>
             ))}
           </div>

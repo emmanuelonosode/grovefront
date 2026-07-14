@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowRight, ShieldCheck, Clock, BadgeDollarSign, BellRing } from "lucide-react";
 import { fetchProperties, toPropertyCardShape } from "@/lib/properties";
-import { CITIES, fetchAllCities, buildGenericCityData, type CityData } from "@/lib/cities";
+import { fetchAllCities, toDirectoryCities } from "@/lib/cities";
 import { PropertyCard } from "@/components/public/PropertyCard";
 import { CityDirectory } from "@/components/public/CityDirectory";
 import { TrustSignals } from "@/components/public/TrustSignals";
@@ -70,10 +70,8 @@ export default async function ApartmentsPage() {
   const live = count > 0;
 
   const dbCities = await fetchAllCities().catch(() => []);
-  const mergedCities: CityData[] = [
-    ...Object.values(CITIES),
-    ...dbCities.filter((c) => !CITIES[c.slug]).map((c) => buildGenericCityData(c)),
-  ];
+  // Slim projection — the directory only needs name/photo/count.
+  const mergedCities = toDirectoryCities(dbCities);
   const cityCounts: Record<string, number> = Object.fromEntries(dbCities.map((c) => [c.slug, c.count]));
 
   const breadcrumb = {

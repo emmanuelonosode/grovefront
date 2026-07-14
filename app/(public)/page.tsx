@@ -6,7 +6,7 @@ import { FeaturedPropertiesSection } from "@/components/public/FeaturedPropertie
 import { WorkersScene, PetScene } from "@/components/public/HomepageIllustrations";
 import { StateDirectory } from "@/components/public/StateDirectory";
 import { fetchHomepageProperties, fetchProperties, toPropertyCardShape } from "@/lib/properties";
-import { CITIES, fetchAllCities, buildGenericCityData, type CityData } from "@/lib/cities";
+import { fetchAllCities, toDirectoryCities } from "@/lib/cities";
 import { BUSINESS, postalAddressSchema } from "@/lib/business";
 
 // Hero background rotates every 2 hours (recomputed on each ISR regeneration, revalidate=300)
@@ -217,10 +217,10 @@ export default async function HomePage() {
   const heroImage = HERO_IMAGES[Math.floor(Date.now() / (2 * 60 * 60 * 1000)) % HERO_IMAGES.length];
 
   const dbCities = allCitiesRaw.status === "fulfilled" ? allCitiesRaw.value : [];
-  const mergedCities: CityData[] = [
-    ...Object.values(CITIES),
-    ...dbCities.filter((c) => !CITIES[c.slug]).map((c) => buildGenericCityData(c)),
-  ];
+  // Slim projection — the directory + city grid only need name/photo/count, so
+  // we must NOT ship every city's full seoContent to the client (that alone was
+  // ~1MB of the homepage).
+  const mergedCities = toDirectoryCities(dbCities);
   // Live listing counts per city slug — shown in the crawlable city directory.
   const cityCounts: Record<string, number> = Object.fromEntries(
     dbCities.map((c) => [c.slug, c.count])
