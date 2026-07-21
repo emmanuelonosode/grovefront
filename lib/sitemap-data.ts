@@ -97,11 +97,26 @@ export async function buildCities(): Promise<SitemapEntry[]> {
     ...Object.keys(CITIES),
     ...dbCities.filter((c) => (c.count ?? 0) >= FILTER_MIN_LISTINGS).map((c) => c.slug),
   ]);
-  const cityFilterPages: SitemapEntry[] = [...filterCitySlugs].flatMap((slug) =>
-    BEDROOM_FILTERS.map((filter) => ({
+
+  // Per-city bedroom inventory. A bedroom filter page 404s (notFound) when that
+  // city has no listings with that bed count, so emitting one purely because the
+  // city cleared FILTER_MIN_LISTINGS submits URLs that don't exist — Google logs
+  // those as "Submitted URL not found (404)" and burns crawl budget on them.
+  // Only emit a filter URL when the city actually has that bedroom count.
+  const bedroomsBySlug = new Map(dbCities.map((c) => [c.slug, c.bedrooms ?? undefined]));
+
+  const cityFilterPages: SitemapEntry[] = [...filterCitySlugs].flatMap((slug) => {
+    const beds = bedroomsBySlug.get(slug);
+    return BEDROOM_FILTERS.filter((filter) => {
+      // No breakdown available (curated-only city, or an older backend that
+      // omits `bedrooms`) — keep prior behaviour rather than dropping the page.
+      if (!beds) return true;
+      const n = Number(filter.split("-")[0]);
+      return (beds[String(n)] ?? 0) > 0;
+    }).map((filter) => ({
       url: `${BASE_URL}/rentals/${slug}/${filter}`, lastModified: lastModBySlug.get(slug), changeFrequency: "weekly" as const, priority: 0.6,
-    }))
-  );
+    }));
+  });
 
   // Property-management pages use the same inventory gate as bedroom filters —
   // emitting one for all ~550 cities created hundreds of near-identical thin
