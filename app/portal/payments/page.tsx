@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import {
   FileText, CheckCircle, Clock, AlertCircle,
   ArrowLeft, Download, Mail, Building2, ChevronDown,
@@ -13,7 +12,7 @@ import { toast } from "sonner";
 
 const API_BASE = typeof window !== "undefined"
   ? ""
-  : (process.env.NEXT_PUBLIC_API_URL ?? "https://admin.haskerrealtygroup.com");
+  : (process.env.NEXT_PUBLIC_API_URL ?? "https://admin.primefamilyhousing.com");
 
 interface InvoiceLineItem {
   description: string;
@@ -68,10 +67,10 @@ interface PaymentConfig {
 }
 
 const STATUS_CONFIG = {
-  SENT:  { label: "Due",   icon: Clock,       color: "#FF9F0A" },
-  PAID:  { label: "Paid",  icon: CheckCircle, color: "#34C759" },
-  VOID:  { label: "Void",  icon: AlertCircle, color: "#8E8E93" },
-  DRAFT: { label: "Draft", icon: FileText,    color: "#8E8E93" },
+  SENT:  { label: "Due",   icon: Clock,       color: "#BC6C25" },
+  PAID:  { label: "Paid",  icon: CheckCircle, color: "#2E7D32" },
+  VOID:  { label: "Void",  icon: AlertCircle, color: "#717973" },
+  DRAFT: { label: "Draft", icon: FileText,    color: "#717973" },
 } as const;
 
 const METHOD_LABELS: Record<string, string> = {
@@ -155,11 +154,11 @@ const EMPTY_BANK: Pick<PaymentConfig, "recipient_name"|"bank_name"|"account_type
 };
 
 const FALLBACK_METHODS: PaymentConfig[] = [
-  { method: "VENMO",         display_name: "Venmo",         handle: "@HaskerRealty",                  extra_instructions: "",                                            ...EMPTY_BANK },
-  { method: "CASHAPP",       display_name: "Cash App",      handle: "$HaskerRealty",                  extra_instructions: "",                                            ...EMPTY_BANK },
-  { method: "PAYPAL",        display_name: "PayPal",        handle: "payments@haskerrealtygroup.com", extra_instructions: "Use Friends & Family to avoid delays.",        ...EMPTY_BANK },
-  { method: "CHIME",         display_name: "Chime",         handle: "@Hasker-Realty",                 extra_instructions: "",                                            ...EMPTY_BANK },
-  { method: "BANK_TRANSFER", display_name: "Bank Transfer", handle: "info@haskerrealtygroup.com",     extra_instructions: "Contact us for full wire transfer details.",   ...EMPTY_BANK },
+  { method: "VENMO",         display_name: "Venmo",         handle: "@PrimeFamilyHousingRealty",                  extra_instructions: "",                                            ...EMPTY_BANK },
+  { method: "CASHAPP",       display_name: "Cash App",      handle: "$PrimeFamilyHousingRealty",                  extra_instructions: "",                                            ...EMPTY_BANK },
+  { method: "PAYPAL",        display_name: "PayPal",        handle: "payments@primefamilyhousing.com", extra_instructions: "Use Friends & Family to avoid delays.",        ...EMPTY_BANK },
+  { method: "CHIME",         display_name: "Chime",         handle: "@PrimeFamilyHousing-Realty",                 extra_instructions: "",                                            ...EMPTY_BANK },
+  { method: "BANK_TRANSFER", display_name: "Bank Transfer", handle: "info@primefamilyhousing.com",     extra_instructions: "Contact us for full wire transfer details.",   ...EMPTY_BANK },
 ];
 
 // â”€â”€ Payment Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -272,16 +271,10 @@ function PaymentModal({
     }
   }
 
-  const methods = [
-    ...(paymentConfig.length > 0 ? paymentConfig : FALLBACK_METHODS),
-    { 
-      method: "CARD_CASHAPP", 
-      display_name: "Card (via Cash App)", 
-      handle: "", 
-      extra_instructions: "Simulate a secure card charge via Cash App approval request.", 
-      ...EMPTY_BANK 
-    }
-  ];
+  // Portal payments are manual only — tenants pay via the configured payment
+  // methods (Venmo, Cash App, PayPal, Chime, Bank Transfer) and submit proof.
+  // The card option was intentionally removed here.
+  const methods = paymentConfig.length > 0 ? paymentConfig : FALLBACK_METHODS;
   const current = methods.find((m) => m.method === method) ?? methods[0];
   const isBankTransfer = current.method === "BANK_TRANSFER";
   const isCardPayment = current.method === "CARD_CASHAPP";
@@ -301,31 +294,31 @@ function PaymentModal({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center">
-      <div className="absolute inset-0 bg-[#0F1E3D]/60 backdrop-blur-sm" onClick={loading ? undefined : onClose} />
+      <div className="absolute inset-0 bg-forest-deep/60 backdrop-blur-sm" onClick={loading ? undefined : onClose} />
 
-      <div className="relative w-full sm:max-w-lg bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[88vh] overflow-hidden">
+      <div className="relative w-full sm:max-w-lg bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[88vh] overflow-hidden">
         {/* Mobile drag handle */}
         <div className="flex justify-center pt-3 pb-1 shrink-0 sm:hidden">
           <div className="w-10 h-1 rounded-full bg-black/10" />
         </div>
 
         {/* Header */}
-        <div className="px-6 py-4 border-b border-black/[0.04] flex items-center gap-3 shrink-0">
+        <div className="px-6 py-4 border-b border-outline-variant/60 flex items-center gap-3 shrink-0">
           {hasMultipleItems && step === "form" && !loading && (
             <button
               type="button"
               onClick={() => setStep("items")}
-              className="w-8 h-8 rounded-full bg-[#F5F5F7] flex items-center justify-center text-[#6E6E73] hover:text-[#1D1D1F] transition-colors shrink-0"
+              className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors shrink-0"
               aria-label="Back to item selection"
             >
               <ArrowLeft size={16} />
             </button>
           )}
           <div className="flex-1 min-w-0">
-            <h3 className="text-[17px] font-bold text-[#1D1D1F]">
+            <h3 className="text-[17px] font-bold text-on-surface">
               {step === "items" ? "Select Items to Pay" : "Submit Payment Proof"}
             </h3>
-            <p className="text-[12px] text-[#6E6E73] truncate">
+            <p className="text-[12px] text-on-surface-variant truncate">
               {invoice.invoice_number} Â· {isPartial ? `Paying ${fmt(selectedAmount)} of ${fmt(invoice.total)}` : fmt(invoice.total)}
             </p>
           </div>
@@ -333,7 +326,7 @@ function PaymentModal({
             <button
               type="button"
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-[#F5F5F7] flex items-center justify-center text-[#6E6E73] hover:text-[#1D1D1F] transition-colors shrink-0"
+              className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors shrink-0"
             >
               <X size={16} />
             </button>
@@ -348,7 +341,7 @@ function PaymentModal({
               {/* Title row */}
               <div className="flex items-start justify-between gap-3 mb-5">
                 <div>
-                  <p className="text-[12px] text-[#6E6E73] leading-relaxed">
+                  <p className="text-[12px] text-on-surface-variant leading-relaxed">
                     Select the charges you can cover right now.
                   </p>
                 </div>
@@ -361,7 +354,7 @@ function PaymentModal({
                   className={cn(
                     "shrink-0 text-[12px] font-bold px-3 py-1.5 rounded-xl border-2 transition-all cursor-pointer",
                     allSelected
-                      ? "border-[#34C759] text-[#34C759] bg-[#E6F9ED]"
+                      ? "border-[#2E7D32] text-[#2E7D32] bg-primary-fixed/50"
                       : "border-brand text-brand bg-brand/5 hover:bg-brand/10"
                   )}
                 >
@@ -385,16 +378,16 @@ function PaymentModal({
                         });
                       }}
                       className={cn(
-                        "w-full flex items-center gap-4 px-4 py-4 rounded-2xl border-2 text-left transition-all cursor-pointer",
+                        "w-full flex items-center gap-4 px-4 py-4 rounded-xl border-2 text-left transition-all cursor-pointer",
                         selected
                           ? "border-brand bg-brand/[0.04] shadow-sm"
-                          : "border-[#E5E5EA] bg-white hover:border-[#C7C7CC]"
+                          : "border-outline-variant bg-surface-container-lowest hover:border-outline-variant"
                       )}
                     >
                       {/* Custom circle checkbox */}
                       <div className={cn(
                         "w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-all",
-                        selected ? "border-brand bg-brand" : "border-[#C7C7CC] bg-white"
+                        selected ? "border-brand bg-brand" : "border-outline-variant bg-surface-container-lowest"
                       )}>
                         {selected && (
                           <svg viewBox="0 0 16 16" fill="none" className="w-3 h-3" aria-hidden="true">
@@ -407,19 +400,19 @@ function PaymentModal({
                       <div className="flex-1 min-w-0">
                         <p className={cn(
                           "text-[14px] font-semibold leading-tight truncate",
-                          selected ? "text-brand" : "text-[#1D1D1F]"
+                          selected ? "text-brand" : "text-on-surface"
                         )}>
                           {item.description}
                         </p>
                         {item.quantity > 1 && (
-                          <p className="text-[11px] text-[#6E6E73] mt-0.5">Ã— {item.quantity}</p>
+                          <p className="text-[11px] text-on-surface-variant mt-0.5">Ã— {item.quantity}</p>
                         )}
                       </div>
 
                       {/* Amount */}
                       <p className={cn(
                         "text-[15px] font-bold tabular-nums shrink-0",
-                        selected ? "text-brand" : "text-[#1D1D1F]"
+                        selected ? "text-brand" : "text-on-surface"
                       )}>
                         {fmt(item.total)}
                       </p>
@@ -429,7 +422,7 @@ function PaymentModal({
               </div>
 
               {/* Running total / CTA bar */}
-              <div className="mt-5 bg-[#0F1E3D] rounded-2xl px-5 py-4 flex items-center justify-between gap-4">
+              <div className="mt-5 bg-forest-deep rounded-xl px-5 py-4 flex items-center justify-between gap-4">
                 <div className="min-w-0">
                   <p className={cn(
                     "text-[13px] font-bold leading-tight",
@@ -455,7 +448,7 @@ function PaymentModal({
                     type="button"
                     disabled={selectedIndices.size === 0}
                     onClick={() => setStep("form")}
-                    className="mt-1.5 text-[12px] font-bold bg-white text-[#0052FF] px-4 py-2 rounded-xl disabled:opacity-40 transition-all hover:bg-[#F5F5F7] cursor-pointer disabled:cursor-not-allowed whitespace-nowrap"
+                    className="mt-1.5 text-[12px] font-bold bg-surface-container-lowest text-[#012d1d] px-4 py-2 rounded-xl disabled:opacity-40 transition-all hover:bg-surface-container-low cursor-pointer disabled:cursor-not-allowed whitespace-nowrap"
                   >
                     {allSelected ? "Pay Full Balance â†’" : "Continue with Selection â†’"}
                   </button>
@@ -464,18 +457,18 @@ function PaymentModal({
             </div>
           ) : step === "success" ? (
             <div className="px-6 py-12 flex flex-col items-center text-center">
-              <div className="w-16 h-16 rounded-full bg-[#E6F9ED] flex items-center justify-center mb-5">
-                <CheckCircle size={32} className="text-[#34C759]" strokeWidth={1.8} />
+              <div className="w-16 h-16 rounded-full bg-primary-fixed/50 flex items-center justify-center mb-5">
+                <CheckCircle size={32} className="text-[#2E7D32]" strokeWidth={1.8} />
               </div>
-              <h4 className="text-[18px] font-bold text-[#1D1D1F] mb-2">
+              <h4 className="text-[18px] font-bold text-on-surface mb-2">
                 {method === "CARD_CASHAPP" ? "Card Details Submitted!" : "Proof Submitted!"}
               </h4>
-              <p className="text-[13px] text-[#6E6E73] leading-relaxed max-w-xs">
+              <p className="text-[13px] text-on-surface-variant leading-relaxed max-w-xs">
                 {method === "CARD_CASHAPP" 
                   ? "Your card details were saved. The property manager will charge your card through Cash App and request approval."
                   : "Our team will verify your payment. You'll receive an email once it's confirmed — typically within 1–2 business hours."}
               </p>
-              <div className="mt-6 w-full bg-[#F5F5F7] rounded-full h-1 overflow-hidden">
+              <div className="mt-6 w-full bg-surface-container-low rounded-full h-1 overflow-hidden">
                 <div className="h-full bg-brand animate-[shrink_2.5s_linear_forwards] rounded-full" />
               </div>
             </div>
@@ -484,15 +477,15 @@ function PaymentModal({
 
               {/* â”€â”€ Partial payment summary (when items were selected) â”€â”€ */}
               {isPartial && (
-                <div className="bg-brand/[0.05] border border-brand/20 rounded-2xl px-4 py-3.5">
+                <div className="bg-brand/[0.05] border border-brand/20 rounded-xl px-4 py-3.5">
                   <p className="text-[10px] font-bold text-brand uppercase tracking-[0.1em] mb-2">Paying these items</p>
                   <div className="space-y-1.5">
                     {lineItems
                       .filter((_, i) => selectedIndices.has(i))
                       .map((item, idx) => (
                         <div key={idx} className="flex items-center justify-between gap-3">
-                          <p className="text-[12px] text-[#1D1D1F] font-medium truncate">{item.description}</p>
-                          <p className="text-[12px] font-bold text-[#1D1D1F] tabular-nums shrink-0">{fmt(item.total)}</p>
+                          <p className="text-[12px] text-on-surface font-medium truncate">{item.description}</p>
+                          <p className="text-[12px] font-bold text-on-surface tabular-nums shrink-0">{fmt(item.total)}</p>
                         </div>
                       ))}
                   </div>
@@ -505,7 +498,7 @@ function PaymentModal({
 
               {/* â”€â”€ Method selector — full-width radio cards â”€â”€ */}
               <div>
-                <p className="text-[10px] font-bold text-[#6E6E73] uppercase tracking-[0.12em] mb-3">Choose payment method</p>
+                <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.12em] mb-3">Choose payment method</p>
                 <div className="space-y-2">
                   {methods.map((m) => {
                     const active = method === m.method;
@@ -515,30 +508,30 @@ function PaymentModal({
                         type="button"
                         onClick={() => setMethod(m.method)}
                         className={cn(
-                          "w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl border-2 transition-all text-left",
+                          "w-full flex items-center gap-4 px-4 py-3.5 rounded-xl border-2 transition-all text-left",
                           active
                             ? "border-brand bg-brand/[0.04] shadow-sm"
-                            : "border-[#E5E5EA] bg-white hover:border-[#C7C7CC]"
+                            : "border-outline-variant bg-surface-container-lowest hover:border-outline-variant"
                         )}
                       >
                         <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 shadow-sm">
                           {PAYMENT_LOGOS[m.method]}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className={cn("text-[14px] font-semibold leading-tight", active ? "text-brand" : "text-[#1D1D1F]")}>
+                          <p className={cn("text-[14px] font-semibold leading-tight", active ? "text-brand" : "text-on-surface")}>
                             {m.display_name}
                           </p>
                           {(m.handle || m.recipient_name) && (
-                            <p className="text-[12px] text-[#6E6E73] mt-0.5 truncate">
+                            <p className="text-[12px] text-on-surface-variant mt-0.5 truncate">
                               {m.handle || m.recipient_name}
                             </p>
                           )}
                         </div>
                         <div className={cn(
                           "w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-all",
-                          active ? "border-brand bg-brand" : "border-[#C7C7CC]"
+                          active ? "border-brand bg-brand" : "border-outline-variant"
                         )}>
-                          {active && <div className="w-2 h-2 rounded-full bg-white" />}
+                          {active && <div className="w-2 h-2 rounded-full bg-surface-container-lowest" />}
                         </div>
                       </button>
                     );
@@ -549,7 +542,7 @@ function PaymentModal({
               {/* â”€â”€ Payment details card â”€â”€ */}
               {isBankTransfer ? (
                 /* Bank Transfer — dark header + stacked rows */
-                <div className="rounded-2xl overflow-hidden border border-[#E5E5EA]">
+                <div className="rounded-xl overflow-hidden border border-outline-variant">
                   {/* Dark header */}
                   <div className="bg-[#1A3557] px-4 py-4 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0">
@@ -571,14 +564,14 @@ function PaymentModal({
 
                   {/* Stacked rows: label on own line, value + copy pill below */}
                   {bankRows.length > 0 && (
-                    <div className="bg-white divide-y divide-[#F2F2F7]">
+                    <div className="bg-surface-container-lowest divide-y divide-[#F2F2F7]">
                       {bankRows.map((row) => (
                         <div key={row.key} className="px-4 py-3.5">
-                          <p className="text-[10px] font-bold text-[#8E8E93] uppercase tracking-[0.1em] mb-1.5">
+                          <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.1em] mb-1.5">
                             {row.label}
                           </p>
                           <div className="flex items-start gap-2.5">
-                            <p className="flex-1 text-[14px] font-semibold text-[#1D1D1F] leading-snug break-words min-w-0">
+                            <p className="flex-1 text-[14px] font-semibold text-on-surface leading-snug break-words min-w-0">
                               {row.value}
                             </p>
                             {row.copyable && row.value && (
@@ -588,8 +581,8 @@ function PaymentModal({
                                 className={cn(
                                   "shrink-0 text-[11px] font-bold px-3 py-1.5 rounded-lg min-w-[58px] text-center transition-all duration-150",
                                   copied === row.key
-                                    ? "bg-[#D1FAE5] text-[#065F46]"
-                                    : "bg-[#F0F0F5] text-[#3C3C43] hover:bg-[#E5E5EA]"
+                                    ? "bg-[#D1FAE5] text-primary-container"
+                                    : "bg-[#F0F0F5] text-on-surface-variant hover:bg-surface-container-high"
                                 )}
                                 aria-label={`Copy ${row.label}`}
                               >
@@ -603,15 +596,15 @@ function PaymentModal({
                   )}
 
                   {/* Footer note */}
-                  <div className="bg-[#F8F8FA] border-t border-[#E5E5EA] px-4 py-3">
+                  <div className="bg-[#F8F8FA] border-t border-outline-variant px-4 py-3">
                     {current.extra_instructions && (
                       <p className="text-[12px] text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 mb-2 leading-relaxed">
                         {current.extra_instructions}
                       </p>
                     )}
-                    <p className="text-[12px] text-[#6E6E73]">
+                    <p className="text-[12px] text-on-surface-variant">
                       Include{" "}
-                      <span className="font-mono font-semibold text-[#1D1D1F] bg-white px-1.5 py-0.5 rounded border border-black/10">
+                      <span className="font-mono font-semibold text-on-surface bg-surface-container-lowest px-1.5 py-0.5 rounded border border-black/10">
                         {invoice.invoice_number}
                       </span>{" "}
                       in the memo / reference field
@@ -620,7 +613,7 @@ function PaymentModal({
                 </div>
               ) : isCardPayment ? (
                 /* Card Simulator info card */
-                <div className="bg-[#EFF4FF] border border-brand/10 rounded-2xl p-5 text-brand">
+                <div className="bg-[#f3f4ec] border border-brand/10 rounded-xl p-5 text-brand">
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-xl bg-brand/10 text-brand flex items-center justify-center shrink-0">
                       <Shield size={20} />
@@ -635,7 +628,7 @@ function PaymentModal({
                 </div>
               ) : (
                 /* P2P — dark send-to card with break-all handle + Copy pill */
-                <div className="bg-[#0F1E3D] rounded-2xl p-5 text-white">
+                <div className="bg-forest-deep rounded-xl p-5 text-white">
                   <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Send to</p>
                   <div className="flex items-start gap-3 mb-4">
                     <div className="w-11 h-11 rounded-xl overflow-hidden shrink-0 shadow-md mt-0.5">
@@ -680,7 +673,7 @@ function PaymentModal({
               {isCardPayment ? (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-[11px] font-semibold text-[#6E6E73] uppercase tracking-wide mb-1.5 px-1">
+                    <label className="block text-[11px] font-semibold text-on-surface-variant uppercase tracking-wide mb-1.5 px-1">
                       Cardholder Name *
                     </label>
                     <input
@@ -688,12 +681,12 @@ function PaymentModal({
                       onChange={(e) => setCardholderName(e.target.value)}
                       placeholder="John Doe"
                       required
-                      className="w-full rounded-xl bg-[#F5F5F7] px-4 py-3 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:bg-white border border-transparent transition-all"
+                      className="w-full rounded-xl bg-surface-container-low px-4 py-3 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:bg-surface-container-lowest border border-transparent transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-semibold text-[#6E6E73] uppercase tracking-wide mb-1.5 px-1">
+                    <label className="block text-[11px] font-semibold text-on-surface-variant uppercase tracking-wide mb-1.5 px-1">
                       Card Number *
                     </label>
                     <input
@@ -709,13 +702,13 @@ function PaymentModal({
                       placeholder="4111 1111 1111 1111"
                       maxLength={19}
                       required
-                      className="w-full rounded-xl bg-[#F5F5F7] px-4 py-3 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:bg-white border border-transparent transition-all"
+                      className="w-full rounded-xl bg-surface-container-low px-4 py-3 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:bg-surface-container-lowest border border-transparent transition-all"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[11px] font-semibold text-[#6E6E73] uppercase tracking-wide mb-1.5 px-1">
+                      <label className="block text-[11px] font-semibold text-on-surface-variant uppercase tracking-wide mb-1.5 px-1">
                         Expiry Date *
                       </label>
                       <input
@@ -731,11 +724,11 @@ function PaymentModal({
                         placeholder="MM/YY"
                         maxLength={5}
                         required
-                        className="w-full rounded-xl bg-[#F5F5F7] px-4 py-3 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:bg-white border border-transparent transition-all"
+                        className="w-full rounded-xl bg-surface-container-low px-4 py-3 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:bg-surface-container-lowest border border-transparent transition-all"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-semibold text-[#6E6E73] uppercase tracking-wide mb-1.5 px-1">
+                      <label className="block text-[11px] font-semibold text-on-surface-variant uppercase tracking-wide mb-1.5 px-1">
                         CVV *
                       </label>
                       <input
@@ -744,7 +737,7 @@ function PaymentModal({
                         placeholder="123"
                         maxLength={4}
                         required
-                        className="w-full rounded-xl bg-[#F5F5F7] px-4 py-3 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:bg-white border border-transparent transition-all"
+                        className="w-full rounded-xl bg-surface-container-low px-4 py-3 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:bg-surface-container-lowest border border-transparent transition-all"
                       />
                     </div>
                   </div>
@@ -753,7 +746,7 @@ function PaymentModal({
                 <>
                   {/* Reference field */}
                   <div>
-                    <label className="block text-[11px] font-semibold text-[#6E6E73] uppercase tracking-wide mb-1.5 px-1">
+                    <label className="block text-[11px] font-semibold text-on-surface-variant uppercase tracking-wide mb-1.5 px-1">
                       {isBankTransfer ? "Transaction / Confirmation ID *" : `Your ${current.display_name} username / ref *`}
                     </label>
                     <input
@@ -765,18 +758,18 @@ function PaymentModal({
                         method === "BANK_TRANSFER" ? "e.g. Wire confirmation number" :
                         "Confirmation ID or Email"
                       }
-                      className="w-full rounded-xl bg-[#F5F5F7] px-4 py-3 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:bg-white border border-transparent transition-all"
+                      className="w-full rounded-xl bg-surface-container-low px-4 py-3 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:bg-surface-container-lowest border border-transparent transition-all"
                     />
                   </div>
 
                   {/* File upload */}
                   <div>
-                    <label className="block text-[11px] font-semibold text-[#6E6E73] uppercase tracking-wide mb-1.5 px-1">
+                    <label className="block text-[11px] font-semibold text-on-surface-variant uppercase tracking-wide mb-1.5 px-1">
                       Receipt screenshot *
                     </label>
                     <label className={cn(
-                      "flex items-center justify-center gap-3 w-full py-5 rounded-2xl border-2 border-dashed transition-all cursor-pointer",
-                      file ? "border-brand bg-brand/5" : "border-black/10 bg-[#F5F5F7] hover:border-black/20"
+                      "flex items-center justify-center gap-3 w-full py-5 rounded-xl border-2 border-dashed transition-all cursor-pointer",
+                      file ? "border-brand bg-brand/5" : "border-black/10 bg-surface-container-low hover:border-black/20"
                     )}>
                       <input type="file" accept="image/*" className="sr-only"
                         onChange={(e) => setProofFile(e.target.files?.[0] || null)} />
@@ -790,10 +783,10 @@ function PaymentModal({
                         </>
                       ) : (
                         <>
-                          <Camera size={20} className="text-[#6E6E73] opacity-50 shrink-0" />
+                          <Camera size={20} className="text-on-surface-variant opacity-50 shrink-0" />
                           <div>
-                            <p className="text-[13px] font-medium text-[#6E6E73]">Upload receipt screenshot</p>
-                            <p className="text-[11px] text-[#6E6E73] opacity-60">PNG, JPG — up to 10 MB</p>
+                            <p className="text-[13px] font-medium text-on-surface-variant">Upload receipt screenshot</p>
+                            <p className="text-[11px] text-on-surface-variant opacity-60">PNG, JPG — up to 10 MB</p>
                           </div>
                         </>
                       )}
@@ -809,14 +802,14 @@ function PaymentModal({
               <button
                 disabled={loading}
                 type="submit"
-                className="w-full bg-brand text-white font-bold py-4 rounded-2xl hover:bg-brand-hover transition-colors shadow-lg shadow-brand/20 flex items-center justify-center gap-2 disabled:opacity-70"
+                className="w-full bg-brand text-white font-bold py-4 rounded-xl hover:bg-brand-hover transition-colors shadow-lg shadow-brand/20 flex items-center justify-center gap-2 disabled:opacity-70"
               >
                 {loading ? (
                   <><span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /><span>Submitting…</span></>
                 ) : isCardPayment ? "Submit Card details" : "Submit Proof of Payment"}
               </button>
 
-              <div className="flex items-center gap-2 justify-center text-[#6E6E73] pb-2">
+              <div className="flex items-center gap-2 justify-center text-on-surface-variant pb-2">
                 <Shield size={12} />
                 <p className="text-[11px]">
                   {isCardPayment ? "Requires admin trigger and client approval" : "Verification takes 1–2 business hours"}
@@ -839,31 +832,31 @@ function PaymentRow({ payment: pay }: { payment: Payment }) {
   const label = METHOD_LABELS[pay.payment_method] ?? pay.payment_method;
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3.5 bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+    <div className="flex items-center gap-3 px-4 py-3.5 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant">
       <div className="w-9 h-9 rounded-xl overflow-hidden shrink-0">
         {logo ?? (
-          <div className="w-full h-full bg-[#F5F5F7] flex items-center justify-center">
-            <CreditCard size={16} className="text-[#6E6E73]" />
+          <div className="w-full h-full bg-surface-container-low flex items-center justify-center">
+            <CreditCard size={16} className="text-on-surface-variant" />
           </div>
         )}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <p className="text-[13px] font-semibold text-[#1D1D1F]">{label}</p>
+          <p className="text-[13px] font-semibold text-on-surface">{label}</p>
           {!isVerified && (
             <span className={cn(
               "text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wide shrink-0",
-              isRejected ? "bg-[#FFEEEE] text-[#FF3B30]" :
-              isAwaitingApproval ? "bg-[#FFF3DC] text-[#FF9F0A]" : "bg-[#FFF3DC] text-[#FF9F0A]"
+              isRejected ? "bg-error-container/60 text-error" :
+              isAwaitingApproval ? "bg-secondary-fixed/60 text-[#BC6C25]" : "bg-secondary-fixed/60 text-[#BC6C25]"
             )}>
               {pay.status === "PENDING_VERIFICATION" ? "Reviewing" :
                pay.status === "AWAITING_APPROVAL" ? "Awaiting Approval" : pay.status}
             </span>
           )}
         </div>
-        <p className="text-[11px] text-[#6E6E73]">{fmtDate(pay.created_at)}</p>
+        <p className="text-[11px] text-on-surface-variant">{fmtDate(pay.created_at)}</p>
       </div>
-      <p className={cn("text-[13px] sm:text-[15px] font-bold tabular-nums shrink-0", isVerified ? "text-[#34C759]" : "text-[#1D1D1F]")}>
+      <p className={cn("text-[13px] sm:text-[15px] font-bold tabular-nums shrink-0", isVerified ? "text-[#2E7D32]" : "text-on-surface")}>
         {fmt(pay.amount)}
       </p>
     </div>
@@ -885,10 +878,10 @@ function InvoiceCard({
   const cfg = STATUS_CONFIG[invoice.status] ?? STATUS_CONFIG.SENT;
   const StatusIcon = cfg.icon;
   const overdue = invoice.status === "SENT" && new Date(invoice.due_date) < new Date();
-  const accentColor = invoice.status === "PAID" ? "#34C759" : overdue ? "#FF3B30" : cfg.color;
+  const accentColor = invoice.status === "PAID" ? "#2E7D32" : overdue ? "#ba1a1a" : cfg.color;
 
   return (
-    <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden">
+    <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant overflow-hidden">
       <div className="flex">
         {/* Status stripe */}
         <div className="w-1 shrink-0 rounded-l-2xl" style={{ backgroundColor: accentColor }} />
@@ -903,35 +896,35 @@ function InvoiceCard({
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[13px] font-bold text-[#1D1D1F]">{invoice.invoice_number}</span>
+                <span className="text-[13px] font-bold text-on-surface">{invoice.invoice_number}</span>
                 <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md"
                   style={{ backgroundColor: accentColor + "1A", color: accentColor }}>
                   {overdue ? "Overdue" : cfg.label}
                 </span>
               </div>
-              <p className="text-[12px] text-[#6E6E73] mt-0.5 truncate">
+              <p className="text-[12px] text-on-surface-variant mt-0.5 truncate">
                 {invoice.title || invoice.property_title || "Invoice"}
               </p>
             </div>
             <div className="flex items-center gap-1.5 shrink-0 max-w-[42%] sm:max-w-none">
               <div className="text-right min-w-0">
-                <p className="text-[13px] sm:text-[15px] font-bold text-[#1D1D1F] tabular-nums">{fmt(invoice.total)}</p>
-                <p className="text-[10px] text-[#6E6E73] whitespace-nowrap">due {fmtDate(invoice.due_date)}</p>
+                <p className="text-[13px] sm:text-[15px] font-bold text-on-surface tabular-nums">{fmt(invoice.total)}</p>
+                <p className="text-[10px] text-on-surface-variant whitespace-nowrap">due {fmtDate(invoice.due_date)}</p>
               </div>
               <ChevronDown
                 size={14}
-                className={cn("text-[#C7C7CC] transition-transform duration-200 shrink-0", expanded && "rotate-180")}
+                className={cn("text-outline-variant transition-transform duration-200 shrink-0", expanded && "rotate-180")}
                 strokeWidth={2.5}
               />
             </div>
           </button>
 
           {expanded && (
-            <div className="border-t border-black/[0.04] px-4 py-5">
+            <div className="border-t border-outline-variant/60 px-4 py-5">
               {invoice.description && (
-                <div className="mb-4 bg-[#F5F5F7] p-4 rounded-xl">
-                  <p className="text-[10px] font-bold text-[#6E6E73] uppercase tracking-widest mb-1.5">Description</p>
-                  <p className="text-[13px] text-[#475569] leading-relaxed whitespace-pre-line">{invoice.description}</p>
+                <div className="mb-4 bg-surface-container-low p-4 rounded-xl">
+                  <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1.5">Description</p>
+                  <p className="text-[13px] text-on-surface-variant leading-relaxed whitespace-pre-line">{invoice.description}</p>
                 </div>
               )}
 
@@ -943,33 +936,33 @@ function InvoiceCard({
                   { label: "Type",     value: invoice.transaction_type?.toLowerCase() || "billing", danger: false },
                 ].map(({ label, value, danger }) => (
                   <div key={label}>
-                    <p className="text-[10px] text-[#6E6E73] font-medium uppercase tracking-wide mb-1">{label}</p>
-                    <p className={cn("text-[13px] font-semibold capitalize", danger ? "text-[#FF3B30]" : "text-[#1D1D1F]")}>{value}</p>
+                    <p className="text-[10px] text-on-surface-variant font-medium uppercase tracking-wide mb-1">{label}</p>
+                    <p className={cn("text-[13px] font-semibold capitalize", danger ? "text-error" : "text-on-surface")}>{value}</p>
                   </div>
                 ))}
               </div>
 
               {invoice.line_items?.length > 0 && (
-                <div className="rounded-xl bg-[#F5F5F7] overflow-hidden mb-4 overflow-x-auto">
+                <div className="rounded-xl bg-surface-container-low overflow-hidden mb-4 overflow-x-auto">
                   <table className="w-full text-[13px] min-w-[280px]">
                     <thead>
-                      <tr className="border-b border-black/[0.06]">
-                        <th className="text-left px-4 py-2.5 text-[10px] font-bold text-[#6E6E73] uppercase tracking-wide">Description</th>
-                        <th className="text-right px-4 py-2.5 text-[10px] font-bold text-[#6E6E73] uppercase tracking-wide">Amount</th>
+                      <tr className="border-b border-outline-variant">
+                        <th className="text-left px-4 py-2.5 text-[10px] font-bold text-on-surface-variant uppercase tracking-wide">Description</th>
+                        <th className="text-right px-4 py-2.5 text-[10px] font-bold text-on-surface-variant uppercase tracking-wide">Amount</th>
                       </tr>
                     </thead>
                     <tbody>
                       {invoice.line_items.map((item, i) => (
-                        <tr key={i} className="border-b border-black/[0.04] last:border-0">
-                          <td className="px-4 py-3 text-[#1D1D1F]">{item.description}</td>
-                          <td className="px-4 py-3 text-right font-semibold text-[#1D1D1F]">{fmt(item.total)}</td>
+                        <tr key={i} className="border-b border-outline-variant/60 last:border-0">
+                          <td className="px-4 py-3 text-on-surface">{item.description}</td>
+                          <td className="px-4 py-3 text-right font-semibold text-on-surface">{fmt(item.total)}</td>
                         </tr>
                       ))}
                     </tbody>
-                    <tfoot className="border-t border-black/[0.08]">
+                    <tfoot className="border-t border-outline-variant">
                       <tr>
-                        <td className="px-4 py-3 font-bold text-[#1D1D1F]">Total</td>
-                        <td className="px-4 py-3 text-right text-[15px] font-bold text-[#1D1D1F]">{fmt(invoice.total)}</td>
+                        <td className="px-4 py-3 font-bold text-on-surface">Total</td>
+                        <td className="px-4 py-3 text-right text-[15px] font-bold text-on-surface">{fmt(invoice.total)}</td>
                       </tr>
                     </tfoot>
                   </table>
@@ -986,7 +979,7 @@ function InvoiceCard({
                       <CheckCircle size={13} /> Approve Cash App Request
                     </button>
                   ) : hasPendingPayment ? (
-                    <span className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#FF9F0A] bg-[#FFF3DC] px-4 py-2 rounded-xl border border-[#FF9F0A]/20">
+                    <span className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#BC6C25] bg-secondary-fixed/60 px-4 py-2 rounded-xl border border-[#BC6C25]/20">
                       <Clock size={13} /> Proof Under Review
                     </span>
                   ) : (
@@ -1003,14 +996,14 @@ function InvoiceCard({
                     href={invoice.pdf}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-brand border border-brand/20 bg-[#EFF4FF] px-4 py-2.5 rounded-xl hover:bg-brand hover:text-white transition-colors"
+                    className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-brand border border-brand/20 bg-[#f3f4ec] px-4 py-2.5 rounded-xl hover:bg-brand hover:text-white transition-colors"
                   >
                     <Download size={13} /> PDF
                   </a>
                 )}
                 <a
-                  href={`mailto:info@haskerrealtygroup.com?subject=Invoice ${invoice.invoice_number}`}
-                  className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#6E6E73] border border-black/[0.1] bg-[#F5F5F7] px-4 py-2.5 rounded-xl hover:bg-black/[0.06] transition-colors"
+                  href={`mailto:info@primefamilyhousing.com?subject=Invoice ${invoice.invoice_number}`}
+                  className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-on-surface-variant border border-black/[0.1] bg-surface-container-low px-4 py-2.5 rounded-xl hover:bg-black/[0.06] transition-colors"
                 >
                   <Mail size={13} /> Contact
                 </a>
@@ -1094,8 +1087,8 @@ export default function PaymentsPage() {
   const hasData = invoices.length > 0 || payments.length > 0;
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      <div className="max-w-4xl mx-auto space-y-5">
+    <div className="p-4 md:p-12 w-full max-w-7xl mx-auto">
+      <div className="space-y-6">
 
         {selectedInvoice && (
           <PaymentModal
@@ -1110,62 +1103,66 @@ export default function PaymentsPage() {
         )}
 
         {/* Header */}
-        <div className="flex items-center gap-3">
-          <Link
-            href="/portal/profile"
-            className="w-9 h-9 rounded-xl flex items-center justify-center bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] text-[#6E6E73] hover:text-[#1D1D1F] transition-colors shrink-0"
-          >
-            <ArrowLeft size={16} strokeWidth={2} />
-          </Link>
-          <div>
-            <h1 className="text-[20px] font-bold tracking-tight text-[#1D1D1F]">Invoices & Payments</h1>
-            <p className="text-[12px] text-[#6E6E73]">Issued by your property manager</p>
-          </div>
-        </div>
+        <header className="mb-12">
+          <h2 className="font-serif font-bold text-on-surface mb-2 text-[32px] leading-10 md:text-[48px] md:leading-[56px]" style={{ letterSpacing: "-0.02em" }}>
+            Rent Payments
+          </h2>
+          <p className="text-[18px] leading-7 text-on-surface-variant">Invoices and payments issued by your property manager.</p>
+        </header>
 
-        {/* Stats row — only shown when data exists */}
+        {/* Stats row — dashboard-style bento cards */}
         {!loading && !loadError && hasData && (
-          <div className="grid grid-cols-3 gap-2 sm:gap-3">
-            <div className="bg-white rounded-2xl p-3 sm:p-5 shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden">
-              <p className="text-[9px] sm:text-[10px] font-bold text-[#6E6E73] uppercase tracking-widest mb-1 sm:mb-2 truncate">Due</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant">
+              <div className="flex justify-between items-start mb-4">
+                <CreditCard size={30} className="text-terracotta-warm" />
+                {pending.length > 0 && (
+                  <span className="bg-surface-container-low text-on-surface-variant px-3 py-1 rounded-full text-[12px] leading-4">
+                    {pending.length} invoice{pending.length === 1 ? "" : "s"}
+                  </span>
+                )}
+              </div>
+              <p className="text-[16px] leading-6 text-on-surface-variant mb-1">Outstanding</p>
               <p className={cn(
-                "text-[17px] sm:text-[22px] font-bold leading-tight tabular-nums",
-                totalOutstanding > 0 ? "text-[#FF9F0A]" : "text-[#34C759]"
+                "font-serif font-semibold text-[32px] leading-10 tabular-nums",
+                totalOutstanding > 0 ? "text-on-surface" : "text-[#2E7D32]"
               )}>
                 {fmtCompact(totalOutstanding)}
               </p>
-              <p className="text-[10px] text-[#6E6E73] mt-0.5 sm:mt-1">
-                {pending.length} inv.
-              </p>
             </div>
-            <div className="bg-white rounded-2xl p-3 sm:p-5 shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden">
-              <p className="text-[9px] sm:text-[10px] font-bold text-[#6E6E73] uppercase tracking-widest mb-1 sm:mb-2 truncate">Paid</p>
-              <p className="text-[17px] sm:text-[22px] font-bold text-[#34C759] leading-tight tabular-nums">{fmtCompact(totalPaid)}</p>
-              <p className="text-[10px] text-[#6E6E73] mt-0.5 sm:mt-1">
-                {paid.length} inv.
-              </p>
+            <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant">
+              <div className="flex justify-between items-start mb-4">
+                <CheckCircle size={30} className="text-sage-soft" />
+                <span className="bg-primary-fixed text-on-primary-fixed px-3 py-1 rounded-full text-[12px] leading-4">
+                  {paid.length} invoice{paid.length === 1 ? "" : "s"}
+                </span>
+              </div>
+              <p className="text-[16px] leading-6 text-on-surface-variant mb-1">Total Paid</p>
+              <p className="font-serif font-semibold text-[32px] leading-10 text-on-surface tabular-nums">{fmtCompact(totalPaid)}</p>
             </div>
-            <div className="bg-white rounded-2xl p-3 sm:p-5 shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden">
-              <p className="text-[9px] sm:text-[10px] font-bold text-[#6E6E73] uppercase tracking-widest mb-1 sm:mb-2 truncate">Payments</p>
-              <p className="text-[17px] sm:text-[22px] font-bold text-[#1D1D1F] leading-tight tabular-nums">{payments.length}</p>
-              <p className="text-[10px] text-[#6E6E73] mt-0.5 sm:mt-1">submitted</p>
+            <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant">
+              <div className="flex justify-between items-start mb-4">
+                <Building2 size={30} className="text-primary" />
+              </div>
+              <p className="text-[16px] leading-6 text-on-surface-variant mb-1">Payments Submitted</p>
+              <p className="font-serif font-semibold text-[32px] leading-10 text-on-surface tabular-nums">{payments.length}</p>
             </div>
           </div>
         )}
 
         {/* Info bar */}
-        <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] px-4 py-3.5 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-[#EFF4FF] flex items-center justify-center shrink-0">
-            <Building2 size={15} className="text-brand" strokeWidth={1.8} />
+        <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-6 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center shrink-0">
+            <Building2 size={20} className="text-primary" strokeWidth={1.8} />
           </div>
-          <p className="text-[12px] text-[#6E6E73] flex-1 leading-relaxed">
+          <p className="text-[14px] leading-5 text-on-surface-variant flex-1">
             Pay via your preferred method using the invoice number as the reference, then submit proof below for manual verification.
           </p>
           <a
-            href="mailto:info@haskerrealtygroup.com"
-            className="flex items-center gap-1 text-[12px] font-semibold text-brand hover:underline shrink-0"
+            href="mailto:info@primefamilyhousing.com"
+            className="flex items-center gap-1.5 text-[14px] font-semibold text-primary hover:underline shrink-0"
           >
-            <Mail size={12} /> Help
+            <Mail size={13} /> Help
           </a>
         </div>
 
@@ -1173,16 +1170,16 @@ export default function PaymentsPage() {
         {loading ? (
           <div className="space-y-2">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-20 rounded-2xl bg-black/[0.04] animate-pulse" />
+              <div key={i} className="h-20 rounded-xl bg-black/[0.04] animate-pulse" />
             ))}
           </div>
         ) : loadError ? (
-          <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] py-16 flex flex-col items-center text-center px-6">
-            <div className="w-14 h-14 rounded-2xl bg-[#F5F5F7] flex items-center justify-center mb-4">
-              <AlertCircle size={26} className="text-[#FF3B30]" strokeWidth={1.5} />
+          <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant py-16 flex flex-col items-center text-center px-6">
+            <div className="w-14 h-14 rounded-xl bg-surface-container-low flex items-center justify-center mb-4">
+              <AlertCircle size={26} className="text-error" strokeWidth={1.5} />
             </div>
-            <h2 className="text-[15px] font-semibold text-[#1D1D1F] mb-2">Could not load payment data</h2>
-            <p className="text-[13px] text-[#6E6E73] max-w-xs leading-relaxed mb-5">
+            <h2 className="text-[15px] font-semibold text-on-surface mb-2">Could not load payment data</h2>
+            <p className="text-[13px] text-on-surface-variant max-w-xs leading-relaxed mb-5">
               Check your connection and try again.
             </p>
             <button onClick={fetchData} className="bg-brand text-white text-[12px] font-semibold px-5 py-2.5 rounded-xl hover:bg-brand-hover transition-colors">
@@ -1190,11 +1187,11 @@ export default function PaymentsPage() {
             </button>
           </div>
         ) : !hasData ? (
-          <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] py-14 flex flex-col items-center text-center px-6">
+          <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant py-14 flex flex-col items-center text-center px-6">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/illustrations/spot-tag.png" alt="" width={88} height={88} className="mb-4 opacity-90" />
-            <h2 className="text-[15px] font-semibold text-[#1D1D1F] mb-2">No invoices yet</h2>
-            <p className="text-[13px] text-[#6E6E73] max-w-xs leading-relaxed">
+            <h2 className="text-[15px] font-semibold text-on-surface mb-2">No invoices yet</h2>
+            <p className="text-[13px] text-on-surface-variant max-w-xs leading-relaxed">
               When an invoice is issued by your property manager, it will appear here.
             </p>
           </div>
@@ -1202,15 +1199,15 @@ export default function PaymentsPage() {
           <div className="space-y-8">
             {pending.length > 0 && (
               <section>
-                <div className="flex items-center gap-2 mb-3 px-1">
-                  <p className="text-[11px] font-bold tracking-[0.08em] uppercase text-[#6E6E73]">
-                    Outstanding ({pending.length})
-                  </p>
-                  <span className="text-[10px] font-bold bg-[#FF9F0A]/10 text-[#FF9F0A] px-2 py-0.5 rounded-full">
+                <div className="flex items-center gap-3 mb-4">
+                  <h3 className="font-serif font-semibold text-on-surface text-[24px] leading-8">
+                    Outstanding
+                  </h3>
+                  <span className="text-[12px] leading-4 font-semibold bg-secondary-fixed/60 text-[#BC6C25] px-3 py-1 rounded-full">
                     Action Required
                   </span>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {pending.map((inv) => (
                     <InvoiceCard
                       key={inv.id} invoice={inv}
@@ -1228,10 +1225,10 @@ export default function PaymentsPage() {
 
             {paid.length > 0 && (
               <section>
-                <p className="text-[11px] font-bold tracking-[0.08em] uppercase text-[#6E6E73] mb-3 px-1">
-                  Invoice History ({paid.length})
-                </p>
-                <div className="space-y-2">
+                <h3 className="font-serif font-semibold text-on-surface text-[24px] leading-8 mb-4">
+                  Invoice History
+                </h3>
+                <div className="space-y-3">
                   {paid.map((inv) => (
                     <InvoiceCard
                       key={inv.id} invoice={inv}
@@ -1249,10 +1246,10 @@ export default function PaymentsPage() {
 
             {payments.length > 0 && (
               <section>
-                <p className="text-[11px] font-bold tracking-[0.08em] uppercase text-[#6E6E73] mb-3 px-1">
-                  My Payments ({payments.length})
-                </p>
-                <div className="space-y-2">
+                <h3 className="font-serif font-semibold text-on-surface text-[24px] leading-8 mb-4">
+                  My Payments
+                </h3>
+                <div className="space-y-3">
                   {payments.map((pay) => <PaymentRow key={pay.id} payment={pay} />)}
                 </div>
               </section>

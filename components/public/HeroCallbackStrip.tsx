@@ -10,7 +10,7 @@ import {
   trackEvent,
 } from "@/lib/tracking";
 
-const CAPTURED_KEY = "hasker_lead_captured";
+const CAPTURED_KEY = "pfh_lead_captured";
 
 export function HeroCallbackStrip() {
   const [phone,     setPhone]     = useState("");

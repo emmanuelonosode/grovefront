@@ -6,7 +6,7 @@ import { getStoredUTMs, trackEvent } from "@/lib/tracking";
 
 const API_BASE = typeof window !== "undefined"
   ? ""
-  : (process.env.NEXT_PUBLIC_API_URL ?? "https://admin.haskerrealtygroup.com");
+  : (process.env.NEXT_PUBLIC_API_URL ?? "https://admin.primefamilyhousing.com");
 
 const SUPPORTED_CITIES = [
   { value: "atlanta-ga", label: "Atlanta, GA" },
@@ -77,16 +77,16 @@ export function PropertyManagementLeadForm() {
 
   if (done) {
     return (
-      <div className="text-center py-12 px-6 bg-[#EFF4FF] border border-[#DBEAFE] rounded-none shadow-sm max-w-xl mx-auto">
+      <div className="text-center py-12 px-6 bg-[#f3f4ec] border border-[#c1ecd4] rounded-none shadow-sm max-w-xl mx-auto">
         <div className="w-16 h-16 rounded-full bg-brand/10 flex items-center justify-center mx-auto mb-6">
           <CheckCircle size={32} className="text-brand" />
         </div>
         <h3 className="font-serif text-2xl font-bold text-[#0B1F3A] mb-3">Analysis Request Received</h3>
         <p className="text-neutral-600 text-sm leading-relaxed mb-6 max-w-sm mx-auto">
-          Thank you for reaching out. A local Hasker & Co. property specialist will perform a full rental valuation and contact you within 24 hours.
+          Thank you for reaching out. A local PrimeFamilyHousing property specialist will perform a full rental valuation and contact you within 24 hours.
         </p>
         <div className="text-xs text-neutral-400">
-          Have an urgent question? Email us at <a href="mailto:info@haskerrealtygroup.com" className="text-brand font-semibold hover:underline">info@haskerrealtygroup.com</a>
+          Have an urgent question? Email us at <a href="mailto:info@primefamilyhousing.com" className="text-brand font-semibold hover:underline">info@primefamilyhousing.com</a>
         </div>
       </div>
     );
@@ -108,7 +108,7 @@ export function PropertyManagementLeadForm() {
             placeholder="Your full name *"
             value={name}
             onChange={(e) => { setName(e.target.value); setError(""); }}
-            className="w-full bg-[#EFF4FF]/20 border border-neutral-200 rounded-none pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all"
+            className="w-full bg-[#f3f4ec]/20 border border-neutral-200 rounded-none pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all"
           />
         </div>
 
@@ -121,7 +121,7 @@ export function PropertyManagementLeadForm() {
               placeholder="Email address *"
               value={email}
               onChange={(e) => { setEmail(e.target.value); setError(""); }}
-              className="w-full bg-[#EFF4FF]/20 border border-neutral-200 rounded-none pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all"
+              className="w-full bg-[#f3f4ec]/20 border border-neutral-200 rounded-none pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all"
             />
           </div>
           <div className="relative">
@@ -131,7 +131,7 @@ export function PropertyManagementLeadForm() {
               placeholder="Phone number"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full bg-[#EFF4FF]/20 border border-neutral-200 rounded-none pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all"
+              className="w-full bg-[#f3f4ec]/20 border border-neutral-200 rounded-none pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all"
             />
           </div>
         </div>
@@ -142,7 +142,7 @@ export function PropertyManagementLeadForm() {
           <select
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            className="w-full bg-[#EFF4FF]/20 border border-neutral-200 rounded-none pl-10 pr-4 py-3 text-[#111827] text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all appearance-none cursor-pointer"
+            className="w-full bg-[#f3f4ec]/20 border border-neutral-200 rounded-none pl-10 pr-4 py-3 text-[#111827] text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all appearance-none cursor-pointer"
           >
             {SUPPORTED_CITIES.map((c) => (
               <option key={c.value} value={c.value}>
@@ -165,7 +165,7 @@ export function PropertyManagementLeadForm() {
             placeholder="Property street address, City, State, ZIP *"
             value={address}
             onChange={(e) => { setAddress(e.target.value); setError(""); }}
-            className="w-full bg-[#EFF4FF]/20 border border-neutral-200 rounded-none pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all"
+            className="w-full bg-[#f3f4ec]/20 border border-neutral-200 rounded-none pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all"
           />
         </div>
 
@@ -177,7 +177,7 @@ export function PropertyManagementLeadForm() {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             rows={3}
-            className="w-full bg-[#EFF4FF]/20 border border-neutral-200 rounded-none pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all resize-none"
+            className="w-full bg-[#f3f4ec]/20 border border-neutral-200 rounded-none pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all resize-none"
           />
         </div>
 

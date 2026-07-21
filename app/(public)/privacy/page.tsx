@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Hasker & Co. Realty Group",
-  description: "How Hasker & Co. Realty Group collects, uses, and protects your personal information.",
-  alternates: { canonical: "https://haskerrealtygroup.com/privacy" },
+  title: "Privacy Policy | PrimeFamilyHousing",
+  description: "How PrimeFamilyHousing collects, uses, and protects your personal information.",
+  alternates: { canonical: "https://primefamilyhousing.com/privacy" },
   robots: { index: true, follow: true },
 };
 
@@ -56,18 +56,18 @@ export default function PrivacyPage() {
         <p>
           You have the right to access, correct, or delete your personal information at any time.
           To exercise these rights, contact us at{" "}
-          <a href="mailto:info@haskerrealtygroup.com">info@haskerrealtygroup.com</a>.
+          <a href="mailto:info@primefamilyhousing.com">info@primefamilyhousing.com</a>.
         </p>
 
         <h2>7. Contact Us</h2>
         <p>
           If you have questions about this Privacy Policy, please contact us at:
           <br />
-          Hasker &amp; Co. Realty Group
+          PrimeFamilyHousing
           <br />
           1230 Peachtree Street NE, Suite 400, Atlanta, GA 30309
           <br />
-          <a href="mailto:info@haskerrealtygroup.com">info@haskerrealtygroup.com</a>
+          <a href="mailto:info@primefamilyhousing.com">info@primefamilyhousing.com</a>
         </p>
       </div>
     </div>

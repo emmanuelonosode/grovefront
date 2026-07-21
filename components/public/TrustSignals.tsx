@@ -19,7 +19,7 @@ const POINTS = [
   {
     icon: BadgeCheck,
     title: "Licensed, accountable brokerage",
-    body: "Hasker & Co. is a licensed brokerage held to professional standards in every state we serve.",
+    body: "PrimeFamilyHousing is a licensed brokerage held to professional standards in every state we serve.",
   },
   {
     icon: PawPrint,
@@ -41,7 +41,7 @@ const POINTS = [
 export function TrustSignals({
   eyebrow = "Why renters choose us",
   heading = "Renting you can actually trust",
-  subheading = "We built Hasker & Co. around the things renters told us they wished every landlord did: no games, no fine print, and a straight path to your next home.",
+  subheading = "We built PrimeFamilyHousing around the things renters told us they wished every landlord did: no games, no fine print, and a straight path to your next home.",
   tone = "light",
 }: {
   eyebrow?: string;

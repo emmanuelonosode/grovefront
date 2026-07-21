@@ -14,7 +14,7 @@ interface Props {
 
 /**
  * Tour-booking modal. Mounts once on the property detail page and opens when any
- * "Book a Tour" CTA dispatches the `hasker:open-tour` window event — so a visitor
+ * "Book a Tour" CTA dispatches the `pfh:open-tour` window event — so a visitor
  * can schedule a tour from anywhere on the page without scrolling to a form.
  * Wraps the self-contained multi-step PropertyInquiryForm.
  */
@@ -23,8 +23,8 @@ export function PropertyTourModal(props: Props) {
 
   useEffect(() => {
     const handler = () => setOpen(true);
-    window.addEventListener("hasker:open-tour", handler);
-    return () => window.removeEventListener("hasker:open-tour", handler);
+    window.addEventListener("pfh:open-tour", handler);
+    return () => window.removeEventListener("pfh:open-tour", handler);
   }, []);
 
   useEffect(() => {

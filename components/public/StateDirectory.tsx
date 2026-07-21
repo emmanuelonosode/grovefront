@@ -89,48 +89,48 @@ export function StateDirectory({ cities, counts = {} }: Props) {
   if (states.length === 0) return null;
 
   return (
-    <section id="all-cities" className="bg-white border-t border-[#F1F5F9]">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16 lg:py-20">
-        <div className="mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-          <div>
-            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-brand mb-3">
-              Browse every market
+    <section id="all-cities" className="bg-background border-t border-outline-variant/40">
+      <div className="max-w-7xl mx-auto px-4 md:px-12 py-16 md:py-24">
+        <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="max-w-3xl">
+            <p className="text-[14px] font-semibold tracking-widest uppercase text-primary mb-2">
+              Browse Every Market
             </p>
-            <h2 className="font-serif text-3xl lg:text-4xl font-bold text-brand-dark leading-tight">
+            <h2 className="font-serif font-semibold text-primary leading-tight text-[28px] md:text-[40px]">
               Houses for rent by state
             </h2>
-            <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-[#475569]">
+            <p className="mt-3 text-[18px] leading-7 text-on-surface-variant">
               Pick a state to see every city we serve — transparent pricing, pet-friendly
               options, and 24-hour application decisions.
             </p>
           </div>
 
           {/* State / city search */}
-          <div className="relative w-full md:w-[300px] shrink-0">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+          <div className="relative w-full md:w-auto md:min-w-[320px] shrink-0">
+            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search state or city…"
+              placeholder="Search state or city..."
               aria-label="Search rentals by state or city"
-              className="w-full h-11 pl-10 pr-9 rounded-lg border border-neutral-200 bg-white text-[14px] text-neutral-800 placeholder-neutral-400 outline-none transition-colors focus:border-brand focus:ring-2 focus:ring-brand/15"
+              className="block w-full h-12 pl-10 pr-9 rounded-lg border border-outline-variant bg-surface text-[15px] text-on-surface placeholder-outline outline-none shadow-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
             {query && (
               <button
                 type="button"
                 onClick={() => setQuery("")}
                 aria-label="Clear search"
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-neutral-400 hover:text-neutral-600 transition-colors cursor-pointer"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-outline hover:text-on-surface transition-colors cursor-pointer"
               >
-                <X size={14} />
+                <X size={15} />
               </button>
             )}
           </div>
         </div>
 
         {visible.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {visible.map((state) => {
               // When searching by city, surface the matching cities first.
               const matched = q
@@ -141,59 +141,58 @@ export function StateDirectory({ cities, counts = {} }: Props) {
               const moreCount = state.cities.length - topCities.length;
 
               // The card is a <div>, not one big <Link>: each city chip is its
-              // own crawlable anchor to /rentals/[city] (they used to be plain
-              // spans — zero link equity), and nesting <a> inside <a> is
-              // invalid HTML that browsers break apart unpredictably.
+              // own crawlable anchor to /rentals/[city], and nesting <a> in <a>
+              // is invalid HTML that browsers break apart unpredictably.
               return (
                 <div
                   key={state.code}
-                  className="group flex flex-col rounded-2xl border border-neutral-200 bg-white overflow-hidden transition-all duration-200 hover:border-brand hover:shadow-[0_14px_40px_rgba(0,82,255,0.14)] hover:-translate-y-1"
+                  className="group flex flex-col bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] border border-surface-variant hover:-translate-y-1 transition-transform duration-300"
                 >
                   {/* Landmark photo header — links to the state hub */}
-                  <Link href={`/rentals/${state.slug}`} className="relative block h-40 overflow-hidden bg-neutral-100">
+                  <Link href={`/rentals/${state.slug}`} className="relative block h-64 w-full overflow-hidden bg-surface-container">
                     {state.image && (
                       <Image
                         src={state.image}
                         alt={`Homes for rent in ${state.name}`}
                         fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                       />
                     )}
-                    <div className="absolute inset-0 bg-linear-to-t from-black/65 via-black/10 to-transparent" />
-                    <span className="absolute top-3 right-3 rounded-md bg-white/90 px-2 py-1 text-[12px] font-black tracking-wide text-brand-dark">
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent" />
+                    <span className="absolute top-4 right-4 rounded-full bg-surface px-3 py-1 text-[14px] font-bold tracking-wide text-primary shadow-sm">
                       {state.code}
                     </span>
-                    <div className="absolute bottom-3 left-4 right-4">
-                      <h3 className="font-serif text-[22px] font-bold text-white leading-tight" style={{ textShadow: "0 1px 12px rgba(0,0,0,0.5)" }}>
+                    <div className="absolute bottom-4 left-4 right-4 text-on-primary">
+                      <h3 className="font-serif font-semibold text-[24px] leading-8 mb-1 drop-shadow-md">
                         {state.name}
                       </h3>
-                      <p className="text-[13px] font-medium text-white/85" style={{ textShadow: "0 1px 8px rgba(0,0,0,0.5)" }}>
+                      <p className="text-[16px] leading-6 opacity-90">
                         {state.totalHomes > 0 ? `${state.totalHomes} home${state.totalHomes === 1 ? "" : "s"} for rent · ` : ""}
                         {state.cities.length} {state.cities.length === 1 ? "city" : "cities"}
                       </p>
                     </div>
                   </Link>
 
-                  <div className="flex flex-col flex-1 p-5">
-                    <div className="flex flex-wrap gap-2">
+                  <div className="p-6 flex-grow flex flex-col justify-between">
+                    <div className="flex flex-wrap gap-2 mb-6">
                       {topCities.map((city) => (
                         <Link
                           key={city.slug}
                           href={`/rentals/${city.slug}`}
-                          className="inline-flex items-center gap-1.5 rounded-full bg-neutral-50 border border-neutral-200 px-3 py-1.5 text-[13.5px] text-[#3F4650] hover:border-brand hover:text-brand hover:bg-brand-light transition-colors"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-surface-container-low border border-outline-variant/30 rounded-full text-on-surface text-[14px] hover:bg-earth-beige hover:border-earth-beige transition-colors"
                         >
-                          <MapPin size={12} className="text-brand/60 shrink-0" />
+                          <MapPin size={15} className="text-outline shrink-0" />
                           {city.name}
                           {counts[city.slug] ? (
-                            <span className="tabular-nums font-semibold text-brand">{counts[city.slug]}</span>
+                            <span className="font-semibold ml-0.5 tabular-nums">{counts[city.slug]}</span>
                           ) : null}
                         </Link>
                       ))}
                       {moreCount > 0 && (
                         <Link
                           href={`/rentals/${state.slug}`}
-                          className="inline-flex items-center rounded-full bg-neutral-50 border border-neutral-200 px-3 py-1.5 text-[13.5px] text-neutral-400 hover:border-brand hover:text-brand transition-colors"
+                          className="inline-flex items-center px-3 py-1.5 bg-surface-variant/50 border border-transparent rounded-full text-outline text-[14px] hover:bg-surface-variant transition-colors"
                         >
                           +{moreCount} more
                         </Link>
@@ -202,10 +201,10 @@ export function StateDirectory({ cities, counts = {} }: Props) {
 
                     <Link
                       href={`/rentals/${state.slug}`}
-                      className="mt-auto pt-4 flex items-center justify-between text-[14.5px] font-bold text-brand hover:underline"
+                      className="mt-auto pt-4 flex items-center justify-between w-full border-t border-surface-variant text-[14px] tracking-[0.05em] font-semibold text-primary hover:text-forest-deep transition-colors"
                     >
-                      View all {state.name} rentals
-                      <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" />
+                      <span>View all {state.name} rentals</span>
+                      <ArrowRight size={18} className="transition-transform duration-200 group-hover:translate-x-1" />
                     </Link>
                   </div>
                 </div>
@@ -213,13 +212,13 @@ export function StateDirectory({ cities, counts = {} }: Props) {
             })}
           </div>
         ) : (
-          <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-8 text-center">
-            <p className="text-[15px] font-semibold text-neutral-700">
+          <div className="rounded-xl border border-outline-variant bg-surface-container-low p-8 text-center">
+            <p className="text-[15px] font-semibold text-on-surface">
               No state or city matches “{query}”.
             </p>
-            <p className="mt-1 text-[13px] text-neutral-500">
+            <p className="mt-1 text-[13px] text-on-surface-variant">
               Try a state name like “Texas” or a city like “Atlanta” — or{" "}
-              <Link href="/houses-for-rent" className="text-brand font-semibold hover:underline">
+              <Link href="/houses-for-rent" className="text-primary font-semibold hover:underline">
                 browse all rentals
               </Link>
               .

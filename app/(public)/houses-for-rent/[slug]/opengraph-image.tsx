@@ -12,10 +12,10 @@ const ICON_SVG =
   '%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2044%2044%22%3E' +
   '%3Ccircle%20cx%3D%2222%22%20cy%3D%2222%22%20r%3D%2222%22%20fill%3D%22rgba(11%2C31%2C58%2C0.7)%22/%3E' +
   '%3Cg%20transform%3D%22translate(22%2C22)%20scale(0.173)%20translate(-160%2C-160)%22%3E' +
-  '%3Cpolygon%20points%3D%2276%2C160%20160%2C56%20244%2C160%20160%2C264%22%20fill%3D%22%231A56DB%22/%3E' +
+  '%3Cpolygon%20points%3D%2276%2C160%20160%2C56%20244%2C160%20160%2C264%22%20fill%3D%22%23012d1d%22/%3E' +
   '%3Cpolygon%20points%3D%22120%2C160%20160%2C104%20200%2C160%22%20fill%3D%22%23FFFFFF%22/%3E' +
   '%3Crect%20x%3D%22124%22%20y%3D%22160%22%20width%3D%2272%22%20height%3D%2250%22%20rx%3D%224%22%20fill%3D%22%23FFFFFF%22/%3E' +
-  '%3Crect%20x%3D%22146%22%20y%3D%22170%22%20width%3D%2228%22%20height%3D%2240%22%20rx%3D%224%22%20fill%3D%22%231A56DB%22/%3E' +
+  '%3Crect%20x%3D%22146%22%20y%3D%22170%22%20width%3D%2228%22%20height%3D%2240%22%20rx%3D%224%22%20fill%3D%22%23012d1d%22/%3E' +
   '%3C/g%3E' +
   '%3C/svg%3E';
 const ICON_SRC = `data:image/svg+xml,${ICON_SVG}`;
@@ -74,7 +74,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
             position: "absolute",
             inset: 0,
             background:
-              "linear-gradient(to bottom, rgba(15,30,61,0.15) 0%, rgba(15,30,61,0.3) 40%, rgba(15,30,61,0.88) 75%, rgba(15,30,61,0.96) 100%)",
+              "linear-gradient(to bottom, rgba(8,28,21,0.15) 0%, rgba(8,28,21,0.3) 40%, rgba(8,28,21,0.88) 75%, rgba(8,28,21,0.96) 100%)",
             display: "flex",
           }}
         />
@@ -88,7 +88,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
             display: "flex",
             alignItems: "center",
             gap: 12,
-            background: "rgba(15,30,61,0.82)",
+            background: "rgba(8,28,21,0.82)",
             border: "1px solid rgba(255,255,255,0.18)",
             borderRadius: 6,
             padding: "10px 20px 10px 12px",
@@ -98,9 +98,9 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           <img src={ICON_SRC} width={36} height={36} alt="" />
           <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
             <span style={{ color: "#ffffff", fontSize: 15, fontWeight: 800, letterSpacing: 0.3, lineHeight: 1 }}>
-              HASKER &amp; CO.
+              PRIMEFAMILYHOUSING &amp; CO.
             </span>
-            <span style={{ color: "#0052FF", fontSize: 9, fontWeight: 500, letterSpacing: 3, lineHeight: 1 }}>
+            <span style={{ color: "#012d1d", fontSize: 9, fontWeight: 500, letterSpacing: 3, lineHeight: 1 }}>
               REALTY GROUP
             </span>
           </div>

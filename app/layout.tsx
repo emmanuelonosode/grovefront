@@ -1,27 +1,27 @@
 import type { Metadata } from "next";
-import { DM_Sans, Poppins } from "next/font/google";
+import { Montserrat, Source_Sans_3 } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
 import { TrackingScripts } from "@/components/TrackingScripts";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import "./globals.css";
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+const sourceSans = Source_Sans_3({
+  variable: "--font-source-sans",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  weight: ["400", "600", "700"],
   display: "swap",
 });
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "600", "700", "800"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "Hasker & Co. Realty Group | Affordable Rental Homes & Apartments",
+    default: "PrimeFamilyHousing | Affordable Rental Homes & Apartments",
     // Pages already include the brand in their own title, so the template must
     // NOT append it again (that double-printed the brand in every <title>).
     template: "%s",
@@ -30,11 +30,10 @@ export const metadata: Metadata = {
     "Find affordable rental apartments and homes across Atlanta, Charlotte, Houston, Dallas, Nashville & more. Move-in ready homes, fast approvals, 500+ units available.",
   keywords: [
     // ── Brand ──────────────────────────────────────────────────────
-    "Hasker Realty Group",
-    "Hasker realty",
-    "Hasker and Co Realty Group",
-    "Hasker & Co Realty",
-    "haskerrealtygroup.com",
+    "Prime Family Housing",
+    "PrimeFamilyHousing",
+    "primefamilyhousing.com",
+    "Prime Family Housing rentals",
     // ── High-intent rental searches ───────────────────────────────
     "homes for rent",
     "houses for rent",
@@ -80,29 +79,29 @@ export const metadata: Metadata = {
     "long term rental homes",
     "property management rental homes",
   ],
-  authors: [{ name: "Hasker & Co. Realty Group", url: "https://haskerrealtygroup.com" }],
-  creator: "Hasker & Co. Realty Group",
-  publisher: "Hasker & Co. Realty Group",
+  authors: [{ name: "PrimeFamilyHousing", url: "https://primefamilyhousing.com" }],
+  creator: "PrimeFamilyHousing",
+  publisher: "PrimeFamilyHousing",
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://haskerrealtygroup.com"),
+  metadataBase: new URL("https://primefamilyhousing.com"),
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://haskerrealtygroup.com",
-    siteName: "Hasker & Co. Realty Group",
-    title: "Hasker & Co. Realty Group | Affordable Rental Homes & Apartments",
+    url: "https://primefamilyhousing.com",
+    siteName: "PrimeFamilyHousing",
+    title: "PrimeFamilyHousing | Affordable Rental Homes & Apartments",
     description: "Discover quality, affordable rental homes and apartments — move-in ready, fast approvals.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hasker & Co. Realty Group | Affordable Rental Homes & Apartments",
+    title: "PrimeFamilyHousing | Affordable Rental Homes & Apartments",
     description:
       "Find affordable rental apartments and homes across Atlanta, Charlotte, Houston, Dallas, Nashville & more. Move-in ready homes, fast approvals.",
-    creator: "@haskerrealty",
+    creator: "@primefamilyhousing",
   },
   icons: {
     icon: [
@@ -122,49 +121,53 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  // Google Search Console site verification. Set NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+  // to the token from the GSC "HTML tag" verification method (the content= value).
+  // Preferred long-term: verify the whole DOMAIN property via DNS TXT instead — that
+  // also covers admin.* and www.* and survives host changes. This tag is the quick path.
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } }
+    : {}),
   other: {
-    "llms-txt": "https://haskerrealtygroup.com/llms.txt",
-    "llms-full-txt": "https://haskerrealtygroup.com/llms-full.txt",
+    "llms-txt": "https://primefamilyhousing.com/llms.txt",
+    "llms-full-txt": "https://primefamilyhousing.com/llms-full.txt",
   },
 };
 
 // ── Global entity graph — present on every page ──────────────────────────
 // The @graph pattern lets Google resolve all entities together and is the
 // correct way to establish an Organisation Knowledge Panel entry.
-// alternateName is the primary signal that "Hasker" is intentional, not a
+// alternateName is the primary signal that "PrimeFamilyHousing" is intentional, not a
 // typo — Google uses it to suppress "Did you mean?" autocorrections.
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "Organization",
-      "@id": "https://haskerrealtygroup.com/#organization",
-      "name": "Hasker & Co. Realty Group",
-      "legalName": "Hasker & Co. Realty Group",
+      "@id": "https://primefamilyhousing.com/#organization",
+      "name": "PrimeFamilyHousing",
+      "legalName": "PrimeFamilyHousing",
       // alternateName teaches Google every branded query that points here
       "alternateName": [
-        "Hasker Realty Group",
-        "Hasker Realty",
-        "Hasker and Co Realty Group",
-        "Hasker and Co Realty",
-        "Hasker Co Realty Group",
-        "Hasker & Co Realty"
+        "Prime Family Housing",
+        "PrimeFamilyHousing.com",
+        "Prime Family Housing LLC"
       ],
-      "url": "https://haskerrealtygroup.com",
+      "url": "https://primefamilyhousing.com",
       "logo": {
         "@type": "ImageObject",
-        "@id": "https://haskerrealtygroup.com/#logo",
-        "url": "https://haskerrealtygroup.com/logo/logo.png",
-        "contentUrl": "https://haskerrealtygroup.com/logo/logo.png",
+        "@id": "https://primefamilyhousing.com/#logo",
+        "url": "https://primefamilyhousing.com/logo/logo.png",
+        "contentUrl": "https://primefamilyhousing.com/logo/logo.png",
         "width": 280,
         "height": 48,
-        "caption": "Hasker & Co. Realty Group"
+        "caption": "PrimeFamilyHousing"
       },
-      "image": { "@id": "https://haskerrealtygroup.com/#logo" },
-      "description": "Hasker & Co. Realty Group is a licensed US real estate company founded in 2012, specializing in affordable rental homes and budget-friendly properties for sale across 12+ US cities. Well-maintained, move-in ready homes. 24-hour application decisions. 2,000+ families housed.",
+      "image": { "@id": "https://primefamilyhousing.com/#logo" },
+      "description": "PrimeFamilyHousing is a licensed US real estate company founded in 2012, specializing in affordable rental homes and budget-friendly properties for sale across 12+ US cities. Well-maintained, move-in ready homes. 24-hour application decisions. 2,000+ families housed.",
       "foundingDate": "2012",
       "telephone": "+17572082767",
-      "email": "info@haskerrealtygroup.com",
+      "email": "info@primefamilyhousing.com",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "213 Bob Ln",
@@ -178,7 +181,7 @@ const jsonLd = {
           "@type": "ContactPoint",
           "contactType": "customer service",
           "telephone": "+17572082767",
-          "email": "info@haskerrealtygroup.com",
+          "email": "info@primefamilyhousing.com",
           "availableLanguage": ["English"],
           "hoursAvailable": {
             "@type": "OpeningHoursSpecification",
@@ -190,11 +193,11 @@ const jsonLd = {
       ],
       "sameAs": [
         "https://www.facebook.com/share/1G6G3YcUd3/",
-        "https://www.tiktok.com/@haskerrealtygroup",
-        "https://www.instagram.com/haskerrealty",
-        "https://www.linkedin.com/company/haskerrealty",
-        "https://twitter.com/haskerrealty",
-        "https://haskerrealtygroup.com"
+        "https://www.tiktok.com/@primefamilyhousing",
+        "https://www.instagram.com/primefamilyhousing",
+        "https://www.linkedin.com/company/primefamilyhousing",
+        "https://twitter.com/primefamilyhousing",
+        "https://primefamilyhousing.com"
       ],
       "slogan": "Quality Homes. Well-Maintained. Move-In Ready.",
       "numberOfEmployees": { "@type": "QuantitativeValue", "minValue": 10, "maxValue": 50 },
@@ -251,17 +254,17 @@ const jsonLd = {
     {
       // WebSite schema enables the Sitelinks Searchbox in Google branded results
       "@type": "WebSite",
-      "@id": "https://haskerrealtygroup.com/#website",
-      "url": "https://haskerrealtygroup.com",
-      "name": "Hasker & Co. Realty Group",
-      "alternateName": ["Hasker Realty Group", "Hasker Realty", "Hasker and Co Realty Group"],
-      "description": "Official website of Hasker & Co. Realty Group — affordable rental homes and properties for sale across 12+ US cities. Founded 2012. Move-in ready homes.",
-      "publisher": { "@id": "https://haskerrealtygroup.com/#organization" },
+      "@id": "https://primefamilyhousing.com/#website",
+      "url": "https://primefamilyhousing.com",
+      "name": "PrimeFamilyHousing",
+      "alternateName": ["Prime Family Housing", "PrimeFamilyHousing.com"],
+      "description": "Official website of PrimeFamilyHousing — affordable rental homes and properties for sale across 12+ US cities. Founded 2012. Move-in ready homes.",
+      "publisher": { "@id": "https://primefamilyhousing.com/#organization" },
       "potentialAction": {
         "@type": "SearchAction",
         "target": {
           "@type": "EntryPoint",
-          "urlTemplate": "https://haskerrealtygroup.com/houses-for-rent?q={search_term_string}"
+          "urlTemplate": "https://primefamilyhousing.com/houses-for-rent?q={search_term_string}"
         },
         "query-input": "required name=search_term_string"
       },
@@ -279,7 +282,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${poppins.variable} h-full scroll-smooth`}>
+    <html lang="en" className={`${sourceSans.variable} ${montserrat.variable} h-full scroll-smooth`}>
       <head>
         <meta name="referrer" content="no-referrer" />
         <script

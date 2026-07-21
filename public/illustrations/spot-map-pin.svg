@@ -1,6 +1,6 @@
 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#0B1F3A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
   <!-- Background -->
-  <rect width="200" height="200" fill="#EFF4FF" stroke="none"/>
+  <rect width="200" height="200" fill="#f3f4ec" stroke="none"/>
   <circle cx="100" cy="105" r="74" fill="#FBF9F4" stroke="none"/>
   <circle cx="100" cy="105" r="74"/>
 
@@ -13,15 +13,15 @@
   </g>
 
   <!-- Mini house 1 -->
-  <rect x="46" y="142" width="14" height="12" fill="#EFF4FF"/>
+  <rect x="46" y="142" width="14" height="12" fill="#f3f4ec"/>
   <rect x="46" y="142" width="14" height="12"/>
-  <path d="M 44 142 L 53 134 L 62 142 Z" fill="#1A56DB"/>
+  <path d="M 44 142 L 53 134 L 62 142 Z" fill="#012d1d"/>
   <path d="M 44 142 L 53 134 L 62 142 Z"/>
 
   <!-- Mini house 2 -->
-  <rect x="140" y="138" width="14" height="12" fill="#EFF4FF"/>
+  <rect x="140" y="138" width="14" height="12" fill="#f3f4ec"/>
   <rect x="140" y="138" width="14" height="12"/>
-  <path d="M 138 138 L 147 130 L 156 138 Z" fill="#1A56DB"/>
+  <path d="M 138 138 L 147 130 L 156 138 Z" fill="#012d1d"/>
   <path d="M 138 138 L 147 130 L 156 138 Z"/>
 
   <!-- Pin -->
@@ -29,7 +29,7 @@
     <!-- Drop shadow -->
     <ellipse cx="0" cy="34" rx="14" ry="3" fill="#0B1F3A" opacity="0.18" stroke="none"/>
     <!-- Pin body -->
-    <path d="M 0 30 L -18 -2 Q -18 -28 0 -28 Q 18 -28 18 -2 Z" fill="#1A56DB"/>
+    <path d="M 0 30 L -18 -2 Q -18 -28 0 -28 Q 18 -28 18 -2 Z" fill="#012d1d"/>
     <path d="M 0 30 L -18 -2 Q -18 -28 0 -28 Q 18 -28 18 -2 Z"/>
     <!-- Pin hole -->
     <circle cx="0" cy="-8" r="7" fill="#FBF9F4"/>

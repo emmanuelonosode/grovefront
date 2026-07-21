@@ -116,18 +116,18 @@ function ApplicationDrawer({
 
       {/* Panel */}
       <div
-        className="w-full max-w-lg bg-white h-full overflow-y-auto shadow-2xl"
+        className="w-full max-w-lg bg-surface-container-lowest h-full overflow-y-auto shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-neutral-100 px-6 py-4 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-surface-container-lowest border-b border-outline-variant/60 px-6 py-4 flex items-center justify-between z-10">
           <div>
-            <p className="font-semibold text-[#0F1E3D] text-sm">{app.full_name}</p>
-            <p className="text-xs text-neutral-400 mt-0.5">{ROLE_LABELS[app.role_id] ?? app.role_title}</p>
+            <p className="font-semibold text-forest-deep text-sm">{app.full_name}</p>
+            <p className="text-xs text-on-surface-variant mt-0.5">{ROLE_LABELS[app.role_id] ?? app.role_title}</p>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 transition-colors"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"
           >
             <X size={15} />
           </button>
@@ -135,18 +135,18 @@ function ApplicationDrawer({
 
         <div className="px-6 py-6 space-y-6">
           {/* Contact info */}
-          <div className="bg-neutral-50 rounded-xl p-4 space-y-3">
-            <div className="flex items-center gap-2.5 text-sm text-neutral-700">
-              <Mail size={13} className="text-neutral-400 shrink-0" />
+          <div className="bg-surface-container-low rounded-xl p-4 space-y-3">
+            <div className="flex items-center gap-2.5 text-sm text-on-surface">
+              <Mail size={13} className="text-on-surface-variant shrink-0" />
               <a href={`mailto:${app.email}`} className="text-brand hover:underline">{app.email}</a>
             </div>
-            <div className="flex items-center gap-2.5 text-sm text-neutral-700">
-              <Phone size={13} className="text-neutral-400 shrink-0" />
+            <div className="flex items-center gap-2.5 text-sm text-on-surface">
+              <Phone size={13} className="text-on-surface-variant shrink-0" />
               <a href={`tel:${app.phone}`} className="hover:underline">{app.phone}</a>
             </div>
             {app.linkedin_url && (
-              <div className="flex items-center gap-2.5 text-sm text-neutral-700">
-                <ExternalLink size={13} className="text-neutral-400 shrink-0" />
+              <div className="flex items-center gap-2.5 text-sm text-on-surface">
+                <ExternalLink size={13} className="text-on-surface-variant shrink-0" />
                 <a href={app.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-brand hover:underline truncate">
                   {app.linkedin_url}
                 </a>
@@ -156,51 +156,51 @@ function ApplicationDrawer({
 
           {/* Applied date + current status */}
           <div className="flex items-center justify-between">
-            <p className="text-xs text-neutral-400">Applied {fmt(app.applied_at)}</p>
+            <p className="text-xs text-on-surface-variant">Applied {fmt(app.applied_at)}</p>
             <StatusBadge status={app.status} />
           </div>
 
           {/* Role-specific field */}
           {app.extra_field_label && (
             <div>
-              <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-1">{app.extra_field_label}</p>
-              <p className="text-sm text-[#0F1E3D]">{app.extra_field_value || "—"}</p>
+              <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">{app.extra_field_label}</p>
+              <p className="text-sm text-forest-deep">{app.extra_field_value || "—"}</p>
             </div>
           )}
 
           {/* Motivation */}
           <div>
-            <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">Why They Want to Join</p>
-            <p className="text-sm text-neutral-700 leading-relaxed whitespace-pre-line bg-neutral-50 rounded-xl p-4">
+            <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Why They Want to Join</p>
+            <p className="text-sm text-on-surface leading-relaxed whitespace-pre-line bg-surface-container-low rounded-xl p-4">
               {app.motivation}
             </p>
           </div>
 
           {/* Divider */}
-          <div className="border-t border-neutral-100" />
+          <div className="border-t border-outline-variant/60" />
 
           {/* Update status */}
           <div>
-            <label className="block text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">
               Update Status
             </label>
             <div className="relative">
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as ApplicationStatus)}
-                className="w-full appearance-none bg-white border border-neutral-200 rounded-lg px-3.5 py-2.5 text-sm text-[#0F1E3D] focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand pr-8 cursor-pointer"
+                className="w-full appearance-none bg-surface-container-lowest border border-outline-variant rounded-lg px-3.5 py-2.5 text-sm text-forest-deep focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand pr-8 cursor-pointer"
               >
                 {(Object.keys(STATUS_LABELS) as ApplicationStatus[]).map((s) => (
                   <option key={s} value={s}>{STATUS_LABELS[s]}</option>
                 ))}
               </select>
-              <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+              <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
             </div>
           </div>
 
           {/* Staff notes */}
           <div>
-            <label className="block text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">
               Staff Notes
             </label>
             <textarea
@@ -208,7 +208,7 @@ function ApplicationDrawer({
               onChange={(e) => setNotes(e.target.value)}
               rows={4}
               placeholder="Add notes for your team — interview feedback, follow-up actions, etc."
-              className="w-full border border-neutral-200 rounded-lg px-3.5 py-2.5 text-sm text-[#0F1E3D] placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand resize-none leading-relaxed"
+              className="w-full border border-outline-variant rounded-lg px-3.5 py-2.5 text-sm text-forest-deep placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand resize-none leading-relaxed"
             />
           </div>
 
@@ -216,7 +216,7 @@ function ApplicationDrawer({
           <button
             onClick={handleSave}
             disabled={saving}
-            className="w-full flex items-center justify-center gap-2 bg-[#0F1E3D] hover:bg-brand text-white text-sm font-semibold py-3 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-2 bg-forest-deep hover:bg-brand text-white text-sm font-semibold py-3 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {saving ? (
               <><Loader2 size={14} className="animate-spin" /> Saving…</>
@@ -228,7 +228,7 @@ function ApplicationDrawer({
           </button>
 
           {app.reviewed_by_name && (
-            <p className="text-center text-[11px] text-neutral-300">
+            <p className="text-center text-[11px] text-outline">
               Last reviewed by {app.reviewed_by_name}
             </p>
           )}
@@ -299,25 +299,27 @@ export default function HiringPage() {
   }
 
   return (
-    <div className="px-6 lg:px-8 py-8 max-w-6xl mx-auto">
+    <div className="p-4 md:p-12 w-full max-w-7xl mx-auto">
 
       {/* Page header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#0F1E3D] tracking-tight">Hiring</h1>
-        <p className="text-sm text-neutral-400 mt-1">Review and manage job applications from your careers page.</p>
-      </div>
+      <header className="mb-12">
+        <h2 className="font-serif font-bold text-on-surface mb-2 text-[32px] leading-10 md:text-[48px] md:leading-[56px]" style={{ letterSpacing: "-0.02em" }}>
+          Hiring
+        </h2>
+        <p className="text-[18px] leading-7 text-on-surface-variant">Review and manage job applications from your careers page.</p>
+      </header>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         {/* Search */}
-        <div className="flex items-center gap-2 flex-1 bg-white border border-neutral-200 rounded-lg px-3.5 h-10 shadow-sm">
-          <Search size={13} className="text-neutral-400 shrink-0" />
+        <div className="flex items-center gap-2 flex-1 bg-surface-container-lowest border border-outline-variant rounded-lg px-3.5 h-10 shadow-sm">
+          <Search size={13} className="text-on-surface-variant shrink-0" />
           <input
             type="text"
             placeholder="Search by name, email, or role…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 text-sm text-[#0F1E3D] placeholder:text-neutral-300 outline-none bg-transparent"
+            className="flex-1 text-sm text-forest-deep placeholder:text-on-surface-variant/50 outline-none bg-transparent"
           />
         </div>
 
@@ -326,14 +328,14 @@ export default function HiringPage() {
           <select
             value={filterRole}
             onChange={(e) => setFilterRole(e.target.value)}
-            className="appearance-none bg-white border border-neutral-200 rounded-lg px-3.5 py-0 h-10 text-sm text-[#0F1E3D] focus:outline-none focus:ring-2 focus:ring-brand/20 pr-8 cursor-pointer shadow-sm"
+            className="appearance-none bg-surface-container-lowest border border-outline-variant rounded-lg px-3.5 py-0 h-10 text-sm text-forest-deep focus:outline-none focus:ring-2 focus:ring-brand/20 pr-8 cursor-pointer shadow-sm"
           >
             <option value="">All Roles</option>
             {roleOptions.map((r) => (
               <option key={r} value={r}>{ROLE_LABELS[r] ?? r}</option>
             ))}
           </select>
-          <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+          <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
         </div>
 
         {/* Status filter */}
@@ -341,14 +343,14 @@ export default function HiringPage() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="appearance-none bg-white border border-neutral-200 rounded-lg px-3.5 py-0 h-10 text-sm text-[#0F1E3D] focus:outline-none focus:ring-2 focus:ring-brand/20 pr-8 cursor-pointer shadow-sm"
+            className="appearance-none bg-surface-container-lowest border border-outline-variant rounded-lg px-3.5 py-0 h-10 text-sm text-forest-deep focus:outline-none focus:ring-2 focus:ring-brand/20 pr-8 cursor-pointer shadow-sm"
           >
             <option value="">All Statuses</option>
             {(Object.keys(STATUS_LABELS) as ApplicationStatus[]).map((s) => (
               <option key={s} value={s}>{STATUS_LABELS[s]}</option>
             ))}
           </select>
-          <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+          <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
         </div>
       </div>
 
@@ -365,8 +367,8 @@ export default function HiringPage() {
                 className={cn(
                   "flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border transition-colors",
                   filterStatus === s
-                    ? "bg-[#0052FF] text-white border-[#0052FF]"
-                    : "bg-white text-neutral-500 border-neutral-200 hover:border-neutral-300"
+                    ? "bg-[#012d1d] text-white border-[#012d1d]"
+                    : "bg-surface-container-lowest text-on-surface-variant border-outline-variant hover:border-outline"
                 )}
               >
                 <span className={cn("w-1.5 h-1.5 rounded-full", {
@@ -384,35 +386,35 @@ export default function HiringPage() {
       )}
 
       {/* Table */}
-      <div className="bg-white border border-neutral-200 rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
         {loading ? (
           <div className="flex flex-col gap-3 p-6">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="flex gap-4 animate-pulse">
-                <div className="w-8 h-8 bg-neutral-100 rounded-full shrink-0" />
+                <div className="w-8 h-8 bg-surface-container rounded-full shrink-0" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-3 bg-neutral-100 rounded w-40" />
-                  <div className="h-2.5 bg-neutral-50 rounded w-24" />
+                  <div className="h-3 bg-surface-container rounded w-40" />
+                  <div className="h-2.5 bg-surface-container-low rounded w-24" />
                 </div>
-                <div className="w-20 h-5 bg-neutral-100 rounded-full" />
+                <div className="w-20 h-5 bg-surface-container rounded-full" />
               </div>
             ))}
           </div>
         ) : applications.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-            <div className="w-12 h-12 bg-neutral-50 rounded-full flex items-center justify-center mb-4">
-              <User size={20} className="text-neutral-300" />
+            <div className="w-12 h-12 bg-surface-container-low rounded-full flex items-center justify-center mb-4">
+              <User size={20} className="text-outline" />
             </div>
-            <p className="text-sm font-medium text-neutral-400">No applications yet</p>
-            <p className="text-xs text-neutral-300 mt-1 max-w-xs">
+            <p className="text-sm font-medium text-on-surface-variant">No applications yet</p>
+            <p className="text-xs text-outline mt-1 max-w-xs">
               Share your careers page to start receiving candidates.
               Applications will appear here as they come in.
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-neutral-100">
+          <div className="divide-y divide-outline-variant/60">
             {/* Header */}
-            <div className="hidden md:grid grid-cols-[1fr_1fr_auto_auto] gap-4 px-5 py-3 bg-neutral-50 text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
+            <div className="hidden md:grid grid-cols-[1fr_1fr_auto_auto] gap-4 px-5 py-3 bg-surface-container-low text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">
               <span>Applicant</span>
               <span>Role</span>
               <span>Applied</span>
@@ -423,7 +425,7 @@ export default function HiringPage() {
               <button
                 key={app.id}
                 onClick={() => setSelected(app)}
-                className="w-full text-left px-5 py-4 hover:bg-neutral-50 transition-colors group"
+                className="w-full text-left px-5 py-4 hover:bg-surface-container-low transition-colors group"
               >
                 <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto_auto] gap-2 md:gap-4 md:items-center">
                   {/* Applicant */}
@@ -432,20 +434,20 @@ export default function HiringPage() {
                       {app.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-[#0F1E3D] truncate group-hover:text-brand transition-colors">
+                      <p className="text-sm font-semibold text-forest-deep truncate group-hover:text-brand transition-colors">
                         {app.full_name}
                       </p>
-                      <p className="text-[11px] text-neutral-400 truncate">{app.email}</p>
+                      <p className="text-[11px] text-on-surface-variant truncate">{app.email}</p>
                     </div>
                   </div>
 
                   {/* Role */}
-                  <p className="text-xs text-neutral-500 truncate hidden md:block">
+                  <p className="text-xs text-on-surface-variant truncate hidden md:block">
                     {ROLE_LABELS[app.role_id] ?? app.role_title}
                   </p>
 
                   {/* Date */}
-                  <p className="text-[11px] text-neutral-400 whitespace-nowrap hidden md:block">{fmt(app.applied_at)}</p>
+                  <p className="text-[11px] text-on-surface-variant whitespace-nowrap hidden md:block">{fmt(app.applied_at)}</p>
 
                   {/* Status */}
                   <StatusBadge status={app.status} />
@@ -456,7 +458,7 @@ export default function HiringPage() {
         )}
       </div>
 
-      <p className="text-[11px] text-neutral-300 mt-4 text-center">
+      <p className="text-[11px] text-outline mt-4 text-center">
         {applications.length} application{applications.length !== 1 ? "s" : ""}
         {(filterRole || filterStatus || search) ? " (filtered)" : " total"}
       </p>

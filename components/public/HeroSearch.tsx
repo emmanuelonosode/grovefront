@@ -1,14 +1,29 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, X } from "lucide-react";
+import { Search, BedDouble, DollarSign } from "lucide-react";
 import { looksNaturalLanguage, parseSmartQuery } from "@/lib/properties";
+
+const BED_OPTIONS = [
+  { label: "Beds", value: "" },
+  { label: "2+ Beds", value: "2" },
+  { label: "3+ Beds", value: "3" },
+  { label: "4+ Beds", value: "4" },
+];
+
+const PRICE_OPTIONS = [
+  { label: "Price", min: "", max: "" },
+  { label: "$1k – $2k", min: "1000", max: "2000" },
+  { label: "$2k – $3k", min: "2000", max: "3000" },
+  { label: "$3k+", min: "3000", max: "" },
+];
 
 export function HeroSearch() {
   const router = useRouter();
-  const [listingType, setListingType] = useState<"for-rent" | "for-sale">("for-rent");
   const [location, setLocation] = useState("");
+  const [beds, setBeds] = useState("");
+  const [priceIdx, setPriceIdx] = useState(0);
   const [aiLoading, setAiLoading] = useState(false);
 
   async function handleSearch(e: React.FormEvent) {
@@ -21,7 +36,7 @@ export function HeroSearch() {
       const smart = await parseSmartQuery(term);
       setAiLoading(false);
       if (smart) {
-        if (!smart.listing_type) smart.listing_type = listingType;
+        if (!smart.listing_type) smart.listing_type = "for-rent";
         const p = new URLSearchParams();
         Object.entries(smart).forEach(([k, v]) => { if (v) p.set(k, v); });
         router.push(`/houses-for-rent?${p.toString()}`);
@@ -30,68 +45,72 @@ export function HeroSearch() {
     }
 
     const params = new URLSearchParams();
-    params.set("listing_type", listingType);
+    params.set("listing_type", "for-rent");
     if (term) params.set("q", term);
+    if (beds) params.set("beds", beds);
+    const price = PRICE_OPTIONS[priceIdx];
+    if (price.min) params.set("min_price", price.min);
+    if (price.max) params.set("max_price", price.max);
     router.push(`/houses-for-rent?${params.toString()}`);
   }
 
   return (
-    <div className="w-full">
-
-      {/* Type toggle — floats above the bar, feels part of the hero */}
-      <div className="flex items-center gap-2 mb-3">
-        {(["for-rent", "for-sale"] as const).map((type) => (
-          <button
-            key={type}
-            type="button"
-            onClick={() => setListingType(type)}
-            className={`px-5 py-2 rounded-full text-[13px] font-semibold transition-all duration-150 cursor-pointer ${
-              listingType === type
-                ? "bg-white text-brand shadow-md"
-                : "bg-white/15 text-white/80 hover:bg-white/25 backdrop-blur-sm"
-            }`}
-          >
-            {type === "for-rent" ? "For Rent" : "For Sale"}
-          </button>
-        ))}
-      </div>
-
-      {/* Single unified search bar */}
-      <form
-        onSubmit={handleSearch}
-        className="flex items-center bg-white rounded-2xl shadow-[0_8px_48px_rgba(0,0,0,0.22)] overflow-hidden h-15 sm:h-16"
-      >
-        <Search size={18} className="ml-5 text-neutral-400 shrink-0" />
-
+    <form
+      onSubmit={handleSearch}
+      className="max-w-4xl mx-auto bg-surface rounded-xl shadow-lg p-2 flex flex-col md:flex-row items-center gap-2"
+    >
+      {/* Location */}
+      <div className="flex-1 w-full flex items-center px-4 py-3 bg-surface-container-lowest rounded-lg border border-surface-variant focus-within:border-primary transition-colors">
+        <Search size={20} className="text-outline mr-3 shrink-0" />
         <input
           type="text"
-          placeholder="Try: pet-friendly 3 bed in Atlanta under $2,000"
+          placeholder="City, Neighborhood, or Zip"
           value={location}
           autoComplete="off"
           onChange={(e) => setLocation(e.target.value)}
-          className="flex-1 px-3 text-[15px] sm:text-[16px] text-neutral-800 placeholder-neutral-400 outline-none bg-transparent min-w-0"
+          className="w-full bg-transparent border-none focus:ring-0 outline-none text-[16px] text-on-surface placeholder-on-surface-variant/70 p-0 min-w-0"
         />
+      </div>
 
-        {location && (
-          <button
-            type="button"
-            onClick={() => setLocation("")}
-            aria-label="Clear"
-            className="p-2 text-neutral-400 hover:text-neutral-600 transition-colors shrink-0 cursor-pointer"
+      {/* Beds + Price */}
+      <div className="w-full md:w-auto flex gap-2">
+        <div className="flex-1 flex items-center px-4 py-3 bg-surface-container-lowest rounded-lg border border-surface-variant">
+          <BedDouble size={18} className="text-outline mr-2 shrink-0" />
+          <select
+            value={beds}
+            onChange={(e) => setBeds(e.target.value)}
+            aria-label="Bedrooms"
+            className="w-full bg-transparent border-none focus:ring-0 outline-none text-[16px] text-on-surface p-0 cursor-pointer"
           >
-            <X size={15} />
-          </button>
-        )}
+            {BED_OPTIONS.map((o) => (
+              <option key={o.label} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex-1 flex items-center px-4 py-3 bg-surface-container-lowest rounded-lg border border-surface-variant">
+          <DollarSign size={18} className="text-outline mr-2 shrink-0" />
+          <select
+            value={priceIdx}
+            onChange={(e) => setPriceIdx(Number(e.target.value))}
+            aria-label="Price range"
+            className="w-full bg-transparent border-none focus:ring-0 outline-none text-[16px] text-on-surface p-0 cursor-pointer"
+          >
+            {PRICE_OPTIONS.map((o, i) => (
+              <option key={o.label} value={i}>{o.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
 
-        <button
-          type="submit"
-          disabled={aiLoading}
-          className="m-2 px-6 sm:px-8 h-11 sm:h-12 bg-brand hover:bg-brand-hover text-white font-bold text-[14px] rounded-xl transition-colors duration-150 shrink-0 cursor-pointer whitespace-nowrap disabled:opacity-70 flex items-center gap-2"
-        >
-          {aiLoading && <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
-          {aiLoading ? "Thinking…" : "Search"}
-        </button>
-      </form>
-    </div>
+      {/* Submit */}
+      <button
+        type="submit"
+        disabled={aiLoading}
+        className="w-full md:w-auto bg-primary text-on-primary font-semibold text-[14px] tracking-[0.05em] px-8 py-4 rounded-lg hover:bg-primary-container transition-colors shadow-md active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer disabled:opacity-70"
+      >
+        {aiLoading && <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+        {aiLoading ? "Thinking…" : "Search Homes"}
+      </button>
+    </form>
   );
 }

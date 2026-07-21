@@ -65,7 +65,7 @@ export function SidebarWidgets({ property, agent, agentPhoto, agencyName }: Side
 
   const handleOpenTour = () => {
     trackClick("book_tour", { slug: property.slug, where: "sidebar_dates" });
-    window.dispatchEvent(new Event("hasker:open-tour"));
+    window.dispatchEvent(new Event("pfh:open-tour"));
   };
 
   const handleRequestInfo = () => {
@@ -74,7 +74,7 @@ export function SidebarWidgets({ property, agent, agentPhoto, agencyName }: Side
     if (comments.trim()) {
       localStorage.setItem(`inquiry_comments_${property.slug}`, comments.trim());
     }
-    window.dispatchEvent(new Event("hasker:open-tour"));
+    window.dispatchEvent(new Event("pfh:open-tour"));
   };
 
   const handleSubscribe = async (e: React.FormEvent) => {
@@ -91,7 +91,7 @@ export function SidebarWidgets({ property, agent, agentPhoto, agencyName }: Side
       const isEmail = subscribeInput.includes("@");
       const payload = {
         full_name: "Open House Subscriber",
-        email: isEmail ? subscribeInput.trim() : "subscriber@haskerrealtygroup.com",
+        email: isEmail ? subscribeInput.trim() : "subscriber@primefamilyhousing.com",
         phone: !isEmail ? subscribeInput.trim() : undefined,
         source: "NEWSLETTER",
         interest_type: "RENT",

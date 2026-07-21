@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Accessibility | Hasker & Co. Realty Group",
-  description: "Hasker & Co. Realty Group's commitment to web accessibility and how to request assistance.",
-  alternates: { canonical: "https://haskerrealtygroup.com/accessibility" },
+  title: "Accessibility | PrimeFamilyHousing",
+  description: "PrimeFamilyHousing's commitment to web accessibility and how to request assistance.",
+  alternates: { canonical: "https://primefamilyhousing.com/accessibility" },
   robots: { index: true, follow: true },
 };
 
@@ -21,7 +21,7 @@ export default function AccessibilityPage() {
       <div className="max-w-3xl mx-auto px-6 lg:px-8 py-16 prose prose-neutral">
         <h2>Our Commitment</h2>
         <p>
-          Hasker &amp; Co. Realty Group is committed to ensuring digital accessibility for people
+          PrimeFamilyHousing is committed to ensuring digital accessibility for people
           with disabilities. We continually improve the user experience for everyone and apply
           relevant accessibility standards.
         </p>
@@ -54,7 +54,7 @@ export default function AccessibilityPage() {
         <ul>
           <li>
             Email:{" "}
-            <a href="mailto:info@haskerrealtygroup.com">info@haskerrealtygroup.com</a>
+            <a href="mailto:info@primefamilyhousing.com">info@primefamilyhousing.com</a>
           </li>
           <li>
             Address: 1230 Peachtree Street NE, Suite 400, Atlanta, GA 30309

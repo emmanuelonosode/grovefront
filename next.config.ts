@@ -36,10 +36,12 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       // Fonts
       "font-src 'self' https://fonts.gstatic.com",
-      // Images: same origin, Cloudinary, Unsplash, InvitationHomes, Rently CDN + S3, CARTO tiles, Meta Pixel noscript, HAR static
-      "img-src 'self' data: blob: https://admin.haskerrealtygroup.com https://res.cloudinary.com https://images.unsplash.com https://images.invitationhomes.com https://*.invitationhomes.com https://*.zillowstatic.com https://d39tc8gklidfbm.cloudfront.net https://s3.amazonaws.com https://maps.gstatic.com https://maps.googleapis.com https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com https://unpkg.com https://www.facebook.com https://www.googletagmanager.com https://*.harstatic.com",
-      // API connections: same origin + backend API + CARTO + Cloudinary + GTM + GA4 + Meta Pixel + IP geolocation
-      "connect-src 'self' https://admin.haskerrealtygroup.com https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com https://api.cloudinary.com https://www.googletagmanager.com https://www.google-analytics.com https://analytics.google.com https://connect.facebook.net https://www.facebook.com https://ipapi.co",
+      // Images: same origin, Unsplash, InvitationHomes, Rently CDN + S3, CARTO tiles, HAR static
+      // (Google/Meta tracking hosts removed — no third-party analytics.)
+      "img-src 'self' data: blob: https://admin.primefamilyhousing.com https://images.unsplash.com https://images.invitationhomes.com https://*.invitationhomes.com https://*.zillowstatic.com https://d39tc8gklidfbm.cloudfront.net https://s3.amazonaws.com https://maps.gstatic.com https://maps.googleapis.com https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com https://unpkg.com https://*.harstatic.com",
+      // API connections: same origin + backend API + CARTO + IP geolocation (native location capture).
+      // (GTM / GA4 / Meta Pixel hosts removed — analytics is first-party only.)
+      "connect-src 'self' https://admin.primefamilyhousing.com https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com https://ipapi.co",
       // Media
       "media-src 'self'",
       // Iframes: Google Maps embed + virtual tour providers
@@ -70,8 +72,8 @@ const nextConfig: NextConfig = {
       // www → non-www permanent redirect (301).
       {
         source: "/:path*",
-        has: [{ type: "host", value: "www.haskerrealtygroup.com" }],
-        destination: "https://haskerrealtygroup.com/:path*",
+        has: [{ type: "host", value: "www.primefamilyhousing.com" }],
+        destination: "https://primefamilyhousing.com/:path*",
         permanent: true,
       },
       // /properties → /houses-for-rent (route rename, 301 preserves SEO equity)
@@ -112,17 +114,12 @@ const nextConfig: NextConfig = {
       {
         // Backend-served media (agent avatars, etc.)
         protocol: "https",
-        hostname: "admin.haskerrealtygroup.com",
+        hostname: "admin.primefamilyhousing.com",
         pathname: "/media/**",
       },
       {
         protocol: "https",
         hostname: "images.unsplash.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "res.cloudinary.com",
         pathname: "/**",
       },
       {
@@ -161,7 +158,7 @@ const nextConfig: NextConfig = {
   },
 
   async rewrites() {
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL ?? "https://admin.haskerrealtygroup.com";
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL ?? "https://admin.primefamilyhousing.com";
     return [
       // Rule 1: URL already has trailing slash — pass through as-is
       {

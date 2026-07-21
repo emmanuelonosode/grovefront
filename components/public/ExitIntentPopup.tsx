@@ -11,9 +11,9 @@ import {
   trackEvent,
 } from "@/lib/tracking";
 
-const POPUP_TS_KEY   = "hasker_popup_ts";        // 24h cross-session cooldown
-const SHOWN_KEY      = "hasker_popup_shown";     // hard once-per-session guard
-const LEAD_KEY       = "hasker_lead_captured";   // set by any lead form
+const POPUP_TS_KEY   = "pfh_popup_ts";        // 24h cross-session cooldown
+const SHOWN_KEY      = "pfh_popup_shown";     // hard once-per-session guard
+const LEAD_KEY       = "pfh_lead_captured";   // set by any lead form
 const COOLDOWN_MS    = 24 * 60 * 60 * 1000;
 const TIMER_DELAY_MS = 30_000;                    // calm — only after real browsing
 

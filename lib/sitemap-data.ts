@@ -4,7 +4,7 @@ import { fetchAgents } from "@/lib/agents";
 import { fetchAllCities, CITIES } from "@/lib/cities";
 import { stateSlugForCode } from "@/lib/states";
 
-export const BASE_URL = "https://haskerrealtygroup.com";
+export const BASE_URL = "https://primefamilyhousing.com";
 
 const BEDROOM_FILTERS = ["1-bedroom", "2-bedroom", "3-bedroom", "4-bedroom"];
 const FILTER_MIN_LISTINGS = 12;
@@ -122,8 +122,7 @@ export async function buildProperties(): Promise<SitemapEntry[]> {
   // carries its primary photo as an <image:image> so Google indexes listing
   // images (Google Images + result thumbnails).
   return all.map((p) => {
-    // Some stored image values carry a stray Cloudinary "image/upload/" prefix
-    // in front of an absolute URL; <image:loc> must be a fully-qualified URL,
+    // <image:loc> must be a fully-qualified URL,
     // so clean it and drop anything still not absolute (GSC rejects it otherwise).
     const image = cleanImageUrl(p.image);
     return {

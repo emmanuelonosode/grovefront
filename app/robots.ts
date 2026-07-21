@@ -37,7 +37,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/dashboard", "/portal", "/api", "/_next"],
       },
     ],
-    sitemap: "https://haskerrealtygroup.com/sitemap.xml",
-    host: "https://haskerrealtygroup.com",
+    sitemap: "https://primefamilyhousing.com/sitemap.xml",
+    host: "https://primefamilyhousing.com",
   };
 }

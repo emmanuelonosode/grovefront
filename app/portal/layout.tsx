@@ -1,18 +1,19 @@
-﻿"use client";
+"use client";
 
 import { useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, CreditCard, FileText, Wrench, User, LogOut, Home, Users } from "lucide-react";
+import { LayoutDashboard, CreditCard, FileText, Wrench, User, LogOut, Home, Users, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 
 const BASE_NAV = [
-  { label: "My Profile",   href: "/portal/profile",   icon: LayoutDashboard },
-  { label: "Payments",    href: "/portal/payments",    icon: CreditCard },
-  { label: "Maintenance", href: "/portal/maintenance", icon: Wrench },
-  { label: "Documents",   href: "/portal/documents",   icon: FileText },
+  { label: "Dashboard",     href: "/portal/dashboard",   icon: LayoutDashboard },
+  { label: "Rent Payments", href: "/portal/payments",    icon: CreditCard },
+  { label: "Maintenance",   href: "/portal/maintenance", icon: Wrench },
+  { label: "My Documents",  href: "/portal/documents",   icon: FileText },
+  { label: "My Profile",    href: "/portal/profile",     icon: User },
+  { label: "Settings",      href: "/portal/settings",    icon: Settings },
 ];
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
@@ -32,13 +33,13 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
     ? [...BASE_NAV, { label: "Hiring", href: "/portal/hiring", icon: Users }]
     : BASE_NAV;
 
-  // Mobile bottom bar: tenant items only (4 max) + sign out
+  // Mobile bottom bar: core tenant items only (4 max) + sign out
   const mobileNavItems = BASE_NAV.slice(0, 4);
 
   if (isLoading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F5F5F7]">
-        <div className="w-8 h-8 border-[2.5px] border-brand border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-8 h-8 border-[2.5px] border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -48,65 +49,57 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
     router.push("/");
   }
 
+  const isActive = (href: string) =>
+    pathname === href || (href !== "/portal/dashboard" && pathname.startsWith(href));
+
   return (
-    <div className="min-h-screen bg-[#F5F5F7] flex">
+    <div className="min-h-screen bg-background flex">
 
-      {/* â”€â”€ Sidebar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <aside className="hidden lg:flex flex-col w-60 bg-[#0F1E3D] shrink-0">
+      {/* ── Sidebar ──────────────────────────────────────────────────── */}
+      <aside className="hidden lg:flex flex-col w-64 bg-surface-container-low shadow-sm shrink-0 p-4">
 
-        {/* Logo */}
-        <div className="px-5 py-7">
-          <Link href="/">
-            <Image
-              src="/logo.svg"
-              alt="Hasker & Co. Realty Group"
-              width={130}
-              height={34}
-              className="h-7 w-auto brightness-0 invert"
-            />
+        {/* Brand */}
+        <div className="mb-8 px-2 pt-2">
+          <Link href="/" className="font-serif font-semibold text-[20px] leading-7 text-primary">
+            PrimeFamilyHousing
           </Link>
-          <p className="text-[9px] tracking-[0.18em] uppercase text-white/30 mt-2 font-medium">
-            Tenant Portal
+          <p className="text-[10px] tracking-[0.18em] uppercase text-on-surface-variant/70 mt-1 font-medium">
+            Residents Portal
           </p>
         </div>
 
-        {/* User chip — links to settings */}
+        {/* User block — links to settings */}
         <Link
           href="/portal/settings"
-          className="mx-3 mb-4 px-3 py-3 rounded-xl bg-white/[0.06] flex items-center gap-3 hover:bg-white/[0.10] transition-colors group"
+          className="flex items-center gap-4 mb-8 pb-6 border-b border-outline-variant px-2 group"
         >
-          <div className="w-8 h-8 rounded-full bg-brand flex items-center justify-center text-[11px] font-semibold text-white shrink-0 select-none">
+          <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-[15px] font-semibold text-on-primary shrink-0 select-none">
             {user.first_name?.[0]}{user.last_name?.[0]}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-[13px] font-semibold text-white truncate leading-none mb-0.5">
-              {user.full_name}
+            <p className="text-[15px] font-bold text-on-surface truncate leading-tight group-hover:text-primary transition-colors">
+              Welcome, {user.first_name}
             </p>
-            <p className="text-[11px] text-white/40 truncate leading-none">{user.email}</p>
+            <p className="text-[12px] leading-4 text-on-surface-variant truncate">{user.email}</p>
           </div>
-          <User size={13} className="text-white/20 group-hover:text-white/50 shrink-0 transition-colors" strokeWidth={1.8} />
         </Link>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 space-y-0.5">
+        <nav className="flex-1 space-y-2">
           {navItems.map(({ label, href, icon: Icon }) => {
-            const active = pathname === href || (href !== "/portal/profile" && pathname.startsWith(href));
+            const active = isActive(href);
             return (
               <Link
                 key={href}
                 href={href}
                 className={cn(
-                  "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-150",
+                  "flex items-center gap-3 px-4 py-3 rounded-lg text-[15px] transition-all duration-150 active:scale-[0.98]",
                   active
-                    ? "bg-white/10 text-white"
-                    : "text-white/50 hover:text-white hover:bg-white/[0.06]"
+                    ? "bg-primary-fixed text-on-primary-fixed font-bold"
+                    : "text-on-surface-variant font-medium hover:bg-surface-container-high"
                 )}
               >
-                <Icon
-                  size={15}
-                  className={active ? "text-white" : "text-white/40"}
-                  strokeWidth={active ? 2.2 : 1.8}
-                />
+                <Icon size={18} strokeWidth={active ? 2.2 : 1.8} />
                 {label}
               </Link>
             );
@@ -114,47 +107,49 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         </nav>
 
         {/* Footer */}
-        <div className="px-3 py-5 space-y-0.5 border-t border-white/[0.07] mt-4">
+        <div className="mt-auto pt-4 space-y-2">
           <Link
-            href="/"
-            className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium text-white/40 hover:text-white hover:bg-white/[0.06] transition-all duration-150"
+            href="/portal/payments"
+            className="w-full flex items-center justify-center bg-primary text-on-primary font-semibold text-[14px] tracking-[0.05em] py-3 rounded-lg hover:bg-primary-container transition-colors active:scale-[0.98]"
           >
-            <Home size={15} strokeWidth={1.8} />
-            Back to Site
+            Make a Payment
           </Link>
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium text-white/40 hover:text-red-400 hover:bg-white/[0.06] transition-all duration-150"
-          >
-            <LogOut size={15} strokeWidth={1.8} />
-            Sign Out
-          </button>
+          <div className="flex items-center gap-2 pt-2 border-t border-outline-variant">
+            <Link
+              href="/"
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-[13px] font-medium text-on-surface-variant hover:bg-surface-container-high transition-colors"
+            >
+              <Home size={14} strokeWidth={1.8} />
+              Main Site
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-[13px] font-medium text-on-surface-variant hover:text-error hover:bg-surface-container-high transition-colors cursor-pointer"
+            >
+              <LogOut size={14} strokeWidth={1.8} />
+              Sign Out
+            </button>
+          </div>
         </div>
       </aside>
 
-      {/* â”€â”€ Mobile header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div className="lg:hidden fixed top-0 inset-x-0 z-50 bg-[#0F1E3D]/95 backdrop-blur-xl px-4 py-3 flex items-center justify-between">
-        <Link href="/">
-          <Image
-            src="/logo.svg"
-            alt="Hasker & Co."
-            width={100}
-            height={26}
-            className="h-6 w-auto brightness-0 invert"
-          />
+      {/* ── Mobile header ────────────────────────────────────────────── */}
+      <div className="lg:hidden fixed top-0 inset-x-0 z-50 bg-surface/95 backdrop-blur-xl border-b border-outline-variant px-4 py-3 flex items-center justify-between">
+        <Link href="/" className="font-serif font-semibold text-[18px] text-primary">
+          PrimeFamilyHousing
         </Link>
         <div className="flex items-center gap-2">
           <Link
             href="/portal/settings"
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors"
             aria-label="Settings"
           >
             <User size={15} />
           </Link>
-          <span className="text-xs text-white/50 font-medium">{user.first_name}</span>
+          <span className="text-xs text-on-surface-variant font-medium">{user.first_name}</span>
           <button
             onClick={handleLogout}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-surface-container transition-colors"
             aria-label="Sign out"
           >
             <LogOut size={15} />
@@ -162,17 +157,17 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         </div>
       </div>
 
-      {/* â”€â”€ Mobile bottom nav â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-white/90 backdrop-blur-xl border-t border-black/[0.06] flex">
+      {/* ── Mobile bottom nav ────────────────────────────────────────── */}
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-surface/95 backdrop-blur-xl border-t border-outline-variant flex">
         {mobileNavItems.map(({ label, href, icon: Icon }) => {
-          const active = pathname === href || (href !== "/portal/profile" && pathname.startsWith(href));
+          const active = isActive(href);
           return (
             <Link
               key={href}
               href={href}
               className={cn(
                 "flex-1 flex flex-col items-center gap-1 pt-2.5 pb-3 text-[10px] font-semibold tracking-tight transition-colors",
-                active ? "text-brand" : "text-[#6E6E73] hover:text-brand"
+                active ? "text-primary" : "text-on-surface-variant hover:text-primary"
               )}
             >
               <Icon size={19} strokeWidth={active ? 2.2 : 1.8} />
@@ -182,14 +177,14 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         })}
         <button
           onClick={handleLogout}
-          className="flex-1 flex flex-col items-center gap-1 pt-2.5 pb-3 text-[10px] font-semibold tracking-tight text-[#6E6E73] hover:text-red-500 transition-colors"
+          className="flex-1 flex flex-col items-center gap-1 pt-2.5 pb-3 text-[10px] font-semibold tracking-tight text-on-surface-variant hover:text-error transition-colors"
         >
           <LogOut size={19} strokeWidth={1.8} />
           Sign Out
         </button>
       </nav>
 
-      {/* â”€â”€ Main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Main ─────────────────────────────────────────────────────── */}
       <main className="flex-1 min-w-0 pt-16 pb-24 lg:pt-0 lg:pb-0 overflow-auto">
         {children}
       </main>

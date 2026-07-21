@@ -18,7 +18,7 @@ interface MapPin {
   listing_type: string;
 }
 
-const BLUE = "#0052FF";
+const BLUE = "#012d1d";
 
 function isValid(p: MapPin) {
   const lat = Number(p.latitude), lng = Number(p.longitude);

@@ -1,14 +1,10 @@
-declare global {
-  interface Window {
-    dataLayer: Record<string, unknown>[];
-    fbq: (...args: unknown[]) => void;
-    _fbq?: unknown;
-  }
-}
+// Native-only analytics: conversion/interaction events feed our own telemetry
+// spool (see lib/telemetry.ts). No GTM dataLayer, no Meta Pixel fbq.
+import { trackEvent as nativeTrackEvent, identify as nativeIdentify } from "@/lib/telemetry";
 
-const CONSENT_KEY = "hasker_cookie_consent";
-const CONSENT_EVENT = "hasker:consent-granted";
-const UTM_KEY = "hasker_utms";
+const CONSENT_KEY = "pfh_cookie_consent";
+const CONSENT_EVENT = "pfh:consent-granted";
+const UTM_KEY = "pfh_utms";
 
 // ── Consent ───────────────────────────────────────────────────────────────────
 
@@ -33,7 +29,7 @@ export function denyConsent(): void {
 
 // ── Referral Code Capture ─────────────────────────────────────────────────────
 
-const REFERRAL_KEY = "hasker_referral_code";
+const REFERRAL_KEY = "pfh_referral_code";
 
 /**
  * Reads ?ref= from the URL and stores it in sessionStorage.
@@ -92,8 +88,8 @@ export function getStoredUTMs(): UTMParams {
 
 // ── Location Intelligence ─────────────────────────────────────────────────────
 
-const LOCATION_KEY = "hasker_location";
-const SEARCH_INTENT_KEY = "hasker_search_intent";
+const LOCATION_KEY = "pfh_location";
+const SEARCH_INTENT_KEY = "pfh_search_intent";
 
 export interface LocationData {
   city?: string;
@@ -256,12 +252,14 @@ export function getStructuredDevice(): DeviceData {
   }
 }
 
-// ── GTM Events ────────────────────────────────────────────────────────────────
+// ── Conversion / interaction events ──────────────────────────────────────────
+// All of these are now FIRST-PARTY: they feed our own telemetry spool
+// (/api/v1/analytics/visitors/) instead of Google Tag Manager or Meta Pixel.
+// The function names/signatures are kept so existing call sites are unchanged.
 
 export function trackEvent(event: string, params?: Record<string, unknown>): void {
-  if (typeof window === "undefined" || !hasConsent()) return;
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({ event, ...params });
+  if (typeof window === "undefined") return;
+  nativeTrackEvent(event, params ?? {});
 }
 
 export function trackPageView(url?: string): void {
@@ -271,33 +269,22 @@ export function trackPageView(url?: string): void {
 }
 
 export function identifyUser(email: string, userId?: string | number): void {
-  if (typeof window === "undefined" || !hasConsent()) return;
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: "identify_user",
-    user_id: userId?.toString() ?? undefined,
-    user_email: email,
-  });
+  if (typeof window === "undefined") return;
+  nativeIdentify(email, userId);
 }
 
-// ── Meta Pixel Events ─────────────────────────────────────────────────────────
-
-/** Fires a standard Meta Pixel event (fbq("track", ...)). No-ops if Pixel not loaded or no consent. */
+/** Kept for API compatibility — routes to the native event spool (Meta Pixel removed). */
 export function trackMetaEvent(
   eventName: string,
   params?: Record<string, unknown>
 ): void {
-  if (typeof window === "undefined" || !hasConsent()) return;
-  if (typeof window.fbq !== "function") return;
-  window.fbq("track", eventName, params ?? {});
+  trackEvent(eventName, params);
 }
 
-/** Fires a custom Meta Pixel event (fbq("trackCustom", ...)). */
+/** Kept for API compatibility — routes to the native event spool (Meta Pixel removed). */
 export function trackMetaCustom(
   eventName: string,
   params?: Record<string, unknown>
 ): void {
-  if (typeof window === "undefined" || !hasConsent()) return;
-  if (typeof window.fbq !== "function") return;
-  window.fbq("trackCustom", eventName, params ?? {});
+  trackEvent(eventName, params);
 }

@@ -44,7 +44,7 @@ function SplitScreenLogin() {
   const { login } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") ?? "/portal/profile";
+  const next = searchParams.get("next") ?? "/portal/dashboard";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -68,11 +68,11 @@ function SplitScreenLogin() {
     }
   }
 
-  const inputCls = "w-full rounded-xl px-4 py-3.5 text-[14px] text-[#1D1D1F] bg-[#F5F5F7] border border-transparent outline-none transition-all placeholder:text-[#86868B] focus:bg-white focus:border-[#0052FF] focus:ring-4 focus:ring-[#0052FF]/10";
+  const inputCls = "w-full rounded-xl px-4 py-3.5 text-[14px] text-[#1D1D1F] bg-[#F5F5F7] border border-transparent outline-none transition-all placeholder:text-[#86868B] focus:bg-white focus:border-[#012d1d] focus:ring-4 focus:ring-[#012d1d]/10";
 
   return (
     <div className="fixed inset-0 z-50 flex h-screen w-full bg-white overflow-hidden font-sans">
-      <h1 className="sr-only">Sign In | Hasker &amp; Co. Realty Group</h1>
+      <h1 className="sr-only">Sign In | PrimeFamilyHousing</h1>
 
       {/* Dynamic Keyframes for Marquee */}
       <style dangerouslySetInnerHTML={{ __html: `
@@ -87,12 +87,12 @@ function SplitScreenLogin() {
       `}} />
 
       {/* LEFT SIDE: Visual Hook (60%) */}
-      <div className="hidden lg:flex w-[60%] flex-col gap-6 justify-center bg-[#0F1E3D] relative overflow-hidden">
+      <div className="hidden lg:flex w-[60%] flex-col gap-6 justify-center bg-[#081C15] relative overflow-hidden">
         
         {/* Subtle overlay gradients for smooth edge fading */}
-        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#0F1E3D] to-transparent z-10 pointer-events-none" />
-        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#0F1E3D] to-transparent z-10 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0F1E3D]/60 via-transparent to-[#0F1E3D]/60 z-10 pointer-events-none" />
+        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#081C15] to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#081C15] to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#081C15]/60 via-transparent to-[#081C15]/60 z-10 pointer-events-none" />
 
         {/* Floating Grid */}
         <div className="flex flex-col gap-6 transform rotate-[-4deg] scale-110 opacity-80">
@@ -105,7 +105,7 @@ function SplitScreenLogin() {
         <div className="absolute inset-0 z-20 flex flex-col justify-center items-center pointer-events-none">
           <Image
             src="/logo.svg"
-            alt="Hasker & Co. Realty Group"
+            alt="PrimeFamilyHousing"
             width={180}
             height={48}
             className="brightness-0 invert mb-4"
@@ -156,7 +156,7 @@ function SplitScreenLogin() {
                 <label className="block text-[12px] font-semibold text-[#1D1D1F]">
                   Password
                 </label>
-                <Link href="/forgot-password" className="text-[12px] text-[#0052FF] hover:underline font-medium">
+                <Link href="/forgot-password" className="text-[12px] text-[#012d1d] hover:underline font-medium">
                   Forgot password?
                 </Link>
               </div>
@@ -182,7 +182,7 @@ function SplitScreenLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#0052FF] text-white rounded-xl py-3.5 text-[15px] font-semibold hover:bg-[#0041D6] transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:shadow-none mt-2"
+              className="w-full bg-[#012d1d] text-white rounded-xl py-3.5 text-[15px] font-semibold hover:bg-[#1b4332] transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:shadow-none mt-2"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -196,8 +196,8 @@ function SplitScreenLogin() {
           <p className="mt-8 text-center text-[13px] text-[#6E6E73] font-medium">
             Don&apos;t have an account?{" "}
             <Link
-              href={`/register${next !== "/portal/profile" ? `?next=${encodeURIComponent(next)}` : ""}`}
-              className="text-[#0052FF] font-semibold hover:underline"
+              href={`/register${next !== "/portal/dashboard" ? `?next=${encodeURIComponent(next)}` : ""}`}
+              className="text-[#012d1d] font-semibold hover:underline"
             >              Sign up
             </Link>
           </p>

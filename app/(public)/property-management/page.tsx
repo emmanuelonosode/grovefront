@@ -14,25 +14,25 @@ export const revalidate = 300;
 /* ── Metadata ───────────────────────────────────────────────────────── */
 
 export const metadata: Metadata = {
-  title: "Professional Property Management Services | Hasker & Co. Realty Group",
+  title: "Professional Property Management Services | PrimeFamilyHousing",
   description:
-    "Maximize your rental income with zero hassle. Let Hasker & Co. Realty Group handle tenant screening, automated rent collection, 24/7 maintenance, and reporting across 12+ US cities.",
+    "Maximize your rental income with zero hassle. Let PrimeFamilyHousing handle tenant screening, automated rent collection, 24/7 maintenance, and reporting across 12+ US cities.",
   keywords: [
     "property management", "rental property manager", "landlord services",
     "rent collection service", "tenant screening", "vetted renters",
-    "investment property management", "Hasker & Co Property Management"
+    "investment property management", "PrimeFamilyHousing Property Management"
   ],
-  alternates: { canonical: "https://haskerrealtygroup.com/property-management" },
+  alternates: { canonical: "https://primefamilyhousing.com/property-management" },
   openGraph: {
-    title: "Professional Property Management Services | Hasker & Co. Realty Group",
+    title: "Professional Property Management Services | PrimeFamilyHousing",
     description: "Maximize your rental income with zero hassle. Vetted tenants, 24/7 maintenance, and flat fees.",
-    url: "https://haskerrealtygroup.com/property-management",
+    url: "https://primefamilyhousing.com/property-management",
     type: "website",
     images: [{ url: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&q=80", width: 1200, height: 630, alt: "Professional Property Management" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Professional Property Management Services | Hasker & Co. Realty Group",
+    title: "Professional Property Management Services | PrimeFamilyHousing",
     description: "Maximize your rental income with zero hassle. Vetted tenants, 24/7 maintenance, and flat fees.",
     images: ["https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&q=80"],
   },
@@ -60,7 +60,7 @@ export default async function PropertyManagementPage() {
 
   const allCities = Array.from(uniqueCitiesMap.values()).sort((a, b) => a.name.localeCompare(b.name));
 
-  const pageUrl = "https://haskerrealtygroup.com/property-management";
+  const pageUrl = "https://primefamilyhousing.com/property-management";
 
   const serviceSchema = {
     "@context": "https://schema.org",
@@ -68,8 +68,8 @@ export default async function PropertyManagementPage() {
     name: "Professional Property Management Services",
     provider: {
       "@type": "RealEstateAgent",
-      name: "Hasker & Co. Realty Group",
-      url: "https://haskerrealtygroup.com",
+      name: "PrimeFamilyHousing",
+      url: "https://primefamilyhousing.com",
       telephone: "+17572082767",
       address: {
         "@type": "PostalAddress",
@@ -88,7 +88,7 @@ export default async function PropertyManagementPage() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home",               item: "https://haskerrealtygroup.com" },
+      { "@type": "ListItem", position: 1, name: "Home",               item: "https://primefamilyhousing.com" },
       { "@type": "ListItem", position: 2, name: "Property Management", item: pageUrl },
     ],
   };
@@ -111,7 +111,7 @@ export default async function PropertyManagementPage() {
       a: "Rent is due on the 1st of each month. Direct deposit payouts are processed and sent to your bank account by the 10th of the month, along with your monthly financial statement in the owner portal.",
     },
     {
-      q: "Do I have to live nearby to work with Hasker & Co.?",
+      q: "Do I have to live nearby to work with PrimeFamilyHousing?",
       a: "Not at all. We specialize in turn-key management for out-of-state and international investors. We handle inspections, lease signings, keys, and tenant requests locally so you don't have to travel.",
     },
   ];
@@ -168,21 +168,21 @@ export default async function PropertyManagementPage() {
       {/* ── HERO SECTION ─────────────────────────────────────────────────── */}
       <section className="relative bg-[#0B1F3A] text-white pt-32 pb-24 overflow-hidden">
         {/* Background Subtle grid overlay */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#EFF4FF_1px,transparent_1px)] [background-size:16px_16px]" />
+        <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#f3f4ec_1px,transparent_1px)] [background-size:16px_16px]" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Copy */}
             <div className="lg:col-span-7 text-left">
               <p className="text-brand text-xs font-semibold tracking-[0.35em] uppercase mb-4">
-                Hasker &amp; Co. Property Management
+                PrimeFamilyHousing Property Management
               </p>
               <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.1] text-white mb-6">
                 Worry-Free Leasing.<br />
                 <span className="text-brand">Consistent Returns.</span>
               </h1>
               <p className="text-blue-100 text-base sm:text-lg max-w-xl leading-relaxed mb-8">
-                Hasker &amp; Co. manages single-family rental homes with institution-grade precision and local care. Vetted tenants, 24/7 maintenance coordination, and transparent flat fees. No surprise charges.
+                PrimeFamilyHousing manages single-family rental homes with institution-grade precision and local care. Vetted tenants, 24/7 maintenance coordination, and transparent flat fees. No surprise charges.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button variant="accent" size="lg" asChild>
@@ -255,9 +255,9 @@ export default async function PropertyManagementPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((s) => (
-              <div key={s.title} className="border border-neutral-100 bg-[#EFF4FF]/20 p-8 hover:border-brand/35 hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+              <div key={s.title} className="border border-neutral-100 bg-[#f3f4ec]/20 p-8 hover:border-brand/35 hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
                 <div>
-                  <div className="w-12 h-12 bg-[#EFF4FF] flex items-center justify-center mb-5">
+                  <div className="w-12 h-12 bg-[#f3f4ec] flex items-center justify-center mb-5">
                     <s.icon size={22} className="text-brand" />
                   </div>
                   <h3 className="font-serif text-lg font-bold text-[#0B1F3A] mb-3">{s.title}</h3>
@@ -271,7 +271,7 @@ export default async function PropertyManagementPage() {
       </section>
 
       {/* ── ONBOARDING PROCESS ───────────────────────────────────────────── */}
-      <section className="bg-[#EFF4FF] py-24 border-y border-neutral-200/50">
+      <section className="bg-[#f3f4ec] py-24 border-y border-neutral-200/50">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
             <p className="text-brand text-xs font-semibold tracking-[0.25em] uppercase mb-3">Onboarding</p>
@@ -323,7 +323,7 @@ export default async function PropertyManagementPage() {
                 With a Local Focus.
               </h2>
               <p className="text-neutral-500 text-base leading-relaxed mb-8">
-                Unlike local self-managed portals or massive national aggregators with disconnected call centers, Hasker &amp; Co. Realty Group gives you the best of both worlds.
+                Unlike local self-managed portals or massive national aggregators with disconnected call centers, PrimeFamilyHousing gives you the best of both worlds.
               </p>
 
               <ul className="space-y-4">
@@ -353,7 +353,7 @@ export default async function PropertyManagementPage() {
       </section>
 
       {/* ── DYNAMIC CITY LIST (SEO HUBS) ─────────────────────────────────── */}
-      <section id="supported-markets" className="bg-[#EFF4FF] py-20 border-t border-neutral-200/60">
+      <section id="supported-markets" className="bg-[#f3f4ec] py-20 border-t border-neutral-200/60">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-12">
             <p className="text-brand text-xs font-semibold tracking-[0.25em] uppercase mb-3">Our Markets</p>
@@ -392,7 +392,7 @@ export default async function PropertyManagementPage() {
             {faqItems.map((faq) => (
               <details
                 key={faq.q}
-                className="group border border-neutral-200 rounded-none bg-[#EFF4FF]/10 overflow-hidden hover:border-brand/40 transition-colors"
+                className="group border border-neutral-200 rounded-none bg-[#f3f4ec]/10 overflow-hidden hover:border-brand/40 transition-colors"
               >
                 <summary className="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer list-none hover:bg-neutral-50 transition-colors">
                   <span className="font-medium text-sm text-[#0B1F3A] leading-snug">{faq.q}</span>

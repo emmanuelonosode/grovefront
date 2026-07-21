@@ -2,16 +2,16 @@
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "Brand & Design Kit — Hasker & Co. Realty Group",
+  title: "Brand & Design Kit — PrimeFamilyHousing",
   robots: { index: false, follow: false },
 };
 
 const colors = [
-  { name: "Brand Blue",  hex: "#1A56DB", use: "CTAs Â· Links Â· Accents",        dark: false },
-  { name: "Ink Navy",    hex: "#0F1E3D", use: "Headers Â· Dark backgrounds",     dark: true  },
+  { name: "Brand Blue",  hex: "#012d1d", use: "CTAs Â· Links Â· Accents",        dark: false },
+  { name: "Ink Navy",    hex: "#081C15", use: "Headers Â· Dark backgrounds",     dark: true  },
   { name: "Mid Navy",    hex: "#0D2550", use: "Alt dark sections Â· Footers",    dark: true  },
-  { name: "Pale Blue",   hex: "#EFF4FF", use: "Section backgrounds",            dark: false },
-  { name: "Muted Blue",  hex: "#DBEAFE", use: "Badges Â· Tags Â· Chips",          dark: false },
+  { name: "Pale Blue",   hex: "#f3f4ec", use: "Section backgrounds",            dark: false },
+  { name: "Muted Blue",  hex: "#c1ecd4", use: "Badges Â· Tags Â· Chips",          dark: false },
   { name: "White",       hex: "#FFFFFF", use: "Text on dark Â· Card backgrounds", dark: false },
 ];
 
@@ -74,7 +74,7 @@ export default function DesignHandoffPage() {
           <p className="text-blue-300 text-xs font-semibold tracking-[0.4em] uppercase mb-3">Internal Reference</p>
           <h1 className="font-sans text-4xl font-bold mb-2">Brand & Design Kit</h1>
           <p className="text-blue-100/70 text-sm">
-            Everything you need to create ads, posters, social posts, and marketing for Hasker &amp; Co.
+            Everything you need to create ads, posters, social posts, and marketing for PrimeFamilyHousing
             Use the <code className="bg-white/10 px-1.5 py-0.5 rounded text-xs">/design-handoff</code> skill in Claude Code to generate copy on demand.
           </p>
         </div>
@@ -140,7 +140,7 @@ export default function DesignHandoffPage() {
             <div className="bg-white border border-neutral-200 rounded-sm p-6">
               <p className="text-xs text-neutral-400 uppercase tracking-widest mb-3">Body — DM Sans, 400</p>
               <p className="font-sans text-base text-neutral-600 leading-relaxed">
-                Everyone deserves a quality home they can actually afford. Hasker &amp; Co. Realty Group cuts through the noise — no inflated prices, no hidden admin fees, no bait-and-switch listings. Just honest homes for real families.
+                Everyone deserves a quality home they can actually afford. PrimeFamilyHousing cuts through the noise — no inflated prices, no hidden admin fees, no bait-and-switch listings. Just honest homes for real families.
               </p>
             </div>
             <div className="bg-white border border-neutral-200 rounded-sm p-6">
@@ -242,7 +242,7 @@ export default function DesignHandoffPage() {
             <p><span className="font-semibold text-brand-dark">Subject:</span> Real families in real homes. Bright interiors, welcoming front doors, families unpacking or relaxing. Not staged magazine shoots.</p>
             <p><span className="font-semibold text-brand-dark">Mood:</span> Warm, hopeful, attainable. Natural light. Clutter-free but lived-in.</p>
             <p><span className="font-semibold text-brand-dark">Avoid:</span> Luxury penthouses, crystal chandeliers, marble everything. We are affordable — show it.</p>
-            <p><span className="font-semibold text-brand-dark">Overlay:</span> On hero images use a dark navy gradient (<code className="bg-neutral-100 px-1.5 py-0.5 rounded text-xs">#0052FF at 55”“85% opacity</code>) so white text stays readable.</p>
+            <p><span className="font-semibold text-brand-dark">Overlay:</span> On hero images use a dark navy gradient (<code className="bg-neutral-100 px-1.5 py-0.5 rounded text-xs">#012d1d at 55”“85% opacity</code>) so white text stays readable.</p>
             <p><span className="font-semibold text-brand-dark">Stock sources:</span> Unsplash, Pexels. Search terms: "family home interior", "affordable apartment", "house rental", "moving in family".</p>
           </div>
         </section>

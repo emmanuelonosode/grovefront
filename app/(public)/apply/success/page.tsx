@@ -94,14 +94,14 @@ function SuccessContent() {
         </div>
 
         {/* Questions */}
-        <div className="bg-[#0F1E3D] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="bg-[#081C15] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <p className="text-[13px] font-semibold text-white tracking-tight">Questions about your application?</p>
             <p className="text-[12px] text-white/40 mt-0.5">Reference your ID when emailing us.</p>
           </div>
           <div className="flex gap-2 shrink-0">
             <a
-              href={`mailto:info@haskerrealtygroup.com?subject=Application ${refId}&body=Hi, I'm following up on my application ${refId}.`}
+              href={`mailto:info@primefamilyhousing.com?subject=Application ${refId}&body=Hi, I'm following up on my application ${refId}.`}
               className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-white border border-white/20 px-3.5 py-2 rounded-xl hover:bg-white/10 transition-colors"
             >
               <Mail size={13} />

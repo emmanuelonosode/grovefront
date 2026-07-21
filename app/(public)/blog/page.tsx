@@ -6,15 +6,15 @@ import { fetchPosts, type BlogPost } from "@/lib/blog";
 export const revalidate = 3600;
 
 export const metadata = {
-  title: "Renter's Guide & Housing Tips | Hasker & Co. Realty Group",
+  title: "Renter's Guide & Housing Tips | PrimeFamilyHousing",
   description:
-    "Free renter guides, moving tips, budgeting advice, lease explainers, and housing market updates from Hasker & Co. Realty Group. Written for real families finding affordable homes in Virginia Beach, Atlanta, Charlotte, Houston, Dallas, Nashville and more.",
-  alternates: { canonical: "https://haskerrealtygroup.com/blog" },
+    "Free renter guides, moving tips, budgeting advice, lease explainers, and housing market updates from PrimeFamilyHousing. Written for real families finding affordable homes in Virginia Beach, Atlanta, Charlotte, Houston, Dallas, Nashville and more.",
+  alternates: { canonical: "https://primefamilyhousing.com/blog" },
   openGraph: {
-    title: "Renter's Guide & Housing Tips — Hasker & Co. Realty Group",
+    title: "Renter's Guide & Housing Tips — PrimeFamilyHousing",
     description: "Free renter guides and housing tips for real families.",
     type: "website",
-    url: "https://haskerrealtygroup.com/blog",
+    url: "https://primefamilyhousing.com/blog",
   },
 };
 
@@ -125,8 +125,8 @@ export default async function BlogPage({ searchParams }: PageProps) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://haskerrealtygroup.com" },
-      { "@type": "ListItem", position: 2, name: "Renter's Guide", item: "https://haskerrealtygroup.com/blog" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://primefamilyhousing.com" },
+      { "@type": "ListItem", position: 2, name: "Renter's Guide", item: "https://primefamilyhousing.com/blog" },
     ],
   };
 
@@ -149,7 +149,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
       <section className="relative min-h-[480px] lg:min-h-[540px] flex items-end overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=1600&q=80"
-          alt="Person reading the Hasker & Co. Renter's Guide"
+          alt="Person reading the PrimeFamilyHousing Renter's Guide"
           fill
           priority
           className="object-cover object-center"
@@ -308,7 +308,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
         {/* Empty state — illustrated */}
         {posts.length === 0 && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 border border-neutral-100 rounded-sm overflow-hidden">
-            <div className="flex items-center justify-center min-h-[280px] bg-[#DBEAFE] p-12">
+            <div className="flex items-center justify-center min-h-[280px] bg-[#c1ecd4] p-12">
               <Image
                 src="/illustrations/spot-empty-book.svg"
                 alt=""

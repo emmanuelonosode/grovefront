@@ -1,7 +1,7 @@
 ﻿import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
-export const alt = 'Hasker & Co. Realty Group — Quality Homes. Move-In Ready.'
+export const alt = 'PrimeFamilyHousing — Quality Homes. Move-In Ready.'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -31,10 +31,10 @@ const ICON_SVG =
   '%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2044%2044%22%3E' +
   '%3Ccircle%20cx%3D%2222%22%20cy%3D%2222%22%20r%3D%2222%22%20fill%3D%22%230B1F3A%22/%3E' +
   '%3Cg%20transform%3D%22translate(22%2C22)%20scale(0.173)%20translate(-160%2C-160)%22%3E' +
-  '%3Cpolygon%20points%3D%2276%2C160%20160%2C56%20244%2C160%20160%2C264%22%20fill%3D%22%231A56DB%22/%3E' +
+  '%3Cpolygon%20points%3D%2276%2C160%20160%2C56%20244%2C160%20160%2C264%22%20fill%3D%22%23012d1d%22/%3E' +
   '%3Cpolygon%20points%3D%22120%2C160%20160%2C104%20200%2C160%22%20fill%3D%22%23FFFFFF%22/%3E' +
   '%3Crect%20x%3D%22124%22%20y%3D%22160%22%20width%3D%2272%22%20height%3D%2250%22%20rx%3D%224%22%20fill%3D%22%23FFFFFF%22/%3E' +
-  '%3Crect%20x%3D%22146%22%20y%3D%22170%22%20width%3D%2228%22%20height%3D%2240%22%20rx%3D%224%22%20fill%3D%22%231A56DB%22/%3E' +
+  '%3Crect%20x%3D%22146%22%20y%3D%22170%22%20width%3D%2228%22%20height%3D%2240%22%20rx%3D%224%22%20fill%3D%22%23012d1d%22/%3E' +
   '%3C/g%3E' +
   '%3C/svg%3E'
 
@@ -52,7 +52,7 @@ export default function Image() {
           width: 1200,
           height: 630,
           display: 'flex',
-          background: '#0F1E3D',
+          background: '#081C15',
           fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
           position: 'relative',
           overflow: 'hidden',
@@ -83,7 +83,7 @@ export default function Image() {
               position: 'absolute',
               inset: 0,
               background:
-                'linear-gradient(to right, #0F1E3D 0%, rgba(15,30,61,0.72) 35%, rgba(15,30,61,0.18) 70%, rgba(15,30,61,0.08) 100%)',
+                'linear-gradient(to right, #081C15 0%, rgba(8,28,21,0.72) 35%, rgba(8,28,21,0.18) 70%, rgba(8,28,21,0.08) 100%)',
               display: 'flex',
             }}
           />
@@ -93,7 +93,7 @@ export default function Image() {
               position: 'absolute',
               inset: 0,
               background:
-                'linear-gradient(to bottom, rgba(15,30,61,0.45) 0%, transparent 25%, transparent 75%, rgba(15,30,61,0.55) 100%)',
+                'linear-gradient(to bottom, rgba(8,28,21,0.45) 0%, transparent 25%, transparent 75%, rgba(8,28,21,0.55) 100%)',
               display: 'flex',
             }}
           />
@@ -107,7 +107,7 @@ export default function Image() {
             top: 0,
             bottom: 0,
             width: 6,
-            background: 'linear-gradient(to bottom, #0052FF, #3B82F6)',
+            background: 'linear-gradient(to bottom, #012d1d, #1b4332)',
             display: 'flex',
           }}
         />
@@ -154,11 +154,11 @@ export default function Image() {
                   display: 'flex',
                 }}
               >
-                HASKER &amp; CO.
+                PRIMEFAMILYHOUSING &amp; CO.
               </div>
               <div
                 style={{
-                  color: '#0052FF',
+                  color: '#012d1d',
                   fontSize: 10,
                   fontWeight: 500,
                   letterSpacing: '3.5px',
@@ -176,7 +176,7 @@ export default function Image() {
             style={{
               width: 48,
               height: 3,
-              background: '#0F1E3D',
+              background: '#081C15',
               borderRadius: 2,
               marginBottom: 24,
               display: 'flex',
@@ -323,19 +323,19 @@ export default function Image() {
                 width: 6,
                 height: 6,
                 borderRadius: '50%',
-                background: '#0F1E3D',
+                background: '#081C15',
                 display: 'flex',
               }}
             />
             <span
               style={{
-                color: '#0052FF',
+                color: '#012d1d',
                 fontSize: 15,
                 fontWeight: 700,
                 letterSpacing: 0.5,
               }}
             >
-              haskerrealtygroup.com
+              primefamilyhousing.com
             </span>
           </div>
         </div>
@@ -361,7 +361,7 @@ export default function Image() {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                background: 'rgba(15,30,61,0.82)',
+                background: 'rgba(8,28,21,0.82)',
                 border: '1px solid rgba(255,255,255,0.14)',
                 borderRadius: 8,
                 padding: '10px 18px',

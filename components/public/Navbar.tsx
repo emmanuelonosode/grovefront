@@ -3,14 +3,15 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { HaskerLogo } from "@/components/ui/HaskerLogo";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 import { Menu, X, Phone, User, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
 
 const navLinks = [
-  { label: "Browse Homes", href: "/houses-for-rent" },
+  { label: "Find a Home", href: "/houses-for-rent" },
+  { label: "Communities", href: "/communities" },
   { label: "Our Team", href: "/agents" },
   { label: "Renter's Guide", href: "/blog" },
   { label: "Contact", href: "/contact" },
@@ -62,14 +63,14 @@ export function Navbar() {
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-[background-color,backdrop-filter,box-shadow,border-color] duration-300",
           solidBg
-            ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-neutral-100"
-            : "bg-gradient-to-b from-black/50 to-transparent"
+            ? "bg-surface/90 backdrop-blur-md shadow-sm border-b border-surface-variant"
+            : "bg-gradient-to-b from-forest-deep/60 to-transparent"
         )}
       >
         <nav className="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0">
-            <HaskerLogo
+            <BrandLogo
               variant={isHeroPage && !scrolled ? "on-dark" : "on-white"}
               height={32}
             />
@@ -99,7 +100,7 @@ export function Navbar() {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
             <button
-              onClick={() => window.dispatchEvent(new Event("hasker:open-callback"))}
+              onClick={() => window.dispatchEvent(new Event("pfh:open-callback"))}
               className={cn(
                 "flex items-center gap-1.5 text-[15px] font-bold transition-colors hover:text-brand cursor-pointer",
                 solidBg ? "text-brand-dark" : "text-white/90"
@@ -136,15 +137,20 @@ export function Navbar() {
                 <Link
                   href="/login"
                   className={cn(
-                    "text-[15px] font-semibold transition-colors hover:text-brand",
-                    solidBg ? "text-brand-dark" : "text-white/90"
+                    "text-[14px] font-semibold tracking-[0.05em] px-4 py-2 rounded-full transition-colors active:scale-95",
+                    solidBg
+                      ? "text-primary hover:bg-surface-container-low"
+                      : "text-white/90 hover:bg-white/10"
                   )}
                 >
-                  Sign In
+                  Log In
                 </Link>
-                <Button variant="accent" size="sm" asChild>
-                  <Link href="/apply">Apply Now</Link>
-                </Button>
+                <Link
+                  href="/apply"
+                  className="text-[14px] font-semibold tracking-[0.05em] bg-primary text-on-primary px-6 py-2 rounded-full hover:bg-primary-container transition-colors active:scale-95"
+                >
+                  Apply Now
+                </Link>
               </>
             )}
           </div>
@@ -218,7 +224,7 @@ export function Navbar() {
 
           <div className="pt-5 mt-2 border-t border-neutral-100 flex flex-col gap-3">
             <a
-              href="mailto:info@haskerrealtygroup.com"
+              href="mailto:info@primefamilyhousing.com"
               className="flex items-center gap-2 text-brand-dark font-medium text-[15px] py-1"
             >
               <Phone size={15} className="text-brand" />

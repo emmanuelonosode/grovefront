@@ -10,7 +10,7 @@ interface Props {
 
 const API_BASE = typeof window !== "undefined"
   ? ""
-  : (process.env.NEXT_PUBLIC_API_URL ?? "https://admin.haskerrealtygroup.com");
+  : (process.env.NEXT_PUBLIC_API_URL ?? "https://admin.primefamilyhousing.com");
 
 export function CityLeadCapture({ cityName }: Props) {
   useEffect(() => { captureSearchIntent(cityName); }, [cityName]);

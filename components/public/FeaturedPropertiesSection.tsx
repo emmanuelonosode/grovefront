@@ -45,7 +45,7 @@ export function FeaturedPropertiesSection({ properties, totalCount }: Props) {
               Available rentals this week.
             </h2>
             {totalCount != null && (
-              <p className="mt-2" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14, color: "#475569" }}>
+              <p className="mt-2" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 14, color: "#475569" }}>
                 {totalCount} homes listed — inspected, maintained, and ready for you.
               </p>
             )}
@@ -69,7 +69,7 @@ export function FeaturedPropertiesSection({ properties, totalCount }: Props) {
                   ? "bg-brand-dark text-white"
                   : "bg-white text-[#475569] hover:text-brand-dark"
               }`}
-              style={{ fontFamily: "DM Sans, sans-serif" }}
+              style={{ fontFamily: "var(--font-source-sans), sans-serif" }}
             >
               {t.label}
               {t.count > 0 && (
@@ -103,7 +103,7 @@ export function FeaturedPropertiesSection({ properties, totalCount }: Props) {
                 )}
                 <ArrowRight size={14} />
               </Link>
-              <p className="mt-4" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 13, color: "#94A3B8" }}>
+              <p className="mt-4" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 13, color: "#94A3B8" }}>
                 Ready to apply?{" "}
                 <Link href="/apply" className="text-brand font-medium hover:underline">
                   Start your application here
@@ -114,7 +114,7 @@ export function FeaturedPropertiesSection({ properties, totalCount }: Props) {
         ) : (
           <div className="text-center py-20" style={{ color: "#94A3B8" }}>
             <p className="font-serif font-bold text-[18px] text-brand-dark">New listings coming soon.</p>
-            <p className="mt-2" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14, color: "#475569" }}>Check back shortly or browse all available rentals.</p>
+            <p className="mt-2" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 14, color: "#475569" }}>Check back shortly or browse all available rentals.</p>
           </div>
         )}
       </div>

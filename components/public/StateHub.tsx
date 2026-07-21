@@ -1,7 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import {
-  Clock, ShieldCheck, PawPrint, Home, ArrowRight, MapPin, Building2, TrendingUp,
+  Clock, ShieldCheck, PawPrint, Home, ArrowRight, MapPin, TrendingUp,
+  Search, TreePine, GraduationCap,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { CityLeadCapture } from "@/components/public/CityLeadCapture";
@@ -31,7 +32,7 @@ const TRUST_BADGES = [
  * Lists EVERY city / community in the state with live counts (crawlable links).
  */
 export function StateHub({ state, cities, counts, totalListings, otherStates }: Props) {
-  const BASE = "https://haskerrealtygroup.com";
+  const BASE = "https://primefamilyhousing.com";
   const url = `${BASE}/rentals/${state.slug}`;
   const cityCount = cities.length;
 
@@ -56,7 +57,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
     name: `Houses for Rent in ${state.name}`,
     description: `Browse affordable houses and apartments for rent across ${state.name}. ${totalListings}+ move-in ready rentals in ${cityCount} cities and communities. 24-hour application decisions.`,
     url,
-    isPartOf: { "@type": "WebSite", name: "Hasker & Co. Realty Group", url: BASE },
+    isPartOf: { "@type": "WebSite", name: "PrimeFamilyHousing", url: BASE },
     about: {
       "@type": "State",
       name: state.name,
@@ -78,7 +79,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
   const faqs = [
     {
       q: `How many houses for rent are available in ${state.name}?`,
-      a: `Hasker & Co. Realty Group currently has ${totalListings > 0 ? `${totalListings} ` : ""}move-in ready rentals across ${cityCount} cities and communities in ${state.name}, including ${topCityNames}. New listings are added daily.`,
+      a: `PrimeFamilyHousing currently has ${totalListings > 0 ? `${totalListings} ` : ""}move-in ready rentals across ${cityCount} cities and communities in ${state.name}, including ${topCityNames}. New listings are added daily.`,
     },
     {
       q: `Which cities in ${state.name} have rentals?`,
@@ -110,68 +111,51 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
-      {/* ── HERO — clean state photo, text on a solid card ─────── */}
-      <section className="relative flex items-end overflow-hidden min-h-[540px] lg:min-h-[600px]">
-        <Image
-          src={heroImage}
-          alt={`Homes for rent in ${state.name}`}
-          fill
-          priority
-          className="object-cover object-center"
-          sizes="100vw"
-        />
+      {/* ── HERO — full-bleed photo, forest gradient, centered ─── */}
+      <section className="relative w-full min-h-[500px] md:min-h-[614px] flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={heroImage}
+            alt={`Homes for rent in ${state.name}`}
+            fill
+            priority
+            className="object-cover object-center"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/80 via-forest-deep/40 to-transparent" />
+        </div>
 
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pb-12 pt-32">
-          <div className="max-w-2xl bg-white rounded-2xl shadow-2xl p-8 lg:p-12">
-            <nav aria-label="Breadcrumb" className="mb-5">
-              <ol className="flex items-center gap-2 text-xs text-neutral-500">
-                <li><Link href="/" className="hover:text-brand transition-colors">Home</Link></li>
-                <li className="text-neutral-300">/</li>
-                <li><Link href="/houses-for-rent" className="hover:text-brand transition-colors">Houses for Rent</Link></li>
-                <li className="text-neutral-300">/</li>
-                <li className="text-neutral-800 font-medium">{state.name}</li>
-              </ol>
-            </nav>
+        <div className="relative z-10 text-center px-4 md:px-12 max-w-7xl mx-auto flex flex-col items-center pt-28 pb-14">
+          <span className="text-[14px] leading-5 tracking-widest font-semibold text-secondary-container mb-3 uppercase">
+            Regional Guide
+          </span>
+          <h1 className="font-serif font-bold text-white mb-6 max-w-3xl drop-shadow-md text-[2.2rem] leading-[1.15] sm:text-[3rem] lg:text-[3.5rem] lg:leading-[1.16]" style={{ letterSpacing: "-0.02em" }}>
+            Find Your Sanctuary in {state.name}
+          </h1>
+          <p className="text-[17px] sm:text-[18px] leading-[1.55] text-surface-container-low max-w-2xl mb-10 drop-shadow-md">
+            Browse affordable, move-in ready houses and apartments across {state.name}
+            {totalListings > 0 ? ` — ${totalListings} verified listings in ${cityCount} cities and communities` : ""}.
+            Transparent pricing, pet-friendly options, and decisions in 24 hours.
+          </p>
 
-            <span className="block w-12 h-1.5 rounded-full bg-accent mb-4" />
-            <p className="text-[#B87400] text-xs font-bold tracking-[0.2em] uppercase mb-3">
-              {state.name} Rentals
-            </p>
-            <h1 className="font-serif text-4xl lg:text-5xl font-bold text-neutral-900 leading-tight">
-              Houses for Rent in {state.name}
-            </h1>
-            <p className="text-neutral-600 text-lg mt-4 leading-relaxed">
-              Browse affordable, move-in ready houses and apartments for rent across {state.name}
-              {totalListings > 0 ? ` — ${totalListings} verified listings in ${cityCount} cities and communities` : ""}.
-              Transparent pricing, pet-friendly options, and decisions in 24 hours.
-            </p>
-
-            <div className="flex flex-wrap gap-3 mt-8">
-              <Button variant="accent" size="lg" asChild>
-                <Link href={`/houses-for-rent?q=${encodeURIComponent(state.name)}`}>
-                  Browse {state.code} Listings <ArrowRight size={16} />
-                </Link>
-              </Button>
-              <Button variant="outline" size="lg" asChild>
-                <Link href="/apply">Apply Now — 10 Minutes</Link>
-              </Button>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mt-10">
-              {[
-                { icon: Building2, value: `${cityCount}`, label: "Cities & Communities" },
-                { icon: Home, value: totalListings > 0 ? `${totalListings}` : "Daily", label: totalListings > 0 ? "Listings" : "New Listings" },
-                { icon: Clock, value: "24 hr", label: "Decisions" },
-              ].map((s) => (
-                <div key={s.label} className="border-l-2 border-accent pl-3">
-                  <s.icon size={16} className="text-brand mb-1.5" />
-                  <p className="text-xl font-bold text-neutral-900 tabular-nums">{s.value}</p>
-                  <p className="text-[11px] text-neutral-500 uppercase tracking-wide mt-0.5">{s.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Search bar */}
+          <form action="/houses-for-rent" method="GET" className="w-full max-w-2xl bg-surface rounded-full p-2 flex items-center shadow-lg">
+            <Search size={18} className="text-outline ml-4 mr-2 shrink-0" />
+            <input
+              type="text"
+              name="q"
+              defaultValue={state.name}
+              placeholder="Search by city, neighborhood, or zip code..."
+              className="flex-grow bg-transparent border-none focus:ring-0 text-on-surface text-[16px] placeholder-on-surface-variant/60 outline-none min-w-0"
+            />
+            <button
+              type="submit"
+              className="bg-primary text-on-primary text-[14px] tracking-[0.05em] font-semibold rounded-full py-3 px-8 hover:bg-forest-deep transition-colors duration-200 active:scale-95 flex items-center gap-2 shrink-0 cursor-pointer"
+            >
+              Search
+              <ArrowRight size={16} />
+            </button>
+          </form>
         </div>
       </section>
 
@@ -216,8 +200,85 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
         </div>
       </section>
 
+      {/* ── FEATURED COMMUNITIES (top cities as rich cards) ──── */}
+      {sortedCities.filter((c) => c.heroImage).length > 0 && (
+        <section className="py-12 md:py-16 px-4 md:px-12 max-w-7xl mx-auto w-full">
+          <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <h2 className="font-serif font-semibold text-primary mb-2 text-[26px] leading-[34px] md:text-[32px] md:leading-[40px]">Featured Communities</h2>
+              <p className="text-[16px] leading-6 text-on-surface-variant max-w-xl">
+                Explore the most sought-after {state.name} neighborhoods for families, offering exceptional schools, abundant parks, and a strong sense of belonging.
+              </p>
+            </div>
+            <a
+              href="#all-cities"
+              className="shrink-0 font-semibold text-[14px] tracking-[0.05em] text-terracotta-warm hover:text-secondary flex items-center gap-2 transition-colors"
+            >
+              View all {state.name} cities <ArrowRight size={18} />
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {sortedCities.filter((c) => c.heroImage).slice(0, 3).map((c, i) => {
+              const n = counts[c.slug];
+              return (
+                <div
+                  key={c.slug}
+                  className="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-surface-variant transition-transform hover:-translate-y-1 duration-300"
+                >
+                  <div className="relative h-64 overflow-hidden">
+                    <Image
+                      src={c.heroImage}
+                      alt={`Family homes for rent in ${c.name}, ${state.code}`}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                    {i === 0 && (
+                      <div className="absolute top-4 left-4 bg-earth-beige text-on-secondary-container text-[14px] leading-5 font-semibold px-3 py-1 rounded-full shadow-sm flex items-center gap-1">
+                        <TrendingUp size={15} /> High Demand
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-6">
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="font-serif font-semibold text-primary text-[24px] leading-8">{c.name}</h3>
+                      {n ? (
+                        <span className="bg-surface-container text-on-surface-variant text-[12px] leading-4 px-2 py-1 rounded-md tabular-nums">
+                          {n} Home{n === 1 ? "" : "s"}
+                        </span>
+                      ) : null}
+                    </div>
+                    {c.tagline && (
+                      <p className="text-[16px] leading-6 text-on-surface-variant mb-6 line-clamp-2">{c.tagline}</p>
+                    )}
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-surface-container-low text-on-surface-variant text-[12px] leading-4 rounded-full border border-outline-variant/50">
+                        <GraduationCap size={14} className="text-sage-soft" /> Family Schools
+                      </span>
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-surface-container-low text-on-surface-variant text-[12px] leading-4 rounded-full border border-outline-variant/50">
+                        <TreePine size={14} className="text-sage-soft" /> Parks & Trails
+                      </span>
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-surface-container-low text-on-surface-variant text-[12px] leading-4 rounded-full border border-outline-variant/50">
+                        <Home size={14} className="text-sage-soft" /> from {c.avgRent}/mo
+                      </span>
+                    </div>
+                    <Link
+                      href={`/rentals/${c.slug}`}
+                      className="w-full text-[14px] tracking-[0.05em] font-semibold text-primary border border-outline hover:border-primary py-2.5 rounded-lg transition-colors flex justify-center items-center gap-2 group-hover:bg-primary/5"
+                    >
+                      Explore {c.name}
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       {/* ── ALL CITIES & COMMUNITIES ─────────────────────────── */}
-      <section className="bg-white">
+      <section id="all-cities" className="bg-surface-container-lowest">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16 lg:py-20">
           <div className="mb-10">
             <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-2">Browse by location</p>
@@ -271,6 +332,58 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
         </div>
       </section>
 
+      {/* ── WHY CHOOSE {STATE} ───────────────────────────────── */}
+      <section className="bg-surface-container-low py-12 md:py-16 mt-6">
+        <div className="px-4 md:px-12 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
+          <div className="w-full md:w-1/2 relative h-[400px]">
+            <Image
+              src={heroImage}
+              alt={`Living in ${state.name}`}
+              fill
+              className="rounded-xl shadow-md object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
+          </div>
+          <div className="w-full md:w-1/2">
+            <h2 className="font-serif font-semibold text-primary mb-3 text-[26px] leading-[34px] md:text-[32px] md:leading-[40px]">
+              Why Choose {state.name}?
+            </h2>
+            <p className="text-[16px] leading-6 text-on-surface-variant mb-6">
+              {state.name} offers families a blend of opportunity and community. From
+              {topCityNames ? ` ${topCityNames.split(", ").slice(0, 2).join(" and ")}` : " its top cities"} to
+              quieter neighborhoods, our {state.name} homes put schools, parks, and everyday
+              essentials within easy reach — with transparent pricing and none of the runaround.
+            </p>
+            <ul className="space-y-4 mb-8">
+              <li className="flex items-start gap-3">
+                <div className="bg-primary/10 p-2 rounded-full text-primary mt-1">
+                  <TreePine size={18} />
+                </div>
+                <div>
+                  <h4 className="text-[14px] leading-5 tracking-[0.05em] font-semibold text-on-surface mb-1">Room to Grow</h4>
+                  <p className="text-[14px] leading-5 text-on-surface-variant">Spacious family homes with yards, near parks, trails, and green space.</p>
+                </div>
+              </li>
+              <li className="flex items-start gap-3">
+                <div className="bg-primary/10 p-2 rounded-full text-primary mt-1">
+                  <GraduationCap size={18} />
+                </div>
+                <div>
+                  <h4 className="text-[14px] leading-5 tracking-[0.05em] font-semibold text-on-surface mb-1">Family-First Communities</h4>
+                  <p className="text-[14px] leading-5 text-on-surface-variant">Neighborhoods chosen for school access, safety, and a real sense of belonging.</p>
+                </div>
+              </li>
+            </ul>
+            <Link
+              href="/contact"
+              className="inline-flex text-[14px] tracking-[0.05em] font-semibold bg-terracotta-warm text-white py-3 px-6 rounded-full hover:bg-secondary transition-colors duration-200 shadow-sm"
+            >
+              Speak to a Local Expert
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ── SEO CONTENT ──────────────────────────────────────── */}
       <section className="bg-brand-light border-y border-brand-muted">
         <div className="max-w-3xl mx-auto px-6 lg:px-8 py-16 lg:py-20">
@@ -280,7 +393,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
           </h2>
           <div className="space-y-5 text-neutral-600 text-[15px] leading-relaxed">
             <p>
-              Looking for a house for rent in {state.name}? Hasker &amp; Co. Realty Group lists affordable,
+              Looking for a house for rent in {state.name}? PrimeFamilyHousing lists affordable,
               move-in ready rental homes and apartments across {cityCount} {state.name} cities and communities
               {topCityNames ? `, including ${topCityNames}` : ""}. Every listing shows transparent pricing,
               photos, and pet policy upfront — no hidden fees, no surprises.
@@ -308,7 +421,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
       />
 
       {/* ── LEAD CAPTURE ─────────────────────────────────────── */}
-      <section className="bg-[#0F1E3D] py-16 lg:py-20 px-6">
+      <section className="bg-[#081C15] py-16 lg:py-20 px-6">
         <div className="max-w-xl mx-auto text-center">
           <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-3">Be First</p>
           <h2 className="font-serif text-3xl lg:text-4xl font-bold text-white mb-4">

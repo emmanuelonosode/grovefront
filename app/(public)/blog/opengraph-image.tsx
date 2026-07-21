@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og'
 import { OGImage } from '@/lib/og-image'
 
 export const runtime = 'edge'
-export const alt = "Free renter's guide and housing tips — Hasker & Co. Realty Group"
+export const alt = "Free renter's guide and housing tips — PrimeFamilyHousing"
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 

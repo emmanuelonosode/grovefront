@@ -7,20 +7,20 @@ const ICON_SVG =
   '%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2044%2044%22%3E' +
   '%3Ccircle%20cx%3D%2222%22%20cy%3D%2222%22%20r%3D%2222%22%20fill%3D%22%230B1F3A%22/%3E' +
   '%3Cg%20transform%3D%22translate(22%2C22)%20scale(0.173)%20translate(-160%2C-160)%22%3E' +
-  '%3Cpolygon%20points%3D%2276%2C160%20160%2C56%20244%2C160%20160%2C264%22%20fill%3D%22%231A56DB%22/%3E' +
+  '%3Cpolygon%20points%3D%2276%2C160%20160%2C56%20244%2C160%20160%2C264%22%20fill%3D%22%23012d1d%22/%3E' +
   '%3Cpolygon%20points%3D%22120%2C160%20160%2C104%20200%2C160%22%20fill%3D%22%23FFFFFF%22/%3E' +
   '%3Crect%20x%3D%22124%22%20y%3D%22160%22%20width%3D%2272%22%20height%3D%2250%22%20rx%3D%224%22%20fill%3D%22%23FFFFFF%22/%3E' +
-  '%3Crect%20x%3D%22146%22%20y%3D%22170%22%20width%3D%2228%22%20height%3D%2240%22%20rx%3D%224%22%20fill%3D%22%231A56DB%22/%3E' +
+  '%3Crect%20x%3D%22146%22%20y%3D%22170%22%20width%3D%2228%22%20height%3D%2240%22%20rx%3D%224%22%20fill%3D%22%23012d1d%22/%3E' +
   '%3C/g%3E' +
   '%3C/svg%3E'
 
 // Large decorative mark (house only, no circle bg) — 320Ã—320 viewBox
 const DECO_SVG =
   '%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20320%20320%22%3E' +
-  '%3Cpolygon%20points%3D%2276%2C160%20160%2C56%20244%2C160%20160%2C264%22%20fill%3D%22none%22%20stroke%3D%22%231A56DB%22%20stroke-width%3D%228%22/%3E' +
-  '%3Cpolygon%20points%3D%22120%2C160%20160%2C104%20200%2C160%22%20fill%3D%22none%22%20stroke%3D%22%231A56DB%22%20stroke-width%3D%225%22/%3E' +
-  '%3Crect%20x%3D%22124%22%20y%3D%22160%22%20width%3D%2272%22%20height%3D%2250%22%20rx%3D%224%22%20fill%3D%22none%22%20stroke%3D%22%231A56DB%22%20stroke-width%3D%225%22/%3E' +
-  '%3Crect%20x%3D%22146%22%20y%3D%22170%22%20width%3D%2228%22%20height%3D%2240%22%20rx%3D%224%22%20fill%3D%22none%22%20stroke%3D%22%231A56DB%22%20stroke-width%3D%225%22/%3E' +
+  '%3Cpolygon%20points%3D%2276%2C160%20160%2C56%20244%2C160%20160%2C264%22%20fill%3D%22none%22%20stroke%3D%22%23012d1d%22%20stroke-width%3D%228%22/%3E' +
+  '%3Cpolygon%20points%3D%22120%2C160%20160%2C104%20200%2C160%22%20fill%3D%22none%22%20stroke%3D%22%23012d1d%22%20stroke-width%3D%225%22/%3E' +
+  '%3Crect%20x%3D%22124%22%20y%3D%22160%22%20width%3D%2272%22%20height%3D%2250%22%20rx%3D%224%22%20fill%3D%22none%22%20stroke%3D%22%23012d1d%22%20stroke-width%3D%225%22/%3E' +
+  '%3Crect%20x%3D%22146%22%20y%3D%22170%22%20width%3D%2228%22%20height%3D%2240%22%20rx%3D%224%22%20fill%3D%22none%22%20stroke%3D%22%23012d1d%22%20stroke-width%3D%225%22/%3E' +
   '%3C/svg%3E'
 
 const ICON_SRC = `data:image/svg+xml,${ICON_SVG}`
@@ -49,7 +49,7 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
         width: '1200px',
         height: '630px',
         display: 'flex',
-        background: '#0F1E3D',
+        background: '#081C15',
         fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
         position: 'relative',
         overflow: 'hidden',
@@ -61,7 +61,7 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
           position: 'absolute',
           left: 0, top: 0, bottom: 0,
           width: '6px',
-          background: '#0F1E3D',
+          background: '#081C15',
           display: 'flex',
         }}
       />
@@ -130,10 +130,10 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
               lineHeight: 1,
               display: 'flex',
             }}>
-              HASKER &amp; CO.
+              PRIMEFAMILYHOUSING &amp; CO.
             </div>
             <div style={{
-              color: '#0052FF',
+              color: '#012d1d',
               fontSize: '11px',
               fontWeight: 400,
               letterSpacing: '3.5px',
@@ -149,7 +149,7 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
         <div style={{
           width: '56px',
           height: '3px',
-          background: '#0F1E3D',
+          background: '#081C15',
           borderRadius: '2px',
           marginBottom: '28px',
           display: 'flex',
@@ -216,12 +216,12 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
         {/* Website */}
         <div style={{
           display: 'flex',
-          color: '#0052FF',
+          color: '#012d1d',
           fontSize: '18px',
           fontWeight: 700,
           letterSpacing: '0.3px',
         }}>
-          haskerrealtygroup.com
+          primefamilyhousing.com
         </div>
 
         {/* Tag chips */}

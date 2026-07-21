@@ -40,9 +40,6 @@ export function CityDirectory({ cities, counts = {}, heading, intro }: Props) {
     <section id="all-cities" className="bg-white border-t border-[#F1F5F9]">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16 lg:py-20">
         <div className="mb-10">
-          <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-brand mb-3">
-            Browse every market
-          </p>
           <h2 className="font-serif text-3xl lg:text-4xl font-bold text-brand-dark leading-tight">
             {heading ?? "Houses for rent by city & state"}
           </h2>

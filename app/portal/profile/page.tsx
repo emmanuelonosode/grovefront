@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { apiFetch } from "@/lib/auth";
-import { cn } from "@/lib/utils";
+import { cn, toCardImageUrl } from "@/lib/utils";
 
 const API_BASE = "";
 
@@ -123,7 +123,7 @@ function appStatusLabel(s: string) {
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 
 function Skeleton({ className }: { className?: string }) {
-  return <div className={cn("animate-pulse rounded-2xl bg-black/[0.04]", className)} />;
+  return <div className={cn("animate-pulse rounded-xl bg-black/[0.04]", className)} />;
 }
 
 // ── Card Shell ────────────────────────────────────────────────────────────────
@@ -138,7 +138,7 @@ function Card({
   href?: string;
 }) {
   const base = cn(
-    "bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)]",
+    "bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant",
     href && "cursor-pointer hover:shadow-[0_4px_20px_rgba(0,0,0,0.10)] hover:scale-[1.01] transition-all duration-200",
     className
   );
@@ -188,41 +188,29 @@ export default function ProfilePage() {
   const initials = [user?.first_name?.[0], user?.last_name?.[0]].filter(Boolean).join("") || "?";
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      <div className="max-w-5xl mx-auto space-y-4">
+    <div className="p-4 md:p-12 w-full max-w-7xl mx-auto">
+      <div className="space-y-6">
 
         {/* ── Header ────────────────────────────────────────────────────── */}
-        <div className="flex items-center justify-between gap-4 px-1 pb-1">
+        <header className="mb-6 flex items-end justify-between gap-4">
           <div>
-            <h1 className="text-[22px] sm:text-[26px] font-semibold tracking-tight text-[#1D1D1F] leading-tight">
+            <h2 className="font-serif font-bold text-on-surface mb-2 text-[32px] leading-10 md:text-[48px] md:leading-[56px]" style={{ letterSpacing: "-0.02em" }}>
               {greeting(user?.first_name ?? "there")}
-            </h1>
-            <p className="text-[13px] text-[#6E6E73] mt-0.5">{todayFormatted()}</p>
+            </h2>
+            <p className="text-[18px] leading-7 text-on-surface-variant">{todayFormatted()}</p>
           </div>
-          <div className="shrink-0 w-11 h-11 rounded-full bg-brand flex items-center justify-center text-white text-[13px] font-bold select-none shadow-sm ring-2 ring-brand/20">
+          <div className="shrink-0 w-14 h-14 rounded-full bg-primary flex items-center justify-center text-on-primary text-[16px] font-bold select-none shadow-sm">
             {initials}
           </div>
-        </div>
-
-        {/* ── City Banner ───────────────────────────────────────────────── */}
-        <div className="rounded-2xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
-          <Image
-            src="/illustrations/banner-city-skyline.png"
-            alt=""
-            width={1200}
-            height={400}
-            className="w-full h-[110px] sm:h-[140px] object-cover object-bottom"
-            priority
-          />
-        </div>
+        </header>
 
         {/* ── KPI Widgets ───────────────────────────────────────────────── */}
         {loading ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-[92px]" />)}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-[104px]" />)}
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <KpiWidget
               icon={Home}
               label="Property"
@@ -256,7 +244,7 @@ export default function ProfilePage() {
         )}
 
         {/* ── Bento Grid ────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-4">
@@ -325,7 +313,7 @@ export default function ProfilePage() {
                   linkLabel="History"
                 />
                 {payments.length === 0 ? (
-                  <p className="px-5 pb-5 text-[13px] text-[#6E6E73]">No payments recorded yet.</p>
+                  <p className="px-5 pb-5 text-[13px] text-on-surface-variant">No payments recorded yet.</p>
                 ) : (
                   <div className="divide-y divide-black/[0.04] px-2">
                     {payments.slice(0, 3).map((pay) => (
@@ -341,7 +329,7 @@ export default function ProfilePage() {
         {/* ── Saved Properties ──────────────────────────────────────────── */}
         {!loading && favorites.length > 0 && (
           <div>
-            <p className="text-[11px] font-semibold tracking-[0.08em] uppercase text-[#6E6E73] px-1 mb-2.5">
+            <p className="text-[11px] font-semibold tracking-[0.08em] uppercase text-on-surface-variant px-1 mb-2.5">
               Saved Properties
             </p>
             <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
@@ -356,7 +344,7 @@ export default function ProfilePage() {
 
         {/* ── Quick Actions ──────────────────────────────────────────────── */}
         <div>
-          <p className="text-[11px] font-semibold tracking-[0.08em] uppercase text-[#6E6E73] px-1 mb-2.5">
+          <p className="text-[11px] font-semibold tracking-[0.08em] uppercase text-on-surface-variant px-1 mb-2.5">
             Quick Actions
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -386,10 +374,10 @@ export default function ProfilePage() {
                 <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-colors duration-200", iconBg)}>
                   <Icon size={17} className={iconColor} strokeWidth={1.8} />
                 </div>
-                <p className="text-[13px] font-semibold text-[#1D1D1F] leading-snug group-hover:text-brand transition-colors duration-200">
+                <p className="text-[13px] font-semibold text-on-surface leading-snug group-hover:text-brand transition-colors duration-200">
                   {label}
                 </p>
-                <p className="text-[11px] text-[#6E6E73] mt-0.5 leading-snug">{desc}</p>
+                <p className="text-[11px] text-on-surface-variant mt-0.5 leading-snug">{desc}</p>
               </Card>
             ))}
           </div>
@@ -407,16 +395,16 @@ export default function ProfilePage() {
                 className="shrink-0"
               />
               <div>
-                <p className="text-[13px] font-semibold text-[#1D1D1F] tracking-tight">
-                  Hasker &amp; Co. Realty Group
+                <p className="text-[13px] font-semibold text-on-surface tracking-tight">
+                  PrimeFamilyHousing
                 </p>
-                <p className="text-[12px] text-[#6E6E73]">Your dedicated property management team</p>
+                <p className="text-[12px] text-on-surface-variant">Your dedicated property management team</p>
               </div>
             </div>
             <div className="flex gap-2 shrink-0">
               <a
-                href="mailto:info@haskerrealtygroup.com"
-                className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#6E6E73] border border-black/[0.1] bg-black/[0.03] px-3.5 py-2 rounded-xl hover:bg-black/[0.06] transition-colors duration-200"
+                href="mailto:info@primefamilyhousing.com"
+                className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-on-surface-variant border border-black/[0.1] bg-black/[0.03] px-3.5 py-2 rounded-xl hover:bg-black/[0.06] transition-colors duration-200"
               >
                 <Mail size={12} />
                 Email Us
@@ -454,31 +442,31 @@ function KpiWidget({
   urgent?: boolean;
 }) {
   const iconStyles = {
-    blue:  { bg: "bg-brand/10",       color: "text-brand"        },
-    green: { bg: "bg-emerald-50",     color: "text-emerald-600"  },
-    amber: { bg: "bg-amber-50",       color: "text-amber-500"    },
+    blue:  { bg: "bg-surface-container",    color: "text-primary"          },
+    green: { bg: "bg-primary-fixed/50",     color: "text-[#2E7D32]"        },
+    amber: { bg: "bg-secondary-fixed/60",   color: "text-terracotta-warm"  },
   }[accent];
 
   const valueColor = {
-    blue:  "text-[#1D1D1F]",
-    green: "text-[#1D1D1F]",
-    amber: "text-amber-500",
+    blue:  "text-on-surface",
+    green: "text-on-surface",
+    amber: "text-terracotta-warm",
   }[accent];
 
   return (
     <div className={cn(
-      "bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] px-4 py-4 flex items-start gap-3 transition-shadow duration-200",
-      urgent && "ring-1 ring-amber-200 shadow-[0_2px_12px_rgba(245,158,11,0.12)]"
+      "bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-5 flex items-start gap-4 transition-shadow duration-200",
+      urgent && "ring-1 ring-terracotta-warm/30"
     )}>
-      <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5", iconStyles.bg)}>
-        <Icon size={15} className={iconStyles.color} strokeWidth={1.8} />
+      <div className={cn("w-12 h-12 rounded-full flex items-center justify-center shrink-0", iconStyles.bg)}>
+        <Icon size={20} className={iconStyles.color} strokeWidth={1.8} />
       </div>
       <div className="min-w-0">
-        <p className="text-[11px] font-medium text-[#6E6E73] leading-none mb-1.5 truncate">{label}</p>
-        <p className={cn("text-[17px] font-semibold tracking-tight leading-none truncate", valueColor)}>
+        <p className="text-[12px] leading-4 text-on-surface-variant mb-1 truncate">{label}</p>
+        <p className={cn("font-serif text-[22px] font-semibold tracking-tight leading-7 truncate", valueColor)}>
           {value}
         </p>
-        <p className="text-[11px] text-[#6E6E73] mt-1 truncate leading-snug">{sub}</p>
+        <p className="text-[12px] leading-4 text-on-surface-variant mt-0.5 truncate">{sub}</p>
       </div>
     </div>
   );
@@ -495,7 +483,7 @@ function LeaseCard({ transaction: t }: { transaction: Transaction }) {
   const sc = statusColor[t.status] ?? "text-white/40 bg-white/[0.06]";
 
   return (
-    <div className="h-full rounded-2xl bg-brand-dark overflow-hidden flex flex-col shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+    <div className="h-full rounded-xl bg-brand-dark overflow-hidden flex flex-col shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
       <div className="h-0.5 bg-gradient-to-r from-brand via-blue-400 to-blue-600" />
 
       <div className="flex-1 p-5 flex flex-col gap-4">
@@ -547,7 +535,7 @@ function LeaseCard({ transaction: t }: { transaction: Transaction }) {
             <ArrowRight size={12} strokeWidth={2} />
           </Link>
           <a
-            href="mailto:info@haskerrealtygroup.com"
+            href="mailto:info@primefamilyhousing.com"
             className="flex-1 flex items-center justify-center gap-1.5 bg-white/[0.08] text-white text-[12px] font-semibold px-4 py-2.5 rounded-xl hover:bg-white/[0.14] transition-colors duration-200 border border-white/[0.07]"
           >
             <Mail size={13} strokeWidth={2} />
@@ -573,10 +561,10 @@ function NoLeaseContent() {
         priority={false}
       />
       <div>
-        <h2 className="text-[15px] font-semibold text-[#1D1D1F] tracking-tight mb-1.5">
+        <h2 className="text-[15px] font-semibold text-on-surface tracking-tight mb-1.5">
           No active lease yet
         </h2>
-        <p className="text-[12px] text-[#6E6E73] leading-relaxed max-w-[210px] mx-auto">
+        <p className="text-[12px] text-on-surface-variant leading-relaxed max-w-[210px] mx-auto">
           Once our team links your tenancy, everything will appear here.
         </p>
       </div>
@@ -589,8 +577,8 @@ function NoLeaseContent() {
           Browse Available Homes
         </Link>
         <a
-          href="mailto:info@haskerrealtygroup.com"
-          className="flex items-center justify-center gap-1.5 text-[12px] font-semibold text-[#6E6E73] border border-black/[0.1] bg-black/[0.02] px-4 py-2.5 rounded-xl hover:bg-black/[0.04] transition-colors duration-200"
+          href="mailto:info@primefamilyhousing.com"
+          className="flex items-center justify-center gap-1.5 text-[12px] font-semibold text-on-surface-variant border border-black/[0.1] bg-black/[0.02] px-4 py-2.5 rounded-xl hover:bg-black/[0.04] transition-colors duration-200"
         >
           <Mail size={13} strokeWidth={2} />
           Contact Our Team
@@ -616,17 +604,17 @@ function PanelHeader({
   linkLabel: string;
 }) {
   const bc = {
-    amber: "bg-amber-50 text-amber-600",
-    blue:  "bg-brand-light text-brand",
-    green: "bg-emerald-50 text-emerald-600",
+    amber: "bg-secondary-fixed/60 text-[#BC6C25]",
+    blue:  "bg-primary-fixed text-on-primary-fixed",
+    green: "bg-primary-fixed/50 text-[#2E7D32]",
   }[badgeColor];
 
   return (
-    <div className="flex items-center justify-between px-5 py-4">
-      <div className="flex items-center gap-2">
-        <span className="text-[14px] font-semibold text-[#1D1D1F] tracking-tight">{title}</span>
+    <div className="flex items-center justify-between px-6 pt-6 pb-4">
+      <div className="flex items-center gap-2.5">
+        <span className="font-serif text-[20px] leading-7 font-semibold text-on-surface tracking-tight">{title}</span>
         {badge && (
-          <span className={cn("text-[11px] font-bold px-1.5 py-0.5 rounded-md", bc)}>
+          <span className={cn("text-[12px] leading-4 font-semibold px-2.5 py-0.5 rounded-full", bc)}>
             {badge}
           </span>
         )}
@@ -653,26 +641,26 @@ function InvoiceRow({ invoice: inv }: { invoice: Invoice }) {
     >
       <div className={cn(
         "w-7 h-7 rounded-lg flex items-center justify-center shrink-0",
-        overdue ? "bg-red-50" : "bg-[#F5F5F7]"
+        overdue ? "bg-red-50" : "bg-surface-container-low"
       )}>
-        <AlertCircle size={13} className={overdue ? "text-[#FF3B30]" : "text-[#6E6E73]"} strokeWidth={2} />
+        <AlertCircle size={13} className={overdue ? "text-error" : "text-on-surface-variant"} strokeWidth={2} />
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <p className="text-[13px] font-semibold text-[#1D1D1F] truncate">{inv.invoice_number}</p>
+          <p className="text-[13px] font-semibold text-on-surface truncate">{inv.invoice_number}</p>
           {overdue && (
-            <span className="text-[10px] font-bold bg-red-50 text-[#FF3B30] px-1.5 py-0.5 rounded-md uppercase tracking-wide shrink-0">
+            <span className="text-[10px] font-bold bg-red-50 text-error px-1.5 py-0.5 rounded-md uppercase tracking-wide shrink-0">
               Overdue
             </span>
           )}
         </div>
-        <p className="text-[11px] text-[#6E6E73] truncate">Due {fmtDate(inv.due_date)}</p>
+        <p className="text-[11px] text-on-surface-variant truncate">Due {fmtDate(inv.due_date)}</p>
       </div>
       <div className="flex items-center gap-1.5 shrink-0">
-        <p className={cn("text-[13px] font-semibold", overdue ? "text-[#FF3B30]" : "text-[#1D1D1F]")}>
+        <p className={cn("text-[13px] font-semibold", overdue ? "text-error" : "text-on-surface")}>
           {fmtMoney(inv.total)}
         </p>
-        <ChevronRight size={13} className="text-[#C7C7CC] group-hover:text-brand transition-colors duration-200" strokeWidth={2.5} />
+        <ChevronRight size={13} className="text-outline-variant group-hover:text-brand transition-colors duration-200" strokeWidth={2.5} />
       </div>
     </Link>
   );
@@ -706,31 +694,31 @@ function ApplicationRow({
           <ListTodo size={13} className="text-brand" strokeWidth={2} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[13px] font-semibold text-[#1D1D1F] truncate">{app.property_title || "Application"}</p>
-          <p className="text-[11px] text-[#6E6E73] truncate">
+          <p className="text-[13px] font-semibold text-on-surface truncate">{app.property_title || "Application"}</p>
+          <p className="text-[11px] text-on-surface-variant truncate">
             {app.submitted_at ? `Submitted ${fmtDate(app.submitted_at)}` : "Draft — not yet submitted"}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold bg-[#F5F5F7] text-[#6E6E73] px-2 py-1 rounded-md uppercase tracking-wide">
+          <span className="text-[10px] font-bold bg-surface-container-low text-on-surface-variant px-2 py-1 rounded-md uppercase tracking-wide">
             {appStatusLabel(app.status)}
           </span>
           <ChevronDown
             size={14}
-            className={cn("text-[#C7C7CC] transition-transform duration-200", expanded && "rotate-180")}
+            className={cn("text-outline-variant transition-transform duration-200", expanded && "rotate-180")}
           />
         </div>
       </button>
 
       {expanded && (
         <div className="px-3 pb-5 pt-1">
-          <div className="bg-[#F5F5F7] rounded-xl p-4">
-            <p className="text-[10px] font-bold text-[#6E6E73] uppercase tracking-widest mb-4">Application Progress</p>
+          <div className="bg-surface-container-low rounded-xl p-4">
+            <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-4">Application Progress</p>
 
             {/* Progress track */}
             <div className="relative flex items-start">
               {/* Connector line behind circles */}
-              <div className="absolute left-[11px] right-[11px] top-[11px] h-0.5 bg-[#E5E5EA]" />
+              <div className="absolute left-[11px] right-[11px] top-[11px] h-0.5 bg-surface-container-high" />
               {roadmap.slice(0, -1).map((step, i) => {
                 const nextDone = roadmap[i + 1]?.done;
                 return (
@@ -740,7 +728,7 @@ function ApplicationRow({
                     style={{
                       left: `calc(${(i / (roadmap.length - 1)) * 100}% + 11px)`,
                       right: `calc(${100 - ((i + 1) / (roadmap.length - 1)) * 100}% + 11px)`,
-                      backgroundColor: nextDone ? "#34C759" : "transparent",
+                      backgroundColor: nextDone ? "#2E7D32" : "transparent",
                     }}
                   />
                 );
@@ -749,22 +737,22 @@ function ApplicationRow({
               {roadmap.map((step, i) => (
                 <div key={step.id} className="flex-1 flex flex-col items-center relative">
                   <div className={cn(
-                    "w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 bg-white relative z-10 transition-colors duration-300",
+                    "w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 bg-surface-container-lowest relative z-10 transition-colors duration-300",
                     step.done
                       ? (step.failed ? "bg-red-500 border-red-500" : "bg-emerald-500 border-emerald-500")
-                      : "border-[#E5E5EA]"
+                      : "border-outline-variant"
                   )}>
                     {step.done ? (
                       step.failed
                         ? <AlertCircle size={11} className="text-white" strokeWidth={2.5} />
                         : <CheckCircle size={11} className="text-white" strokeWidth={2.5} />
                     ) : (
-                      <span className="text-[9px] font-bold text-[#C7C7CC]">{i + 1}</span>
+                      <span className="text-[9px] font-bold text-outline-variant">{i + 1}</span>
                     )}
                   </div>
                   <span className={cn(
                     "text-[9px] font-bold mt-1.5 uppercase tracking-tight text-center",
-                    step.done ? "text-[#1D1D1F]" : "text-[#C7C7CC]"
+                    step.done ? "text-on-surface" : "text-outline-variant"
                   )}>
                     {step.label}
                   </span>
@@ -772,8 +760,8 @@ function ApplicationRow({
               ))}
             </div>
 
-            <div className="mt-5 pt-4 border-t border-black/[0.04] space-y-3">
-              <p className="text-[11px] text-[#6E6E73] leading-relaxed">
+            <div className="mt-5 pt-4 border-t border-outline-variant/60 space-y-3">
+              <p className="text-[11px] text-on-surface-variant leading-relaxed">
                 {app.status === "DRAFT"                && "Your application has been saved but not yet submitted."}
                 {app.status === "PENDING_PAYMENT"      && "A payment is required to complete your application submission."}
                 {app.status === "PENDING_VERIFICATION" && "We are verifying your payment proof. This typically takes 1–2 hours."}
@@ -816,28 +804,28 @@ function PaymentRow({ payment: pay }: { payment: Payment }) {
         {isVerified ? (
           <CheckCircle size={13} className="text-emerald-600" strokeWidth={2} />
         ) : isRejected ? (
-          <AlertCircle size={13} className="text-[#FF3B30]" strokeWidth={2} />
+          <AlertCircle size={13} className="text-error" strokeWidth={2} />
         ) : (
           <Clock size={13} className="text-amber-500" strokeWidth={2} />
         )}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <p className="text-[13px] font-semibold text-[#1D1D1F] truncate">{pay.payment_method}</p>
+          <p className="text-[13px] font-semibold text-on-surface truncate">{pay.payment_method}</p>
           {!isVerified && (
             <span className={cn(
               "text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wide shrink-0",
-              isRejected ? "bg-red-50 text-[#FF3B30]" : "bg-amber-50 text-amber-600"
+              isRejected ? "bg-red-50 text-error" : "bg-amber-50 text-amber-600"
             )}>
               {pay.status === "PENDING_VERIFICATION" ? "Reviewing" : pay.status}
             </span>
           )}
         </div>
-        <p className="text-[11px] text-[#6E6E73] truncate">{fmtDate(pay.created_at)}</p>
+        <p className="text-[11px] text-on-surface-variant truncate">{fmtDate(pay.created_at)}</p>
       </div>
       <p className={cn(
         "text-[13px] font-semibold shrink-0",
-        isVerified ? "text-emerald-600" : "text-[#1D1D1F]"
+        isVerified ? "text-emerald-600" : "text-on-surface"
       )}>
         {fmtMoney(pay.amount)}
       </p>
@@ -852,12 +840,12 @@ function FavoriteCard({ favorite: fav }: { favorite: Favorite }) {
   return (
     <Link
       href={`/houses-for-rent/${fav.property.slug}`}
-      className="group min-w-[200px] w-[200px] shrink-0 bg-white rounded-2xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.10)] hover:scale-[1.01] transition-all duration-200 cursor-pointer"
+      className="group min-w-[200px] w-[200px] shrink-0 bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant hover:shadow-[0_4px_20px_rgba(0,0,0,0.10)] hover:scale-[1.01] transition-all duration-200 cursor-pointer"
     >
-      <div className="h-[120px] bg-[#F5F5F7] relative">
+      <div className="h-[120px] bg-surface-container-low relative">
         {fav.property.primary_image_url ? (
           <Image
-            src={fav.property.primary_image_url}
+            src={toCardImageUrl(fav.property.primary_image_url)}
             alt={fav.property.title}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -865,15 +853,15 @@ function FavoriteCard({ favorite: fav }: { favorite: Favorite }) {
           />
         ) : (
           <div className="flex items-center justify-center h-full">
-            <Building2 className="text-[#C7C7CC]" size={24} />
+            <Building2 className="text-outline-variant" size={24} />
           </div>
         )}
         <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm">
-          <Heart size={12} className="text-[#FF3B30] fill-[#FF3B30]" />
+          <Heart size={12} className="text-error fill-[#ba1a1a]" />
         </div>
       </div>
       <div className="p-3">
-        <h3 className="text-[13px] font-semibold text-[#1D1D1F] truncate">{fav.property.title}</h3>
+        <h3 className="text-[13px] font-semibold text-on-surface truncate">{fav.property.title}</h3>
         <p className="text-[12px] text-brand font-medium mt-0.5">
           {fmtMoney(fav.property.price)}{isRental ? "/mo" : ""}
         </p>

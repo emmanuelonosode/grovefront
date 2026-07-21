@@ -28,9 +28,9 @@ export async function generateMetadata(
   const city = await resolveCityData(slug);
   if (!city) return { title: "Not Found" };
 
-  const title = `Property Management in ${city.name}, ${city.stateCode} | Hasker & Co. Realty Group`;
-  const description = `Professional property management in ${city.name}, ${city.stateCode}. Tenant screening, rent collection, maintenance coordination, and monthly reporting. Let Hasker & Co. manage your investment.`;
-  const url = `https://haskerrealtygroup.com/property-management/${slug}`;
+  const title = `Property Management in ${city.name}, ${city.stateCode} | PrimeFamilyHousing`;
+  const description = `Professional property management in ${city.name}, ${city.stateCode}. Tenant screening, rent collection, maintenance coordination, and monthly reporting. Let PrimeFamilyHousing manage your investment.`;
+  const url = `https://primefamilyhousing.com/property-management/${slug}`;
 
   return {
     title,
@@ -72,7 +72,7 @@ export default async function PropertyManagementCityPage(
   const city = await resolveCityData(slug);
   if (!city) notFound();
 
-  const pageUrl = `https://haskerrealtygroup.com/property-management/${slug}`;
+  const pageUrl = `https://primefamilyhousing.com/property-management/${slug}`;
 
   const serviceSchema = {
     "@context": "https://schema.org",
@@ -80,8 +80,8 @@ export default async function PropertyManagementCityPage(
     name: `Property Management in ${city.name}, ${city.stateCode}`,
     provider: {
       "@type": "RealEstateAgent",
-      name: "Hasker & Co. Realty Group",
-      url: "https://haskerrealtygroup.com",
+      name: "PrimeFamilyHousing",
+      url: "https://primefamilyhousing.com",
       telephone: "+17572082767",
       address: {
         "@type": "PostalAddress",
@@ -103,8 +103,8 @@ export default async function PropertyManagementCityPage(
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home",               item: "https://haskerrealtygroup.com" },
-      { "@type": "ListItem", position: 2, name: "Property Management", item: "https://haskerrealtygroup.com/property-management" },
+      { "@type": "ListItem", position: 1, name: "Home",               item: "https://primefamilyhousing.com" },
+      { "@type": "ListItem", position: 2, name: "Property Management", item: "https://primefamilyhousing.com/property-management" },
       { "@type": "ListItem", position: 3, name: `${city.name}, ${city.stateCode}`, item: pageUrl },
     ],
   };
@@ -112,10 +112,10 @@ export default async function PropertyManagementCityPage(
   const faqItems = [
     {
       q: `How much does property management cost in ${city.name}?`,
-      a: `Hasker & Co. Realty Group charges a transparent, flat management fee with no hidden costs. Contact us for a free property analysis and quote tailored to your ${city.name} rental.`,
+      a: `PrimeFamilyHousing charges a transparent, flat management fee with no hidden costs. Contact us for a free property analysis and quote tailored to your ${city.name} rental.`,
     },
     {
-      q: `What does Hasker & Co. handle when managing my ${city.name} property?`,
+      q: `What does PrimeFamilyHousing handle when managing my ${city.name} property?`,
       a: `We handle everything: tenant screening and placement, rent collection, late fee enforcement, 24/7 maintenance coordination, monthly owner statements, and lease renewals. You own — we manage.`,
     },
     {
@@ -289,7 +289,7 @@ export default async function PropertyManagementCityPage(
               </Link>
             </Button>
             <Button variant="outline-white" size="lg" asChild>
-              <Link href="mailto:info@haskerrealtygroup.com">
+              <Link href="mailto:info@primefamilyhousing.com">
                 <Mail size={16} />
                 Email Us
               </Link>

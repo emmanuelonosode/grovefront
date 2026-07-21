@@ -15,7 +15,7 @@ function MultiStepRegister() {
   const { register, verifyEmail, resendOTP } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") ?? "/portal/profile";
+  const next = searchParams.get("next") ?? "/portal/dashboard";
 
   const [step, setStep] = useState<Step>("signup");
   
@@ -130,7 +130,7 @@ function MultiStepRegister() {
 
   // Auto-complete onboarding if there's a custom 'next' URL
   useEffect(() => {
-    if (step === "onboarding" && next !== "/portal/profile") {
+    if (step === "onboarding" && next !== "/portal/dashboard") {
       // Determine default intent based on next url
       const defaultIntent = next.includes("apply") || next.includes("rent") 
         ? "renting" 
@@ -153,7 +153,7 @@ function MultiStepRegister() {
     return () => clearTimeout(t);
   }, [resendCooldown]);
 
-  const inputCls = "w-full rounded-xl px-4 py-3 text-[14px] text-[#1D1D1F] bg-[#F5F5F7] outline-none transition-all focus:bg-white focus:ring-2 focus:ring-brand/30 focus:shadow-[0_0_0_1px_#0052FF]";
+  const inputCls = "w-full rounded-xl px-4 py-3 text-[14px] text-[#1D1D1F] bg-[#F5F5F7] outline-none transition-all focus:bg-white focus:ring-2 focus:ring-brand/30 focus:shadow-[0_0_0_1px_#012d1d]";
 
   // Handle OTP Inputs
   const handleOtpChange = (index: number, value: string) => {
@@ -211,7 +211,7 @@ function MultiStepRegister() {
                   Create your account
                 </h1>
                 <p className="text-[13px] text-[#6E6E73]">
-                  Join Hasker &amp; Co. Realty Group
+                  Join PrimeFamilyHousing
                 </p>
               </div>
 
@@ -259,7 +259,7 @@ function MultiStepRegister() {
 
               <p className="mt-6 text-center text-[13px] text-[#6E6E73]">
                 Already have an account?{" "}
-                <Link href={`/login${next !== "/portal/profile" ? `?next=${encodeURIComponent(next)}` : ""}`} className="text-brand font-semibold hover:underline">
+                <Link href={`/login${next !== "/portal/dashboard" ? `?next=${encodeURIComponent(next)}` : ""}`} className="text-brand font-semibold hover:underline">
                   Sign in
                 </Link>
               </p>
@@ -334,7 +334,7 @@ function MultiStepRegister() {
               transition={{ duration: 0.3 }}
               className="flex flex-col h-full justify-center"
             >
-              {next !== "/portal/profile" ? (
+              {next !== "/portal/dashboard" ? (
                 // Seamless continuation screen
                 <div className="flex flex-col h-full justify-center items-center text-center px-4">
                   <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -344,7 +344,7 @@ function MultiStepRegister() {
                     Account Created!
                   </h1>
                   <p className="text-[15px] text-[#6E6E73] leading-relaxed mb-8 max-w-sm">
-                    Welcome to Hasker &amp; Co. Realty Group. Your email is verified and you&apos;re ready to go.
+                    Welcome to PrimeFamilyHousing. Your email is verified and you&apos;re ready to go.
                   </p>
                   
                   <button 

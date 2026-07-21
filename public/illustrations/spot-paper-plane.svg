@@ -12,7 +12,7 @@
     <polygon points="-44,0 30,-16 30,8 -10,10"/>
     <line x1="-44" y1="0" x2="-10" y2="10"/>
     <line x1="-44" y1="0" x2="30" y2="-16"/>
-    <polygon points="-10,10 30,-16 30,8" fill="#EFF4FF"/>
+    <polygon points="-10,10 30,-16 30,8" fill="#f3f4ec"/>
     <polygon points="-10,10 30,-16 30,8"/>
   </g>
 

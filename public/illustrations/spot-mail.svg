@@ -15,7 +15,7 @@
 
   <!-- Brand stamp — tiny diamond mark -->
   <g transform="translate(118, 70)">
-    <polygon points="0,-7 7,0 0,7 -7,0" fill="#1A56DB"/>
+    <polygon points="0,-7 7,0 0,7 -7,0" fill="#012d1d"/>
   </g>
 
   <!-- Envelope front flap — V shape over everything -->

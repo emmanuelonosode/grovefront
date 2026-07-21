@@ -1,129 +1,42 @@
 "use client";
 
-import Script from "next/script";
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { hasConsent, captureUTMs, captureReferralCode, captureLocation } from "@/lib/tracking";
+import { captureUTMs, captureReferralCode, captureLocation } from "@/lib/tracking";
 import { initTelemetryEngine, trackPageView } from "@/lib/telemetry";
 
-
-
-const GTM_ID   = process.env.NEXT_PUBLIC_GTM_ID;
-const GA_ID    = process.env.NEXT_PUBLIC_GA_ID;
-const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
-
+/**
+ * First-party analytics only. No Google (GA4/GTM) and no Meta Pixel — the site
+ * ships zero third-party tracking scripts, which keeps the page fast (no extra
+ * DNS lookups, no render-blocking/afterInteractive vendor JS, no ad cookies).
+ * Everything below is our own telemetry beaconing to /api/v1/analytics/visitors/.
+ * (Google Search Console is unaffected — that's a static verification <meta>,
+ * not a script.)
+ */
 function PageViewTracker() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    trackPageView(pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : ""));
+    const qs = searchParams?.toString();
+    trackPageView(pathname + (qs ? `?${qs}` : ""));
   }, [pathname, searchParams]);
 
   return null;
 }
 
 export function TrackingScripts() {
-  const [consent, setConsent] = useState(false);
-
   useEffect(() => {
+    // Attribution capture (UTMs, referral code) + coarse location, then start
+    // the native telemetry engine. All first-party, all sent to our own API.
     captureUTMs();
     captureReferralCode();
-    captureLocation().then(() => {
-        // Init telemetry engine once location is potentially captured
-        initTelemetryEngine();
-    });
-
-    const consentVal = hasConsent();
-    setTimeout(() => setConsent(consentVal), 0);
-    const handler = () => setConsent(true);
-    window.addEventListener("hasker:consent-granted", handler);
-
-    return () => {
-      window.removeEventListener("hasker:consent-granted", handler);
-    };
+    captureLocation().then(() => initTelemetryEngine());
   }, []);
 
   return (
-    <>
-      <Suspense fallback={null}>
-        <PageViewTracker />
-      </Suspense>
-
-      {/* ── GA4 — fires on every visit, no consent required ─────────── */}
-      {GA_ID && (
-        <Script
-          id="ga4-script"
-          strategy="afterInteractive"
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-        />
-      )}
-      {GA_ID && (
-        <Script
-          id="ga4-config"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`,
-          }}
-        />
-      )}
-
-      {/* ── GTM — fires on every visit, no consent required ─────────── */}
-      {GTM_ID && (
-        <Script
-          id="gtm-script"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','${GTM_ID}');`,
-          }}
-        />
-      )}
-      {GTM_ID && (
-        <noscript>
-          <iframe
-            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
-            height="0"
-            width="0"
-            style={{ display: "none", visibility: "hidden" }}
-          />
-        </noscript>
-      )}
-
-      {/* ── Meta Pixel — consent-gated (sets advertising cookies) ───── */}
-      {consent && PIXEL_ID && (
-        <Script
-          id="meta-pixel-script"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window,document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init','${PIXEL_ID}');
-fbq('track','PageView');`,
-          }}
-        />
-      )}
-      {consent && PIXEL_ID && (
-        <noscript>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            height="1"
-            width="1"
-            style={{ display: "none" }}
-            src={`https://www.facebook.com/tr?id=${PIXEL_ID}&ev=PageView&noscript=1`}
-            alt=""
-          />
-        </noscript>
-      )}
-    </>
+    <Suspense fallback={null}>
+      <PageViewTracker />
+    </Suspense>
   );
 }

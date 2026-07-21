@@ -6,11 +6,11 @@
  */
 
 export const BUSINESS = {
-  name: "Hasker & Co. Realty Group",
-  url: "https://haskerrealtygroup.com",
+  name: "PrimeFamilyHousing",
+  url: "https://primefamilyhousing.com",
   telephone: "+17572082767",
   telephoneDisplay: "(757) 208-2767",
-  email: "info@haskerrealtygroup.com",
+  email: "info@primefamilyhousing.com",
   address: {
     streetAddress: "213 Bob Ln",
     addressLocality: "Virginia Beach",
@@ -20,10 +20,10 @@ export const BUSINESS = {
   },
   sameAs: [
     "https://www.facebook.com/share/1G6G3YcUd3/",
-    "https://www.tiktok.com/@haskerrealtygroup",
-    "https://www.instagram.com/haskerrealty",
-    "https://www.linkedin.com/company/haskerrealty",
-    "https://twitter.com/haskerrealty",
+    "https://www.tiktok.com/@primefamilyhousing",
+    "https://www.instagram.com/primefamilyhousing",
+    "https://www.linkedin.com/company/primefamilyhousing",
+    "https://twitter.com/primefamilyhousing",
   ],
 } as const;
 

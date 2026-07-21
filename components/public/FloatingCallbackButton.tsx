@@ -12,7 +12,7 @@ import {
 } from "@/lib/tracking";
 import { trackClick } from "@/lib/telemetry";
 
-const CAPTURED_KEY = "hasker_callback_sent";
+const CAPTURED_KEY = "pfh_callback_sent";
 
 const INPUT_CLS =
   "w-full h-[48px] border border-neutral-200 rounded-xl pl-10 pr-4 " +
@@ -39,8 +39,8 @@ export function FloatingCallbackButton() {
   // Listen for programmatic open trigger (e.g. from Navbar "Call Me" button)
   useEffect(() => {
     const handler = () => { if (!alreadySent) setOpen(true); };
-    window.addEventListener("hasker:open-callback", handler);
-    return () => window.removeEventListener("hasker:open-callback", handler);
+    window.addEventListener("pfh:open-callback", handler);
+    return () => window.removeEventListener("pfh:open-callback", handler);
   }, [alreadySent]);
 
   // Scroll lock when open
@@ -103,7 +103,7 @@ export function FloatingCallbackButton() {
 
   // On the full-screen search/map page the floating pill blocks content, so it's
   // hidden there — the Call action lives in the bottom toolbar instead, which opens
-  // this same modal via the `hasker:open-callback` event. The modal + listener stay
+  // this same modal via the `pfh:open-callback` event. The modal + listener stay
   // mounted on every page so that trigger always works.
   const showFloating = !alreadySent && !pathname.startsWith("/houses-for-rent") && !pathname.startsWith("/apply");
 

@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Star, ShieldCheck, Users, Home as HomeIcon } from "lucide-react";
+import { ArrowRight, ShieldCheck, MapPin, Wrench, BadgeDollarSign } from "lucide-react";
 import { HeroSearch } from "@/components/public/HeroSearch";
-import { FeaturedPropertiesSection } from "@/components/public/FeaturedPropertiesSection";
+import { HeroCarousel } from "@/components/public/HeroCarousel";
+import { HeroHeadline } from "@/components/public/HeroHeadline";
 import { WorkersScene, PetScene } from "@/components/public/HomepageIllustrations";
 import { StateDirectory } from "@/components/public/StateDirectory";
-import { fetchHomepageProperties, fetchProperties, toPropertyCardShape } from "@/lib/properties";
+import { fetchProperties } from "@/lib/properties";
 import { fetchAllCities, toDirectoryCities } from "@/lib/cities";
 import { BUSINESS, postalAddressSchema } from "@/lib/business";
 
@@ -23,9 +24,9 @@ const HERO_IMAGES = [
 ];
 
 export const metadata = {
-  title: "Hasker & Co. Realty Group | Affordable Homes to Rent & Buy",
+  title: "PrimeFamilyHousing | Affordable Homes to Rent & Buy",
   description:
-    "Hasker & Co. Realty Group — find affordable homes to rent and buy across Atlanta, Charlotte, Houston, Dallas, Nashville and Phoenix. Decisions in 24 hrs.",
+    "PrimeFamilyHousing — find affordable homes to rent and buy across Atlanta, Charlotte, Houston, Dallas, Nashville and Phoenix. Decisions in 24 hrs.",
   keywords: [
     "houses for rent",
     "homes for rent near me",
@@ -41,47 +42,52 @@ export const metadata = {
     "2 bedroom houses for rent",
     "3 bedroom houses for rent",
     "affordable housing for families",
-    "Hasker Realty Group",
-    "haskerrealtygroup.com",
+    "Prime Family Housing",
+    "primefamilyhousing.com",
   ],
   openGraph: {
-    title: "Hasker & Co. Realty Group | Affordable Homes to Rent & Buy",
-    description: "Hasker & Co. Realty Group — quality homes, well-maintained and move-in ready. Fast approvals. 12+ cities.",
+    title: "PrimeFamilyHousing | Affordable Homes to Rent & Buy",
+    description: "PrimeFamilyHousing — quality homes, well-maintained and move-in ready. Fast approvals. 12+ cities.",
     type: "website",
-    url: "https://haskerrealtygroup.com",
-    images: [{ url: "https://haskerrealtygroup.com/opengraph-image", width: 1200, height: 630, alt: "Hasker & Co. Realty Group — Affordable Homes" }],
+    url: "https://primefamilyhousing.com",
+    images: [{ url: "https://primefamilyhousing.com/opengraph-image", width: 1200, height: 630, alt: "PrimeFamilyHousing — Affordable Homes" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hasker & Co. Realty Group | Affordable Homes to Rent & Buy",
-    description: "Hasker & Co. Realty Group — quality homes, well-maintained and move-in ready. Fast approvals. 12+ cities.",
-    images: ["https://haskerrealtygroup.com/opengraph-image"],
-    creator: "@haskerrealty",
+    title: "PrimeFamilyHousing | Affordable Homes to Rent & Buy",
+    description: "PrimeFamilyHousing — quality homes, well-maintained and move-in ready. Fast approvals. 12+ cities.",
+    images: ["https://primefamilyhousing.com/opengraph-image"],
+    creator: "@primefamilyhousing",
   },
-  alternates: { canonical: "https://haskerrealtygroup.com" },
+  alternates: { canonical: "https://primefamilyhousing.com" },
 };
 
 export const revalidate = 300;
 
-const BASE_URL = "https://haskerrealtygroup.com";
+const BASE_URL = "https://primefamilyhousing.com";
 
 const LOCAL_BUSINESS_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "RealEstateAgent",
   "@id": `${BASE_URL}/#local-business`,
-  name: "Hasker & Co. Realty Group",
-  legalName: "Hasker & Co. Realty Group",
-  alternateName: ["Hasker Realty Group", "Hasker Realty", "Hasker and Co Realty Group", "Hasker & Co Realty"],
+  name: "PrimeFamilyHousing",
+  legalName: "PrimeFamilyHousing",
+  alternateName: ["Prime Family Housing", "PrimeFamilyHousing.com"],
   parentOrganization: { "@id": `${BASE_URL}/#organization` },
   url: BASE_URL,
   logo: `${BASE_URL}/logo.svg`,
   image: `${BASE_URL}/opengraph-image`,
-  description: "Hasker & Co. Realty Group — affordable homes to rent and buy. Quality homes, move-in ready, fast decisions. 2,000+ families housed across 12+ US cities since 2012.",
+  description: "PrimeFamilyHousing — affordable homes to rent and buy. Quality homes, move-in ready, fast decisions. 2,000+ families housed across 12+ US cities since 2012.",
   email: BUSINESS.email,
   telephone: BUSINESS.telephone,
   priceRange: "$$",
   foundingDate: "2012",
   address: postalAddressSchema(),
+  // Geo coordinates strengthen local-pack / Google Maps eligibility for a
+  // location-based real-estate business. Approximate to the HQ ZIP (Virginia
+  // Beach, VA 23454) — confirm the exact pin in Google Business Profile.
+  geo: { "@type": "GeoCoordinates", latitude: 36.8419, longitude: -76.0419 },
+  hasMap: "https://www.google.com/maps/search/?api=1&query=213+Bob+Ln+Virginia+Beach+VA+23454",
   openingHoursSpecification: [
     { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday"], opens: "09:00", closes: "18:00" },
     { "@type": "OpeningHoursSpecification", dayOfWeek: ["Saturday"], opens: "10:00", closes: "16:00" },
@@ -92,17 +98,17 @@ const LOCAL_BUSINESS_SCHEMA = {
     "Raleigh, NC", "Orlando, FL", "San Antonio, TX", "Jacksonville, FL", "Philadelphia, PA",
   ],
   sameAs: [
-    "https://www.instagram.com/haskerrealty",
-    "https://www.linkedin.com/company/haskerrealty",
-    "https://twitter.com/haskerrealty",
-    "https://www.facebook.com/haskerrealty",
+    "https://www.instagram.com/primefamilyhousing",
+    "https://www.linkedin.com/company/primefamilyhousing",
+    "https://twitter.com/primefamilyhousing",
+    "https://www.facebook.com/primefamilyhousing",
   ],
 };
 
 const WEBSITE_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "Hasker & Co. Realty Group",
+  name: "PrimeFamilyHousing",
   url: BASE_URL,
   potentialAction: {
     "@type": "SearchAction",
@@ -115,9 +121,9 @@ const ORGANIZATION_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "Organization",
   "@id": `${BASE_URL}/#organization`,
-  name: "Hasker & Co. Realty Group",
-  legalName: "Hasker & Co. Realty Group",
-  alternateName: ["Hasker Realty Group", "Hasker Realty", "Hasker and Co Realty Group", "Hasker & Co Realty"],
+  name: "PrimeFamilyHousing",
+  legalName: "PrimeFamilyHousing",
+  alternateName: ["Prime Family Housing", "PrimeFamilyHousing.com"],
   url: BASE_URL,
   logo: `${BASE_URL}/logo.svg`,
   email: BUSINESS.email,
@@ -125,10 +131,10 @@ const ORGANIZATION_SCHEMA = {
   address: postalAddressSchema(),
   contactPoint: { "@type": "ContactPoint", email: BUSINESS.email, telephone: BUSINESS.telephone, contactType: "customer service", availableLanguage: "English" },
   sameAs: [
-    "https://www.instagram.com/haskerrealty",
-    "https://www.linkedin.com/company/haskerrealty",
-    "https://twitter.com/haskerrealty",
-    "https://www.facebook.com/haskerrealty",
+    "https://www.instagram.com/primefamilyhousing",
+    "https://www.linkedin.com/company/primefamilyhousing",
+    "https://twitter.com/primefamilyhousing",
+    "https://www.facebook.com/primefamilyhousing",
   ],
 };
 
@@ -136,11 +142,11 @@ const FAQ_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: [
-    { "@type": "Question", name: "What is Hasker Realty Group?", acceptedAnswer: { "@type": "Answer", text: "Hasker Realty Group — officially named Hasker & Co. Realty Group — is a licensed US real estate company founded in 2012 and headquartered in Virginia Beach, VA. The company specializes in affordable rental homes and budget-friendly properties for sale across 12+ US cities." } },
-    { "@type": "Question", name: "How long does it take to get approved for a rental?", acceptedAnswer: { "@type": "Answer", text: "Hasker & Co. Realty Group reviews every rental application within 24 hours. You can apply online in under 10 minutes at haskerrealtygroup.com/apply." } },
-    { "@type": "Question", name: "Does Hasker & Co. Realty Group charge hidden fees?", acceptedAnswer: { "@type": "Answer", text: "No. The listed price is what you pay. No administrative processing fees or convenience surcharges beyond the standard security deposit." } },
-    { "@type": "Question", name: "Can I rent with bad credit through Hasker & Co. Realty Group?", acceptedAnswer: { "@type": "Answer", text: "Hasker & Co. Realty Group reviews applications individually and works with renters who have imperfect credit or limited rental history." } },
-    { "@type": "Question", name: "Does Hasker & Co. Realty Group have pet-friendly rentals?", acceptedAnswer: { "@type": "Answer", text: "Yes. Many of our rental listings across Atlanta, Charlotte, Houston, Dallas and other cities are pet-friendly. Pet policies are disclosed upfront on every listing." } },
+    { "@type": "Question", name: "What is Prime Family Housing?", acceptedAnswer: { "@type": "Answer", text: "Prime Family Housing — officially named PrimeFamilyHousing — is a licensed US real estate company founded in 2012 and headquartered in Virginia Beach, VA. The company specializes in affordable rental homes and budget-friendly properties for sale across 12+ US cities." } },
+    { "@type": "Question", name: "How long does it take to get approved for a rental?", acceptedAnswer: { "@type": "Answer", text: "PrimeFamilyHousing reviews every rental application within 24 hours. You can apply online in under 10 minutes at primefamilyhousing.com/apply." } },
+    { "@type": "Question", name: "Does PrimeFamilyHousing charge hidden fees?", acceptedAnswer: { "@type": "Answer", text: "No. The listed price is what you pay. No administrative processing fees or convenience surcharges beyond the standard security deposit." } },
+    { "@type": "Question", name: "Can I rent with bad credit through PrimeFamilyHousing?", acceptedAnswer: { "@type": "Answer", text: "PrimeFamilyHousing reviews applications individually and works with renters who have imperfect credit or limited rental history." } },
+    { "@type": "Question", name: "Does PrimeFamilyHousing have pet-friendly rentals?", acceptedAnswer: { "@type": "Answer", text: "Yes. Many of our rental listings across Atlanta, Charlotte, Houston, Dallas and other cities are pet-friendly. Pet policies are disclosed upfront on every listing." } },
   ],
 };
 
@@ -153,7 +159,7 @@ const BREADCRUMB_HOME = {
 const HOW_IT_WORKS_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "HowTo",
-  name: "How to Rent a Home with Hasker & Co. Realty Group",
+  name: "How to Rent a Home with PrimeFamilyHousing",
   description: "Apply for an affordable rental home in 3 simple steps. Decisions within 24 hours.",
   totalTime: "PT10M",
   estimatedCost: { "@type": "MonetaryAmount", currency: "USD", value: "0" },
@@ -176,13 +182,6 @@ const maintenancePromises = [
   { h: "In-house team, not third-party",   d: "Our own technicians service every home. They know the property, you, and the history." },
 ];
 
-const whyPillars = [
-  { num: "01", title: "Prices you can trust",        desc: "What you see is what you pay. We never inflate rents or add surprise move-in fees." },
-  { num: "02", title: "24-hour decisions",            desc: "Apply in under 10 minutes. We review every application and respond within a day." },
-  { num: "03", title: "Maintenance that shows up",   desc: "Submit a request, get a same-day response. We don't leave you waiting." },
-  { num: "04", title: "Your whole family welcome",   desc: "Kids, pets, extended family. Most of our homes are pet-friendly. No breed restrictions on many." },
-];
-
 const faqs = [
   { q: "How long does it take to get approved?",               a: "Every application gets reviewed within 24 hours. Most renters hear back the same business day." },
   { q: "Do you charge hidden fees or admin charges?",          a: "No. The listed price is what you pay. Standard security deposit and that's it — no admin fees, no convenience surcharges." },
@@ -195,26 +194,12 @@ const faqs = [
 const petTags = ["Dogs welcome", "Cats welcome", "$300 pet deposit", "$25/mo pet rent", "No breed restrictions"];
 
 export default async function HomePage() {
-  const [featuredRaw, totalCountRaw, allCitiesRaw] = await Promise.allSettled([
-    fetchHomepageProperties(),
+  const [totalCountRaw, allCitiesRaw] = await Promise.allSettled([
     fetchProperties(),
     fetchAllCities(),
   ]);
 
-  const homepagePinned   = featuredRaw.status === "fulfilled" ? featuredRaw.value : [];
-  const generalResults   = totalCountRaw.status === "fulfilled" ? (totalCountRaw.value.results ?? []) : [];
-  const pinnedIds        = new Set(homepagePinned.map((p) => p.id));
-  const featuredProperties = [
-    ...homepagePinned,
-    ...generalResults.filter((p) => !pinnedIds.has(p.id)),
-  ].slice(0, 6).map(toPropertyCardShape);
-
   const totalProperties = totalCountRaw.status === "fulfilled" ? totalCountRaw.value.count : null;
-
-  // Rotate the hero photo every 2 hours. Safe here: this is a Server Component with
-  // ISR (revalidate=300), so the value is fixed per render — no client re-render churn.
-  // eslint-disable-next-line react-hooks/purity
-  const heroImage = HERO_IMAGES[Math.floor(Date.now() / (2 * 60 * 60 * 1000)) % HERO_IMAGES.length];
 
   const dbCities = allCitiesRaw.status === "fulfilled" ? allCitiesRaw.value : [];
   // Slim projection — the directory + city grid only need name/photo/count, so
@@ -237,77 +222,29 @@ export default async function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(HOW_IT_WORKS_SCHEMA) }} />
 
       {/* â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="relative flex flex-col items-center justify-center overflow-hidden text-center" style={{ minHeight: 660 }}>
-        <Image
-          src={heroImage}
-          alt="Beautiful home available through Hasker & Co. Realty Group"
-          fill
-          className="object-cover object-center"
-          sizes="100vw"
-          priority
-          fetchPriority="high"
-        />
-        <div className="relative z-10 w-full flex flex-col items-center px-5 sm:px-8 pt-28 pb-16">
-          {/* H1 — no overlay on the photo; readability comes from text shadows */}
-          <h1
-            className="hero-animate font-serif font-bold text-white leading-[1.04] mb-5 text-[2.8rem] sm:text-[3.9rem] lg:text-[5rem]"
-            style={{ letterSpacing: "-0.025em", maxWidth: 980, textShadow: "0 2px 10px rgba(0,0,0,0.55), 0 4px 34px rgba(0,0,0,0.45)" }}
-          >
-            Best-maintained houses for rent,<br className="hidden sm:block" /> in 12+ U.S. cities.
-          </h1>
+      <section className="relative w-full min-h-[600px] md:min-h-[700px] flex items-center justify-center overflow-hidden bg-surface-container-low">
+        {/* Background carousel + forest gradient */}
+        <div className="absolute inset-0 z-0">
+          <HeroCarousel images={HERO_IMAGES} />
+          <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/80 via-forest-deep/30 to-transparent pointer-events-none" />
+        </div>
 
-          {/* Subhead */}
-          <p
-            className="hero-animate text-[17px] sm:text-[19px] leading-[1.55] mb-10 max-w-[560px] text-white"
-            style={{ textShadow: "0 1px 6px rgba(0,0,0,0.6), 0 2px 18px rgba(0,0,0,0.4)", animationDelay: "80ms" }}
-          >
-            Well-maintained rentals at honest prices. No hidden fees. Decisions in 24 hours.
-          </p>
+        {/* Content */}
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-12 text-center mt-16 pb-12">
+          {/* Rotating headline + subtitle */}
+          <div className="hero-animate">
+            <HeroHeadline />
+          </div>
 
-          {/* Search */}
-          <div className="hero-animate w-full max-w-[760px] mb-6" style={{ animationDelay: "160ms" }}>
+          {/* Smart search bar */}
+          <div className="hero-animate w-full" style={{ animationDelay: "160ms" }}>
             <HeroSearch />
-          </div>
-
-          {/* Clear next steps — browse or apply */}
-          <div className="hero-animate flex flex-col sm:flex-row items-center justify-center gap-3 mb-9 w-full sm:w-auto px-2" style={{ animationDelay: "200ms" }}>
-            <Link
-              href="/houses-for-rent"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 h-12 px-7 bg-brand hover:bg-brand-hover text-white font-bold text-[15px] rounded-xl shadow-lg shadow-black/20 transition-colors"
-            >
-              Browse Available Homes
-              <ArrowRight size={16} />
-            </Link>
-            <Link
-              href="/apply"
-              className="w-full sm:w-auto flex items-center justify-center h-12 px-7 bg-accent hover:bg-accent-hover text-neutral-900 font-bold text-[15px] rounded-xl shadow-lg shadow-black/20 transition-colors"
-            >
-              Apply Now — 24h Decision
-            </Link>
-          </div>
-
-          {/* Trust badges — solid, crisp */}
-          <div className="hero-animate flex flex-wrap items-center justify-center gap-2.5" style={{ animationDelay: "240ms" }}>
-            {[
-              { icon: <Star size={14} className="text-amber-500 fill-amber-500" />, label: "Verified Listings Only" },
-              { icon: <ShieldCheck size={14} className="text-emerald-600" />,        label: "Equal Housing Provider" },
-              { icon: <Users size={14} className="text-brand" />,                    label: "2,400+ families housed" },
-              { icon: <HomeIcon size={14} className="text-brand" />,                 label: "Equal Housing Opportunity" },
-            ].map((b) => (
-              <div
-                key={b.label}
-                className="flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[13px] font-semibold text-neutral-800 shadow-md shadow-black/15"
-              >
-                {b.icon}
-                {b.label}
-              </div>
-            ))}
           </div>
         </div>
       </section>
 
       {/* â”€â”€ STATS STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section style={{ background: "#0F1E3D", color: "#fff" }}>
+      <section style={{ background: "#081C15", color: "#fff" }}>
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4">
             {[
@@ -318,8 +255,8 @@ export default async function HomePage() {
             ].map((stat, i) => (
               <div key={stat.l} className="px-6 py-10" style={{ borderLeft: i > 0 ? "1px solid rgba(255,255,255,0.12)" : "none" }}>
                 <div className="font-serif font-bold text-white leading-none" style={{ fontSize: 44, letterSpacing: "-0.02em" }}>{stat.v}</div>
-                <div className="font-semibold mt-[10px]" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 13, color: "rgba(255,255,255,0.85)" }}>{stat.l}</div>
-                <div className="mt-[3px]" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 11, color: "rgba(255,255,255,0.4)", letterSpacing: "0.04em" }}>{stat.s}</div>
+                <div className="font-semibold mt-[10px]" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 13, color: "rgba(255,255,255,0.85)" }}>{stat.l}</div>
+                <div className="mt-[3px]" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 11, color: "rgba(255,255,255,0.4)", letterSpacing: "0.04em" }}>{stat.s}</div>
               </div>
             ))}
           </div>
@@ -327,10 +264,88 @@ export default async function HomePage() {
       </section>
 
       {/* â”€â”€ FEATURED RENTALS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <FeaturedPropertiesSection properties={featuredProperties} totalCount={totalProperties} />
+      <section className="py-16 md:py-24 px-4 md:px-12 max-w-7xl mx-auto w-full">
+        <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <h2 className="font-serif font-semibold text-primary mb-2 text-[26px] leading-[34px] md:text-[32px] md:leading-[40px]">Featured Communities</h2>
+            <p className="text-[16px] leading-6 text-on-surface-variant max-w-2xl">
+              Explore our most popular neighborhoods, featuring spacious homes, top-tier amenities, and a welcoming atmosphere.
+            </p>
+          </div>
+          <Link
+            href="#all-cities"
+            className="shrink-0 font-semibold text-[14px] tracking-[0.05em] text-secondary hover:text-terracotta-warm flex items-center transition-colors group"
+          >
+            View All Communities
+            <ArrowRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-6 h-auto md:h-[600px]">
+          {mergedCities.slice(0, 3).map((city, i) => {
+            const isLarge = i === 0;
+            const homeCount = cityCounts[city.slug];
+            return (
+              <Link
+                key={city.slug}
+                href={`/rentals/${city.slug}`}
+                className={`${isLarge ? "md:col-span-2 md:row-span-2" : "h-[280px] md:h-auto"} rounded-xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition-shadow block bg-surface-container`}
+              >
+                {city.heroImage && (
+                  <Image
+                    src={city.heroImage}
+                    alt={`Homes for rent in ${city.name}, ${city.state}`}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes={isLarge ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
+                  />
+                )}
+                <div className={`absolute inset-0 bg-gradient-to-t ${isLarge ? "from-forest-deep/90 via-forest-deep/20" : "from-forest-deep/80 via-transparent"} to-transparent`} />
+                <div className={`absolute bottom-0 left-0 w-full ${isLarge ? "p-8" : "p-6"}`}>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {homeCount != null && homeCount > 0 && (
+                      <span className="bg-earth-beige text-on-secondary-container text-[12px] leading-4 px-3 py-1 rounded-full font-semibold">
+                        {homeCount} Home{homeCount === 1 ? "" : "s"} Available
+                      </span>
+                    )}
+                    {city.avgRent && (
+                      <span className="bg-surface/90 text-primary text-[12px] leading-4 px-3 py-1 rounded-full backdrop-blur-sm">
+                        from {city.avgRent}/mo
+                      </span>
+                    )}
+                  </div>
+                  <h3 className={`font-serif font-semibold text-white mb-1 ${isLarge ? "text-[28px] leading-9 md:text-[32px] md:leading-[40px]" : "text-[22px] leading-8"}`}>
+                    {city.name}
+                  </h3>
+                  <div className={`flex items-center text-earth-beige ${isLarge ? "text-[16px] leading-6 mb-3" : "text-[13px]"}`}>
+                    <MapPin size={isLarge ? 17 : 14} className="mr-1 shrink-0" />
+                    {city.state}
+                  </div>
+                  {isLarge && city.tagline && (
+                    <p className="text-white/90 text-[16px] leading-6 line-clamp-2 max-w-lg">{city.tagline}</p>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        <div className="mt-10 text-center">
+          <Link
+            href="/houses-for-rent"
+            className="inline-flex items-center gap-2 bg-primary text-on-primary text-[14px] font-semibold tracking-[0.05em] h-[50px] px-8 rounded-full hover:bg-primary-container transition-colors active:scale-95"
+          >
+            Browse all available homes
+            {totalProperties != null && (
+              <span className="text-white/60 font-normal text-[13px]">{totalProperties} total</span>
+            )}
+            <ArrowRight size={14} />
+          </Link>
+        </div>
+      </section>
 
       {/* â”€â”€ HOW IT WORKS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section style={{ background: "#EFF4FF" }} className="py-[88px] px-8">
+      <section style={{ background: "#f3f4ec" }} className="py-[88px] px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-brand">Simple process</p>
@@ -341,9 +356,9 @@ export default async function HomePage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 bg-white border border-[#F1F5F9]">
             {howItWorks.map((step, i) => (
               <div key={step.n} className="p-10" style={{ borderRight: i < 2 ? "1px solid #F1F5F9" : "none" }}>
-                <div className="font-serif font-bold leading-none mb-5" style={{ fontSize: 64, color: "#DBEAFE" }}>{step.n}</div>
+                <div className="font-serif font-bold leading-none mb-5" style={{ fontSize: 64, color: "#c1ecd4" }}>{step.n}</div>
                 <h3 className="font-serif font-bold text-brand-dark leading-[1.2] mb-[10px]" style={{ fontSize: 22 }}>{step.title}</h3>
-                <p className="leading-[1.6]" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14, color: "#475569" }}>{step.desc}</p>
+                <p className="leading-[1.6]" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 14, color: "#475569" }}>{step.desc}</p>
               </div>
             ))}
           </div>
@@ -372,7 +387,7 @@ export default async function HomePage() {
               <h2 className="font-serif font-bold text-brand-dark leading-[1.12] mt-[14px] mb-[14px]" style={{ fontSize: 42, letterSpacing: "-0.015em" }}>
                 The best-maintained rentals on the market.
               </h2>
-              <p className="leading-[1.65] mb-7" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 15.5, color: "#475569", maxWidth: 460 }}>
+              <p className="leading-[1.65] mb-7" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 15.5, color: "#475569", maxWidth: 460 }}>
                 We don&apos;t list homes we wouldn&apos;t live in. Every property is inspected, cleaned, and turned by our in-house maintenance team before move-in — then supported the same way after.
               </p>
               <div className="flex flex-col gap-[18px]">
@@ -384,8 +399,8 @@ export default async function HomePage() {
                       </svg>
                     </div>
                     <div>
-                      <div className="font-semibold mb-[3px]" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14.5, color: "#0F1E3D" }}>{pr.h}</div>
-                      <div className="leading-[1.55]" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 13, color: "#475569" }}>{pr.d}</div>
+                      <div className="font-semibold mb-[3px]" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 14.5, color: "#081C15" }}>{pr.h}</div>
+                      <div className="leading-[1.55]" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 13, color: "#475569" }}>{pr.d}</div>
                     </div>
                   </div>
                 ))}
@@ -420,7 +435,7 @@ export default async function HomePage() {
               <h2 className="font-serif font-bold text-brand-dark leading-[1.12] mt-3" style={{ fontSize: 38, letterSpacing: "-0.015em" }}>
                 Cities we serve.
               </h2>
-              <p className="mt-3 max-w-[460px] leading-[1.6]" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14, color: "#475569" }}>
+              <p className="mt-3 max-w-[460px] leading-[1.6]" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 14, color: "#475569" }}>
                 Affordable rentals in Atlanta, Charlotte, Houston, Dallas, Nashville, Phoenix, Austin, Miami, Denver, Seattle, Las Vegas, and Tampa.
               </p>
             </div>
@@ -447,10 +462,10 @@ export default async function HomePage() {
                   className="object-cover object-center"
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
                 />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,64,214,0) 40%, rgba(0,64,214,0.85) 100%)" }} />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(1,45,29,0) 40%, rgba(1,45,29,0.85) 100%)" }} />
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                   <div className="font-serif font-bold leading-[1.1]" style={{ fontSize: 20 }}>{city.name}</div>
-                  <div className="mt-0.5" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 11, color: "rgba(255,255,255,0.6)" }}>
+                  <div className="mt-0.5" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 11, color: "rgba(255,255,255,0.6)" }}>
                     {city.state} Â· from {city.avgRent}/mo
                   </div>
                 </div>
@@ -472,7 +487,7 @@ export default async function HomePage() {
               <h2 className="font-serif font-bold text-brand-dark leading-[1.12] mt-[14px] mb-[14px]" style={{ fontSize: 42, letterSpacing: "-0.015em" }}>
                 Bring your whole family.
               </h2>
-              <p className="leading-[1.65] mb-6" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 15.5, color: "#475569", maxWidth: 460 }}>
+              <p className="leading-[1.65] mb-6" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 15.5, color: "#475569", maxWidth: 460 }}>
                 Most of our homes welcome pets. No breed restrictions on the majority of listings, transparent deposits, and a tenant team that&apos;s genuinely happy you brought the dog.
               </p>
               <div className="flex flex-wrap gap-2 mb-7">
@@ -480,7 +495,7 @@ export default async function HomePage() {
                   <span
                     key={tag}
                     className="inline-flex items-center border border-[#F1F5F9] rounded-sm"
-                    style={{ background: "#FBF9F4", color: "#0052FF", fontFamily: "DM Sans, sans-serif", fontSize: 12.5, fontWeight: 500, padding: "7px 12px" }}
+                    style={{ background: "#FBF9F4", color: "#012d1d", fontFamily: "var(--font-source-sans), sans-serif", fontSize: 12.5, fontWeight: 500, padding: "7px 12px" }}
                   >
                     {tag}
                   </span>
@@ -501,36 +516,46 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* â”€â”€ WHY HASKER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-[88px] px-8 bg-white border-t border-[#F1F5F9]">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-20 items-start">
-            {/* Sticky left */}
-            <div className="lg:sticky lg:top-24">
-              <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-brand">Why Hasker &amp; Co.</p>
-              <h2 className="font-serif font-bold text-brand-dark leading-[1.12] mt-3" style={{ fontSize: 42, letterSpacing: "-0.015em" }}>
-                Quality homes.<br />Honest pricing.<br />Real support.
-              </h2>
-              <p className="mt-6 leading-[1.65]" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14, color: "#475569", maxWidth: 280 }}>
-                Everyone deserves a quality home they can actually afford. We cut through the noise — no inflated prices, no hidden fees, no bait-and-switch listings.
-              </p>
-            </div>
-            {/* Pillars */}
-            <div>
-              {whyPillars.map((pillar, i) => (
-                <div
-                  key={pillar.num}
-                  className="grid gap-6 items-baseline py-7"
-                  style={{ gridTemplateColumns: "80px 1fr", borderTop: i > 0 ? "1px solid #F1F5F9" : "none" }}
-                >
-                  <div className="font-serif font-bold leading-none" style={{ fontSize: 36, color: "#DBEAFE" }}>{pillar.num}</div>
-                  <div>
-                    <h3 className="font-serif font-bold text-brand-dark mb-2" style={{ fontSize: 22 }}>{pillar.title}</h3>
-                    <p className="leading-[1.65]" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 14, color: "#475569" }}>{pillar.desc}</p>
-                  </div>
+      {/* â”€â”€ WHY PRIMEFAMILYHOUSING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <section className="py-16 md:py-24 bg-surface-container-low border-t border-outline-variant/40">
+        <div className="max-w-7xl mx-auto px-4 md:px-12">
+          <div className="text-center mb-16">
+            <h2 className="font-serif font-semibold text-primary mb-4 text-[26px] leading-[34px] md:text-[32px] md:leading-[40px]">
+              The PrimeFamilyHousing Difference
+            </h2>
+            <p className="text-[18px] leading-7 text-on-surface-variant max-w-3xl mx-auto">
+              We believe leasing a home should be as reliable and rewarding as owning one. Experience professional management with a personal touch.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+            {[
+              {
+                icon: <ShieldCheck size={28} />,
+                iconBg: "bg-earth-beige text-secondary",
+                title: "Trusted Stability",
+                desc: "Long-term lease options and predictable renewals mean you can put down roots without the anxiety of sudden changes.",
+              },
+              {
+                icon: <Wrench size={28} />,
+                iconBg: "bg-primary-fixed text-primary",
+                title: "Proactive Maintenance",
+                desc: "Our dedicated service teams ensure your home stays in perfect condition, handling repairs swiftly and professionally — same-day responses, no 7-day ticket queues.",
+              },
+              {
+                icon: <BadgeDollarSign size={28} />,
+                iconBg: "bg-secondary-container text-secondary",
+                title: "Honest Pricing",
+                desc: "The listed price is what you pay. No inflated rents, no surprise move-in fees, and transparent pet policies on every listing.",
+              },
+            ].map((f) => (
+              <div key={f.title} className="bg-surface rounded-xl p-8 shadow-sm hover:shadow-md transition-shadow border border-surface-variant">
+                <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-6 ${f.iconBg}`}>
+                  {f.icon}
                 </div>
-              ))}
-            </div>
+                <h3 className="font-serif font-semibold text-on-surface mb-3 text-[22px] leading-8">{f.title}</h3>
+                <p className="text-[16px] leading-relaxed text-on-surface-variant">{f.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -555,7 +580,7 @@ export default async function HomePage() {
                   <span className="shrink-0 ml-4 text-brand text-[20px] leading-none select-none group-open:hidden">+</span>
                   <span className="shrink-0 ml-4 text-brand text-[20px] leading-none select-none hidden group-open:inline">âˆ’</span>
                 </summary>
-                <p className="leading-[1.65] mt-3.5" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 15, color: "#475569", maxWidth: 720 }}>{faq.a}</p>
+                <p className="leading-[1.65] mt-3.5" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 15, color: "#475569", maxWidth: 720 }}>{faq.a}</p>
               </details>
             ))}
             <div className="border-t border-[#F1F5F9]" />
@@ -564,13 +589,13 @@ export default async function HomePage() {
       </section>
 
       {/* â”€â”€ FINAL CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-[88px] px-8 text-center" style={{ background: "#0F1E3D", color: "#fff" }}>
+      <section className="py-[88px] px-8 text-center" style={{ background: "#081C15", color: "#fff" }}>
         <div className="max-w-7xl mx-auto">
-          <p className="text-[11px] font-semibold tracking-[0.3em] uppercase" style={{ color: "#A9C5F6" }}>Ready when you are</p>
+          <p className="text-[11px] font-semibold tracking-[0.3em] uppercase" style={{ color: "#a5d0b9" }}>Ready when you are</p>
           <h2 className="font-serif font-bold text-white leading-[1.05] mt-3.5" style={{ fontSize: 48, letterSpacing: "-0.02em" }}>
             Find your next home.
           </h2>
-          <p className="leading-[1.6] mt-[18px] mb-8 mx-auto" style={{ fontFamily: "DM Sans, sans-serif", fontSize: 16, color: "rgba(255,255,255,0.7)", maxWidth: 540 }}>
+          <p className="leading-[1.6] mt-[18px] mb-8 mx-auto" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 16, color: "rgba(255,255,255,0.7)", maxWidth: 540 }}>
             Browse {totalProperties ?? "hundreds of"} move-in ready rentals across 12 cities. Decisions in 24 hours. No hidden fees.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">

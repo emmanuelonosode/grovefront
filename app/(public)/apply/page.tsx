@@ -4,20 +4,20 @@ import { RentalApplicationForm } from "@/components/public/RentalApplicationForm
 import { Clock, Shield, Home } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Apply to Rent a Home | Hasker & Co. Realty Group",
+  title: "Apply to Rent a Home | PrimeFamilyHousing",
   description:
-    "Apply to rent an affordable home with Hasker & Co. Realty Group. Simple online application, reviewed within 24 hours. No pressure. Fast, honest decisions.",
+    "Apply to rent an affordable home with PrimeFamilyHousing. Simple online application, reviewed within 24 hours. No pressure. Fast, honest decisions.",
   keywords: [
     "apply to rent a home", "rental application", "affordable rental application",
     "rent a house", "cheap apartments to rent", "rental application online",
   ],
   openGraph: {
-    title: "Apply to Rent a Home | Hasker & Co. Realty Group",
+    title: "Apply to Rent a Home | PrimeFamilyHousing",
     description: "Simple rental application reviewed in 24 hours. Affordable, move-in ready homes across 12+ cities.",
     type: "website",
-    url: "https://haskerrealtygroup.com/apply",
+    url: "https://primefamilyhousing.com/apply",
   },
-  alternates: { canonical: "https://haskerrealtygroup.com/apply" },
+  alternates: { canonical: "https://primefamilyhousing.com/apply" },
 };
 
 interface Props {
@@ -27,8 +27,8 @@ interface Props {
 const breadcrumb = {
   "@context": "https://schema.org", "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://haskerrealtygroup.com" },
-    { "@type": "ListItem", position: 2, name: "Apply", item: "https://haskerrealtygroup.com/apply" },
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://primefamilyhousing.com" },
+    { "@type": "ListItem", position: 2, name: "Apply", item: "https://primefamilyhousing.com/apply" },
   ],
 };
 
@@ -59,10 +59,10 @@ export default async function ApplyPage({ searchParams }: Props) {
             {/* Copy */}
             <div className="flex-1 text-center md:text-left pt-10 pb-8 md:pb-14">
               <p className="hero-animate text-[10px] font-bold tracking-[0.22em] uppercase text-brand mb-4" style={{ animationDelay: "0ms" }}>
-                Hasker &amp; Co. Realty Group
+                PrimeFamilyHousing
               </p>
               <h1
-                className="hero-animate font-sans font-bold text-[#0F1E3D] leading-[1.12] tracking-tight mb-4"
+                className="hero-animate font-sans font-bold text-[#081C15] leading-[1.12] tracking-tight mb-4"
                 style={{
                   fontSize: "clamp(28px, 5vw, 46px)",
                   animationDelay: "60ms",
@@ -77,7 +77,7 @@ export default async function ApplyPage({ searchParams }: Props) {
                 {TRUST.map(({ icon: Icon, text }) => (
                   <span
                     key={text}
-                    className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#0052FF] bg-white border border-[#DBEAFE] rounded-full px-3.5 py-1.5 shadow-sm"
+                    className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#012d1d] bg-white border border-[#c1ecd4] rounded-full px-3.5 py-1.5 shadow-sm"
                   >
                     <Icon size={12} className="text-brand shrink-0" strokeWidth={2.5} />
                     {text}

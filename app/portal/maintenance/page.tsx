@@ -1,10 +1,9 @@
 ﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import {
-  ArrowLeft, Wrench, Zap, Wind, Settings, Home, Bug, Lock,
+  Wrench, Zap, Wind, Settings, Home, Bug, Lock,
   HelpCircle, ChevronDown, CheckCircle, AlertCircle, Clock,
   Image as ImageIcon, Upload, Mail, X,
 } from "lucide-react";
@@ -25,18 +24,18 @@ const CATEGORIES = [
 ] as const;
 
 const PRIORITIES = [
-  { value: "LOW",    label: "Low",    sub: "Non-urgent, no immediate risk",    color: "#6E6E73" },
-  { value: "MEDIUM", label: "Medium", sub: "Needs attention soon",             color: "#FF9F0A" },
+  { value: "LOW",    label: "Low",    sub: "Non-urgent, no immediate risk",    color: "#414844" },
+  { value: "MEDIUM", label: "Medium", sub: "Needs attention soon",             color: "#BC6C25" },
   { value: "HIGH",   label: "High",   sub: "Affecting daily life",             color: "#FF6B00" },
-  { value: "URGENT", label: "Urgent", sub: "Safety risk — needs immediate fix", color: "#FF3B30" },
+  { value: "URGENT", label: "Urgent", sub: "Safety risk — needs immediate fix", color: "#ba1a1a" },
 ] as const;
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ElementType }> = {
-  SUBMITTED:    { label: "Submitted",    color: "#FF9F0A", icon: Clock },
-  ACKNOWLEDGED: { label: "Acknowledged", color: "#0052FF", icon: CheckCircle },
-  IN_PROGRESS:  { label: "In Progress",  color: "#0052FF", icon: Settings },
-  RESOLVED:     { label: "Resolved",     color: "#34C759", icon: CheckCircle },
-  CLOSED:       { label: "Closed",       color: "#6E6E73", icon: X },
+  SUBMITTED:    { label: "Submitted",    color: "#BC6C25", icon: Clock },
+  ACKNOWLEDGED: { label: "Acknowledged", color: "#012d1d", icon: CheckCircle },
+  IN_PROGRESS:  { label: "In Progress",  color: "#012d1d", icon: Settings },
+  RESOLVED:     { label: "Resolved",     color: "#2E7D32", icon: CheckCircle },
+  CLOSED:       { label: "Closed",       color: "#414844", icon: X },
 };
 
 interface MaintenanceRequest {
@@ -71,50 +70,50 @@ function RequestCard({ req }: { req: MaintenanceRequest }) {
   const CatIcon = CATEGORY_ICONS[req.category] ?? HelpCircle;
 
   return (
-    <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden">
+    <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant overflow-hidden">
       <button
         onClick={() => setExpanded((e) => !e)}
         className="w-full px-5 py-4 flex items-center gap-3 text-left hover:bg-black/[0.015] transition-colors cursor-pointer"
       >
-        <div className="w-9 h-9 rounded-xl bg-[#F5F5F7] flex items-center justify-center shrink-0">
-          <CatIcon size={15} className="text-[#3C3C43]" strokeWidth={1.8} />
+        <div className="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center shrink-0">
+          <CatIcon size={20} className="text-primary" strokeWidth={1.8} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[13px] font-semibold text-[#1D1D1F] truncate">{req.title}</p>
+          <p className="text-[16px] leading-6 font-semibold text-on-surface truncate">{req.title}</p>
           <div className="flex items-center gap-2 mt-0.5">
             <span
-              className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-[#F5F5F7]"
+              className="text-[12px] leading-4 font-semibold px-2 py-0.5 rounded-full bg-surface-container-low"
               style={{ color: cfg.color }}
             >
               {cfg.label}
             </span>
-            <span className="text-[11px] text-[#6E6E73]">{timeAgo(req.created_at)}</span>
+            <span className="text-[12px] leading-4 text-on-surface-variant">{timeAgo(req.created_at)}</span>
           </div>
         </div>
         <ChevronDown
           size={15}
-          className={cn("text-[#C7C7CC] transition-transform duration-200 shrink-0", expanded && "rotate-180")}
+          className={cn("text-outline-variant transition-transform duration-200 shrink-0", expanded && "rotate-180")}
           strokeWidth={2.5}
         />
       </button>
 
       {expanded && (
-        <div className="border-t border-black/[0.04] px-5 py-4 space-y-3">
+        <div className="border-t border-outline-variant/60 px-5 py-4 space-y-3">
           {req.description && (
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-[#6E6E73] mb-1">Description</p>
-              <p className="text-[13px] text-[#1D1D1F] leading-relaxed">{req.description}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant mb-1">Description</p>
+              <p className="text-[13px] text-on-surface leading-relaxed">{req.description}</p>
             </div>
           )}
           {req.preferred_access_time && (
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-[#6E6E73] mb-1">Preferred Access</p>
-              <p className="text-[13px] text-[#1D1D1F]">{req.preferred_access_time}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant mb-1">Preferred Access</p>
+              <p className="text-[13px] text-on-surface">{req.preferred_access_time}</p>
             </div>
           )}
           {req.photo_url && (
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-[#6E6E73] mb-1.5">Photo</p>
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-on-surface-variant mb-1.5">Photo</p>
               <img
                 src={req.photo_url}
                 alt="Issue photo"
@@ -125,7 +124,7 @@ function RequestCard({ req }: { req: MaintenanceRequest }) {
           <div className="flex items-center gap-2 pt-1">
             <StatusIcon size={13} style={{ color: cfg.color }} />
             <span className="text-[12px] font-medium" style={{ color: cfg.color }}>{cfg.label}</span>
-            <span className="text-[11px] text-[#6E6E73]">Â· Updated {timeAgo(req.updated_at)}</span>
+            <span className="text-[11px] text-on-surface-variant">Â· Updated {timeAgo(req.updated_at)}</span>
           </div>
         </div>
       )}
@@ -220,55 +219,36 @@ export default function MaintenancePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      <div className="max-w-5xl mx-auto">
+    <div className="p-4 md:p-12 w-full max-w-7xl mx-auto">
 
-        {/* Header */}
-        <div className="flex items-center gap-3 px-1 mb-4">
-          <Link
-            href="/portal/profile"
-            className="w-8 h-8 rounded-xl flex items-center justify-center bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] text-[#6E6E73] hover:text-[#1D1D1F] transition-colors"
-          >
-            <ArrowLeft size={15} strokeWidth={2} />
-          </Link>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-[20px] font-semibold tracking-tight text-[#1D1D1F]">
-              Maintenance Requests
-            </h1>
-            <p className="text-[13px] text-[#6E6E73]">Report issues and track repair status</p>
-          </div>
-        </div>
+      {/* Header */}
+      <header className="mb-12">
+        <h2 className="font-serif font-bold text-on-surface mb-2 text-[32px] leading-10 md:text-[48px] md:leading-[56px]" style={{ letterSpacing: "-0.02em" }}>
+          Maintenance
+        </h2>
+        <p className="text-[18px] leading-7 text-on-surface-variant">Report issues and track repair status — we respond within 1 business day.</p>
+      </header>
 
-        {/* Illustration banner */}
-        <div className="rounded-2xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.06)] mb-4">
-          <Image
-            src="/illustrations/feature-maintenance.png"
-            alt=""
-            width={600}
-            height={400}
-            className="w-full h-[120px] sm:h-[160px] object-cover object-center"
-            priority
-          />
-        </div>
+      <div>
 
         {/* Two-column layout */}
-        <div className="flex flex-col lg:flex-row gap-4 items-start">
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
 
-          {/* â”€â”€ Submit Form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+          {/* ── Submit Form ─────────────────────────────────────────── */}
           <div className="w-full lg:w-2/5 shrink-0">
-            <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden">
-              <div className="px-5 py-4 border-b border-black/[0.04]">
-                <p className="text-[14px] font-semibold text-[#1D1D1F] tracking-tight">New Request</p>
-                <p className="text-[12px] text-[#6E6E73] mt-0.5">We respond within 1 business day</p>
+            <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant overflow-hidden">
+              <div className="px-6 pt-6 pb-4">
+                <h3 className="font-serif font-semibold text-on-surface text-[24px] leading-8">New Request</h3>
+                <p className="text-[14px] leading-5 text-on-surface-variant mt-1">We respond within 1 business day</p>
               </div>
 
               {/* Success banner */}
               {success && (
-                <div className="mx-5 mt-4 flex items-start gap-2.5 bg-[#F0FFF4] border border-[#34C759]/20 rounded-xl px-4 py-3">
-                  <CheckCircle size={15} className="text-[#34C759] shrink-0 mt-0.5" />
+                <div className="mx-5 mt-4 flex items-start gap-2.5 bg-primary-fixed/50 border border-[#2E7D32]/20 rounded-xl px-4 py-3">
+                  <CheckCircle size={15} className="text-[#2E7D32] shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-[13px] font-semibold text-[#1D1D1F]">Request submitted!</p>
-                    <p className="text-[12px] text-[#6E6E73]">We&apos;ll be in touch within 1 business day.</p>
+                    <p className="text-[13px] font-semibold text-on-surface">Request submitted!</p>
+                    <p className="text-[12px] text-on-surface-variant">We&apos;ll be in touch within 1 business day.</p>
                   </div>
                 </div>
               )}
@@ -277,7 +257,7 @@ export default function MaintenancePage() {
 
                 {/* Title */}
                 <div>
-                  <label className="block text-[11px] font-semibold tracking-[0.07em] uppercase text-[#6E6E73] mb-1.5">
+                  <label className="block text-[11px] font-semibold tracking-[0.07em] uppercase text-on-surface-variant mb-1.5">
                     Issue Title *
                   </label>
                   <input
@@ -285,13 +265,13 @@ export default function MaintenancePage() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g. Leaking kitchen tap"
-                    className="w-full bg-[#F5F5F7] rounded-xl px-4 py-3 text-[15px] text-[#1D1D1F] outline-none border border-transparent focus:border-brand/30 transition-colors"
+                    className="w-full bg-surface-container-low rounded-xl px-4 py-3 text-[15px] text-on-surface outline-none border border-transparent focus:border-brand/30 transition-colors"
                   />
                 </div>
 
                 {/* Category */}
                 <div>
-                  <label className="block text-[11px] font-semibold tracking-[0.07em] uppercase text-[#6E6E73] mb-2">
+                  <label className="block text-[11px] font-semibold tracking-[0.07em] uppercase text-on-surface-variant mb-2">
                     Category *
                   </label>
                   <div className="grid grid-cols-2 gap-1.5">
@@ -303,8 +283,8 @@ export default function MaintenancePage() {
                         className={cn(
                           "flex items-center gap-2 px-3 py-2.5 rounded-xl text-[12px] font-semibold transition-all",
                           category === value
-                            ? "bg-[#0052FF] text-white"
-                            : "bg-[#F5F5F7] text-[#3C3C43] hover:bg-[#EBEBED]"
+                            ? "bg-[#012d1d] text-white"
+                            : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"
                         )}
                       >
                         <Icon size={13} strokeWidth={1.8} />
@@ -316,7 +296,7 @@ export default function MaintenancePage() {
 
                 {/* Priority */}
                 <div>
-                  <label className="block text-[11px] font-semibold tracking-[0.07em] uppercase text-[#6E6E73] mb-2">
+                  <label className="block text-[11px] font-semibold tracking-[0.07em] uppercase text-on-surface-variant mb-2">
                     Priority *
                   </label>
                   <div className="space-y-1.5">
@@ -328,8 +308,8 @@ export default function MaintenancePage() {
                         className={cn(
                           "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-left transition-all border",
                           priority === value
-                            ? "bg-[#F5F5F7] border-black/10"
-                            : "bg-white border-transparent hover:bg-[#F5F5F7]"
+                            ? "bg-surface-container-low border-black/10"
+                            : "bg-surface-container-lowest border-transparent hover:bg-surface-container-low"
                         )}
                       >
                         <div
@@ -337,11 +317,11 @@ export default function MaintenancePage() {
                           style={{ backgroundColor: color }}
                         />
                         <div className="min-w-0">
-                          <p className="text-[13px] font-semibold text-[#1D1D1F]">{label}</p>
-                          <p className="text-[11px] text-[#6E6E73]">{sub}</p>
+                          <p className="text-[13px] font-semibold text-on-surface">{label}</p>
+                          <p className="text-[11px] text-on-surface-variant">{sub}</p>
                         </div>
                         {priority === value && (
-                          <CheckCircle size={14} className="ml-auto shrink-0 text-[#34C759]" />
+                          <CheckCircle size={14} className="ml-auto shrink-0 text-[#2E7D32]" />
                         )}
                       </button>
                     ))}
@@ -350,7 +330,7 @@ export default function MaintenancePage() {
 
                 {/* Description */}
                 <div>
-                  <label className="block text-[11px] font-semibold tracking-[0.07em] uppercase text-[#6E6E73] mb-1.5">
+                  <label className="block text-[11px] font-semibold tracking-[0.07em] uppercase text-on-surface-variant mb-1.5">
                     Description *
                   </label>
                   <textarea
@@ -358,13 +338,13 @@ export default function MaintenancePage() {
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Describe the issue, when it started, and how often it occurs…"
                     rows={4}
-                    className="w-full bg-[#F5F5F7] rounded-xl px-4 py-3 text-[15px] text-[#1D1D1F] outline-none border border-transparent focus:border-brand/30 transition-colors resize-none"
+                    className="w-full bg-surface-container-low rounded-xl px-4 py-3 text-[15px] text-on-surface outline-none border border-transparent focus:border-brand/30 transition-colors resize-none"
                   />
                 </div>
 
                 {/* Access time */}
                 <div>
-                  <label className="block text-[11px] font-semibold tracking-[0.07em] uppercase text-[#6E6E73] mb-1.5">
+                  <label className="block text-[11px] font-semibold tracking-[0.07em] uppercase text-on-surface-variant mb-1.5">
                     Preferred Access Time <span className="normal-case font-normal">(optional)</span>
                   </label>
                   <input
@@ -372,13 +352,13 @@ export default function MaintenancePage() {
                     value={accessTime}
                     onChange={(e) => setAccessTime(e.target.value)}
                     placeholder="e.g. Weekdays after 5pm, anytime Sat”“Sun"
-                    className="w-full bg-[#F5F5F7] rounded-xl px-4 py-3 text-[15px] text-[#1D1D1F] outline-none border border-transparent focus:border-brand/30 transition-colors"
+                    className="w-full bg-surface-container-low rounded-xl px-4 py-3 text-[15px] text-on-surface outline-none border border-transparent focus:border-brand/30 transition-colors"
                   />
                 </div>
 
                 {/* Photo */}
                 <div>
-                  <label className="block text-[11px] font-semibold tracking-[0.07em] uppercase text-[#6E6E73] mb-1.5">
+                  <label className="block text-[11px] font-semibold tracking-[0.07em] uppercase text-on-surface-variant mb-1.5">
                     Photo <span className="normal-case font-normal">(optional, max 5 MB)</span>
                   </label>
                   {photoPreview ? (
@@ -386,12 +366,12 @@ export default function MaintenancePage() {
                       <img
                         src={photoPreview}
                         alt="Preview"
-                        className="w-32 h-32 rounded-xl object-cover border border-black/[0.06]"
+                        className="w-32 h-32 rounded-xl object-cover border border-outline-variant"
                       />
                       <button
                         type="button"
                         onClick={() => { setPhoto(null); setPhotoPreview(null); if (fileRef.current) fileRef.current.value = ""; }}
-                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-[#FF3B30] text-white flex items-center justify-center shadow-sm"
+                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-[#ba1a1a] text-white flex items-center justify-center shadow-sm"
                       >
                         <X size={12} />
                       </button>
@@ -400,7 +380,7 @@ export default function MaintenancePage() {
                     <button
                       type="button"
                       onClick={() => fileRef.current?.click()}
-                      className="w-full flex items-center gap-2.5 bg-[#F5F5F7] hover:bg-[#EBEBED] rounded-xl px-4 py-3 text-[13px] text-[#6E6E73] transition-colors"
+                      className="w-full flex items-center gap-2.5 bg-surface-container-low hover:bg-surface-container-high rounded-xl px-4 py-3 text-[13px] text-on-surface-variant transition-colors"
                     >
                       <Upload size={15} />
                       Upload a photo
@@ -416,7 +396,7 @@ export default function MaintenancePage() {
                 </div>
 
                 {formError && (
-                  <div className="flex items-start gap-2 text-[#FF3B30] bg-[#FFF5F5] rounded-xl px-3.5 py-3">
+                  <div className="flex items-start gap-2 text-error bg-error-container/60 rounded-xl px-3.5 py-3">
                     <AlertCircle size={14} className="shrink-0 mt-0.5" />
                     <p className="text-[13px]">{formError}</p>
                   </div>
@@ -439,28 +419,33 @@ export default function MaintenancePage() {
           </div>
 
           {/* â”€â”€ Request History â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-          <div className="flex-1 min-w-0 space-y-3">
-            <p className="text-[11px] font-semibold tracking-[0.08em] uppercase text-[#6E6E73] px-1">
-              Your Requests {requests.length > 0 && `(${requests.length})`}
-            </p>
+          <div className="flex-1 min-w-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-serif font-semibold text-on-surface text-[24px] leading-8">Your Requests</h3>
+              {requests.length > 0 && (
+                <span className="text-[12px] leading-4 text-on-surface-variant bg-surface-container-low px-3 py-1 rounded-full font-medium">
+                  {requests.length} total
+                </span>
+              )}
+            </div>
 
             {loading ? (
               <div className="space-y-2">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-20 rounded-2xl bg-black/[0.04] animate-pulse" />
+                  <div key={i} className="h-20 rounded-xl bg-black/[0.04] animate-pulse" />
                 ))}
               </div>
             ) : loadError === "403" ? (
-              <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 text-center">
-                <div className="w-12 h-12 rounded-2xl bg-[#F5F5F7] flex items-center justify-center mx-auto mb-3">
-                  <AlertCircle size={22} className="text-[#C7C7CC]" strokeWidth={1.5} />
+              <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-6 text-center">
+                <div className="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center mx-auto mb-3">
+                  <AlertCircle size={22} className="text-outline-variant" strokeWidth={1.5} />
                 </div>
-                <p className="text-[14px] font-semibold text-[#1D1D1F] mb-1">Account not linked</p>
-                <p className="text-[13px] text-[#6E6E73] max-w-xs mx-auto leading-relaxed mb-4">
+                <p className="text-[14px] font-semibold text-on-surface mb-1">Account not linked</p>
+                <p className="text-[13px] text-on-surface-variant max-w-xs mx-auto leading-relaxed mb-4">
                   Your account isn&apos;t linked to a tenancy yet. Contact our team to get set up.
                 </p>
                 <a
-                  href="mailto:info@haskerrealtygroup.com?subject=Account Tenancy Setup"
+                  href="mailto:info@primefamilyhousing.com?subject=Account Tenancy Setup"
                   className="inline-flex items-center gap-1.5 bg-brand text-white text-[12px] font-semibold px-4 py-2.5 rounded-xl hover:bg-brand-hover transition-colors"
                 >
                   <Mail size={13} />
@@ -468,16 +453,16 @@ export default function MaintenancePage() {
                 </a>
               </div>
             ) : loadError === "other" ? (
-              <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6 text-center">
-                <div className="w-12 h-12 rounded-2xl bg-[#FFF5F5] flex items-center justify-center mx-auto mb-3">
-                  <AlertCircle size={22} className="text-[#FF3B30]" strokeWidth={1.5} />
+              <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-6 text-center">
+                <div className="w-12 h-12 rounded-xl bg-error-container/60 flex items-center justify-center mx-auto mb-3">
+                  <AlertCircle size={22} className="text-error" strokeWidth={1.5} />
                 </div>
-                <p className="text-[14px] font-semibold text-[#1D1D1F] mb-1">Could not load requests</p>
-                <p className="text-[13px] text-[#6E6E73] max-w-xs mx-auto leading-relaxed mb-4">
+                <p className="text-[14px] font-semibold text-on-surface mb-1">Could not load requests</p>
+                <p className="text-[13px] text-on-surface-variant max-w-xs mx-auto leading-relaxed mb-4">
                   There was a problem fetching your maintenance history. Please refresh the page or contact us if the issue persists.
                 </p>
                 <a
-                  href="mailto:info@haskerrealtygroup.com"
+                  href="mailto:info@primefamilyhousing.com"
                   className="inline-flex items-center gap-1.5 bg-brand text-white text-[12px] font-semibold px-4 py-2.5 rounded-xl hover:bg-brand-hover transition-colors"
                 >
                   <Mail size={13} />
@@ -485,7 +470,7 @@ export default function MaintenancePage() {
                 </a>
               </div>
             ) : requests.length === 0 ? (
-              <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] py-12 flex flex-col items-center text-center px-6">
+              <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant py-12 flex flex-col items-center text-center px-6">
                 <Image
                   src="/illustrations/spot-tools.png"
                   alt=""
@@ -493,8 +478,8 @@ export default function MaintenancePage() {
                   height={88}
                   className="mb-4 opacity-90"
                 />
-                <p className="text-[14px] font-semibold text-[#1D1D1F] mb-1">No requests yet</p>
-                <p className="text-[13px] text-[#6E6E73] max-w-xs leading-relaxed">
+                <p className="text-[14px] font-semibold text-on-surface mb-1">No requests yet</p>
+                <p className="text-[13px] text-on-surface-variant max-w-xs leading-relaxed">
                   Submit your first maintenance request using the form.
                 </p>
               </div>

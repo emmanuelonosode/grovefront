@@ -48,9 +48,9 @@ export async function generateMetadata(
       Object.values(CITIES).some((c) => c.stateCode === stateInfo.code);
     if (!hasInventory) return { title: "Not Found" };
 
-    const title = `Houses for Rent in ${stateInfo.name} | Hasker & Co. Realty Group`;
+    const title = `Houses for Rent in ${stateInfo.name} | PrimeFamilyHousing`;
     const description = `Browse affordable houses & apartments for rent across ${stateInfo.name} — move-in ready homes in cities and communities statewide. Pet-friendly options, transparent pricing, 24-hour application decisions.`;
-    const url = `https://haskerrealtygroup.com/rentals/${stateInfo.slug}`;
+    const url = `https://primefamilyhousing.com/rentals/${stateInfo.slug}`;
     return {
       title,
       description,
@@ -77,9 +77,9 @@ export async function generateMetadata(
     city = buildGenericCityData(stats);
   }
 
-  const title = `Houses for Rent in ${city.name}, ${city.stateCode} | Hasker & Co. Realty Group`;
+  const title = `Houses for Rent in ${city.name}, ${city.stateCode} | PrimeFamilyHousing`;
   const description = `Browse houses & apartments for rent in ${city.name}, ${city.stateCode} — 1 to 4 bedrooms from ${city.avgRent}/mo. Inspected, move-in ready, pet-friendly options. Decisions in 24 hours.`;
-  const url = `https://haskerrealtygroup.com/rentals/${slug}`;
+  const url = `https://primefamilyhousing.com/rentals/${slug}`;
 
   return {
     title,
@@ -241,8 +241,8 @@ export default async function CityRentalsPage(
     "@type": "CollectionPage",
     name: `Affordable Homes for Rent in ${city.name}, ${city.stateCode}`,
     description: `Browse budget-friendly rental homes and apartments in ${city.name}, ${city.state}. Move-in ready homes, 24-hour application decisions.`,
-    url: `https://haskerrealtygroup.com/rentals/${slug}`,
-    isPartOf: { "@type": "WebSite", name: "Hasker & Co. Realty Group", url: "https://haskerrealtygroup.com" },
+    url: `https://primefamilyhousing.com/rentals/${slug}`,
+    isPartOf: { "@type": "WebSite", name: "PrimeFamilyHousing", url: "https://primefamilyhousing.com" },
     about: {
       "@type": "City",
       name: city.name,
@@ -263,10 +263,10 @@ export default async function CityRentalsPage(
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://haskerrealtygroup.com" },
-      { "@type": "ListItem", position: 2, name: "Properties", item: "https://haskerrealtygroup.com/houses-for-rent" },
-      { "@type": "ListItem", position: 3, name: city.state, item: `https://haskerrealtygroup.com/rentals/${stateSlug}` },
-      { "@type": "ListItem", position: 4, name: `${city.name}, ${city.stateCode}`, item: `https://haskerrealtygroup.com/rentals/${slug}` },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://primefamilyhousing.com" },
+      { "@type": "ListItem", position: 2, name: "Properties", item: "https://primefamilyhousing.com/houses-for-rent" },
+      { "@type": "ListItem", position: 3, name: city.state, item: `https://primefamilyhousing.com/rentals/${stateSlug}` },
+      { "@type": "ListItem", position: 4, name: `${city.name}, ${city.stateCode}`, item: `https://primefamilyhousing.com/rentals/${slug}` },
     ],
   };
 
@@ -289,60 +289,73 @@ export default async function CityRentalsPage(
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
-      {/* ── HERO ─────────────────────────────────────────────────── */}
-      <section className="relative min-h-[520px] lg:min-h-[560px] flex items-end overflow-hidden">
-        <Image
-          src={city.heroImage}
-          alt={`Affordable rental homes in ${city.name}, ${city.stateCode}`}
-          fill
-          priority
-          className="object-cover"
-          sizes="100vw"
-        />
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pb-12 pt-32">
-          <div className="max-w-2xl bg-white rounded-2xl shadow-2xl p-8 lg:p-12">
-            {/* Breadcrumb */}
-            <nav aria-label="Breadcrumb" className="mb-5">
-              <ol className="flex items-center gap-2 text-xs text-neutral-500">
-                <li><Link href="/" className="hover:text-brand transition-colors">Home</Link></li>
-                <li className="text-neutral-300">/</li>
-                <li><Link href="/houses-for-rent" className="hover:text-brand transition-colors">Properties</Link></li>
-                <li className="text-neutral-300">/</li>
-                <li><Link href={`/rentals/${stateSlug}`} className="hover:text-brand transition-colors">{city.state}</Link></li>
-                <li className="text-neutral-300">/</li>
-                <li className="text-neutral-800 font-medium">{city.name}, {city.stateCode}</li>
-              </ol>
-            </nav>
+      {/* ── HERO — full-bleed photo, forest gradient ─────────────── */}
+      <section className="relative min-h-[520px] lg:min-h-[600px] flex items-end overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={city.heroImage}
+            alt={`Affordable rental homes in ${city.name}, ${city.stateCode}`}
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/90 via-forest-deep/40 to-transparent" />
+        </div>
 
-            <span className="block w-12 h-1.5 rounded-full bg-accent mb-4 hero-animate" style={{ animationDelay: "0ms" }} />
-            <p className="text-[#B87400] text-xs font-bold tracking-[0.2em] uppercase mb-3 hero-animate" style={{ animationDelay: "0ms" }}>
-              {city.stateCode} Rentals
-            </p>
-            <h1 className="font-serif text-4xl lg:text-5xl font-bold text-neutral-900 leading-tight hero-animate" style={{ animationDelay: "80ms" }}>
-              Homes for Rent in {city.name}, {city.stateCode}
-            </h1>
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-12 pb-12 pt-32">
+          {/* Breadcrumb */}
+          <nav aria-label="Breadcrumb" className="mb-5 hero-animate">
+            <ol className="flex items-center gap-2 text-xs text-white/60">
+              <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
+              <li className="text-white/30">/</li>
+              <li><Link href="/communities" className="hover:text-white transition-colors">Communities</Link></li>
+              <li className="text-white/30">/</li>
+              <li><Link href={`/rentals/${stateSlug}`} className="hover:text-white transition-colors">{city.state}</Link></li>
+              <li className="text-white/30">/</li>
+              <li className="text-white font-medium">{city.name}, {city.stateCode}</li>
+            </ol>
+          </nav>
+
+          <p className="text-secondary-container text-[14px] leading-5 font-semibold tracking-widest uppercase mb-3 hero-animate" style={{ animationDelay: "0ms" }}>
+            Community Profile
+          </p>
+          <h1 className="font-serif font-bold text-white drop-shadow-md hero-animate text-[2.2rem] leading-[1.15] sm:text-[3rem] lg:text-[3.5rem] lg:leading-[1.16]" style={{ letterSpacing: "-0.02em", animationDelay: "80ms" }}>
+            Homes for Rent in {city.name}, {city.stateCode}
+          </h1>
+
+          <div className="flex flex-wrap gap-2 mt-5 hero-animate" style={{ animationDelay: "130ms" }}>
             {totalCount > 0 && (
-              <p className="text-brand text-sm font-semibold mt-3 hero-animate" style={{ animationDelay: "130ms" }}>
-                {totalCount} verified {totalCount === 1 ? "listing" : "listings"} · Updated daily
-              </p>
+              <span className="bg-earth-beige text-on-secondary-container text-[12px] leading-4 px-3 py-1 rounded-full font-semibold tabular-nums">
+                {totalCount} Home{totalCount === 1 ? "" : "s"} Available
+              </span>
             )}
-            <p className="text-neutral-600 text-lg max-w-2xl mt-4 leading-relaxed hero-animate" style={{ animationDelay: "160ms" }}>
-              {city.tagline} Browse affordable, move-in ready homes and apartments — decisions in 24 hours.
-            </p>
+            <span className="bg-surface/90 text-primary text-[12px] leading-4 px-3 py-1 rounded-full backdrop-blur-sm">
+              from {city.avgRent}/mo
+            </span>
+            <span className="bg-surface/90 text-primary text-[12px] leading-4 px-3 py-1 rounded-full backdrop-blur-sm">
+              Updated daily
+            </span>
+          </div>
 
-            <div className="flex flex-wrap gap-3 mt-8 hero-animate" style={{ animationDelay: "240ms" }}>
-              <Button variant="accent" size="lg" asChild>
-                <Link href={`/houses-for-rent?q=${encodeURIComponent(city.name)}`}>
-                  Browse {city.name} Inventory
-                  <ArrowRight size={16} />
-                </Link>
-              </Button>
-              <Button variant="outline" size="lg" asChild>
-                <Link href="/apply">
-                  Apply Now — 10 Minutes
-                </Link>
-              </Button>
-            </div>
+          <p className="text-earth-beige text-[17px] sm:text-[18px] leading-[1.55] max-w-2xl mt-4 drop-shadow-md hero-animate" style={{ animationDelay: "160ms" }}>
+            {city.tagline} Browse affordable, move-in ready homes and apartments — decisions in 24 hours.
+          </p>
+
+          <div className="flex flex-wrap gap-3 mt-8 hero-animate" style={{ animationDelay: "240ms" }}>
+            <Link
+              href={`/houses-for-rent?q=${encodeURIComponent(city.name)}`}
+              className="inline-flex items-center gap-2 bg-primary text-on-primary text-[14px] tracking-[0.05em] font-semibold px-8 py-3.5 rounded-full hover:bg-primary-container transition-colors active:scale-95 shadow-md"
+            >
+              Browse {city.name} Inventory
+              <ArrowRight size={16} />
+            </Link>
+            <Link
+              href="/apply"
+              className="inline-flex items-center gap-2 bg-surface/90 backdrop-blur-sm text-primary text-[14px] tracking-[0.05em] font-semibold px-8 py-3.5 rounded-full hover:bg-surface transition-colors active:scale-95"
+            >
+              Apply Now — 10 Minutes
+            </Link>
           </div>
         </div>
       </section>
@@ -462,7 +475,7 @@ export default async function CityRentalsPage(
       </section>
 
       {/* ── LEAD CAPTURE ─────────────────────────────────────────── */}
-      <section className="bg-[#0F1E3D] py-16 lg:py-20 px-6">
+      <section className="bg-[#081C15] py-16 lg:py-20 px-6">
         <div className="max-w-xl mx-auto text-center">
           <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-3">Be First</p>
           <h2 className="font-serif text-3xl lg:text-4xl font-bold text-white mb-4">

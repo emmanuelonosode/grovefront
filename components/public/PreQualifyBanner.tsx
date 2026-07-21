@@ -7,7 +7,7 @@ import { getStoredUTMs } from "@/lib/tracking";
 
 const API_BASE = typeof window !== "undefined"
   ? ""
-  : (process.env.NEXT_PUBLIC_API_URL ?? "https://admin.haskerrealtygroup.com");
+  : (process.env.NEXT_PUBLIC_API_URL ?? "https://admin.primefamilyhousing.com");
 
 const INCOME_OPTIONS = [
   { label: "Under $2,000 / mo",       value: "under-2000",   maxPrice: "800"  },

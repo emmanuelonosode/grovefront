@@ -6,9 +6,9 @@ import { CareerApplicationForm } from "@/components/public/CareerApplicationForm
 import { FeaturedJobCard } from "@/components/public/FeaturedJobCard";
 
 export const metadata: Metadata = {
-  title: "Careers at Hasker & Co. Realty Group | Join Our Team",
+  title: "Careers at PrimeFamilyHousing | Join Our Team",
   description:
-    "Build a meaningful career helping families find affordable homes. Join Hasker & Co. Realty Group — we're hiring real estate agents, leasing consultants, property managers, and more across Virginia Beach and beyond.",
+    "Build a meaningful career helping families find affordable homes. Join PrimeFamilyHousing — we're hiring real estate agents, leasing consultants, property managers, and more across Virginia Beach and beyond.",
   keywords: [
     "real estate careers Virginia Beach",
     "real estate agent jobs Virginia Beach",
@@ -20,13 +20,13 @@ export const metadata: Metadata = {
     "real estate employment",
   ],
   openGraph: {
-    title: "Careers at Hasker & Co. Realty Group",
+    title: "Careers at PrimeFamilyHousing",
     description:
       "Join a team that helps real families find affordable homes. View open positions and apply today.",
     type: "website",
-    url: "https://haskerrealtygroup.com/careers",
+    url: "https://primefamilyhousing.com/careers",
   },
-  alternates: { canonical: "https://haskerrealtygroup.com/careers" },
+  alternates: { canonical: "https://primefamilyhousing.com/careers" },
 };
 
 const openRoles = [
@@ -204,8 +204,8 @@ const breadcrumb = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://haskerrealtygroup.com" },
-    { "@type": "ListItem", position: 2, name: "Careers", item: "https://haskerrealtygroup.com/careers" },
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://primefamilyhousing.com" },
+    { "@type": "ListItem", position: 2, name: "Careers", item: "https://primefamilyhousing.com/careers" },
   ],
 };
 
@@ -220,15 +220,15 @@ const jobPostings = openRoles.map((role) => {
     "@type": "JobPosting",
     title: role.title,
     description: role.description,
-    identifier: { "@type": "PropertyValue", name: "Hasker & Co. Realty Group", value: role.id },
+    identifier: { "@type": "PropertyValue", name: "PrimeFamilyHousing", value: role.id },
     datePosted: new Date().toISOString().split("T")[0],
     validThrough: validThroughDate,
     employmentType: role.type.includes("Full-Time") ? "FULL_TIME" : "PART_TIME",
     hiringOrganization: {
       "@type": "Organization",
-      name: "Hasker & Co. Realty Group",
-      sameAs: "https://haskerrealtygroup.com",
-      logo: "https://haskerrealtygroup.com/icon.png",
+      name: "PrimeFamilyHousing",
+      sameAs: "https://primefamilyhousing.com",
+      logo: "https://primefamilyhousing.com/icon.png",
     },
     applicantLocationRequirements: { "@type": "Country", name: "US" },
     jobBenefits: role.benefits.join(", "),
@@ -267,7 +267,7 @@ export default function CareersPage() {
       <section className="relative min-h-[580px] lg:min-h-[640px] flex flex-col justify-end overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1600&q=80"
-          alt="Hasker & Co. Realty Group team at work"
+          alt="PrimeFamilyHousing team at work"
           fill
           priority
           className="object-cover object-center"
@@ -296,11 +296,11 @@ export default function CareersPage() {
                 <ArrowRight size={15} />
               </a>
               <a
-                href="mailto:careers@haskerrealtygroup.com"
+                href="mailto:careers@primefamilyhousing.com"
                 className="inline-flex items-center gap-2 text-neutral-500 hover:text-brand text-sm transition-colors duration-200 py-3.5"
               >
                 <Mail size={14} />
-                careers@haskerrealtygroup.com
+                careers@primefamilyhousing.com
               </a>
             </div>
           </div>
@@ -378,7 +378,7 @@ export default function CareersPage() {
               <div className="relative aspect-[4/3] overflow-hidden rounded-sm bg-neutral-200">
                 <Image
                   src="https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=1000&q=80"
-                  alt="Welcoming office environment at Hasker & Co."
+                  alt="Welcoming office environment at PrimeFamilyHousing"
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"
@@ -618,11 +618,11 @@ export default function CareersPage() {
                 a conversation. Send us your resume — no cover letter required.
               </p>
               <a
-                href="mailto:careers@haskerrealtygroup.com"
+                href="mailto:careers@primefamilyhousing.com"
                 className="inline-flex items-center gap-2.5 bg-brand text-white text-sm font-semibold px-7 py-3.5 rounded-sm hover:bg-brand/90 transition-colors duration-200"
               >
                 <Mail size={14} />
-                careers@haskerrealtygroup.com
+                careers@primefamilyhousing.com
               </a>
 
               <div className="mt-10 pt-8 border-t border-white/10 space-y-3">

@@ -23,10 +23,10 @@ import { ApplicationFeePayment } from "./ApplicationFeePayment";
 
 const API_BASE = typeof window !== "undefined"
   ? ""
-  : (process.env.NEXT_PUBLIC_API_URL ?? "https://admin.haskerrealtygroup.com");
-const STORAGE_KEY = "hasker_app_draft_v2";
-const SAVED_PROFILE_KEY = "hasker_saved_profile_v2";
-const DRAFT_ID_KEY = "hasker_app_draft_id";
+  : (process.env.NEXT_PUBLIC_API_URL ?? "https://admin.primefamilyhousing.com");
+const STORAGE_KEY = "pfh_app_draft_v2";
+const SAVED_PROFILE_KEY = "pfh_saved_profile_v2";
+const DRAFT_ID_KEY = "pfh_app_draft_id";
 
 const US_STATES = [
   "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA",
@@ -260,7 +260,7 @@ function BigYesNo({
             className={cn(
               "w-full h-[64px] flex items-center gap-4 px-5 rounded-xl border-2 transition-all text-left",
               value === v
-                ? "border-brand bg-[#EFF4FF]"
+                ? "border-brand bg-[#f3f4ec]"
                 : "border-[#D0D5DD] bg-white hover:border-[#98A2B3]",
             )}
           >
@@ -303,7 +303,7 @@ function BigRadioGroup({
             className={cn(
               "flex-1 h-[62px] rounded-xl border-2 text-[17px] font-semibold transition-all",
               value === opt.value
-                ? "border-brand bg-[#EFF4FF] text-brand"
+                ? "border-brand bg-[#f3f4ec] text-brand"
                 : "border-[#D0D5DD] bg-white text-[#344054] hover:border-[#98A2B3]",
             )}
           >
@@ -709,7 +709,7 @@ function Step9_Pets({
           <button
             type="button"
             onClick={() => appendAnimal({ type: "", breed: "", weight: "", name: "", is_service_animal: false })}
-            className="w-full h-[62px] flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#D0D5DD] text-[17px] font-semibold text-brand hover:border-brand hover:bg-[#EFF4FF] transition-all"
+            className="w-full h-[62px] flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#D0D5DD] text-[17px] font-semibold text-brand hover:border-brand hover:bg-[#f3f4ec] transition-all"
           >
             <Plus size={20} /> Add an animal
           </button>
@@ -830,7 +830,7 @@ function ReviewStep({
       </div>
 
       {/* Certification */}
-      <div className="rounded-xl border-2 border-brand/20 bg-[#EFF4FF] px-5 py-5">
+      <div className="rounded-xl border-2 border-brand/20 bg-[#f3f4ec] px-5 py-5">
         <p className="text-[15px] text-[#344054] leading-relaxed italic mb-5">
           I certify that the answers given herein are true and complete to the best of my knowledge.
           I authorize investigation of all statements contained in this application for rental purposes.
@@ -1033,7 +1033,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
   useEffect(() => {
     const fn = () => {
       if (hasStartedRef.current && !isSubmittedRef.current)
-        window.dataLayer?.push({ event: "application_abandoned", step_reached: step });
+        trackEvent("application_abandoned", { step_reached: step });
     };
     window.addEventListener("beforeunload", fn);
     return () => window.removeEventListener("beforeunload", fn);

@@ -138,7 +138,7 @@ export function ActiveSpecialModal({
         property_interest: propertyId,
         services_requested: [propertySlug],
         message: `Claimed Special Offer for "${propertyTitle}":\n` +
-                 `- Code requested: HASKERFREE\n` +
+                 `- Code requested: PRIMEFAMILYHOUSINGFREE\n` +
                  `- Offer: First Month's Rent FREE\n` +
                  `- Remaining Time on Countdown: ${formatTime(timeLeft)}` +
                  getDeviceContext(),
@@ -160,7 +160,7 @@ export function ActiveSpecialModal({
 
       trackEvent("claim_special_offer", {
         property: propertySlug,
-        code: "HASKERFREE",
+        code: "PRIMEFAMILYHOUSINGFREE",
       });
 
       setSubmitted(true);
@@ -173,10 +173,10 @@ export function ActiveSpecialModal({
   }
 
   function handleCopy() {
-    navigator.clipboard.writeText("HASKERFREE");
+    navigator.clipboard.writeText("PRIMEFAMILYHOUSINGFREE");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-    trackEvent("copy_special_code", { code: "HASKERFREE" });
+    trackEvent("copy_special_code", { code: "PRIMEFAMILYHOUSINGFREE" });
   }
 
   if (!open) return null;
@@ -349,7 +349,7 @@ export function ActiveSpecialModal({
                 </div>
                 <div className="p-5 space-y-3">
                   <div className="font-mono text-3xl font-black text-brand tracking-widest bg-neutral-50 border border-dashed border-neutral-300 rounded-xl py-3 px-4 text-center">
-                    HASKERFREE
+                    PRIMEFAMILYHOUSINGFREE
                   </div>
                   <button
                     onClick={handleCopy}

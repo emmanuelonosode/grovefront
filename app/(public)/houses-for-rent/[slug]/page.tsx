@@ -28,14 +28,6 @@ export const revalidate = 300;
 
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&q=80";
 
-// Inject Cloudinary resize transformation so Google receives a 1200×630 image
-function toOgImageUrl(url: string): string {
-  if (url.includes("res.cloudinary.com") && url.includes("/upload/")) {
-    return url.replace("/upload/", "/upload/c_fill,w_1200,h_630,f_jpg,q_auto/");
-  }
-  return url;
-}
-
 export async function generateStaticParams() {
   // Return empty — pages are built on-demand via ISR (dynamicParams = true by default)
   return [];
@@ -77,11 +69,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const seoDesc = `${addrPrefix}${featureList ? featureList + ". " : ""}Affordable ${typeLabel.toLowerCase()} ${actionLabel} — inspected and move-in ready. Apply online, decision in 24 hours.`;
 
     const ogImage = property.images?.[0]?.image_url
-      ? toOgImageUrl(property.images[0].image_url)
+      ? property.images[0].image_url
       : FALLBACK_IMAGE;
 
     return {
-      title: `${seoTitle} | Hasker & Co. Realty Group`,
+      title: `${seoTitle} | PrimeFamilyHousing`,
       description: seoDesc.slice(0, 160),
       keywords: [
         // Address-specific — ranks when someone Googles the exact address
@@ -98,17 +90,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         `${property.city} ${typeLabel.toLowerCase()} ${actionLabel} move-in ready`,
         `${property.city} ${actionLabel}`,
       ],
-      alternates: { canonical: `https://haskerrealtygroup.com/houses-for-rent/${decodedSlug}` },
+      alternates: { canonical: `https://primefamilyhousing.com/houses-for-rent/${decodedSlug}` },
       openGraph: {
-        title: `${seoTitle} | Hasker & Co. Realty Group`,
+        title: `${seoTitle} | PrimeFamilyHousing`,
         description: seoDesc.slice(0, 160),
         type: "website",
-        url: `https://haskerrealtygroup.com/houses-for-rent/${decodedSlug}`,
+        url: `https://primefamilyhousing.com/houses-for-rent/${decodedSlug}`,
         images: [{ url: ogImage, width: 1200, height: 630, alt: seoTitle }],
       },
       twitter: {
         card: "summary_large_image",
-        title: `${seoTitle} | Hasker & Co. Realty Group`,
+        title: `${seoTitle} | PrimeFamilyHousing`,
         description: seoDesc.slice(0, 160),
         images: [ogImage],
       },
@@ -262,7 +254,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   };
 
   const agentPhoto = agent?.avatar_url || "/images/default-avatar.png";
-  const agencyName = agent?.id === 2 ? "PFG/PENN" : "Hasker & Co. Realty Group";
+  const agencyName = agent?.id === 2 ? "PFG/PENN" : "PrimeFamilyHousing";
 
   // Social proof — only shown when genuinely compelling (real distinct-visitor
   // count from analytics, gated by a minimum so small numbers never appear).
@@ -281,10 +273,10 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://haskerrealtygroup.com" },
-      { "@type": "ListItem", position: 2, name: "Properties", item: "https://haskerrealtygroup.com/houses-for-rent" },
-      { "@type": "ListItem", position: 3, name: stateName, item: `https://haskerrealtygroup.com${stateHref}` },
-      { "@type": "ListItem", position: 4, name: `${property.city}, ${property.state}`, item: `https://haskerrealtygroup.com${cityHref}` },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://primefamilyhousing.com" },
+      { "@type": "ListItem", position: 2, name: "Properties", item: "https://primefamilyhousing.com/houses-for-rent" },
+      { "@type": "ListItem", position: 3, name: stateName, item: `https://primefamilyhousing.com${stateHref}` },
+      { "@type": "ListItem", position: 4, name: `${property.city}, ${property.state}`, item: `https://primefamilyhousing.com${cityHref}` },
       {
         "@type": "ListItem",
         position: 5,
@@ -292,7 +284,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
         name: property.address
           ? `${property.address}, ${property.city}, ${property.state}`
           : property.title,
-        item: `https://haskerrealtygroup.com/houses-for-rent/${decodedSlug}`,
+        item: `https://primefamilyhousing.com/houses-for-rent/${decodedSlug}`,
       },
     ],
   };
@@ -306,11 +298,11 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
       : property.title,
     alternateName: property.title,
     description: property.description ?? "",
-    url: `https://haskerrealtygroup.com/houses-for-rent/${property.slug}`,
+    url: `https://primefamilyhousing.com/houses-for-rent/${property.slug}`,
     image: images.length > 0
       ? images.map((img) => ({
         "@type": "ImageObject",
-        url: toOgImageUrl(img.image_url ?? FALLBACK_IMAGE),
+        url: img.image_url ?? FALLBACK_IMAGE,
         width: 1200,
         height: 630,
         caption: img.caption ?? property.title,
@@ -354,15 +346,15 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
         ...(agent.email && { email: agent.email }),
         memberOf: {
           "@type": "Organization",
-          name: "Hasker & Co. Realty Group",
-          url: "https://haskerrealtygroup.com",
+          name: "PrimeFamilyHousing",
+          url: "https://primefamilyhousing.com",
         },
       },
     }),
   };
 
   // Virtual tour → VideoObject so the tour can earn a video thumbnail in search.
-  const tourThumb = images[0]?.image_url ? toOgImageUrl(images[0].image_url) : FALLBACK_IMAGE;
+  const tourThumb = images[0]?.image_url ?? FALLBACK_IMAGE;
   const videoSchema = virtualTourUrl
     ? {
       "@context": "https://schema.org",

@@ -1,7 +1,7 @@
 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#0B1F3A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
   <!-- Background -->
   <rect width="200" height="200" fill="#FBF9F4" stroke="none"/>
-  <circle cx="100" cy="100" r="74" fill="#DBEAFE" stroke="none"/>
+  <circle cx="100" cy="100" r="74" fill="#c1ecd4" stroke="none"/>
 
   <!-- Open book -->
   <!-- Spine shadow -->

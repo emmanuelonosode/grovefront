@@ -4,11 +4,11 @@ import ContactForm from "./ContactForm";
 import { BUSINESS } from "@/lib/business";
 
 export const metadata = {
-  title: "Contact Us | Hasker & Co. Realty Group",
+  title: "Contact Us | PrimeFamilyHousing",
   description:
-    "Looking for an affordable home to rent or buy? Contact Hasker & Co. Realty Group. Our housing specialists respond within 24 hours with matching properties. No fees, no pressure.",
-  alternates: { canonical: "https://haskerrealtygroup.com/contact" },
-  openGraph: { title: "Contact Us | Hasker & Co. Realty Group", description: "Our housing specialists respond within 24 hours. No fees, no pressure.", type: "website", url: "https://haskerrealtygroup.com/contact" },
+    "Looking for an affordable home to rent or buy? Contact PrimeFamilyHousing. Our housing specialists respond within 24 hours with matching properties. No fees, no pressure.",
+  alternates: { canonical: "https://primefamilyhousing.com/contact" },
+  openGraph: { title: "Contact Us | PrimeFamilyHousing", description: "Our housing specialists respond within 24 hours. No fees, no pressure.", type: "website", url: "https://primefamilyhousing.com/contact" },
 };
 
 const offices = [
@@ -23,26 +23,26 @@ const offices = [
     city: "Atlanta",
     address: "1230 Peachtree Street NE, Suite 400\nAtlanta, GA 30309",
     phone: "",
-    email: "housing@haskerrealtygroup.com",
+    email: "housing@primefamilyhousing.com",
     hours: "Mon – Fri: 9am – 6pm ET\nSat: 10am – 4pm ET",
   },
   {
     city: "Charlotte",
     address: "525 North Tryon Street, Suite 1200\nCharlotte, NC 28202",
     phone: "",
-    email: "housing@haskerrealtygroup.com",
+    email: "housing@primefamilyhousing.com",
     hours: "Mon – Fri: 9am – 6pm ET\nSat: 10am – 3pm ET",
   },
   {
     city: "Houston",
     address: "3900 Essex Lane, Suite 1000\nHouston, TX 77027",
     phone: "",
-    email: "housing@haskerrealtygroup.com",
+    email: "housing@primefamilyhousing.com",
     hours: "Mon – Fri: 9am – 6pm CT\nSat: By Appointment",
   },
 ];
 
-const breadcrumb = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: "https://haskerrealtygroup.com" }, { "@type": "ListItem", position: 2, name: "Contact", item: "https://haskerrealtygroup.com/contact" }] };
+const breadcrumb = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: "https://primefamilyhousing.com" }, { "@type": "ListItem", position: 2, name: "Contact", item: "https://primefamilyhousing.com/contact" }] };
 export default function ContactPage() {
   return (
     <main className="pt-20">

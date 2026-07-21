@@ -1,8 +1,8 @@
 import { getVisitorFingerprint } from "./fingerprint";
 import { getStructuredDevice, getStoredUTMs, getStoredLocation, getStoredReferralCode } from "./tracking";
 
-const SESSION_KEY = "hasker_session_id";
-const FP_KEY = "hasker_fingerprint_id";
+const SESSION_KEY = "pfh_session_id";
+const FP_KEY = "pfh_fingerprint_id";
 const API_ENDPOINT = "/api/v1/analytics/visitors/";
 
 // Batching: events are buffered and sent together to cut request volume and
@@ -178,4 +178,22 @@ export function trackClick(elementName: string, additionalData: Record<string, u
 
 export function trackLogin() {
   enqueue({ event_type: "login" });
+}
+
+/**
+ * First-party conversion / interaction event → our own analytics spool.
+ * This replaces the old GA/GTM dataLayer + Meta Pixel paths: every
+ * trackEvent(...) call across the app now feeds native telemetry instead of
+ * shipping data to Google/Meta. No external scripts, no third-party cookies.
+ */
+export function trackEvent(name: string, data: Record<string, unknown> = {}) {
+  enqueue({ event_type: "conversion", event_name: name, event_data: data });
+}
+
+/** Associate the current session with a known user (login/register). */
+export function identify(email: string, userId?: string | number) {
+  enqueue({
+    event_type: "identify",
+    event_data: { email, user_id: userId != null ? String(userId) : undefined },
+  });
 }

@@ -1,9 +1,8 @@
 ﻿"use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import {
-  ArrowLeft, User, Lock, CheckCircle, Eye, EyeOff,
+  User, Lock, CheckCircle, Eye, EyeOff,
   Mail, Shield,
 } from "lucide-react";
 import { apiFetch } from "@/lib/auth";
@@ -12,7 +11,7 @@ import { useAuth } from "@/context/AuthContext";
 
 const API_BASE = typeof window !== "undefined" 
   ? "" 
-  : (process.env.NEXT_PUBLIC_API_URL ?? "https://admin.haskerrealtygroup.com");
+  : (process.env.NEXT_PUBLIC_API_URL ?? "https://admin.primefamilyhousing.com");
 
 function Input({
   label,
@@ -33,7 +32,7 @@ function Input({
 }) {
   return (
     <div>
-      <label className="block text-[11px] font-semibold tracking-[0.07em] uppercase text-[#6E6E73] mb-1.5">
+      <label className="block text-[11px] font-semibold tracking-[0.07em] uppercase text-on-surface-variant mb-1.5">
         {label}
       </label>
       <div className="relative">
@@ -44,9 +43,9 @@ function Input({
           onChange={(e) => onChange?.(e.target.value)}
           placeholder={placeholder}
           className={cn(
-            "w-full bg-[#F5F5F7] rounded-xl px-4 py-3 text-[15px] text-[#1D1D1F] outline-none",
+            "w-full bg-surface-container-low rounded-xl px-4 py-3 text-[15px] text-on-surface outline-none",
             "border border-transparent focus:border-brand/30 transition-colors",
-            readOnly && "text-[#6E6E73] cursor-not-allowed",
+            readOnly && "text-on-surface-variant cursor-not-allowed",
             suffix && "pr-12"
           )}
         />
@@ -76,7 +75,7 @@ function PasswordInput({
   const [show, setShow] = useState(false);
   return (
     <div>
-      <label className="block text-[11px] font-semibold tracking-[0.07em] uppercase text-[#6E6E73] mb-1.5">
+      <label className="block text-[11px] font-semibold tracking-[0.07em] uppercase text-on-surface-variant mb-1.5">
         {label}
       </label>
       <div className="relative">
@@ -86,20 +85,20 @@ function PasswordInput({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           className={cn(
-            "w-full bg-[#F5F5F7] rounded-xl px-4 py-3 text-[15px] text-[#1D1D1F] outline-none pr-12",
+            "w-full bg-surface-container-low rounded-xl px-4 py-3 text-[15px] text-on-surface outline-none pr-12",
             "border transition-colors",
-            error ? "border-[#FF3B30]/40" : "border-transparent focus:border-brand/30"
+            error ? "border-[#ba1a1a]/40" : "border-transparent focus:border-brand/30"
           )}
         />
         <button
           type="button"
           onClick={() => setShow((s) => !s)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6E6E73] hover:text-[#1D1D1F] transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"
         >
           {show ? <EyeOff size={16} /> : <Eye size={16} />}
         </button>
       </div>
-      {error && <p className="text-[12px] text-[#FF3B30] mt-1">{error}</p>}
+      {error && <p className="text-[12px] text-error mt-1">{error}</p>}
     </div>
   );
 }
@@ -213,35 +212,29 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      <div className="max-w-2xl mx-auto space-y-4">
+    <div className="p-4 md:p-12 w-full max-w-7xl mx-auto">
 
-        {/* Header */}
-        <div className="flex items-center gap-3 px-1">
-          <Link
-            href="/portal/profile"
-            className="w-8 h-8 rounded-xl flex items-center justify-center bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] text-[#6E6E73] hover:text-[#1D1D1F] transition-colors"
-          >
-            <ArrowLeft size={15} strokeWidth={2} />
-          </Link>
-          <div>
-            <h1 className="text-[20px] font-semibold tracking-tight text-[#1D1D1F]">
-              Account Settings
-            </h1>
-            <p className="text-[13px] text-[#6E6E73]">Manage your profile and password</p>
-          </div>
-        </div>
+      {/* Header */}
+      <header className="mb-12">
+        <h2 className="font-serif font-bold text-on-surface mb-2 text-[32px] leading-10 md:text-[48px] md:leading-[56px]" style={{ letterSpacing: "-0.02em" }}>
+          Settings
+        </h2>
+        <p className="text-[18px] leading-7 text-on-surface-variant">Manage your profile and password.</p>
+      </header>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        <div className="lg:col-span-2 space-y-6">
 
         {/* Personal Info Card */}
-        <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden">
-          <div className="px-5 py-4 border-b border-black/[0.04] flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[#F5F5F7] flex items-center justify-center shrink-0">
-              <User size={15} className="text-[#3C3C43]" strokeWidth={1.8} />
+        <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant overflow-hidden">
+          <div className="px-6 pt-6 pb-4 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center shrink-0">
+              <User size={20} className="text-primary" strokeWidth={1.8} />
             </div>
-            <p className="text-[14px] font-semibold text-[#1D1D1F] tracking-tight">Personal Information</p>
+            <h3 className="font-serif font-semibold text-on-surface text-[24px] leading-8">Personal Information</h3>
           </div>
 
-          <form onSubmit={handleSaveProfile} className="p-5 space-y-4">
+          <form onSubmit={handleSaveProfile} className="p-6 pt-2 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input
                 label="First Name"
@@ -270,15 +263,15 @@ export default function SettingsPage() {
                 label="Email Address"
                 value={user?.email ?? ""}
                 readOnly
-                suffix={<Lock size={14} className="text-[#C7C7CC]" />}
+                suffix={<Lock size={14} className="text-outline-variant" />}
               />
               <div>
-                <label className="block text-[11px] font-semibold tracking-[0.07em] uppercase text-[#6E6E73] mb-1.5">
+                <label className="block text-[11px] font-semibold tracking-[0.07em] uppercase text-on-surface-variant mb-1.5">
                   Account Type
                 </label>
-                <div className="bg-[#F5F5F7] rounded-xl px-4 py-3 flex items-center gap-2">
-                  <Shield size={13} className="text-[#C7C7CC]" />
-                  <span className="text-[15px] text-[#6E6E73]">
+                <div className="bg-surface-container-low rounded-xl px-4 py-3 flex items-center gap-2">
+                  <Shield size={13} className="text-outline-variant" />
+                  <span className="text-[15px] text-on-surface-variant">
                     {roleLabel[user?.role ?? ""] ?? user?.role ?? "—"}
                   </span>
                 </div>
@@ -286,7 +279,7 @@ export default function SettingsPage() {
             </div>
 
             {saveError && (
-              <p className="text-[13px] text-[#FF3B30]">{saveError}</p>
+              <p className="text-[13px] text-error">{saveError}</p>
             )}
 
             <div className="flex items-center gap-3 pt-1">
@@ -303,28 +296,28 @@ export default function SettingsPage() {
                 </button>
               )}
               {saved && (
-                <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#34C759]">
+                <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#2E7D32]">
                   <CheckCircle size={14} />
                   Saved
                 </span>
               )}
               {!isDirty && !saved && (
-                <p className="text-[12px] text-[#6E6E73]">Make a change to save</p>
+                <p className="text-[12px] text-on-surface-variant">Make a change to save</p>
               )}
             </div>
           </form>
         </div>
 
         {/* Change Password Card */}
-        <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden">
-          <div className="px-5 py-4 border-b border-black/[0.04] flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[#F5F5F7] flex items-center justify-center shrink-0">
-              <Lock size={15} className="text-[#3C3C43]" strokeWidth={1.8} />
+        <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant overflow-hidden">
+          <div className="px-6 pt-6 pb-4 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center shrink-0">
+              <Lock size={20} className="text-primary" strokeWidth={1.8} />
             </div>
-            <p className="text-[14px] font-semibold text-[#1D1D1F] tracking-tight">Change Password</p>
+            <h3 className="font-serif font-semibold text-on-surface text-[24px] leading-8">Change Password</h3>
           </div>
 
-          <form onSubmit={handleChangePassword} className="p-5 space-y-4">
+          <form onSubmit={handleChangePassword} className="p-6 pt-2 space-y-4">
             <PasswordInput
               label="Current Password"
               value={pwForm.current_password}
@@ -351,7 +344,7 @@ export default function SettingsPage() {
               <button
                 type="submit"
                 disabled={pwSaving}
-                className="inline-flex items-center gap-2 bg-[#1D1D1F] text-white text-[13px] font-semibold px-5 py-2.5 rounded-xl hover:bg-black transition-colors disabled:opacity-60"
+                className="inline-flex items-center gap-2 bg-primary text-on-primary text-[14px] tracking-[0.05em] font-semibold px-5 py-2.5 rounded-lg hover:bg-primary-container transition-colors disabled:opacity-60 active:scale-[0.98]"
               >
                 {pwSaving ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -359,7 +352,7 @@ export default function SettingsPage() {
                 Update Password
               </button>
               {pwSaved && (
-                <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#34C759]">
+                <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#2E7D32]">
                   <CheckCircle size={14} />
                   Password updated
                 </span>
@@ -368,17 +361,18 @@ export default function SettingsPage() {
           </form>
         </div>
 
-        {/* Contact info card */}
-        <div className="bg-[#0F1E3D] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <p className="text-[13px] font-semibold text-white tracking-tight">Need to update your email?</p>
-            <p className="text-[12px] text-white/40 mt-0.5">Contact our team — email changes require verification.</p>
-          </div>
+        </div>
+
+        {/* Contact info card — side column */}
+        <div className="bg-forest-deep rounded-xl shadow-sm p-6">
+          <p className="text-[16px] leading-6 text-on-primary/80 mb-1">Need to update your email?</p>
+          <h3 className="font-serif font-semibold text-on-primary text-[24px] leading-8 mb-4">Our Team is Ready.</h3>
+          <p className="text-[12px] leading-4 text-on-primary/60 mb-5">Email changes require verification, so our team handles them personally.</p>
           <a
-            href="mailto:info@haskerrealtygroup.com?subject=Account Email Change"
-            className="shrink-0 inline-flex items-center gap-1.5 bg-brand text-white text-[12px] font-semibold px-4 py-2.5 rounded-xl hover:bg-brand-hover transition-colors"
+            href="mailto:info@primefamilyhousing.com?subject=Account Email Change"
+            className="w-full flex items-center justify-center gap-2 bg-earth-beige text-on-secondary-container text-[14px] tracking-[0.05em] font-semibold px-4 py-3 rounded-lg hover:bg-surface transition-colors active:scale-[0.98]"
           >
-            <Mail size={13} />
+            <Mail size={14} />
             Contact Us
           </a>
         </div>

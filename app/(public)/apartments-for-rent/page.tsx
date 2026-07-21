@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/Button";
 
 export const revalidate = 300;
 
-const BASE = "https://haskerrealtygroup.com";
+const BASE = "https://primefamilyhousing.com";
 const URL = `${BASE}/apartments-for-rent`;
 
 async function getApartments() {
@@ -27,8 +27,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const { count } = await getApartments();
   const live = count > 0;
   const title = live
-    ? "Apartments for Rent | Move-In Ready Rentals | Hasker & Co. Realty Group"
-    : "Apartments for Rent — Coming Soon | Hasker & Co. Realty Group";
+    ? "Apartments for Rent | Move-In Ready Rentals | PrimeFamilyHousing"
+    : "Apartments for Rent — Coming Soon | PrimeFamilyHousing";
   const description = live
     ? "Browse affordable apartments for rent — move-in ready, transparent pricing, no hidden fees. Apply online and get a decision in 24 hours."
     : "Affordable apartments for rent are coming soon. Get notified the moment new apartment listings go live in your city — no spam, unsubscribe anytime.";
@@ -61,7 +61,7 @@ const FAQS = [
   },
   {
     q: "Are your rentals affordable and pet-friendly?",
-    a: "Yes. Every Hasker & Co. listing shows transparent pricing and pet policy upfront, with no hidden administrative fees. Many homes are pet-friendly.",
+    a: "Yes. Every PrimeFamilyHousing listing shows transparent pricing and pet policy upfront, with no hidden administrative fees. Many homes are pet-friendly.",
   },
 ];
 
@@ -94,7 +94,7 @@ export default async function ApartmentsPage() {
         name: "Apartments for Rent",
         description: "Affordable, move-in ready apartments for rent with transparent pricing and no hidden fees.",
         url: URL,
-        isPartOf: { "@type": "WebSite", name: "Hasker & Co. Realty Group", url: BASE },
+        isPartOf: { "@type": "WebSite", name: "PrimeFamilyHousing", url: BASE },
       }
     : null;
 
@@ -129,7 +129,7 @@ export default async function ApartmentsPage() {
           <p className="text-blue-100 text-lg max-w-2xl mt-4 leading-relaxed">
             {live
               ? "Browse affordable, move-in ready apartments — transparent pricing, no hidden fees, and a decision within 24 hours."
-              : "Apartments are coming soon to Hasker & Co. In the meantime, explore our affordable, move-in ready rental homes — or get notified the moment apartments go live in your city."}
+              : "Apartments are coming soon to PrimeFamilyHousing In the meantime, explore our affordable, move-in ready rental homes — or get notified the moment apartments go live in your city."}
           </p>
           <div className="flex flex-wrap gap-3 mt-8">
             {live ? (
@@ -179,7 +179,7 @@ export default async function ApartmentsPage() {
         </section>
       ) : (
         /* ── COMING SOON / NOTIFY ───────────────────────────── */
-        <section className="bg-[#0F1E3D] py-16 lg:py-20 px-6">
+        <section className="bg-[#081C15] py-16 lg:py-20 px-6">
           <div className="max-w-xl mx-auto text-center">
             <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center mx-auto mb-5">
               <BellRing size={22} className="text-brand" />
@@ -204,7 +204,7 @@ export default async function ApartmentsPage() {
           </h2>
           <div className="space-y-5 text-neutral-600 text-[15px] leading-relaxed">
             <p>
-              Hasker &amp; Co. Realty Group is growing its rental selection to include apartments alongside our
+              PrimeFamilyHousing is growing its rental selection to include apartments alongside our
               affordable, move-in ready houses. Every listing — apartment or home — shows transparent pricing,
               photos, and pet policy upfront, with no hidden administrative or processing fees.
             </p>

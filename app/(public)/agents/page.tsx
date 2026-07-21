@@ -7,9 +7,9 @@ import { formatPrice } from "@/lib/utils";
 export const revalidate = 300;
 
 export const metadata = {
-  title: "Our Housing Specialists | Hasker & Co. Realty Group",
+  title: "Our Housing Specialists | PrimeFamilyHousing",
   description:
-    "Meet the housing specialists at Hasker & Co. Realty Group. Real people helping real families find affordable homes to rent and buy across Virginia Beach, Atlanta, Charlotte, Houston, Dallas, Nashville, Phoenix and more.",
+    "Meet the housing specialists at PrimeFamilyHousing. Real people helping real families find affordable homes to rent and buy across Virginia Beach, Atlanta, Charlotte, Houston, Dallas, Nashville, Phoenix and more.",
   keywords: [
     "housing specialists Virginia Beach",
     "affordable home rental agents",
@@ -21,13 +21,13 @@ export const metadata = {
     "find a rental agent near me",
   ],
   openGraph: {
-    title: "Our Housing Specialists | Hasker & Co. Realty Group",
+    title: "Our Housing Specialists | PrimeFamilyHousing",
     description:
       "Real people helping real families find affordable homes. No jargon, no pressure. Just honest, fast service.",
     type: "website",
-    url: "https://haskerrealtygroup.com/agents",
+    url: "https://primefamilyhousing.com/agents",
   },
-  alternates: { canonical: "https://haskerrealtygroup.com/agents" },
+  alternates: { canonical: "https://primefamilyhousing.com/agents" },
 };
 
 const teamStats = [
@@ -121,8 +121,8 @@ const breadcrumb = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://haskerrealtygroup.com" },
-    { "@type": "ListItem", position: 2, name: "Our Team", item: "https://haskerrealtygroup.com/agents" },
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://primefamilyhousing.com" },
+    { "@type": "ListItem", position: 2, name: "Our Team", item: "https://primefamilyhousing.com/agents" },
   ],
 };
 
@@ -137,7 +137,7 @@ export default async function AgentsPage() {
       <section className="relative min-h-[560px] lg:min-h-[620px] flex items-end overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=1600&q=80"
-          alt="Housing specialists at Hasker & Co. Realty Group"
+          alt="Housing specialists at PrimeFamilyHousing"
           fill
           priority
           className="object-cover object-center"
@@ -418,8 +418,8 @@ export default async function AgentsPage() {
               <Link href="/careers" className="inline-flex items-center justify-center gap-2 bg-brand-dark text-white text-sm font-semibold px-7 py-4 rounded-sm hover:bg-brand transition-colors">
                 View Careers <ArrowRight size={14} />
               </Link>
-              <a href="mailto:careers@haskerrealtygroup.com" className="inline-flex items-center justify-center gap-2 border border-brand-dark text-brand-dark text-sm font-medium px-7 py-4 rounded-sm hover:bg-brand-dark hover:text-white transition-colors">
-                <Mail size={14} /> careers@haskerrealtygroup.com
+              <a href="mailto:careers@primefamilyhousing.com" className="inline-flex items-center justify-center gap-2 border border-brand-dark text-brand-dark text-sm font-medium px-7 py-4 rounded-sm hover:bg-brand-dark hover:text-white transition-colors">
+                <Mail size={14} /> careers@primefamilyhousing.com
               </a>
             </div>
           </div>

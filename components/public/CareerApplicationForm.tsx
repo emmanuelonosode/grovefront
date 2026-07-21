@@ -329,7 +329,7 @@ export function CareerApplicationForm({ roleId, roleTitle }: Props) {
           </div>
 
           <p className="text-[11px] text-neutral-400 leading-relaxed">
-            By submitting this form you agree that Hasker &amp; Co. Realty Group may store and use
+            By submitting this form you agree that PrimeFamilyHousing may store and use
             your information to process your application. We do not share your details with third
             parties.
           </p>

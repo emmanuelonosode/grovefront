@@ -1,5 +1,5 @@
 // Purpose-built amenity SVG icons — single-weight stroke, currentColor, 24×24 viewport.
-// Designed to match the reference editorial icon style from the Hasker design system.
+// Designed to match the reference editorial icon style from the PrimeFamilyHousing design system.
 
 const SW = 1.8;
 

@@ -1,15 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 48" height="40" width="220">
-  <!-- Diamond / house mark -->
-  <polygon points="20,24 36,4 52,24 36,44" fill="#1A56DB"/>
-  <!-- Roof triangle (white cutout) -->
-  <polygon points="28,24 36,13 44,24" fill="white"/>
-  <!-- House body (white) -->
-  <rect x="29" y="24" width="14" height="10" rx="1" fill="white"/>
-  <!-- Door / window (blue) -->
-  <rect x="33" y="26" width="6" height="8" rx="1" fill="#1A56DB"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 48" height="40" width="233">
+  <!-- Icon circle -->
+  <circle cx="24" cy="24" r="22" fill="#012d1d"/>
+  <!-- House mark -->
+  <polygon points="24,11 37,23 34,23 34,26 14,26 14,23 11,23" fill="#E9EDC6"/>
+  <rect x="15.5" y="26" width="17" height="11" rx="1.5" fill="#E9EDC6"/>
+  <rect x="21" y="28.5" width="6" height="8.5" rx="1" fill="#012d1d"/>
   <!-- Wordmark -->
-  <text x="62" y="22" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif"
-        font-weight="700" font-size="16" fill="#0B1F3A" letter-spacing="0.5">HASKER &amp; CO.</text>
-  <text x="63" y="37" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif"
-        font-weight="400" font-size="9" fill="#1A56DB" letter-spacing="3">REALTY GROUP</text>
+  <text x="56" y="24" font-family="Montserrat,'Helvetica Neue',Helvetica,Arial,sans-serif"
+        font-weight="700" font-size="17" fill="#012d1d" letter-spacing="-0.2">PrimeFamilyHousing</text>
+  <text x="57" y="38" font-family="'Source Sans 3','Helvetica Neue',Helvetica,Arial,sans-serif"
+        font-weight="400" font-size="8.5" fill="#7d562d" letter-spacing="3">HOMES FOR FAMILIES</text>
 </svg>

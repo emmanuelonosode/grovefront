@@ -5,7 +5,7 @@ const fs = require('fs');
 const xml2js = require('xml2js');
 
 // --- CONFIGURATION ---
-const BASE_URL = 'https://haskerrealtygroup.com'; // Change to localhost:3000 if testing locally
+const BASE_URL = 'https://primefamilyhousing.com'; // Change to localhost:3000 if testing locally
 const SITEMAP_URL = `${BASE_URL}/sitemap.xml`;
 const OUTPUT_FILE = './public/llms-full.txt';
 const CONCURRENCY_LIMIT = 10; // How many pages to scrape at exactly the same time
@@ -71,7 +71,7 @@ async function generate() {
     }
 
     // Start with a fresh file and write the header
-    const header = `# Hasker & Co. Realty Group - Full Knowledge Base\nGenerated on: ${new Date().toISOString()}\n\nThis document contains the full text of all public pages and property listings.\n`;
+    const header = `# PrimeFamilyHousing - Full Knowledge Base\nGenerated on: ${new Date().toISOString()}\n\nThis document contains the full text of all public pages and property listings.\n`;
     fs.writeFileSync(OUTPUT_FILE, header);
 
     // Process URLs in chunks to protect server memory

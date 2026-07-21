@@ -1,4 +1,4 @@
-const FINGERPRINT_KEY = "hasker_fingerprint_id";
+const FINGERPRINT_KEY = "pfh_fingerprint_id";
 
 async function generateHash(message: string) {
   if (crypto.subtle) {

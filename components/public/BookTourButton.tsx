@@ -5,7 +5,7 @@ import { trackClick } from "@/lib/telemetry";
 
 /**
  * Opens the <PropertyTourModal> (mounted on the property page) via the
- * `hasker:open-tour` event. A thin client wrapper so the server-rendered
+ * `pfh:open-tour` event. A thin client wrapper so the server-rendered
  * detail page can trigger the tour modal.
  */
 export function BookTourButton({
@@ -20,7 +20,7 @@ export function BookTourButton({
   return (
     <button
       type="button"
-      onClick={() => { trackClick("book_tour", { where: "detail" }); window.dispatchEvent(new Event("hasker:open-tour")); }}
+      onClick={() => { trackClick("book_tour", { where: "detail" }); window.dispatchEvent(new Event("pfh:open-tour")); }}
       className={className}
     >
       {withIcon && <Calendar size={15} />}

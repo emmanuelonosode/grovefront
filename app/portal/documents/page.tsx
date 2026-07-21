@@ -1,10 +1,9 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import {
-  FileText, Receipt, Shield, FolderOpen, ArrowLeft, Mail,
+  FileText, Receipt, Shield, FolderOpen, Mail,
   ClipboardCheck, Banknote, Download, AlertCircle, CheckCircle,
 } from "lucide-react";
 import { apiFetch } from "@/lib/auth";
@@ -61,24 +60,24 @@ function DocumentCard({ doc }: { doc: ClientDocument }) {
   const expiring = isExpiringSoon(doc.expires_at);
 
   return (
-    <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-5 flex items-start gap-4">
-      <div className="w-10 h-10 rounded-xl bg-[#F5F5F7] flex items-center justify-center shrink-0">
-        <Icon size={17} className="text-[#3C3C43]" strokeWidth={1.8} />
+    <div className="bg-surface rounded-lg border border-outline-variant/50 hover:bg-surface-container transition-colors p-4 flex items-start gap-4">
+      <div className="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center shrink-0">
+        <Icon size={20} className="text-primary" strokeWidth={1.8} />
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
-          <p className="text-[13px] font-semibold text-[#1D1D1F] leading-snug truncate">{doc.name}</p>
+          <p className="text-[16px] leading-6 font-semibold text-on-surface truncate">{doc.name}</p>
           {doc.is_signed && (
-            <span className="flex items-center gap-1 text-[10px] font-semibold text-[#34C759] bg-[#F0FFF4] px-1.5 py-0.5 rounded-md shrink-0">
-              <CheckCircle size={9} />
+            <span className="flex items-center gap-1 text-[12px] leading-4 font-semibold text-[#2E7D32] bg-primary-fixed/50 px-2 py-0.5 rounded-full shrink-0">
+              <CheckCircle size={11} />
               Signed
             </span>
           )}
         </div>
-        <p className="text-[11px] text-[#6E6E73] mt-0.5">{fmtDate(doc.created_at)}</p>
+        <p className="text-[12px] leading-4 text-on-surface-variant mt-0.5">{fmtDate(doc.created_at)}</p>
         {expiring && doc.expires_at && (
-          <div className="flex items-center gap-1 mt-1.5 text-[11px] font-medium text-[#FF9F0A]">
-            <AlertCircle size={11} />
+          <div className="flex items-center gap-1 mt-1.5 text-[12px] leading-4 font-medium text-terracotta-warm">
+            <AlertCircle size={12} />
             Expires {fmtDate(doc.expires_at)}
           </div>
         )}
@@ -87,9 +86,9 @@ function DocumentCard({ doc }: { doc: ClientDocument }) {
             href={doc.file_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 mt-2 text-[12px] font-semibold text-brand hover:underline"
+            className="inline-flex items-center gap-1 mt-2 text-[14px] font-semibold text-primary hover:underline"
           >
-            <Download size={12} />
+            <Download size={13} />
             Download
           </a>
         )}
@@ -119,138 +118,145 @@ export default function DocumentsPage() {
   const paidWithPdf = invoices.filter((i) => i.status === "PAID" && i.pdf);
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      <div className="max-w-3xl mx-auto space-y-4">
+    <div className="p-4 md:p-12 w-full max-w-7xl mx-auto">
 
-        {/* Header */}
-        <div className="flex items-center gap-3 px-1">
-          <Link
-            href="/portal/profile"
-            className="w-8 h-8 rounded-xl flex items-center justify-center bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] text-[#6E6E73] hover:text-[#1D1D1F] transition-colors"
-          >
-            <ArrowLeft size={15} strokeWidth={2} />
-          </Link>
-          <div>
-            <h1 className="text-[20px] font-semibold tracking-tight text-[#1D1D1F]">My Documents</h1>
-            <p className="text-[13px] text-[#6E6E73]">Lease agreements, receipts, and files</p>
-          </div>
-        </div>
+      {/* Header */}
+      <header className="mb-12">
+        <h2 className="font-serif font-bold text-on-surface mb-2 text-[32px] leading-10 md:text-[48px] md:leading-[56px]" style={{ letterSpacing: "-0.02em" }}>
+          My Documents
+        </h2>
+        <p className="text-[18px] leading-7 text-on-surface-variant">
+          Lease agreements, receipts, and files — all in one place.
+        </p>
+      </header>
 
-        {/* Info card */}
-        <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-5 flex gap-4 items-start">
-          <Image src="/illustrations/spot-clipboard.png" alt="" width={44} height={44} className="shrink-0 mt-0.5" />
-          <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-semibold text-[#1D1D1F] mb-1">Managed by your property team</p>
-            <p className="text-[12px] text-[#6E6E73] leading-relaxed">
-              Lease agreements, receipts, and verification documents are uploaded by
-              Hasker &amp; Co. staff once your tenancy is set up. Need a specific document?
-              Email us and we&apos;ll handle it promptly.
-            </p>
-            <a
-              href="mailto:info@haskerrealtygroup.com?subject=Document Request"
-              className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-brand mt-2.5 hover:underline"
-            >
-              <Mail size={12} />
-              info@haskerrealtygroup.com
-            </a>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* ── Main column ─────────────────────────────────────────── */}
+        <div className="lg:col-span-2 space-y-6">
 
-        {/* Documents list */}
-        <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden">
-          <div className="px-5 py-4 border-b border-black/[0.04] flex items-center justify-between">
-            <p className="text-[14px] font-semibold text-[#1D1D1F] tracking-tight">Your Files</p>
-            <span className="text-[11px] text-[#6E6E73] bg-[#F5F5F7] px-2.5 py-1 rounded-lg font-medium">
-              {loading ? "…" : `${documents.length} document${documents.length !== 1 ? "s" : ""}`}
-            </span>
-          </div>
-
-          {loading ? (
-            <div className="p-5 space-y-3">
-              {[1, 2].map((i) => (
-                <div key={i} className="h-20 rounded-xl bg-black/[0.04] animate-pulse" />
-              ))}
+          {/* Documents list */}
+          <section className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="font-serif font-semibold text-on-surface text-[24px] leading-8">Your Files</h3>
+              <span className="text-[12px] leading-4 text-on-surface-variant bg-surface-container-low px-3 py-1 rounded-full font-medium">
+                {loading ? "…" : `${documents.length} document${documents.length !== 1 ? "s" : ""}`}
+              </span>
             </div>
-          ) : documents.length === 0 ? (
-            <div className="py-12 flex flex-col items-center text-center px-6">
-              <Image
-                src="/illustrations/spot-clipboard.png"
-                alt=""
-                width={100}
-                height={100}
-                className="mb-4 opacity-90"
-              />
-              <h3 className="text-[15px] font-semibold text-[#1D1D1F] tracking-tight mb-2">No documents yet</h3>
-              <p className="text-[13px] text-[#6E6E73] max-w-xs leading-relaxed mb-6">
-                Your lease agreement and files will appear here once your tenancy is confirmed.
-              </p>
-              <a
-                href="mailto:info@haskerrealtygroup.com?subject=Document Request"
-                className="inline-flex items-center gap-1.5 bg-brand text-white text-[12px] font-semibold px-5 py-2.5 rounded-xl hover:bg-brand-hover transition-colors"
-              >
-                <Mail size={13} strokeWidth={2} />
-                Request a Document
-              </a>
-            </div>
-          ) : (
-            <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {documents.map((doc) => (
-                <DocumentCard key={doc.id} doc={doc} />
-              ))}
-            </div>
-          )}
-        </div>
 
-        {/* Payment Receipts */}
-        {(loading || paidWithPdf.length > 0) && (
-          <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden">
-            <div className="px-5 py-4 border-b border-black/[0.04]">
-              <p className="text-[14px] font-semibold text-[#1D1D1F] tracking-tight">Payment Receipts</p>
-              <p className="text-[12px] text-[#6E6E73] mt-0.5">Download PDF receipts for your paid invoices</p>
-            </div>
             {loading ? (
-              <div className="p-5 space-y-2">
-                {[1, 2].map((i) => <div key={i} className="h-12 rounded-xl bg-black/[0.04] animate-pulse" />)}
+              <div className="space-y-3">
+                {[1, 2].map((i) => (
+                  <div key={i} className="h-20 rounded-lg bg-surface-container animate-pulse" />
+                ))}
+              </div>
+            ) : documents.length === 0 ? (
+              <div className="py-12 flex flex-col items-center text-center px-6">
+                <Image
+                  src="/illustrations/spot-clipboard.png"
+                  alt=""
+                  width={100}
+                  height={100}
+                  className="mb-4 opacity-90"
+                />
+                <h4 className="font-serif text-[18px] leading-7 font-semibold text-on-surface mb-2">No documents yet</h4>
+                <p className="text-[16px] leading-6 text-on-surface-variant max-w-sm mb-6">
+                  Your lease agreement and files will appear here once your tenancy is confirmed.
+                </p>
+                <a
+                  href="mailto:info@primefamilyhousing.com?subject=Document Request"
+                  className="inline-flex items-center gap-2 bg-primary text-on-primary text-[14px] tracking-[0.05em] font-semibold px-6 py-3 rounded-lg hover:bg-primary-container transition-colors active:scale-[0.98]"
+                >
+                  <Mail size={14} strokeWidth={2} />
+                  Request a Document
+                </a>
               </div>
             ) : (
-              <div className="divide-y divide-black/[0.04]">
-                {paidWithPdf.map((inv) => (
-                  <div key={inv.id} className="px-5 py-3.5 flex items-center justify-between gap-4">
-                    <div>
-                      <p className="text-[13px] font-semibold text-[#1D1D1F]">{inv.invoice_number}</p>
-                      <p className="text-[11px] text-[#6E6E73]">{fmtDate(inv.issued_date)} Â· {fmt(inv.total)}</p>
-                    </div>
-                    <a
-                      href={inv.pdf!}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-brand border border-brand/20 bg-[#EFF4FF] px-3.5 py-1.5 rounded-lg hover:bg-brand hover:text-white transition-colors shrink-0"
-                    >
-                      <Download size={12} />
-                      PDF
-                    </a>
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {documents.map((doc) => (
+                  <DocumentCard key={doc.id} doc={doc} />
                 ))}
               </div>
             )}
-          </div>
-        )}
+          </section>
 
-        {/* Urgent CTA */}
-        <div className="bg-[#0F1E3D] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <p className="text-[13px] font-semibold text-white tracking-tight">Need a document urgently?</p>
-            <p className="text-[12px] text-white/40 mt-0.5">Our team responds within 1 business day.</p>
-          </div>
-          <a
-            href="mailto:info@haskerrealtygroup.com?subject=Urgent Document Request"
-            className="shrink-0 inline-flex items-center gap-1.5 bg-brand text-white text-[12px] font-semibold px-4 py-2.5 rounded-xl hover:bg-brand-hover transition-colors"
-          >
-            <Mail size={13} strokeWidth={2} />
-            Email Our Team
-          </a>
+          {/* Payment Receipts */}
+          {(loading || paidWithPdf.length > 0) && (
+            <section className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-6">
+              <div className="mb-6">
+                <h3 className="font-serif font-semibold text-on-surface text-[24px] leading-8">Payment Receipts</h3>
+                <p className="text-[14px] leading-5 text-on-surface-variant mt-1">Download PDF receipts for your paid invoices</p>
+              </div>
+              {loading ? (
+                <div className="space-y-2">
+                  {[1, 2].map((i) => <div key={i} className="h-14 rounded-lg bg-surface-container animate-pulse" />)}
+                </div>
+              ) : (
+                <div className="divide-y divide-outline-variant/60">
+                  {paidWithPdf.map((inv) => (
+                    <div key={inv.id} className="py-4 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div className="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center shrink-0">
+                          <Receipt size={20} className="text-primary" strokeWidth={1.8} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[16px] leading-6 font-semibold text-on-surface truncate">{inv.invoice_number}</p>
+                          <p className="text-[12px] leading-4 text-on-surface-variant">{fmtDate(inv.issued_date)} · {fmt(inv.total)}</p>
+                        </div>
+                      </div>
+                      <a
+                        href={inv.pdf!}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-[14px] font-semibold text-primary border border-outline px-4 py-2 rounded-lg hover:bg-surface-container-low transition-colors shrink-0 active:scale-[0.98]"
+                      >
+                        <Download size={13} />
+                        PDF
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
         </div>
 
+        {/* ── Side column ─────────────────────────────────────────── */}
+        <div className="space-y-6">
+
+          {/* Info card */}
+          <section className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-6">
+            <div className="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center mb-4">
+              <FolderOpen size={20} className="text-primary" strokeWidth={1.8} />
+            </div>
+            <h3 className="font-serif font-semibold text-on-surface text-[18px] leading-7 mb-2">Managed by your property team</h3>
+            <p className="text-[14px] leading-5 text-on-surface-variant">
+              Lease agreements, receipts, and verification documents are uploaded by
+              PrimeFamilyHousing staff once your tenancy is set up. Need a specific document?
+              Email us and we&apos;ll handle it promptly.
+            </p>
+            <a
+              href="mailto:info@primefamilyhousing.com?subject=Document Request"
+              className="inline-flex items-center gap-1.5 text-[14px] font-semibold text-primary mt-4 hover:underline"
+            >
+              <Mail size={13} />
+              info@primefamilyhousing.com
+            </a>
+          </section>
+
+          {/* Urgent CTA — image-card style like the dashboard */}
+          <section className="bg-forest-deep rounded-xl shadow-sm p-6">
+            <p className="text-[16px] leading-6 text-on-primary/80 mb-1">Need a document urgently?</p>
+            <h3 className="font-serif font-semibold text-on-primary text-[24px] leading-8 mb-4">Our Team is Ready.</h3>
+            <p className="text-[12px] leading-4 text-on-primary/60 mb-5">We respond within 1 business day.</p>
+            <a
+              href="mailto:info@primefamilyhousing.com?subject=Urgent Document Request"
+              className="w-full flex items-center justify-center gap-2 bg-earth-beige text-on-secondary-container text-[14px] tracking-[0.05em] font-semibold px-4 py-3 rounded-lg hover:bg-surface transition-colors active:scale-[0.98]"
+            >
+              <Mail size={14} strokeWidth={2} />
+              Email Our Team
+            </a>
+          </section>
+        </div>
       </div>
     </div>
   );

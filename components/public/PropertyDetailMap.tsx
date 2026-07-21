@@ -23,8 +23,8 @@ interface Props {
   satellite?: boolean;
 }
 
-const NAVY = "#0F1E3D";
-const BLUE = "#0052FF";
+const NAVY = "#081C15";
+const BLUE = "#012d1d";
 const GREEN = "#16a34a";
 
 function validCoord(m: { lat: number; lng: number }) {

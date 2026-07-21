@@ -9,7 +9,7 @@ import { trackClick } from "@/lib/telemetry";
 // Opens the shared <PropertyTourModal> mounted on the property page.
 const openTour = (slug: string) => {
   trackClick("book_tour", { slug });
-  window.dispatchEvent(new Event("hasker:open-tour"));
+  window.dispatchEvent(new Event("pfh:open-tour"));
 };
 
 interface PropertyLeadCTAsProps {
@@ -26,7 +26,7 @@ interface PropertyLeadCTAsProps {
 // Opens the shared callback/notify modal (FloatingCallbackButton listens for this).
 const openNotify = (city: string) => {
   trackClick("notify_similar", { city });
-  window.dispatchEvent(new Event("hasker:open-callback"));
+  window.dispatchEvent(new Event("pfh:open-callback"));
 };
 
 export function PropertyLeadCTAs({

@@ -6,7 +6,7 @@ import { Phone, Mail, Award, Home, TrendingUp, ArrowLeft } from "lucide-react";
 import { fetchAgentById, fetchAgents, fetchAgentListings } from "@/lib/agents";
 import { toPropertyCardShape, type PropertyListItemAPI } from "@/lib/properties";
 import type { Property } from "@/types";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, toCardImageUrl } from "@/lib/utils";
 
 export const revalidate = 300;
 
@@ -27,23 +27,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const specialty = profile?.specialties?.[0] ?? "Housing Specialist";
     const yearsExp = profile?.years_experience ? `${profile.years_experience}+ years experience. ` : "";
     const bioExcerpt = profile?.bio?.slice(0, 100) ?? "";
-    const description = `${agent.full_name} — ${specialty} at Hasker & Co. Realty Group. ${yearsExp}${bioExcerpt} Helping families find affordable, move-in ready rentals.`.slice(0, 160);
+    const description = `${agent.full_name} — ${specialty} at PrimeFamilyHousing. ${yearsExp}${bioExcerpt} Helping families find affordable, move-in ready rentals.`.slice(0, 160);
     return {
-      title: `${agent.full_name} — ${specialty} | Hasker & Co. Realty Group`,
+      title: `${agent.full_name} — ${specialty} | PrimeFamilyHousing`,
       description,
       keywords: [
         `${agent.full_name} real estate agent`,
-        `${specialty} Hasker Realty`,
+        `${specialty} Prime Family Housing`,
         "affordable rental specialist",
         "housing specialist Virginia Beach",
         "rental agent near me",
       ],
-      alternates: { canonical: `https://haskerrealtygroup.com/agents/${id}` },
+      alternates: { canonical: `https://primefamilyhousing.com/agents/${id}` },
       openGraph: {
-        title: `${agent.full_name} — ${specialty} | Hasker & Co. Realty Group`,
+        title: `${agent.full_name} — ${specialty} | PrimeFamilyHousing`,
         description,
         type: "profile",
-        url: `https://haskerrealtygroup.com/agents/${id}`,
+        url: `https://primefamilyhousing.com/agents/${id}`,
         ...(agent.avatar_url && { images: [{ url: agent.avatar_url, width: 400, height: 400, alt: agent.full_name }] }),
       },
     };
@@ -105,16 +105,16 @@ export default async function AgentProfilePage({ params }: Props) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://haskerrealtygroup.com" },
-      { "@type": "ListItem", position: 2, name: "Our Team", item: "https://haskerrealtygroup.com/agents" },
-      { "@type": "ListItem", position: 3, name: agent.full_name, item: `https://haskerrealtygroup.com/agents/${id}` },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://primefamilyhousing.com" },
+      { "@type": "ListItem", position: 2, name: "Our Team", item: "https://primefamilyhousing.com/agents" },
+      { "@type": "ListItem", position: 3, name: agent.full_name, item: `https://primefamilyhousing.com/agents/${id}` },
     ],
   };
 
   const personSchema = {
     "@context": "https://schema.org",
     "@type": "RealEstateAgent",
-    "@id": `https://haskerrealtygroup.com/agents/${id}`,
+    "@id": `https://primefamilyhousing.com/agents/${id}`,
     name: agent.full_name,
     givenName: agent.first_name,
     familyName: agent.last_name,
@@ -127,11 +127,11 @@ export default async function AgentProfilePage({ params }: Props) {
       credentialCategory: "Real Estate License",
       name: `License #${profile.license_number}`,
     }}),
-    url: `https://haskerrealtygroup.com/agents/${id}`,
+    url: `https://primefamilyhousing.com/agents/${id}`,
     worksFor: {
       "@type": "Organization",
-      name: "Hasker & Co. Realty Group",
-      url: "https://haskerrealtygroup.com",
+      name: "PrimeFamilyHousing",
+      url: "https://primefamilyhousing.com",
     },
     ...(profile?.years_experience && { hasOccupation: {
       "@type": "Occupation",
@@ -302,7 +302,7 @@ export default async function AgentProfilePage({ params }: Props) {
                       >
                         <div className="relative aspect-[16/9] overflow-hidden">
                           <Image
-                            src={primaryImg}
+                            src={toCardImageUrl(primaryImg)}
                             alt={property.title}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-500"

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Hasker & Co. Realty Group",
-  description: "Terms and conditions for using Hasker & Co. Realty Group's website and services.",
-  alternates: { canonical: "https://haskerrealtygroup.com/terms" },
+  title: "Terms of Service | PrimeFamilyHousing",
+  description: "Terms and conditions for using PrimeFamilyHousing's website and services.",
+  alternates: { canonical: "https://primefamilyhousing.com/terms" },
   robots: { index: true, follow: true },
 };
 
@@ -19,7 +19,7 @@ export default function TermsPage() {
       <div className="max-w-3xl mx-auto px-6 lg:px-8 py-16 prose prose-neutral">
         <h2>1. Acceptance of Terms</h2>
         <p>
-          By accessing and using the Hasker &amp; Co. Realty Group website and services, you accept
+          By accessing and using the PrimeFamilyHousing website and services, you accept
           and agree to be bound by these Terms of Service.
         </p>
 
@@ -46,13 +46,13 @@ export default function TermsPage() {
 
         <h2>5. Fair Housing</h2>
         <p>
-          Hasker &amp; Co. Realty Group is committed to fair housing. We do not discriminate on
+          PrimeFamilyHousing is committed to fair housing. We do not discriminate on
           the basis of race, color, national origin, religion, sex, familial status, or disability.
         </p>
 
         <h2>6. Limitation of Liability</h2>
         <p>
-          Hasker &amp; Co. Realty Group shall not be liable for any indirect, incidental, or
+          PrimeFamilyHousing shall not be liable for any indirect, incidental, or
           consequential damages arising from your use of our services.
         </p>
 
@@ -65,7 +65,7 @@ export default function TermsPage() {
         <h2>8. Contact</h2>
         <p>
           For questions about these Terms, contact us at{" "}
-          <a href="mailto:info@haskerrealtygroup.com">info@haskerrealtygroup.com</a>.
+          <a href="mailto:info@primefamilyhousing.com">info@primefamilyhousing.com</a>.
         </p>
       </div>
     </div>

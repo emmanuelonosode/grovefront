@@ -62,9 +62,9 @@ export async function generateMetadata(
   if (!city) return { title: "Not Found" };
 
   const filterLabel = getFilterLabel(spec);
-  const title = `${filterLabel} Rentals in ${city.name}, ${city.stateCode} | Hasker & Co. Realty Group`;
+  const title = `${filterLabel} Rentals in ${city.name}, ${city.stateCode} | PrimeFamilyHousing`;
   const description = `Find ${filterLabel.toLowerCase()} rentals in ${city.name}, ${city.stateCode}. All homes inspected and move-in ready. 24-hour approval decisions. Browse current availability.`;
-  const url = `https://haskerrealtygroup.com/rentals/${slug}/${filter}`;
+  const url = `https://primefamilyhousing.com/rentals/${slug}/${filter}`;
 
   return {
     title,
@@ -100,7 +100,7 @@ export default async function CityFilterPage(
   if (!city) notFound();
 
   const filterLabel = getFilterLabel(spec);
-  const pageUrl = `https://haskerrealtygroup.com/rentals/${slug}/${filter}`;
+  const pageUrl = `https://primefamilyhousing.com/rentals/${slug}/${filter}`;
 
   // Fetch filtered properties. No try/catch: an API outage must surface as a
   // 5xx (Google retries) rather than render an empty page (soft 404).
@@ -141,7 +141,7 @@ export default async function CityFilterPage(
     name: `${filterLabel} Rentals in ${city.name}, ${city.stateCode}`,
     description: `Browse ${filterLabel.toLowerCase()} rental listings in ${city.name}, ${city.stateCode}. Move-in ready homes, 24-hour decisions.`,
     url: pageUrl,
-    isPartOf: { "@type": "WebSite", name: "Hasker & Co. Realty Group", url: "https://haskerrealtygroup.com" },
+    isPartOf: { "@type": "WebSite", name: "PrimeFamilyHousing", url: "https://primefamilyhousing.com" },
     about: {
       "@type": "City",
       name: city.name,
@@ -153,9 +153,9 @@ export default async function CityFilterPage(
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home",       item: "https://haskerrealtygroup.com" },
-      { "@type": "ListItem", position: 2, name: "Properties", item: "https://haskerrealtygroup.com/houses-for-rent" },
-      { "@type": "ListItem", position: 3, name: `${city.name}, ${city.stateCode}`, item: `https://haskerrealtygroup.com/rentals/${slug}` },
+      { "@type": "ListItem", position: 1, name: "Home",       item: "https://primefamilyhousing.com" },
+      { "@type": "ListItem", position: 2, name: "Properties", item: "https://primefamilyhousing.com/houses-for-rent" },
+      { "@type": "ListItem", position: 3, name: `${city.name}, ${city.stateCode}`, item: `https://primefamilyhousing.com/rentals/${slug}` },
       { "@type": "ListItem", position: 4, name: filterLabel,  item: pageUrl },
     ],
   };
@@ -165,17 +165,17 @@ export default async function CityFilterPage(
       ? [
           {
             q: `How much does a ${spec.count}-bedroom rental cost in ${city.name}?`,
-            a: `${spec.count}-bedroom rentals in ${city.name} start around ${city.avgRent}/month. Hasker & Co. offers move-in ready homes with transparent pricing on every listing.`,
+            a: `${spec.count}-bedroom rentals in ${city.name} start around ${city.avgRent}/month. PrimeFamilyHousing offers move-in ready homes with transparent pricing on every listing.`,
           },
           {
             q: `Are ${spec.count}-bedroom homes available to rent in ${city.name}?`,
-            a: `Yes. Hasker & Co. Realty Group maintains verified ${spec.count}-bedroom rental listings in ${city.name}. Browse current availability above and apply in under 10 minutes.`,
+            a: `Yes. PrimeFamilyHousing maintains verified ${spec.count}-bedroom rental listings in ${city.name}. Browse current availability above and apply in under 10 minutes.`,
           },
         ]
       : [
           {
             q: `Are there ${spec.plural.toLowerCase()} for rent in ${city.name}?`,
-            a: `Yes. Hasker & Co. lists verified ${spec.plural.toLowerCase()} in ${city.name} — all inspected and move-in ready, with transparent pricing. Current listings are shown above.`,
+            a: `Yes. PrimeFamilyHousing lists verified ${spec.plural.toLowerCase()} in ${city.name} — all inspected and move-in ready, with transparent pricing. Current listings are shown above.`,
           },
           {
             q: `How much does it cost to rent a ${spec.label.toLowerCase()} in ${city.name}?`,

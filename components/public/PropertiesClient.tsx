@@ -9,7 +9,7 @@ import {
   List, Map as MapIcon, Layers, BedDouble, DollarSign, ArrowRight, Calendar,
   Bath, Bed, Home, PawPrint, Maximize, Phone,
 } from "lucide-react";
-import { HaskerLogo } from "@/components/ui/HaskerLogo";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 import { CardImageCarousel } from "./CardImageCarousel";
 import { FavoriteButton } from "./FavoriteButton";
 import { captureSearchIntent, getBestKnownCity, getDeviceContext, getStoredReferralCode, getStoredUTMs, trackEvent } from "@/lib/tracking";
@@ -147,7 +147,7 @@ export function PropertiesClient({
   const [customMax, setCustomMax] = useState(initialCustom ? initialMaxPrice : "");
 
   useEffect(() => {
-    if (sessionStorage.getItem("hasker_lead_captured") === "true") setLeadCaptured(true);
+    if (sessionStorage.getItem("pfh_lead_captured") === "true") setLeadCaptured(true);
     fetchAllCities().then((cities) => {
       setLiveCities(cities.map((c) => ({ city: c.city, state: c.state })));
     }).catch(() => {});
@@ -220,7 +220,7 @@ export function PropertiesClient({
       if (entries[0].isIntersecting) {
         setLoadingMore(true);
         const nextPage = currentPageState + 1;
-        const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "https://admin.haskerrealtygroup.com";
+        const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "https://admin.primefamilyhousing.com";
         const p = new URLSearchParams();
         const [prMin, prMax] = (priceRange || "").split("-");
         const base: Record<string, string | undefined> = {
@@ -319,7 +319,7 @@ export function PropertiesClient({
         ...(listingType && { listing_type: listingType }),
         ...(q && { q }),
       });
-      const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "https://admin.haskerrealtygroup.com";
+      const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "https://admin.primefamilyhousing.com";
       const res = await fetch(`${apiBase}/api/v1/properties/?${p}`);
       if (res.ok) setMapResults((await res.json()).results);
     } finally { setMapLoading(false); }
@@ -377,7 +377,7 @@ export function PropertiesClient({
           {/* Row 1: Location search input */}
           <div className="flex items-center gap-2 px-4 pt-3 pb-2">
             <Link href="/" aria-label="Home" className="shrink-0 mr-1 hidden sm:flex items-center hover:opacity-80 transition-opacity">
-              <HaskerLogo variant="on-white" height={24} />
+              <BrandLogo variant="on-white" height={24} />
             </Link>
             <div className="relative flex-1 min-w-0" ref={locationRef}>
               <div className="flex items-center gap-2 bg-white border-2 border-neutral-200 rounded-xl px-3.5 h-11 focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/15 transition-all">
@@ -721,7 +721,7 @@ export function PropertiesClient({
               </p>
               <div className="flex items-center gap-1.5 shrink-0">
                 <button
-                  onClick={() => window.dispatchEvent(new Event("hasker:open-callback"))}
+                  onClick={() => window.dispatchEvent(new Event("pfh:open-callback"))}
                   className="text-[11px] font-bold text-white bg-brand hover:bg-brand-hover px-3 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
                 >
                   Get Help
@@ -754,7 +754,7 @@ export function PropertiesClient({
             <div className="flex items-center gap-2 shrink-0">
               {/* Desktop call CTA (mobile uses the bottom toolbar) */}
               <button
-                onClick={() => window.dispatchEvent(new Event("hasker:open-callback"))}
+                onClick={() => window.dispatchEvent(new Event("pfh:open-callback"))}
                 className="hidden lg:flex items-center gap-1.5 text-[12px] font-bold text-brand border border-brand/30 rounded-lg px-3 py-2 hover:bg-brand/5 transition-colors cursor-pointer"
               >
                 <Phone size={13} /> Call
@@ -884,7 +884,7 @@ export function PropertiesClient({
           </button>
           <div className="w-px my-2.5 bg-neutral-200" />
           <button
-            onClick={() => window.dispatchEvent(new Event("hasker:open-callback"))}
+            onClick={() => window.dispatchEvent(new Event("pfh:open-callback"))}
             className="flex items-center gap-2 pl-4 pr-5 py-3.5 text-[13.5px] font-bold text-brand active:bg-brand/5 transition-colors"
           >
             <Phone size={16} /> Call
@@ -1053,7 +1053,7 @@ function EmptyStateCallbackForm() {
         }),
       });
       if (!res.ok) throw new Error("Failed");
-      sessionStorage.setItem("hasker_lead_captured", "true");
+      sessionStorage.setItem("pfh_lead_captured", "true");
       trackEvent("generate_lead", { source: "empty_state" });
       setDone(true);
     } catch {
@@ -1135,7 +1135,7 @@ function InlineLeadCard({ onCaptured }: { onCaptured: () => void }) {
         const d = await res.json().catch(() => ({}));
         throw new Error((d as { detail?: string }).detail ?? "Failed.");
       }
-      sessionStorage.setItem("hasker_lead_captured", "true");
+      sessionStorage.setItem("pfh_lead_captured", "true");
       trackEvent("generate_lead", { source: "inline_card" });
       setDone(true);
       onCaptured();
