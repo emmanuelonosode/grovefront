@@ -40,7 +40,7 @@ export function PropertyLeadCTAs({
 }: PropertyLeadCTAsProps) {
   const [specialOpen, setSpecialOpen] = useState(false);
 
-  const browseHref = `/houses-for-rent?q=${encodeURIComponent(propertyCity || "")}`;
+  const browseHref = `/homes-for-rent?q=${encodeURIComponent(propertyCity || "")}`;
 
   // ── Home no longer available — redirect intent to similar homes ─────────────
   if (!available && mode === "sidebar") {

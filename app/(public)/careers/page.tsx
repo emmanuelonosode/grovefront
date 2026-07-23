@@ -257,7 +257,7 @@ const jobPostings = openRoles.map((role) => {
 
 export default function CareersPage() {
   return (
-    <main className="pt-20 bg-white">
+    <div className="pt-20 bg-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       {jobPostings.map((jp, i) => (
         <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jp) }} />
@@ -655,6 +655,6 @@ export default function CareersPage() {
           <CareerApplicationForm roleId="general" roleTitle="General Application" />
         </div>
       </section>
-    </main>
+    </div>
   );
 }

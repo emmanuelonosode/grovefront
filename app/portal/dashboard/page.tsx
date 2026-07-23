@@ -253,7 +253,7 @@ export default function DashboardPage() {
                       <FileCheck size={14} className="text-primary" /> {application.intended_stay_duration}
                     </span>
                   )}
-                  <Link href={`/houses-for-rent/${application.property_detail.slug}`} className="ml-auto text-primary font-semibold hover:underline flex items-center gap-1">
+                  <Link href={`/homes-for-rent/${application.property_detail.slug}`} className="ml-auto text-primary font-semibold hover:underline flex items-center gap-1">
                     View listing <ChevronRight size={14} />
                   </Link>
                 </div>

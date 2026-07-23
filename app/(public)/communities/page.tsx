@@ -72,7 +72,7 @@ export default async function CommunitiesPage() {
   };
 
   return (
-    <main>
+    <div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />
 
       {/* ── HERO ─────────────────────────────────────────────── */}
@@ -100,7 +100,7 @@ export default async function CommunitiesPage() {
 
           {/* Glass search panel */}
           <form
-            action="/houses-for-rent"
+            action="/homes-for-rent"
             method="GET"
             className="rounded-xl p-3 max-w-xl mx-auto flex items-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-[12px]"
             style={{ background: "rgba(249, 250, 242, 0.85)", border: "1px solid rgba(113, 121, 115, 0.1)" }}
@@ -177,6 +177,6 @@ export default async function CommunitiesPage() {
           </div>
         )}
       </section>
-    </main>
+    </div>
   );
 }

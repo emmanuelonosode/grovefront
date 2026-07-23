@@ -7,15 +7,15 @@ import { fetchAllCities, toDirectoryCities } from "@/lib/cities";
 export const revalidate = 0;
 
 export const metadata = {
-  title: "Houses for Rent & Affordable Homes Nationwide | PrimeFamilyHousing",
+  title: "Homes for Rent & Affordable Houses Nationwide | PrimeFamilyHousing",
   description:
-    "Browse affordable houses, apartments, and homes for rent across the U.S. — move-in ready, pet-friendly options, transparent pricing, and 24-hour application decisions. Find your next rental by city.",
-  alternates: { canonical: "https://primefamilyhousing.com/houses-for-rent" },
+    "Browse affordable homes, houses, and apartments for rent across the U.S. — move-in ready, pet-friendly options, transparent pricing, and 24-hour application decisions. Find your next rental by city.",
+  alternates: { canonical: "https://primefamilyhousing.com/homes-for-rent" },
   openGraph: {
-    title: "Houses for Rent & Affordable Homes Nationwide | PrimeFamilyHousing",
+    title: "Homes for Rent & Affordable Houses Nationwide | PrimeFamilyHousing",
     description: "Browse affordable houses and apartments for rent — inspected, move-in ready, 24-hour decisions.",
     type: "website",
-    url: "https://primefamilyhousing.com/houses-for-rent",
+    url: "https://primefamilyhousing.com/homes-for-rent",
   },
 };
 
@@ -86,7 +86,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home",       item: "https://primefamilyhousing.com" },
-      { "@type": "ListItem", position: 2, name: "Houses for Rent", item: "https://primefamilyhousing.com/houses-for-rent" },
+      { "@type": "ListItem", position: 2, name: "Homes for Rent", item: "https://primefamilyhousing.com/homes-for-rent" },
     ],
   };
 
@@ -94,19 +94,19 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
   const itemListSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "Houses & apartments for rent",
+    name: "Homes & apartments for rent",
     numberOfItems: results.length,
     itemListElement: results.slice(0, 24).map((p, i) => ({
       "@type": "ListItem",
       position: i + 1,
-      url: `https://primefamilyhousing.com/houses-for-rent/${p.slug}`,
+      url: `https://primefamilyhousing.com/homes-for-rent/${p.slug}`,
       name: p.title,
     })),
   };
 
   return (
-    <main>
-      <h1 className="sr-only">Houses &amp; Apartments for Rent — Affordable Homes Nationwide | PrimeFamilyHousing</h1>
+    <div>
+      <h1 className="sr-only">Homes &amp; Apartments for Rent — Affordable Houses Nationwide | PrimeFamilyHousing</h1>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
@@ -136,6 +136,6 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
 
       {/* Crawlable internal-link hub to every city landing page (national SEO). */}
       {/* <CityDirectory cities={mergedCities} counts={cityCounts} /> */}
-    </main>
+    </div>
   );
 }

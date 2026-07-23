@@ -23,7 +23,7 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
 
   const isRental = property.listingType === "for-rent" || property.listingType === "for-lease";
 
-  const detailHref = `/houses-for-rent/${property.slug}`;
+  const detailHref = `/homes-for-rent/${property.slug}`;
 
   // ─── Horizontal variant ────────────────────────────────────────────
   if (variant === "horizontal") {

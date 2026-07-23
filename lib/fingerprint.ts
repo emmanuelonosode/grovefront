@@ -22,6 +22,21 @@ export async function getVisitorFingerprint(): Promise<string> {
   let fp = localStorage.getItem(FINGERPRINT_KEY);
   if (fp) return fp;
   
+  // Safely extract WebGL renderer info if available
+  let webglInfo = "unknown";
+  try {
+    const canvas = document.createElement("canvas");
+    const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+    if (gl && "getExtension" in gl) {
+      const debugInfo = (gl as WebGLRenderingContext).getExtension("WEBGL_debug_renderer_info");
+      if (debugInfo) {
+        webglInfo = (gl as WebGLRenderingContext).getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || "unknown";
+      }
+    }
+  } catch {
+    webglInfo = "error";
+  }
+
   // Create a robust fingerprint based on available safe properties
   const components = [
     navigator.userAgent,
@@ -29,6 +44,9 @@ export async function getVisitorFingerprint(): Promise<string> {
     Intl.DateTimeFormat().resolvedOptions().timeZone,
     window.screen.colorDepth,
     window.screen.width + "x" + window.screen.height,
+    window.devicePixelRatio || 1,
+    navigator.maxTouchPoints || 0,
+    webglInfo,
     navigator.hardwareConcurrency || "unknown",
     //@ts-expect-error deviceMemory is not standard but available in some browsers
     navigator.deviceMemory || "unknown"

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Montserrat, Source_Sans_3 } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
 import { TrackingScripts } from "@/components/TrackingScripts";
@@ -18,6 +18,12 @@ const montserrat = Montserrat({
   weight: ["400", "600", "700", "800"],
   display: "swap",
 });
+
+// theme-color tints the browser UI (mobile address bar, PWA chrome) to the
+// brand forest green. In Next 16 this belongs in the viewport export, not metadata.
+export const viewport: Viewport = {
+  themeColor: "#012d1d",
+};
 
 export const metadata: Metadata = {
   title: {
@@ -103,13 +109,9 @@ export const metadata: Metadata = {
       "Find affordable rental apartments and homes across Atlanta, Charlotte, Houston, Dallas, Nashville & more. Move-in ready homes, fast approvals.",
     creator: "@primefamilyhousing",
   },
-  icons: {
-    icon: [
-      { url: '/icon.png', type: 'image/png', sizes: '320x320' },
-    ],
-    apple: '/apple-icon.png',
-    shortcut: '/icon.png',
-  },
+  // Icons are provided by the App Router file conventions (app/icon.svg,
+  // app/icon.png, app/apple-icon.png) — Next auto-emits the <link> tags with
+  // content hashes, so no manual `icons` block is needed (it would duplicate them).
   robots: {
     index: true,
     follow: true,
@@ -159,9 +161,9 @@ const jsonLd = {
         "@id": "https://primefamilyhousing.com/#logo",
         "url": "https://primefamilyhousing.com/logo/logo.png",
         "contentUrl": "https://primefamilyhousing.com/logo/logo.png",
-        "width": 280,
-        "height": 48,
-        "caption": "PrimeFamilyHousing"
+        "width": 512,
+        "height": 280,
+        "caption": "PrimeFamilyHousing — Great Places to Call Home"
       },
       "image": { "@id": "https://primefamilyhousing.com/#logo" },
       "description": "PrimeFamilyHousing is a licensed US real estate company founded in 2012, specializing in affordable rental homes and budget-friendly properties for sale across 12+ US cities. Well-maintained, move-in ready homes. 24-hour application decisions. 2,000+ families housed.",
@@ -264,7 +266,7 @@ const jsonLd = {
         "@type": "SearchAction",
         "target": {
           "@type": "EntryPoint",
-          "urlTemplate": "https://primefamilyhousing.com/houses-for-rent?q={search_term_string}"
+          "urlTemplate": "https://primefamilyhousing.com/homes-for-rent?q={search_term_string}"
         },
         "query-input": "required name=search_term_string"
       },

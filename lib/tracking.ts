@@ -207,22 +207,34 @@ export function getDeviceContext(): string {
  * Used by the visitor session capture to send individual fields to the backend.
  */
 export interface DeviceData {
-  browser:     string;
-  os:          string;
-  device_type: string;
-  screen:      string;
-  language:    string;
-  timezone:    string;
-  referrer:    string;
-  landing_page: string;
+  browser:              string;
+  os:                   string;
+  device_type:          string;
+  screen:               string;
+  viewport:             string;
+  pixel_ratio:          number;
+  connection_type:      string;
+  hardware_concurrency: number;
+  device_memory:        number;
+  max_touch_points:     number;
+  orientation:          string;
+  language:             string;
+  timezone:             string;
+  referrer:             string;
+  landing_page:         string;
 }
 
 export function getStructuredDevice(): DeviceData {
   if (typeof window === "undefined") {
-    return { browser: "", os: "", device_type: "", screen: "", language: "", timezone: "", referrer: "", landing_page: "" };
+    return {
+      browser: "", os: "", device_type: "", screen: "", viewport: "",
+      pixel_ratio: 1, connection_type: "", hardware_concurrency: 0,
+      device_memory: 0, max_touch_points: 0, orientation: "",
+      language: "", timezone: "", referrer: "", landing_page: ""
+    };
   }
   try {
-    const ua     = navigator.userAgent;
+    const ua = navigator.userAgent;
     const browser = /Edg\//.test(ua)
       ? `Edge ${ua.match(/Edg\/([\d.]+)/)?.[1] ?? ""}`
       : /Chrome\//.test(ua)
@@ -237,25 +249,42 @@ export function getStructuredDevice(): DeviceData {
       : /Android/.test(ua)     ? "Android"
       : /Mac OS X/.test(ua)    ? "macOS"
       : /Linux/.test(ua)       ? "Linux" : "Unknown";
+
+    const conn = (navigator as unknown as { connection?: { effectiveType?: string } }).connection?.effectiveType || "unknown";
+    //@ts-expect-error deviceMemory is non-standard
+    const memory = Number(navigator.deviceMemory || 0);
+    const orientation = window.screen?.orientation?.type || "";
+
     return {
       browser,
       os,
-      device_type:  /Mobi|Android/i.test(ua) ? "Mobile" : "Desktop",
-      screen:       `${window.screen.width}×${window.screen.height}`,
-      language:     navigator.language,
-      timezone:     Intl.DateTimeFormat().resolvedOptions().timeZone,
-      referrer:     document.referrer || "",
-      landing_page: window.location.pathname + window.location.search,
+      device_type:          /Mobi|Android/i.test(ua) ? "Mobile" : "Desktop",
+      screen:               `${window.screen.width}×${window.screen.height}`,
+      viewport:             `${window.innerWidth}×${window.innerHeight}`,
+      pixel_ratio:          window.devicePixelRatio || 1,
+      connection_type:      conn,
+      hardware_concurrency: navigator.hardwareConcurrency || 0,
+      device_memory:        memory,
+      max_touch_points:     navigator.maxTouchPoints || 0,
+      orientation:          orientation,
+      language:             navigator.language,
+      timezone:             Intl.DateTimeFormat().resolvedOptions().timeZone,
+      referrer:             document.referrer || "",
+      landing_page:         window.location.pathname + window.location.search,
     };
   } catch {
-    return { browser: "", os: "", device_type: "", screen: "", language: "", timezone: "", referrer: "", landing_page: "" };
+    return {
+      browser: "", os: "", device_type: "", screen: "", viewport: "",
+      pixel_ratio: 1, connection_type: "", hardware_concurrency: 0,
+      device_memory: 0, max_touch_points: 0, orientation: "",
+      language: "", timezone: "", referrer: "", landing_page: ""
+    };
   }
 }
 
 // ── Conversion / interaction events ──────────────────────────────────────────
 // All of these are now FIRST-PARTY: they feed our own telemetry spool
 // (/api/v1/analytics/visitors/) instead of Google Tag Manager or Meta Pixel.
-// The function names/signatures are kept so existing call sites are unchanged.
 
 export function trackEvent(event: string, params?: Record<string, unknown>): void {
   if (typeof window === "undefined") return;
@@ -287,4 +316,31 @@ export function trackMetaCustom(
   params?: Record<string, unknown>
 ): void {
   trackEvent(eventName, params);
+}
+
+// ── Specialized Real Estate Telemetry Helpers ─────────────────────────────────
+
+export function trackPropertyView(propertyId: string | number, details?: { title?: string; city?: string; price?: number }): void {
+  trackEvent("property_view", {
+    property_id: String(propertyId),
+    title: details?.title,
+    city: details?.city,
+    price: details?.price,
+  });
+}
+
+export function trackSearchFilter(filters: Record<string, unknown>): void {
+  trackEvent("search_filter", { filters });
+}
+
+export function trackFavoriteToggle(propertyId: string | number, isFavorited: boolean): void {
+  trackEvent("favorite_toggle", { property_id: String(propertyId), is_favorited: isFavorited });
+}
+
+export function trackApplicationStart(propertyId: string | number): void {
+  trackEvent("application_start", { property_id: String(propertyId) });
+}
+
+export function trackViewingBooked(propertyId: string | number, date?: string): void {
+  trackEvent("viewing_booked", { property_id: String(propertyId), scheduled_date: date });
 }

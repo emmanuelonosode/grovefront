@@ -218,7 +218,7 @@ export function StateDirectory({ cities, counts = {} }: Props) {
             </p>
             <p className="mt-1 text-[13px] text-on-surface-variant">
               Try a state name like “Texas” or a city like “Atlanta” — or{" "}
-              <Link href="/houses-for-rent" className="text-primary font-semibold hover:underline">
+              <Link href="/homes-for-rent" className="text-primary font-semibold hover:underline">
                 browse all rentals
               </Link>
               .

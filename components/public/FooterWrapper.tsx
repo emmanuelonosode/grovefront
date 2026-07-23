@@ -9,6 +9,6 @@ import { usePathname } from "next/navigation";
  */
 export function FooterWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  if (pathname === "/houses-for-rent") return null;
+  if (pathname === "/homes-for-rent") return null;
   return <>{children}</>;
 }

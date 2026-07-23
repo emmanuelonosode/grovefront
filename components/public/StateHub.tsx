@@ -71,7 +71,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: BASE },
-      { "@type": "ListItem", position: 2, name: "Houses for Rent", item: `${BASE}/houses-for-rent` },
+      { "@type": "ListItem", position: 2, name: "Houses for Rent", item: `${BASE}/homes-for-rent` },
       { "@type": "ListItem", position: 3, name: `${state.name}`, item: url },
     ],
   };
@@ -106,7 +106,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
   };
 
   return (
-    <>
+    <div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
@@ -139,7 +139,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
           </p>
 
           {/* Search bar */}
-          <form action="/houses-for-rent" method="GET" className="w-full max-w-2xl bg-surface rounded-full p-2 flex items-center shadow-lg">
+          <form action="/homes-for-rent" method="GET" className="w-full max-w-2xl bg-surface rounded-full p-2 flex items-center shadow-lg">
             <Search size={18} className="text-outline ml-4 mr-2 shrink-0" />
             <input
               type="text"
@@ -181,12 +181,12 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
           </p>
           <div className="flex flex-wrap gap-2">
             {[
-              { label: "All Homes", href: `/houses-for-rent?q=${encodeURIComponent(state.name)}` },
-              { label: "2-Bedroom", href: `/houses-for-rent?q=${encodeURIComponent(state.name)}&beds=2` },
-              { label: "3-Bedroom", href: `/houses-for-rent?q=${encodeURIComponent(state.name)}&beds=3` },
-              { label: "4-Bedroom", href: `/houses-for-rent?q=${encodeURIComponent(state.name)}&beds=4` },
-              { label: "Pet-Friendly", href: `/houses-for-rent?q=${encodeURIComponent(state.name)}&pets=true` },
-              { label: "Most Affordable", href: `/houses-for-rent?q=${encodeURIComponent(state.name)}&sort=price_asc` },
+              { label: "All Homes", href: `/homes-for-rent?q=${encodeURIComponent(state.name)}` },
+              { label: "2-Bedroom", href: `/homes-for-rent?q=${encodeURIComponent(state.name)}&beds=2` },
+              { label: "3-Bedroom", href: `/homes-for-rent?q=${encodeURIComponent(state.name)}&beds=3` },
+              { label: "4-Bedroom", href: `/homes-for-rent?q=${encodeURIComponent(state.name)}&beds=4` },
+              { label: "Pet-Friendly", href: `/homes-for-rent?q=${encodeURIComponent(state.name)}&pets=true` },
+              { label: "Most Affordable", href: `/homes-for-rent?q=${encodeURIComponent(state.name)}&sort=price_asc` },
             ].map((t) => (
               <Link
                 key={t.label}
@@ -326,7 +326,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
               <p className="text-neutral-500 text-sm max-w-md mx-auto mb-6">
                 We&apos;re expanding across {state.name}. Browse all currently available homes, or leave your details below to be notified first.
               </p>
-              <Button variant="accent" asChild><Link href="/houses-for-rent">Browse All Homes <ArrowRight size={14} /></Link></Button>
+              <Button variant="accent" asChild><Link href="/homes-for-rent">Browse All Homes <ArrowRight size={14} /></Link></Button>
             </div>
           )}
         </div>
@@ -407,7 +407,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
           <div className="mt-8 flex flex-col sm:flex-row gap-3">
             <Button variant="accent" asChild><Link href="/apply">Apply in 10 Minutes</Link></Button>
             <Button variant="outline-blue" asChild>
-              <Link href={`/houses-for-rent?q=${encodeURIComponent(state.name)}`}>Browse {state.name} Listings</Link>
+              <Link href={`/homes-for-rent?q=${encodeURIComponent(state.name)}`}>Browse {state.name} Listings</Link>
             </Button>
           </div>
         </div>
@@ -485,6 +485,6 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
           </div>
         </section>
       )}
-    </>
+    </div>
   );
 }

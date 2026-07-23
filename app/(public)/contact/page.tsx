@@ -45,7 +45,7 @@ const offices = [
 const breadcrumb = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: "https://primefamilyhousing.com" }, { "@type": "ListItem", position: 2, name: "Contact", item: "https://primefamilyhousing.com/contact" }] };
 export default function ContactPage() {
   return (
-    <main className="pt-20">
+    <div className="pt-20">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       {/* Header */}
       <section className="bg-brand-dark pt-16 pb-0 px-6">
@@ -152,6 +152,6 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

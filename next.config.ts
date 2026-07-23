@@ -76,26 +76,27 @@ const nextConfig: NextConfig = {
         destination: "https://primefamilyhousing.com/:path*",
         permanent: true,
       },
-      // /properties → /houses-for-rent (route rename, 301 preserves SEO equity)
+      // /properties → /homes-for-rent (route rename, 301 preserves SEO equity;
+      // points directly at the final path — no redirect chain through /houses-for-rent)
       {
         source: "/properties",
-        destination: "/houses-for-rent",
+        destination: "/homes-for-rent",
         permanent: true,
       },
       {
         source: "/properties/:slug*",
-        destination: "/houses-for-rent/:slug*",
+        destination: "/homes-for-rent/:slug*",
         permanent: true,
       },
-      // /homes-for-rent → /houses-for-rent (route rename, 301 preserves SEO equity)
+      // /houses-for-rent → /homes-for-rent (route rename, 301 preserves SEO equity)
       {
-        source: "/homes-for-rent",
-        destination: "/houses-for-rent",
+        source: "/houses-for-rent",
+        destination: "/homes-for-rent",
         permanent: true,
       },
       {
-        source: "/homes-for-rent/:slug*",
-        destination: "/houses-for-rent/:slug*",
+        source: "/houses-for-rent/:slug*",
+        destination: "/homes-for-rent/:slug*",
         permanent: true,
       },
       // Legacy grouped sub-sitemaps → the single central sitemap. Keeps stale

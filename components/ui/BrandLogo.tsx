@@ -1,66 +1,45 @@
 /**
- * PrimeFamilyHousing — SVG wordmark component.
- * Icon: house mark inside a deep-forest circle with an earth-beige roof cutout.
- * Text: "PrimeFamilyHousing" bold + "HOMES FOR FAMILIES" spaced below.
+ * PrimeFamilyHousing — official brand mark (house + tree over a hill swoosh).
  *
- * variant="on-white"  → deep forest wordmark (nav on light background)
- * variant="on-dark"   → white wordmark       (footer, transparent hero nav)
+ * Renders the real vector logo from /public/brand as an <img> (the browser
+ * rasterizes SVG crisply at any size — no next/image SVG config needed).
+ *
+ * variant="on-white" → forest-green (nav on a light/solid background)
+ * variant="on-dark"  → beige        (footer, transparent hero nav)
+ *
+ * mark="lockup" → full stack: icon + "Primefamilyhousing" + tagline
+ *                 (native ratio 77.22 : 42.21 ≈ 1.83 : 1)
+ * mark="emblem" → icon only, for compact/inline spots
+ *                 (native ratio 75.63 : 27.26 ≈ 2.77 : 1)
+ *
+ * `height` drives the size; width is derived from the mark's native ratio.
  */
+const RATIO = {
+  lockup: 77.22 / 42.21,
+  emblem: 75.63 / 27.26,
+} as const;
+
 export function BrandLogo({
   variant = "on-white",
-  height = 36,
+  mark = "lockup",
+  height = 44,
 }: {
   variant?: "on-white" | "on-dark";
+  mark?: "lockup" | "emblem";
   height?: number;
 }) {
-  const textColor = variant === "on-dark" ? "#FFFFFF" : "#012d1d";
-  const subColor = variant === "on-dark" ? "#E9EDC6" : "#7d562d";
-  const width = Math.round(height * (218 / 44));
+  const tone = variant === "on-dark" ? "beige" : "green";
+  const src = `/brand/${mark === "emblem" ? "emblem" : "logo-lockup"}-${tone}.svg`;
+  const width = Math.round(height * RATIO[mark]);
 
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 218 44"
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt="PrimeFamilyHousing — Great Places to Call Home"
       width={width}
       height={height}
-      role="img"
-      aria-label="PrimeFamilyHousing"
-    >
-      {/* ── Icon circle ── */}
-      <circle cx="22" cy="22" r="22" fill="#012d1d" />
-
-      {/* House mark — roof + body + door, centered in the circle */}
-      <g>
-        <polygon points="22,9 35,21 32,21 32,24 12,24 12,21 9,21" fill="#E9EDC6" />
-        <rect x="13.5" y="24" width="17" height="11" rx="1.5" fill="#E9EDC6" />
-        <rect x="19" y="26.5" width="6" height="8.5" rx="1" fill="#012d1d" />
-      </g>
-
-      {/* ── Wordmark ── */}
-      <text
-        x="52"
-        y="21"
-        fontFamily="Montserrat, 'Helvetica Neue', Helvetica, Arial, sans-serif"
-        fontWeight="700"
-        fontSize="15.5"
-        fill={textColor}
-        letterSpacing="-0.2"
-      >
-        PrimeFamilyHousing
-      </text>
-
-      {/* Descriptor */}
-      <text
-        x="53"
-        y="34"
-        fontFamily="'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif"
-        fontWeight="400"
-        fontSize="8"
-        fill={subColor}
-        letterSpacing="3"
-      >
-        HOMES FOR FAMILIES
-      </text>
-    </svg>
+      style={{ height, width: "auto", display: "block" }}
+    />
   );
 }

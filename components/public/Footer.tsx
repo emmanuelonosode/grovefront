@@ -63,10 +63,10 @@ const footerCols = [
   {
     h: "Rent",
     links: [
-      { label: "Browse homes",         href: "/houses-for-rent" },
+      { label: "Browse homes",         href: "/homes-for-rent" },
       { label: "Apartments for rent",  href: "/apartments-for-rent" },
-      { label: "Pet-friendly",         href: "/houses-for-rent?q=pet" },
-      { label: "All cities",           href: "/houses-for-rent#all-cities" },
+      { label: "Pet-friendly",         href: "/homes-for-rent?q=pet" },
+      { label: "All cities",           href: "/homes-for-rent#all-cities" },
     ],
   },
   {
@@ -108,7 +108,7 @@ export async function Footer() {
           {/* Brand */}
           <div>
             <Link href="/" className="inline-block opacity-90 hover:opacity-100 transition-opacity">
-              <BrandLogo variant="on-dark" height={30} />
+              <BrandLogo variant="on-dark" height={46} />
             </Link>
             <p className="mt-4 leading-[1.6]" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 14, color: "rgba(255,255,255,0.45)", maxWidth: 240 }}>
               Good Homes. Fair Prices. No Surprises.<br />Housing 2,400+ families across the U.S. since 2012.
@@ -189,7 +189,7 @@ export async function Footer() {
               </Link>
             ))}
             <Link
-              href="/houses-for-rent#all-cities"
+              href="/homes-for-rent#all-cities"
               className="transition-colors hover:text-white"
               style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 14.5, color: "#A3B18A", fontWeight: 600, textDecoration: "none" }}
             >

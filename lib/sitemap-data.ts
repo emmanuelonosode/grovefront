@@ -25,7 +25,7 @@ export async function buildCore(): Promise<SitemapEntry[]> {
 
   const pages: SitemapEntry[] = [
     { url: BASE_URL,                      lastModified: new Date(), changeFrequency: "daily",   priority: 1.0 },
-    { url: `${BASE_URL}/houses-for-rent`, lastModified: new Date(), changeFrequency: "daily",   priority: 0.9 },
+    { url: `${BASE_URL}/homes-for-rent`, lastModified: new Date(), changeFrequency: "daily",   priority: 0.9 },
     { url: `${BASE_URL}/apply`,           lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE_URL}/agents`,          lastModified: new Date(), changeFrequency: "daily",   priority: 0.8 },
     { url: `${BASE_URL}/blog`,            lastModified: new Date(), changeFrequency: "daily",   priority: 0.8 },
@@ -141,7 +141,7 @@ export async function buildProperties(): Promise<SitemapEntry[]> {
     // so clean it and drop anything still not absolute (GSC rejects it otherwise).
     const image = cleanImageUrl(p.image);
     return {
-      url: `${BASE_URL}/houses-for-rent/${p.slug}`,
+      url: `${BASE_URL}/homes-for-rent/${p.slug}`,
       lastModified: new Date(p.lastModified),
       changeFrequency: "daily" as const,
       priority: 0.9,

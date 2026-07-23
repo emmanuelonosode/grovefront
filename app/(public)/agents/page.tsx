@@ -130,7 +130,7 @@ export default async function AgentsPage() {
   const agents = await fetchAgents();
 
   return (
-    <main className="pt-20">
+    <div className="pt-20">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
 
       {/* ── HERO — clean photo, no overlay; text on a solid card ─────────── */}
@@ -425,6 +425,6 @@ export default async function AgentsPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

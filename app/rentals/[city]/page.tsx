@@ -264,7 +264,7 @@ export default async function CityRentalsPage(
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: "https://primefamilyhousing.com" },
-      { "@type": "ListItem", position: 2, name: "Properties", item: "https://primefamilyhousing.com/houses-for-rent" },
+      { "@type": "ListItem", position: 2, name: "Properties", item: "https://primefamilyhousing.com/homes-for-rent" },
       { "@type": "ListItem", position: 3, name: city.state, item: `https://primefamilyhousing.com/rentals/${stateSlug}` },
       { "@type": "ListItem", position: 4, name: `${city.name}, ${city.stateCode}`, item: `https://primefamilyhousing.com/rentals/${slug}` },
     ],
@@ -284,7 +284,7 @@ export default async function CityRentalsPage(
   };
 
   return (
-    <>
+    <div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
@@ -344,7 +344,7 @@ export default async function CityRentalsPage(
 
           <div className="flex flex-wrap gap-3 mt-8 hero-animate" style={{ animationDelay: "240ms" }}>
             <Link
-              href={`/houses-for-rent?q=${encodeURIComponent(city.name)}`}
+              href={`/homes-for-rent?q=${encodeURIComponent(city.name)}`}
               className="inline-flex items-center gap-2 bg-primary text-on-primary text-[14px] tracking-[0.05em] font-semibold px-8 py-3.5 rounded-full hover:bg-primary-container transition-colors active:scale-95 shadow-md"
             >
               Browse {city.name} Inventory
@@ -395,7 +395,7 @@ export default async function CityRentalsPage(
               { label: "4 Beds",      href: `/rentals/${slug}/4-bedroom`,  Icon: Bed },
               { label: "Condos",      href: `/rentals/${slug}/condos`,     Icon: Building },
               { label: "Townhouses",  href: `/rentals/${slug}/townhouses`, Icon: Building },
-              { label: "Pet-friendly", href: `/houses-for-rent?q=${encodeURIComponent(city.name)}&pets=true`, Icon: PawPrint },
+              { label: "Pet-friendly", href: `/homes-for-rent?q=${encodeURIComponent(city.name)}&pets=true`, Icon: PawPrint },
             ].map(({ label, href, Icon }) => (
               <Link
                 key={label}
@@ -420,7 +420,7 @@ export default async function CityRentalsPage(
               </h2>
             </div>
             <Link
-              href={`/houses-for-rent?q=${encodeURIComponent(city.name)}`}
+              href={`/homes-for-rent?q=${encodeURIComponent(city.name)}`}
               className="hidden sm:flex items-center gap-2 text-sm text-brand font-medium hover:underline"
             >
               {totalCount > properties.length ? `View all ${totalCount} listings` : `View all ${city.name} listings`}
@@ -456,7 +456,7 @@ export default async function CityRentalsPage(
                   our currently available properties across 12+ cities.
                 </p>
                 <Button variant="accent" asChild className="self-start">
-                  <Link href="/houses-for-rent">Browse All Properties <ArrowRight size={14} /></Link>
+                  <Link href="/homes-for-rent">Browse All Properties <ArrowRight size={14} /></Link>
                 </Button>
               </div>
             </div>
@@ -465,7 +465,7 @@ export default async function CityRentalsPage(
           {/* Mobile CTA */}
           <div className="mt-8 sm:hidden">
             <Button variant="outline-blue" className="w-full" asChild>
-              <Link href={`/houses-for-rent?q=${encodeURIComponent(city.name)}`}>
+              <Link href={`/homes-for-rent?q=${encodeURIComponent(city.name)}`}>
                 View All {city.name} Listings
                 <ArrowRight size={14} />
               </Link>
@@ -538,7 +538,7 @@ export default async function CityRentalsPage(
                   <Link href="/apply">Apply in 10 Minutes</Link>
                 </Button>
                 <Button variant="outline-blue" asChild>
-                  <Link href={`/houses-for-rent?q=${encodeURIComponent(city.name)}`}>
+                  <Link href={`/homes-for-rent?q=${encodeURIComponent(city.name)}`}>
                     Browse {city.name} Listings
                   </Link>
                 </Button>
@@ -670,6 +670,6 @@ export default async function CityRentalsPage(
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

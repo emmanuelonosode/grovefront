@@ -141,7 +141,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
   };
 
   return (
-    <main className="pt-20">
+    <div className="pt-20">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
@@ -398,6 +398,6 @@ export default async function BlogPage({ searchParams }: PageProps) {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

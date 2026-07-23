@@ -512,7 +512,7 @@ export function PropertyEligibilityDrawer({
                 ) : (
                   <>
                     <Link
-                      href={`/houses-for-rent?maxPrice=${recommendedMaxRent}`}
+                      href={`/homes-for-rent?maxPrice=${recommendedMaxRent}`}
                       onClick={onClose}
                       className="w-full flex items-center justify-center gap-2 bg-brand text-white font-bold py-4 rounded-xl hover:bg-brand-hover shadow-md shadow-brand/15 transition-all text-sm cursor-pointer"
                     >

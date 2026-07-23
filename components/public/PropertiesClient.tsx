@@ -275,7 +275,7 @@ export function PropertiesClient({
     };
     Object.entries({ ...base, ...overrides }).forEach(([k, v]) => { if (v) p.set(k, v); });
     const qs = p.toString();
-    return `/houses-for-rent${qs ? `?${qs}` : ""}`;
+    return `/homes-for-rent${qs ? `?${qs}` : ""}`;
   }
 
   function navigate(overrides: Record<string, string | undefined> = {}) {
@@ -298,7 +298,7 @@ export function PropertiesClient({
         const params = new URLSearchParams();
         Object.entries(smart).forEach(([k, v]) => { if (v) params.set(k, v); });
         setMapResults(null);
-        router.push(`/houses-for-rent?${params.toString()}`);
+        router.push(`/homes-for-rent?${params.toString()}`);
         return;
       }
     }
@@ -377,7 +377,7 @@ export function PropertiesClient({
           {/* Row 1: Location search input */}
           <div className="flex items-center gap-2 px-4 pt-3 pb-2">
             <Link href="/" aria-label="Home" className="shrink-0 mr-1 hidden sm:flex items-center hover:opacity-80 transition-opacity">
-              <BrandLogo variant="on-white" height={24} />
+              <BrandLogo variant="on-white" mark="emblem" height={26} />
             </Link>
             <div className="relative flex-1 min-w-0" ref={locationRef}>
               <div className="flex items-center gap-2 bg-white border-2 border-neutral-200 rounded-xl px-3.5 h-11 focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/15 transition-all">
@@ -611,7 +611,7 @@ export function PropertiesClient({
             {/* Clear filters */}
             {activeFiltersCount > 0 && (
               <Link
-                href="/houses-for-rent"
+                href="/homes-for-rent"
                 className="shrink-0 flex items-center gap-1.5 h-9 px-4 text-[12px] font-bold text-red-500 border-2 border-red-200 rounded-xl hover:bg-red-50 active:bg-red-100 transition-colors whitespace-nowrap bg-white"
               >
                 <X size={13} /> Clear
@@ -637,7 +637,7 @@ export function PropertiesClient({
             </button>
           ))}
           <Link
-            href="/houses-for-rent"
+            href="/homes-for-rent"
             className="shrink-0 text-[11px] font-bold text-neutral-400 hover:text-red-500 transition-colors whitespace-nowrap ml-1"
           >
             Clear all
@@ -835,7 +835,7 @@ export function PropertiesClient({
 
                 <div className="flex flex-col gap-2 w-full max-w-[240px]">
                   {activeFiltersCount > 0 && (
-                    <Link href="/houses-for-rent" className="w-full py-3 px-4 bg-brand text-white text-[13px] font-bold rounded-xl hover:bg-brand-hover transition-colors text-center">
+                    <Link href="/homes-for-rent" className="w-full py-3 px-4 bg-brand text-white text-[13px] font-bold rounded-xl hover:bg-brand-hover transition-colors text-center">
                       Clear all filters
                     </Link>
                   )}
@@ -942,7 +942,7 @@ function FilterPill({
 
 function PanelCard({ property, isActive }: { property: PropertyListItemAPI; isActive: boolean }) {
   const isRental   = property.listing_type !== "for-sale";
-  const detailHref = `/houses-for-rent/${property.slug}`;
+  const detailHref = `/homes-for-rent/${property.slug}`;
   const applyHref  = `/apply?property=${property.slug}`;
   const images     = property.image_urls?.length
     ? property.image_urls

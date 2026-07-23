@@ -39,7 +39,7 @@ export function HeroSearch() {
         if (!smart.listing_type) smart.listing_type = "for-rent";
         const p = new URLSearchParams();
         Object.entries(smart).forEach(([k, v]) => { if (v) p.set(k, v); });
-        router.push(`/houses-for-rent?${p.toString()}`);
+        router.push(`/homes-for-rent?${p.toString()}`);
         return;
       }
     }
@@ -51,7 +51,7 @@ export function HeroSearch() {
     const price = PRICE_OPTIONS[priceIdx];
     if (price.min) params.set("min_price", price.min);
     if (price.max) params.set("max_price", price.max);
-    router.push(`/houses-for-rent?${params.toString()}`);
+    router.push(`/homes-for-rent?${params.toString()}`);
   }
 
   return (

@@ -154,7 +154,7 @@ export default async function CityFilterPage(
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home",       item: "https://primefamilyhousing.com" },
-      { "@type": "ListItem", position: 2, name: "Properties", item: "https://primefamilyhousing.com/houses-for-rent" },
+      { "@type": "ListItem", position: 2, name: "Properties", item: "https://primefamilyhousing.com/homes-for-rent" },
       { "@type": "ListItem", position: 3, name: `${city.name}, ${city.stateCode}`, item: `https://primefamilyhousing.com/rentals/${slug}` },
       { "@type": "ListItem", position: 4, name: filterLabel,  item: pageUrl },
     ],
@@ -194,7 +194,7 @@ export default async function CityFilterPage(
   };
 
   return (
-    <>
+    <div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
@@ -216,7 +216,7 @@ export default async function CityFilterPage(
               <ol className="flex items-center gap-2 text-xs text-neutral-500">
                 <li><Link href="/" className="hover:text-brand transition-colors">Home</Link></li>
                 <li className="text-neutral-300">/</li>
-                <li><Link href="/houses-for-rent" className="hover:text-brand transition-colors">Properties</Link></li>
+                <li><Link href="/homes-for-rent" className="hover:text-brand transition-colors">Properties</Link></li>
                 <li className="text-neutral-300">/</li>
                 <li><Link href={`/rentals/${slug}`} className="hover:text-brand transition-colors">{city.name}, {city.stateCode}</Link></li>
                 <li className="text-neutral-300">/</li>
@@ -239,7 +239,7 @@ export default async function CityFilterPage(
 
             <div className="flex flex-wrap gap-3 mt-6">
               <Button variant="accent" size="lg" asChild>
-                <Link href={`/houses-for-rent?q=${encodeURIComponent(city.name)}&type=${spec.kind === "property_type" ? spec.apiType : ""}&beds=${spec.kind === "bedroom" ? spec.count : ""}`}>
+                <Link href={`/homes-for-rent?q=${encodeURIComponent(city.name)}&type=${spec.kind === "property_type" ? spec.apiType : ""}&beds=${spec.kind === "bedroom" ? spec.count : ""}`}>
                   Browse {filterLabel} Listings
                   <ArrowRight size={16} />
                 </Link>
@@ -288,7 +288,7 @@ export default async function CityFilterPage(
             </div>
             {totalCount > 12 && (
               <Link
-                href={`/houses-for-rent?q=${encodeURIComponent(city.name)}`}
+                href={`/homes-for-rent?q=${encodeURIComponent(city.name)}`}
                 className="hidden sm:flex items-center gap-2 text-sm text-brand font-medium hover:underline"
               >
                 View all {totalCount} listings
@@ -317,7 +317,7 @@ export default async function CityFilterPage(
                   <Link href={`/rentals/${slug}`}>All {city.name} Rentals</Link>
                 </Button>
                 <Button variant="outline-blue" asChild>
-                  <Link href="/houses-for-rent">Browse All Cities</Link>
+                  <Link href="/homes-for-rent">Browse All Cities</Link>
                 </Button>
               </div>
             </div>
@@ -375,6 +375,6 @@ export default async function CityFilterPage(
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

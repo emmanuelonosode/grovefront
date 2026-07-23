@@ -47,12 +47,12 @@ async function scrapePage(url) {
         // Convert the messy HTML into clean Markdown for the AI
         let markdown = turndownService.turndown(mainContent);
         
-        // Proactively rewrite legacy URL structures in scraped text/links to canonical /houses-for-rent/
-        markdown = markdown.replace(/\/properties\//g, '/houses-for-rent/');
-        markdown = markdown.replace(/\/homes-for-rent\//g, '/houses-for-rent/');
+        // Proactively rewrite legacy URL structures in scraped text/links to canonical /homes-for-rent/
+        markdown = markdown.replace(/\/properties\//g, '/homes-for-rent/');
+        markdown = markdown.replace(/\/homes-for-rent\//g, '/homes-for-rent/');
         
         // Format it nicely for the llms-full.txt
-        return `\n\n---\n\n# URL: ${url.replace(/\/properties\//g, '/houses-for-rent/').replace(/\/homes-for-rent\//g, '/houses-for-rent/')}\n\n${markdown}`;
+        return `\n\n---\n\n# URL: ${url.replace(/\/properties\//g, '/homes-for-rent/').replace(/\/homes-for-rent\//g, '/homes-for-rent/')}\n\n${markdown}`;
         
     } catch (error) {
         console.log(`⚠️ Failed to scrape ${url}: ${error.message}`);

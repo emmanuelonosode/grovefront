@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
 
 const navLinks = [
-  { label: "Find a Home", href: "/houses-for-rent" },
+  { label: "Find a Home", href: "/homes-for-rent" },
   { label: "Communities", href: "/communities" },
   { label: "Our Team", href: "/agents" },
   { label: "Renter's Guide", href: "/blog" },
@@ -53,8 +53,8 @@ export function Navbar() {
   const solidBg = scrolled || !isHeroPage;
 
   // Full-screen search/map page hides the global navbar to reclaim vertical space.
-  // (Property detail pages /houses-for-rent/[slug] keep it — only the exact search route is hidden.)
-  if (pathname === "/houses-for-rent") return null;
+  // (Property detail pages /homes-for-rent/[slug] keep it — only the exact search route is hidden.)
+  if (pathname === "/homes-for-rent") return null;
 
   return (
     <>
@@ -72,7 +72,7 @@ export function Navbar() {
           <Link href="/" className="flex items-center shrink-0">
             <BrandLogo
               variant={isHeroPage && !scrolled ? "on-dark" : "on-white"}
-              height={32}
+              height={48}
             />
           </Link>
 
