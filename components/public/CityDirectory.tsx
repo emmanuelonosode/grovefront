@@ -45,7 +45,7 @@ export function CityDirectory({ cities, counts = {}, heading, intro }: Props) {
           </h2>
           <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-[#475569]">
             {intro ??
-              "Find affordable houses and apartments for rent in every city we serve. Browse move-in ready rentals by location — transparent pricing, pet-friendly options, and 24-hour application decisions."}
+              "Find affordable houses for rent in every city we serve. Browse move-in ready rentals by location — transparent pricing, pet-friendly options, and 24-hour application decisions."}
           </p>
         </div>
 

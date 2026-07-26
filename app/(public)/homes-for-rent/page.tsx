@@ -13,7 +13,7 @@ export const metadata = {
   alternates: { canonical: "https://primefamilyhousing.com/homes-for-rent" },
   openGraph: {
     title: "Homes for Rent & Affordable Houses Nationwide | PrimeFamilyHousing",
-    description: "Browse affordable houses and apartments for rent — inspected, move-in ready, 24-hour decisions.",
+    description: "Browse affordable houses for rent — inspected, move-in ready, 24-hour decisions.",
     type: "website",
     url: "https://primefamilyhousing.com/homes-for-rent",
   },
@@ -94,7 +94,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
   const itemListSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "Homes & apartments for rent",
+    name: "Houses for rent",
     numberOfItems: results.length,
     itemListElement: results.slice(0, 24).map((p, i) => ({
       "@type": "ListItem",
@@ -106,7 +106,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
 
   return (
     <div>
-      <h1 className="sr-only">Homes &amp; Apartments for Rent — Affordable Houses Nationwide | PrimeFamilyHousing</h1>
+      <h1 className="sr-only">Houses for Rent — Affordable Houses Nationwide | PrimeFamilyHousing</h1>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}

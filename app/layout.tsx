@@ -27,13 +27,13 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "PrimeFamilyHousing | Affordable Rental Homes & Apartments",
+    default: "PrimeFamilyHousing | Affordable Houses for Rent",
     // Pages already include the brand in their own title, so the template must
     // NOT append it again (that double-printed the brand in every <title>).
     template: "%s",
   },
   description:
-    "Find affordable rental apartments and homes across Atlanta, Charlotte, Houston, Dallas, Nashville & more. Move-in ready homes, fast approvals, 500+ units available.",
+    "Find affordable houses for rent across Atlanta, Charlotte, Houston, Dallas, Tampa, Phoenix & more. Move-in ready single-family homes, fast 24-hour approvals.",
   keywords: [
     // ── Brand ──────────────────────────────────────────────────────
     "Prime Family Housing",
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     "2 bedroom houses for rent",
     "3 bedroom houses for rent",
     "4 bedroom homes for rent",
-    "1 bedroom apartments for rent",
+    "5 bedroom houses for rent",
     "large homes for rent",
     "spacious rental homes",
     // ── Feature-specific ──────────────────────────────────────────
@@ -73,10 +73,11 @@ export const metadata: Metadata = {
     "homes for rent Dallas TX",
     "houses for rent Nashville TN",
     "homes for rent Raleigh NC",
-    "houses for rent Virginia Beach VA",
+    "houses for rent Tampa FL",
     "rental homes Phoenix AZ",
-    "homes for rent Tampa FL",
+    "houses for rent Orlando FL",
     "houses for rent Denver CO",
+    "houses for rent Salt Lake City UT",
     // ── Relocation & life-stage ───────────────────────────────────
     "homes for rent relocating families",
     "rental homes for professionals",
@@ -99,14 +100,14 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://primefamilyhousing.com",
     siteName: "PrimeFamilyHousing",
-    title: "PrimeFamilyHousing | Affordable Rental Homes & Apartments",
-    description: "Discover quality, affordable rental homes and apartments — move-in ready, fast approvals.",
+    title: "PrimeFamilyHousing | Affordable Houses for Rent",
+    description: "Discover quality, affordable houses for rent — move-in ready single-family homes, fast approvals.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "PrimeFamilyHousing | Affordable Rental Homes & Apartments",
+    title: "PrimeFamilyHousing | Affordable Houses for Rent",
     description:
-      "Find affordable rental apartments and homes across Atlanta, Charlotte, Houston, Dallas, Nashville & more. Move-in ready homes, fast approvals.",
+      "Find affordable houses for rent across Atlanta, Charlotte, Houston, Dallas, Tampa & more. Move-in ready single-family homes, fast approvals.",
     creator: "@primefamilyhousing",
   },
   // Icons are provided by the App Router file conventions (app/icon.svg,
@@ -166,23 +167,23 @@ const jsonLd = {
         "caption": "PrimeFamilyHousing — Great Places to Call Home"
       },
       "image": { "@id": "https://primefamilyhousing.com/#logo" },
-      "description": "PrimeFamilyHousing is a licensed US real estate company founded in 2012, specializing in affordable rental homes and budget-friendly properties for sale across 12+ US cities. Well-maintained, move-in ready homes. 24-hour application decisions. 2,000+ families housed.",
+      "description": "PrimeFamilyHousing is a licensed US real estate company founded in 2012, specializing in affordable single-family houses for rent across 12+ US cities. Well-maintained, move-in ready homes. 24-hour application decisions. 2,000+ families housed.",
       "foundingDate": "2012",
-      "telephone": "+17572082767",
+      "telephone": "+17577924480",
       "email": "info@primefamilyhousing.com",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "213 Bob Ln",
-        "addressLocality": "Virginia Beach",
-        "addressRegion": "VA",
-        "postalCode": "23454",
+        "streetAddress": "1425 S 1500 E Unit 222",
+        "addressLocality": "Clearfield",
+        "addressRegion": "UT",
+        "postalCode": "84015",
         "addressCountry": "US"
       },
       "contactPoint": [
         {
           "@type": "ContactPoint",
           "contactType": "customer service",
-          "telephone": "+17572082767",
+          "telephone": "+17577924480",
           "email": "info@primefamilyhousing.com",
           "availableLanguage": ["English"],
           "hoursAvailable": {
@@ -207,7 +208,7 @@ const jsonLd = {
         "Equal Housing Opportunity Provider"
       ],
       "hasCredential": [
-        { "@type": "EducationalOccupationalCredential", "name": "Licensed Real Estate Broker — Virginia", "credentialCategory": "license" },
+        { "@type": "EducationalOccupationalCredential", "name": "Licensed Real Estate Broker — Utah", "credentialCategory": "license" },
         { "@type": "EducationalOccupationalCredential", "name": "Licensed Real Estate Broker — Georgia", "credentialCategory": "license" },
         { "@type": "EducationalOccupationalCredential", "name": "Licensed Real Estate Broker — Texas", "credentialCategory": "license" },
         { "@type": "EducationalOccupationalCredential", "name": "Licensed Real Estate Broker — North Carolina", "credentialCategory": "license" },
@@ -239,7 +240,7 @@ const jsonLd = {
         {
           "@type": "Offer",
           "itemOffered": { "@type": "Service", "name": "Affordable Home Rentals",
-            "description": "Quality, affordable rental homes and apartments — inspected, move-in ready, fast approvals." }
+            "description": "Quality, affordable single-family houses for rent — inspected, move-in ready, fast approvals." }
         },
         {
           "@type": "Offer",

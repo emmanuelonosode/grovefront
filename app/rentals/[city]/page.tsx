@@ -49,7 +49,7 @@ export async function generateMetadata(
     if (!hasInventory) return { title: "Not Found" };
 
     const title = `Houses for Rent in ${stateInfo.name} | PrimeFamilyHousing`;
-    const description = `Browse affordable houses & apartments for rent across ${stateInfo.name} — move-in ready homes in cities and communities statewide. Pet-friendly options, transparent pricing, 24-hour application decisions.`;
+    const description = `Browse affordable houses for rent across ${stateInfo.name} — move-in ready homes in cities and communities statewide. Pet-friendly options, transparent pricing, 24-hour application decisions.`;
     const url = `https://primefamilyhousing.com/rentals/${stateInfo.slug}`;
     return {
       title,
@@ -57,7 +57,7 @@ export async function generateMetadata(
       keywords: [
         `houses for rent in ${stateInfo.name}`,
         `homes for rent in ${stateInfo.name}`,
-        `apartments for rent in ${stateInfo.name}`,
+        `single family homes for rent in ${stateInfo.name}`,
         `affordable houses for rent in ${stateInfo.name}`,
         `${stateInfo.code} rentals`,
         `pet friendly rentals ${stateInfo.name}`,
@@ -78,7 +78,7 @@ export async function generateMetadata(
   }
 
   const title = `Houses for Rent in ${city.name}, ${city.stateCode} | PrimeFamilyHousing`;
-  const description = `Browse houses & apartments for rent in ${city.name}, ${city.stateCode} — 1 to 4 bedrooms from ${city.avgRent}/mo. Inspected, move-in ready, pet-friendly options. Decisions in 24 hours.`;
+  const description = `Browse houses for rent in ${city.name}, ${city.stateCode} — 1 to 4 bedrooms from ${city.avgRent}/mo. Inspected, move-in ready, pet-friendly options. Decisions in 24 hours.`;
   const url = `https://primefamilyhousing.com/rentals/${slug}`;
 
   return {
@@ -86,9 +86,9 @@ export async function generateMetadata(
     description,
     keywords: [
       `houses for rent in ${city.name}`,
-      `apartments for rent in ${city.name}, ${city.stateCode}`,
+      `houses for rent in ${city.name}, ${city.stateCode}`,
       `homes for rent ${city.name} ${city.stateCode}`,
-      `2 bedroom apartments for rent ${city.name}`,
+      `2 bedroom houses for rent ${city.name}`,
       `3 bedroom houses for rent ${city.name}`,
       `pet friendly rentals ${city.name}`,
       `${city.name} rentals near me`,
@@ -240,7 +240,7 @@ export default async function CityRentalsPage(
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: `Affordable Homes for Rent in ${city.name}, ${city.stateCode}`,
-    description: `Browse budget-friendly rental homes and apartments in ${city.name}, ${city.state}. Move-in ready homes, 24-hour application decisions.`,
+    description: `Browse budget-friendly rental homes in ${city.name}, ${city.state}. Move-in ready homes, 24-hour application decisions.`,
     url: `https://primefamilyhousing.com/rentals/${slug}`,
     isPartOf: { "@type": "WebSite", name: "PrimeFamilyHousing", url: "https://primefamilyhousing.com" },
     about: {
@@ -339,7 +339,7 @@ export default async function CityRentalsPage(
           </div>
 
           <p className="text-earth-beige text-[17px] sm:text-[18px] leading-[1.55] max-w-2xl mt-4 drop-shadow-md hero-animate" style={{ animationDelay: "160ms" }}>
-            {city.tagline} Browse affordable, move-in ready homes and apartments — decisions in 24 hours.
+            {city.tagline} Browse affordable, move-in ready houses — decisions in 24 hours.
           </p>
 
           <div className="flex flex-wrap gap-3 mt-8 hero-animate" style={{ animationDelay: "240ms" }}>

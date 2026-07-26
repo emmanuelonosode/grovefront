@@ -29,7 +29,6 @@ const bedroomOptions = [
 const propertyTypeOptions = [
   { value: "",            label: "Any Type" },
   { value: "residential", label: "House" },
-  { value: "apartment",   label: "Apartment" },
   { value: "condo",       label: "Condo" },
   { value: "townhouse",   label: "Townhouse" },
 ];

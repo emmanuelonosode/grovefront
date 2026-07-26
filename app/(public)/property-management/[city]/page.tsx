@@ -82,11 +82,11 @@ export default async function PropertyManagementCityPage(
       "@type": "RealEstateAgent",
       name: "PrimeFamilyHousing",
       url: "https://primefamilyhousing.com",
-      telephone: "+17572082767",
+      telephone: "+17577924480",
       address: {
         "@type": "PostalAddress",
-        addressLocality: "Virginia Beach",
-        addressRegion: "VA",
+        addressLocality: "Clearfield",
+        addressRegion: "UT",
         addressCountry: "US",
       },
     },
@@ -216,7 +216,7 @@ export default async function PropertyManagementCityPage(
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <Link href="tel:+17572082767">
+                <Link href="tel:+17577924480">
                   <Phone size={16} />
                   Call Us Now
                 </Link>
@@ -296,7 +296,7 @@ export default async function PropertyManagementCityPage(
             </Button>
           </div>
           <p className="text-blue-300 text-xs mt-6">
-            Or call: <a href="tel:+17572082767" className="text-white font-semibold hover:underline">+1 (757) 208-2767</a>
+            Or call: <a href="tel:+17577924480" className="text-white font-semibold hover:underline">+1 (757) 792-4480</a>
           </p>
         </div>
       </section>

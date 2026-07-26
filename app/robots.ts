@@ -37,7 +37,9 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/dashboard", "/portal", "/api", "/_next"],
       },
     ],
+    // No `host` directive: it's a deprecated Yandex-only extension that Googlebot
+    // ignores (GSC flags it as "Rule ignored"). Canonical host is signaled by the
+    // www→apex 301 and per-page canonical tags instead.
     sitemap: "https://primefamilyhousing.com/sitemap.xml",
-    host: "https://primefamilyhousing.com",
   };
 }

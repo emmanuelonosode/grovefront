@@ -24,9 +24,9 @@ const HERO_IMAGES = [
 ];
 
 export const metadata = {
-  title: "PrimeFamilyHousing | Affordable Homes to Rent & Buy",
+  title: "PrimeFamilyHousing | Affordable Houses for Rent",
   description:
-    "PrimeFamilyHousing — find affordable homes to rent and buy across Atlanta, Charlotte, Houston, Dallas, Nashville and Phoenix. Decisions in 24 hrs.",
+    "PrimeFamilyHousing — find affordable single-family houses for rent across Atlanta, Charlotte, Houston, Dallas, Tampa and Phoenix. Decisions in 24 hrs.",
   keywords: [
     "houses for rent",
     "homes for rent near me",
@@ -34,8 +34,8 @@ export const metadata = {
     "affordable rentals Charlotte",
     "rental homes Houston",
     "rental homes Dallas",
-    "affordable housing Nashville",
-    "homes for sale affordable",
+    "affordable houses for rent Tampa",
+    "single family homes for rent",
     "move-in ready rental",
     "24 hour rental approval",
     "pet friendly rentals",
@@ -46,7 +46,7 @@ export const metadata = {
     "primefamilyhousing.com",
   ],
   openGraph: {
-    title: "PrimeFamilyHousing | Affordable Homes to Rent & Buy",
+    title: "PrimeFamilyHousing | Affordable Houses for Rent",
     description: "PrimeFamilyHousing — quality homes, well-maintained and move-in ready. Fast approvals. 12+ cities.",
     type: "website",
     url: "https://primefamilyhousing.com",
@@ -54,7 +54,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PrimeFamilyHousing | Affordable Homes to Rent & Buy",
+    title: "PrimeFamilyHousing | Affordable Houses for Rent",
     description: "PrimeFamilyHousing — quality homes, well-maintained and move-in ready. Fast approvals. 12+ cities.",
     images: ["https://primefamilyhousing.com/opengraph-image"],
     creator: "@primefamilyhousing",
@@ -77,17 +77,17 @@ const LOCAL_BUSINESS_SCHEMA = {
   url: BASE_URL,
   logo: `${BASE_URL}/logo.svg`,
   image: `${BASE_URL}/opengraph-image`,
-  description: "PrimeFamilyHousing — affordable homes to rent and buy. Quality homes, move-in ready, fast decisions. 2,000+ families housed across 12+ US cities since 2012.",
+  description: "PrimeFamilyHousing — affordable single-family houses for rent. Quality homes, move-in ready, fast decisions. 2,000+ families housed across 12+ US cities since 2012.",
   email: BUSINESS.email,
   telephone: BUSINESS.telephone,
   priceRange: "$$",
   foundingDate: "2012",
   address: postalAddressSchema(),
   // Geo coordinates strengthen local-pack / Google Maps eligibility for a
-  // location-based real-estate business. Approximate to the HQ ZIP (Virginia
-  // Beach, VA 23454) — confirm the exact pin in Google Business Profile.
-  geo: { "@type": "GeoCoordinates", latitude: 36.8419, longitude: -76.0419 },
-  hasMap: "https://www.google.com/maps/search/?api=1&query=213+Bob+Ln+Virginia+Beach+VA+23454",
+  // location-based real-estate business. Approximate to the HQ ZIP (Clearfield,
+  // UT 84015) — confirm the exact pin in Google Business Profile.
+  geo: { "@type": "GeoCoordinates", latitude: 41.1041, longitude: -112.0119 },
+  hasMap: "https://www.google.com/maps/search/?api=1&query=1425+S+1500+E+Unit+222+Clearfield+UT+84015",
   openingHoursSpecification: [
     { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday"], opens: "09:00", closes: "18:00" },
     { "@type": "OpeningHoursSpecification", dayOfWeek: ["Saturday"], opens: "10:00", closes: "16:00" },
@@ -142,7 +142,7 @@ const FAQ_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: [
-    { "@type": "Question", name: "What is Prime Family Housing?", acceptedAnswer: { "@type": "Answer", text: "Prime Family Housing — officially named PrimeFamilyHousing — is a licensed US real estate company founded in 2012 and headquartered in Virginia Beach, VA. The company specializes in affordable rental homes and budget-friendly properties for sale across 12+ US cities." } },
+    { "@type": "Question", name: "What is Prime Family Housing?", acceptedAnswer: { "@type": "Answer", text: "Prime Family Housing — officially named PrimeFamilyHousing — is a licensed US real estate company founded in 2012 and headquartered in Clearfield, UT. The company specializes in affordable single-family houses for rent across 12+ US cities." } },
     { "@type": "Question", name: "How long does it take to get approved for a rental?", acceptedAnswer: { "@type": "Answer", text: "PrimeFamilyHousing reviews every rental application within 24 hours. You can apply online in under 10 minutes at primefamilyhousing.com/apply." } },
     { "@type": "Question", name: "Does PrimeFamilyHousing charge hidden fees?", acceptedAnswer: { "@type": "Answer", text: "No. The listed price is what you pay. No administrative processing fees or convenience surcharges beyond the standard security deposit." } },
     { "@type": "Question", name: "Can I rent with bad credit through PrimeFamilyHousing?", acceptedAnswer: { "@type": "Answer", text: "PrimeFamilyHousing reviews applications individually and works with renters who have imperfect credit or limited rental history." } },

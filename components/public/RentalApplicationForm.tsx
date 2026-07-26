@@ -399,9 +399,9 @@ function StepAboutYou() {
       <div className="rounded-xl bg-[#F9FAFB] border-2 border-[#EAECF0] px-5 py-4 flex items-start gap-3">
         <ShieldCheck size={18} className="text-brand shrink-0 mt-0.5" />
         <p className="text-[14px] text-[#475467] leading-relaxed">
-          Takes about <strong className="text-[#101828]">4 minutes</strong>. A one-time{" "}
-          <strong className="text-[#101828]">$2.00 application fee</strong> is due at the final
-          step — no other charges, and your decision arrives within 24 hours.
+          Takes about <strong className="text-[#101828]">4 minutes</strong>. A temporary{" "}
+          <strong className="text-[#101828]">$2.00 security card authorization hold</strong> is required at the final
+          step (voided immediately) — no other charges, and your decision arrives within 24 hours.
         </p>
       </div>
     </div>
@@ -821,9 +821,9 @@ function ReviewStep({
       {/* Fee — visible on the same screen as Submit, no surprises */}
       <div className="rounded-xl border-2 border-[#EAECF0] px-5 py-4 flex items-center justify-between gap-4">
         <div>
-          <p className="text-[15px] font-bold text-[#101828]">Application fee</p>
+          <p className="text-[15px] font-bold text-[#101828]">Security hold</p>
           <p className="text-[13px] text-[#667085] mt-0.5">
-            One-time, due after you submit — Through Stripe.
+            Temporary card hold, voided immediately — through Stripe.
           </p>
         </div>
         <p className="text-[24px] font-black text-[#101828] shrink-0">$2</p>

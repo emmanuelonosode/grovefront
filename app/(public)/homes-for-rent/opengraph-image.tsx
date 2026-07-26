@@ -12,7 +12,7 @@ export default function Image() {
       <OGImage
         eyebrow="Properties"
         title={'Browse Affordable\nHomes & Rentals'}
-        subtitle="Apartments and houses for rent & sale in Atlanta, Charlotte, Houston, Dallas, Nashville, Phoenix and more."
+        subtitle="Affordable houses for rent in Atlanta, Charlotte, Houston, Dallas, Nashville, Phoenix and more."
       />
     ),
     { ...size },

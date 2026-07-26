@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         `${agent.full_name} real estate agent`,
         `${specialty} Prime Family Housing`,
         "affordable rental specialist",
-        "housing specialist Virginia Beach",
+        "housing specialist Clearfield UT",
         "rental agent near me",
       ],
       alternates: { canonical: `https://primefamilyhousing.com/agents/${id}` },
@@ -139,7 +139,7 @@ export default async function AgentProfilePage({ params }: Props) {
       yearsExperienceMin: profile.years_experience,
     }}),
     ...(socialLinks.linkedin && { sameAs: [socialLinks.linkedin] }),
-    areaServed: ["Virginia Beach, VA", "Atlanta, GA", "Charlotte, NC", "Houston, TX"],
+    areaServed: ["Tampa, FL", "Atlanta, GA", "Charlotte, NC", "Houston, TX"],
   };
 
   return (

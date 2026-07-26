@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     "Apply to rent an affordable home with PrimeFamilyHousing. Simple online application, reviewed within 24 hours. No pressure. Fast, honest decisions.",
   keywords: [
     "apply to rent a home", "rental application", "affordable rental application",
-    "rent a house", "cheap apartments to rent", "rental application online",
+    "rent a house", "cheap houses to rent", "rental application online",
   ],
   openGraph: {
     title: "Apply to Rent a Home | PrimeFamilyHousing",

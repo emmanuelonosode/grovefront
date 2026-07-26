@@ -8,7 +8,7 @@ export const revalidate = 3600;
 export const metadata = {
   title: "Renter's Guide & Housing Tips | PrimeFamilyHousing",
   description:
-    "Free renter guides, moving tips, budgeting advice, lease explainers, and housing market updates from PrimeFamilyHousing. Written for real families finding affordable homes in Virginia Beach, Atlanta, Charlotte, Houston, Dallas, Nashville and more.",
+    "Free renter guides, moving tips, budgeting advice, lease explainers, and housing market updates from PrimeFamilyHousing. Written for real families finding affordable houses for rent in Atlanta, Charlotte, Houston, Dallas, Nashville and more.",
   alternates: { canonical: "https://primefamilyhousing.com/blog" },
   openGraph: {
     title: "Renter's Guide & Housing Tips — PrimeFamilyHousing",
@@ -47,7 +47,7 @@ const TOPIC_GUIDES = [
   {
     icon: BookOpen,
     title: "Lease & Legal Basics",
-    description: "What every clause in your lease actually means, tenant rights in Virginia, and how to handle disputes.",
+    description: "What every clause in your lease actually means, tenant rights in Utah, and how to handle disputes.",
     tags: ["Lease Terms", "Tenant Rights", "Renewals"],
     accent: "bg-violet-600",
     img: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&q=80",
@@ -63,7 +63,7 @@ const TOPIC_GUIDES = [
   {
     icon: BarChart2,
     title: "Market Updates",
-    description: "Monthly rental market reports for Atlanta, Charlotte, Houston, Dallas, Nashville, Virginia Beach and beyond.",
+    description: "Monthly rental market reports for Atlanta, Charlotte, Houston, Dallas, Nashville, Tampa and beyond.",
     tags: ["Atlanta", "Charlotte", "Houston"],
     accent: "bg-brand",
     img: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80",

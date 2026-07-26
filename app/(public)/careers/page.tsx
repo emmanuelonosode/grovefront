@@ -8,14 +8,14 @@ import { FeaturedJobCard } from "@/components/public/FeaturedJobCard";
 export const metadata: Metadata = {
   title: "Careers at PrimeFamilyHousing | Join Our Team",
   description:
-    "Build a meaningful career helping families find affordable homes. Join PrimeFamilyHousing — we're hiring real estate agents, leasing consultants, property managers, and more across Virginia Beach and beyond.",
+    "Build a meaningful career helping families find affordable homes. Join PrimeFamilyHousing — we're hiring real estate agents, leasing consultants, property managers, and more across Clearfield and beyond.",
   keywords: [
-    "real estate careers Virginia Beach",
-    "real estate agent jobs Virginia Beach",
+    "real estate careers Clearfield",
+    "real estate agent jobs Clearfield",
     "property management careers",
     "leasing consultant jobs",
     "affordable housing jobs",
-    "real estate jobs Virginia",
+    "real estate jobs Utah",
     "join realty group",
     "real estate employment",
   ],
@@ -60,13 +60,13 @@ const openRoles = [
     id: "real-estate-agent",
     title: "Licensed Real Estate Agent",
     type: "Full-Time",
-    location: "Virginia Beach, VA",
+    location: "Clearfield, UT",
     department: "Sales",
     urgent: true,
     description:
       "Represent buyers and renters in finding their perfect affordable home. You'll manage client relationships from first inquiry through move-in, conduct property showings, and close transactions with integrity.",
     requirements: [
-      "Active Virginia real estate license (or willing to obtain within 90 days)",
+      "Active Utah real estate license (or willing to obtain within 90 days)",
       "Strong local market knowledge in Hampton Roads or willingness to learn",
       "Excellent written and verbal communication skills",
       "Self-motivated with ability to manage your own pipeline",
@@ -78,7 +78,7 @@ const openRoles = [
     id: "leasing-consultant",
     title: "Leasing Consultant",
     type: "Full-Time",
-    location: "Virginia Beach, VA",
+    location: "Clearfield, UT",
     department: "Leasing",
     urgent: true,
     description:
@@ -87,7 +87,7 @@ const openRoles = [
       "1+ year of customer service, sales, or leasing experience",
       "Strong interpersonal skills and patience",
       "Basic proficiency with property management software (training provided)",
-      "Virginia driver's license and reliable transportation",
+      "Utah driver's license and reliable transportation",
       "Real estate license preferred but not required",
     ],
     benefits: ["Base salary + leasing bonuses", "Health & dental benefits", "Paid time off", "Real estate license sponsorship available"],
@@ -96,16 +96,16 @@ const openRoles = [
     id: "property-manager",
     title: "Property Manager",
     type: "Full-Time",
-    location: "Virginia Beach, VA",
+    location: "Clearfield, UT",
     department: "Operations",
     description:
       "Oversee a portfolio of residential rental properties from day-to-day operations to tenant relations. You'll handle maintenance coordination, lease renewals, rent collection, and inspections while ensuring our tenants have a great experience.",
     requirements: [
       "3+ years in residential property management",
       "Experience with lease administration and tenant relations",
-      "Familiarity with Virginia landlord-tenant law",
+      "Familiarity with Utah landlord-tenant law",
       "Organized, detail-oriented, and calm under pressure",
-      "Virginia real estate license preferred",
+      "Utah real estate license preferred",
     ],
     benefits: ["Competitive salary", "Performance bonuses", "Company vehicle allowance", "Full health benefits package"],
   },
@@ -113,7 +113,7 @@ const openRoles = [
     id: "marketing-coordinator",
     title: "Marketing Coordinator",
     type: "Full-Time",
-    location: "Virginia Beach, VA (Hybrid)",
+    location: "Clearfield, UT (Hybrid)",
     department: "Marketing",
     description:
       "Drive our online presence and tenant acquisition through content, SEO, social media, and digital campaigns. You'll write property descriptions, manage our blog, create social content, and track what's working.",
@@ -130,7 +130,7 @@ const openRoles = [
     id: "maintenance-technician",
     title: "Maintenance Technician",
     type: "Full-Time",
-    location: "Virginia Beach, VA",
+    location: "Clearfield, UT",
     department: "Maintenance",
     description:
       "Keep our properties in top condition for the families who call them home. You'll handle work orders, preventive maintenance, unit turns, and emergency repairs across our residential portfolio.",
@@ -138,7 +138,7 @@ const openRoles = [
       "3+ years of residential maintenance experience",
       "Skills in plumbing, electrical, HVAC, and general carpentry",
       "Ability to troubleshoot and resolve issues independently",
-      "Valid Virginia driver's license",
+      "Valid Utah driver's license",
       "EPA 608 certification preferred",
     ],
     benefits: ["Competitive hourly rate + overtime", "Company van & tools provided", "Health benefits", "On-call rotation with pay premium"],
@@ -147,7 +147,7 @@ const openRoles = [
     id: "tenant-relations-specialist",
     title: "Tenant Relations Specialist",
     type: "Full-Time",
-    location: "Virginia Beach, VA",
+    location: "Clearfield, UT",
     department: "Operations",
     description:
       "Be the voice our tenants trust. You'll handle inbound tenant inquiries, coordinate maintenance requests, manage lease renewals, and resolve disputes with empathy and professionalism.",
@@ -243,10 +243,10 @@ const jobPostings = openRoles.map((role) => {
       "@type": "Place",
       address: {
         "@type": "PostalAddress",
-        streetAddress: "213 Bob Ln",
-        addressLocality: "Virginia Beach",
-        addressRegion: "VA",
-        postalCode: "23454",
+        streetAddress: "1425 S 1500 E Unit 222",
+        addressLocality: "Clearfield",
+        addressRegion: "UT",
+        postalCode: "84015",
         addressCountry: "US",
       },
     };
@@ -278,7 +278,7 @@ export default function CareersPage() {
           <div className="max-w-2xl bg-white rounded-2xl shadow-2xl p-8 lg:p-12">
             <span className="block w-12 h-1.5 rounded-full bg-accent mb-5" />
             <p className="text-[#B87400] text-xs font-bold tracking-[0.35em] uppercase mb-4">
-              Now Hiring · Virginia Beach
+              Now Hiring · Clearfield
             </p>
             <h1 className="font-serif text-4xl sm:text-5xl font-bold text-neutral-900 leading-tight tracking-tight mb-5">
               Help Families Find a Place to Call Home
@@ -421,7 +421,7 @@ export default function CareersPage() {
               </h2>
             </div>
             <p className="text-white/30 text-xs leading-relaxed max-w-xs sm:text-right">
-              Virginia Beach, VA · Equal opportunity employer committed to a diverse, inclusive team.
+              Clearfield, UT · Equal opportunity employer committed to a diverse, inclusive team.
             </p>
           </div>
 
@@ -628,7 +628,7 @@ export default function CareersPage() {
               <div className="mt-10 pt-8 border-t border-white/10 space-y-3">
                 <div className="flex items-center gap-3 text-sm text-white/30">
                   <MapPin size={12} className="text-brand shrink-0" />
-                  213 Bob Ln, Virginia Beach, VA 23454
+                  1425 S 1500 E Unit 222, Clearfield, UT 84015
                 </div>
                 <div className="flex items-center gap-3 text-sm text-white/30">
                   <Clock size={12} className="text-brand shrink-0" />

@@ -9,15 +9,15 @@ export const revalidate = 300;
 export const metadata = {
   title: "Our Housing Specialists | PrimeFamilyHousing",
   description:
-    "Meet the housing specialists at PrimeFamilyHousing. Real people helping real families find affordable homes to rent and buy across Virginia Beach, Atlanta, Charlotte, Houston, Dallas, Nashville, Phoenix and more.",
+    "Meet the housing specialists at PrimeFamilyHousing. Real people helping real families find affordable houses for rent across Atlanta, Charlotte, Houston, Dallas, Tampa, Phoenix and more.",
   keywords: [
-    "housing specialists Virginia Beach",
+    "housing specialists Clearfield UT",
     "affordable home rental agents",
     "rental agents Atlanta",
     "housing help near me",
     "affordable homes team",
-    "real estate agents Virginia",
-    "property specialists Hampton Roads",
+    "real estate agents Utah",
+    "property rental specialists Utah",
     "find a rental agent near me",
   ],
   openGraph: {
@@ -54,13 +54,13 @@ const teamValues = [
     icon: Award,
     title: "Licensed & Accountable",
     description:
-      "Every agent is fully licensed with the Virginia Real Estate Board and bound by the REALTOR® Code of Ethics.",
+      "Every agent is fully licensed with the Utah Division of Real Estate and bound by the REALTOR® Code of Ethics.",
   },
   {
     icon: MapPin,
     title: "Multi-City Coverage",
     description:
-      "Whether you're relocating to Atlanta, Charlotte, Houston, or staying local in Virginia Beach — we have a specialist for your market.",
+      "Whether you're relocating to Atlanta, Charlotte, Houston, or staying local in Utah — we have a specialist for your market.",
   },
 ];
 
@@ -96,7 +96,7 @@ const faqs = [
   },
   {
     q: "What areas do your agents cover?",
-    a: "Our main office is in Virginia Beach, VA with active coverage across Hampton Roads. We also help clients relocating to Atlanta, Charlotte, Houston, Dallas, Nashville, Phoenix, and other major markets through our partner network.",
+    a: "Our main office is in Clearfield, UT with active coverage across northern Utah. We also help clients relocating to Atlanta, Charlotte, Houston, Dallas, Tampa, Phoenix, and other major markets through our partner network.",
   },
   {
     q: "How quickly can an agent respond to my inquiry?",
@@ -109,7 +109,7 @@ const faqs = [
 ];
 
 const specializations = [
-  { title: "Affordable Rentals", description: "Apartments and houses under $1,800/mo across all our markets. We specialize in quality units at honest prices.", tag: "Most Popular" },
+  { title: "Affordable Rentals", description: "Houses under $1,800/mo across all our markets. We specialize in quality units at honest prices.", tag: "Most Popular" },
   { title: "Family Homes", description: "3+ bedroom homes near top-rated schools with safe neighbourhoods. We know the school district maps better than most principals.", tag: "" },
   { title: "Corporate Relocation", description: "Fast-tracked viewings, virtual tours, and guaranteed move-in timelines for employees relocating on company time.", tag: "" },
   { title: "First-Time Renters", description: "No rental history? We work with first-time renters and help you build the documentation you need for approval.", tag: "No Credit OK" },
@@ -402,7 +402,7 @@ export default async function AgentsPage() {
             />
             <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-sm rounded-sm px-5 py-4 shadow-xl">
               <p className="text-xs font-bold text-brand-dark">Licensed REALTORS®</p>
-              <p className="text-xs text-neutral-500 mt-0.5">Virginia Real Estate Board</p>
+              <p className="text-xs text-neutral-500 mt-0.5">Utah Division of Real Estate</p>
             </div>
           </div>
           <div>
@@ -412,7 +412,7 @@ export default async function AgentsPage() {
             </h2>
             <p className="text-neutral-600 text-sm leading-relaxed mb-8">
               We&apos;re always looking for motivated specialists who share our commitment to affordable
-              housing. If you&apos;re licensed in Virginia or one of our target markets, we&apos;d love to talk.
+              housing. If you&apos;re licensed in Utah or one of our target markets, we&apos;d love to talk.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <Link href="/careers" className="inline-flex items-center justify-center gap-2 bg-brand-dark text-white text-sm font-semibold px-7 py-4 rounded-sm hover:bg-brand transition-colors">

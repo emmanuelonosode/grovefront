@@ -4,7 +4,7 @@ import { useState } from "react";
 
 const SERVICE_OPTIONS = [
   "Studio / 1-Bedroom",
-  "2-Bedroom Apartment",
+  "2-Bedroom House",
   "3-Bedroom Home",
   "4+ Bedrooms",
   "Pet-Friendly Unit",

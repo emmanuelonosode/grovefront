@@ -8,14 +8,14 @@
 export const BUSINESS = {
   name: "PrimeFamilyHousing",
   url: "https://primefamilyhousing.com",
-  telephone: "+17572082767",
-  telephoneDisplay: "(757) 208-2767",
+  telephone: "+17577924480",
+  telephoneDisplay: "(757) 792-4480",
   email: "info@primefamilyhousing.com",
   address: {
-    streetAddress: "213 Bob Ln",
-    addressLocality: "Virginia Beach",
-    addressRegion: "VA",
-    postalCode: "23454",
+    streetAddress: "1425 S 1500 E Unit 222",
+    addressLocality: "Clearfield",
+    addressRegion: "UT",
+    postalCode: "84015",
     addressCountry: "US",
   },
   sameAs: [

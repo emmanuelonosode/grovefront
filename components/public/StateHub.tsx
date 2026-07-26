@@ -55,7 +55,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: `Houses for Rent in ${state.name}`,
-    description: `Browse affordable houses and apartments for rent across ${state.name}. ${totalListings}+ move-in ready rentals in ${cityCount} cities and communities. 24-hour application decisions.`,
+    description: `Browse affordable houses for rent across ${state.name}. ${totalListings}+ move-in ready rentals in ${cityCount} cities and communities. 24-hour application decisions.`,
     url,
     isPartOf: { "@type": "WebSite", name: "PrimeFamilyHousing", url: BASE },
     about: {
@@ -83,7 +83,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
     },
     {
       q: `Which cities in ${state.name} have rentals?`,
-      a: `We list houses and apartments for rent in cities and communities across ${state.name} — including ${topCityNames}, and more. You can browse every market on this page.`,
+      a: `We list houses for rent in cities and communities across ${state.name} — including ${topCityNames}, and more. You can browse every market on this page.`,
     },
     {
       q: `How fast can I get approved for a rental in ${state.name}?`,
@@ -133,7 +133,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
             Find Your Sanctuary in {state.name}
           </h1>
           <p className="text-[17px] sm:text-[18px] leading-[1.55] text-surface-container-low max-w-2xl mb-10 drop-shadow-md">
-            Browse affordable, move-in ready houses and apartments across {state.name}
+            Browse affordable, move-in ready houses across {state.name}
             {totalListings > 0 ? ` — ${totalListings} verified listings in ${cityCount} cities and communities` : ""}.
             Transparent pricing, pet-friendly options, and decisions in 24 hours.
           </p>
@@ -286,7 +286,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
               Cities &amp; communities for rent in {state.name}
             </h2>
             <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-neutral-500">
-              Find houses and apartments for rent in every {state.name} city and community we serve. Tap any
+              Find houses for rent in every {state.name} city and community we serve. Tap any
               location to see available move-in ready homes.
             </p>
           </div>
@@ -394,13 +394,13 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
           <div className="space-y-5 text-neutral-600 text-[15px] leading-relaxed">
             <p>
               Looking for a house for rent in {state.name}? PrimeFamilyHousing lists affordable,
-              move-in ready rental homes and apartments across {cityCount} {state.name} cities and communities
+              move-in ready rental homes across {cityCount} {state.name} cities and communities
               {topCityNames ? `, including ${topCityNames}` : ""}. Every listing shows transparent pricing,
               photos, and pet policy upfront — no hidden fees, no surprises.
             </p>
             <p>
-              Whether you need a 1-bedroom apartment, a family-sized 3 or 4-bedroom house, or a pet-friendly
-              rental, you can browse {state.name} homes by city, apply online in under 10 minutes, and get a
+              Whether you need a cozy 2-bedroom house, a family-sized 3 or 4-bedroom home, or a pet-friendly
+              rental, you can browse {state.name} houses by city, apply online in under 10 minutes, and get a
               decision within 24 hours. Many homes are move-in ready immediately.
             </p>
           </div>

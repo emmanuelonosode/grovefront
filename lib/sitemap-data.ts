@@ -36,12 +36,9 @@ export async function buildCore(): Promise<SitemapEntry[]> {
     { url: `${BASE_URL}/accessibility`,   lastModified: new Date(), changeFrequency: "yearly",  priority: 0.3 },
   ];
 
-  try {
-    const apt = await fetchProperties({ listing_type: "for-rent", type: "apartment", page_size: "1" });
-    if (apt.count > 0) {
-      pages.push({ url: `${BASE_URL}/apartments-for-rent`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 });
-    }
-  } catch { /* skip */ }
+  // Note: no /apartments-for-rent in the sitemap — PrimeFamilyHousing rents
+  // single-family houses only. That page self-noindexes and is intentionally
+  // excluded from the sitemap.
 
   for (const { slug, lastModified } of posts) {
     pages.push({ url: `${BASE_URL}/blog/${slug}`, lastModified: new Date(lastModified), changeFrequency: "monthly", priority: 0.65 });
