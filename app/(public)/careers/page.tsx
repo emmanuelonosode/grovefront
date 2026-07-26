@@ -72,7 +72,12 @@ const openRoles = [
       "Self-motivated with ability to manage your own pipeline",
       "CRM experience a plus",
     ],
-    benefits: ["Competitive commission splits", "Health benefits after 90 days", "Marketing support & leads provided", "Flexible schedule"],
+    benefits: [
+      "Competitive commission splits",
+      "Health benefits after 90 days",
+      "Marketing support & leads provided",
+      "Flexible schedule",
+    ],
   },
   {
     id: "leasing-consultant",
@@ -90,7 +95,12 @@ const openRoles = [
       "Utah driver's license and reliable transportation",
       "Real estate license preferred but not required",
     ],
-    benefits: ["Base salary + leasing bonuses", "Health & dental benefits", "Paid time off", "Real estate license sponsorship available"],
+    benefits: [
+      "Base salary + leasing bonuses",
+      "Health & dental benefits",
+      "Paid time off",
+      "Real estate license sponsorship available",
+    ],
   },
   {
     id: "property-manager",
@@ -107,7 +117,12 @@ const openRoles = [
       "Organized, detail-oriented, and calm under pressure",
       "Utah real estate license preferred",
     ],
-    benefits: ["Competitive salary", "Performance bonuses", "Company vehicle allowance", "Full health benefits package"],
+    benefits: [
+      "Competitive salary",
+      "Performance bonuses",
+      "Company vehicle allowance",
+      "Full health benefits package",
+    ],
   },
   {
     id: "marketing-coordinator",
@@ -124,7 +139,12 @@ const openRoles = [
       "Proficiency with social media platforms and scheduling tools",
       "Real estate or property management experience is a big plus",
     ],
-    benefits: ["Salary commensurate with experience", "Remote flexibility", "Health benefits", "Creative autonomy"],
+    benefits: [
+      "Salary commensurate with experience",
+      "Remote flexibility",
+      "Health benefits",
+      "Creative autonomy",
+    ],
   },
   {
     id: "maintenance-technician",
@@ -141,7 +161,12 @@ const openRoles = [
       "Valid Utah driver's license",
       "EPA 608 certification preferred",
     ],
-    benefits: ["Competitive hourly rate + overtime", "Company van & tools provided", "Health benefits", "On-call rotation with pay premium"],
+    benefits: [
+      "Competitive hourly rate + overtime",
+      "Company van & tools provided",
+      "Health benefits",
+      "On-call rotation with pay premium",
+    ],
   },
   {
     id: "tenant-relations-specialist",
@@ -158,7 +183,12 @@ const openRoles = [
       "Strong written communication — email and tenant portal responses",
       "Property management software experience a plus",
     ],
-    benefits: ["Competitive salary", "Monday–Friday schedule", "Health benefits after 60 days", "Paid training"],
+    benefits: [
+      "Competitive salary",
+      "Monday–Friday schedule",
+      "Health benefits after 60 days",
+      "Paid training",
+    ],
   },
 ];
 
@@ -204,8 +234,18 @@ const breadcrumb = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://primefamilyhousing.com" },
-    { "@type": "ListItem", position: 2, name: "Careers", item: "https://primefamilyhousing.com/careers" },
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Home",
+      item: "https://primefamilyhousing.com",
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Careers",
+      item: "https://primefamilyhousing.com/careers",
+    },
   ],
 };
 
@@ -220,7 +260,11 @@ const jobPostings = openRoles.map((role) => {
     "@type": "JobPosting",
     title: role.title,
     description: role.description,
-    identifier: { "@type": "PropertyValue", name: "PrimeFamilyHousing", value: role.id },
+    identifier: {
+      "@type": "PropertyValue",
+      name: "PrimeFamilyHousing",
+      value: role.id,
+    },
     datePosted: new Date().toISOString().split("T")[0],
     validThrough: validThroughDate,
     employmentType: role.type.includes("Full-Time") ? "FULL_TIME" : "PART_TIME",
@@ -258,9 +302,16 @@ const jobPostings = openRoles.map((role) => {
 export default function CareersPage() {
   return (
     <div className="pt-20 bg-white">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+      />
       {jobPostings.map((jp, i) => (
-        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jp) }} />
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jp) }}
+        />
       ))}
 
       {/* ── HERO — clean photo, no overlay; text on a solid card ─────────── */}
@@ -284,8 +335,8 @@ export default function CareersPage() {
               Help Families Find a Place to Call Home
             </h1>
             <p className="text-neutral-600 text-base leading-relaxed mb-8">
-              Affordable homes, honest prices, real people. If that&apos;s the work you want to do,
-              we want to hear from you.
+              Affordable homes, honest prices, real people. If that&apos;s the
+              work you want to do, we want to hear from you.
             </p>
             <div className="flex flex-col sm:flex-row items-start gap-4">
               <a
@@ -296,11 +347,11 @@ export default function CareersPage() {
                 <ArrowRight size={15} />
               </a>
               <a
-                href="mailto:careers@primefamilyhousing.com"
+                href="mailto:career@primefamilyhousing.com"
                 className="inline-flex items-center gap-2 text-neutral-500 hover:text-brand text-sm transition-colors duration-200 py-3.5"
               >
                 <Mail size={14} />
-                careers@primefamilyhousing.com
+                career@primefamilyhousing.com
               </a>
             </div>
           </div>
@@ -316,8 +367,12 @@ export default function CareersPage() {
                 { value: "Since 2012", label: "Building Trust" },
               ].map((s) => (
                 <div key={s.label} className="px-4 sm:px-8 py-5 text-center">
-                  <p className="font-serif text-2xl font-bold text-neutral-900">{s.value}</p>
-                  <p className="text-[11px] text-neutral-400 mt-1 tracking-widest uppercase">{s.label}</p>
+                  <p className="font-serif text-2xl font-bold text-neutral-900">
+                    {s.value}
+                  </p>
+                  <p className="text-[11px] text-neutral-400 mt-1 tracking-widest uppercase">
+                    {s.label}
+                  </p>
                 </div>
               ))}
             </div>
@@ -329,14 +384,17 @@ export default function CareersPage() {
       <section className="max-w-7xl mx-auto px-6 lg:px-8 py-24 lg:py-32">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-14 pb-8 border-b border-neutral-100">
           <div>
-            <p className="text-brand text-xs font-semibold tracking-[0.35em] uppercase mb-3">Why Join Us</p>
+            <p className="text-brand text-xs font-semibold tracking-[0.35em] uppercase mb-3">
+              Why Join Us
+            </p>
             <h2 className="font-serif text-4xl lg:text-5xl font-bold text-brand-dark leading-tight max-w-lg">
               Work That Actually Matters
             </h2>
           </div>
           <p className="text-neutral-500 text-sm leading-relaxed max-w-sm">
-            Housing is one of the most fundamental human needs. Every home we help someone find is
-            a family with stability, safety, and a foundation to build from.
+            Housing is one of the most fundamental human needs. Every home we
+            help someone find is a family with stability, safety, and a
+            foundation to build from.
           </p>
         </div>
 
@@ -384,7 +442,9 @@ export default function CareersPage() {
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
                 <div className="absolute bottom-0 left-0 right-0 bg-brand text-white px-6 py-3.5 flex items-center justify-between">
-                  <p className="text-xs font-bold tracking-wide">Top Workplace · Hampton Roads</p>
+                  <p className="text-xs font-bold tracking-wide">
+                    Top Workplace · Hampton Roads
+                  </p>
                   <p className="text-xs text-white/70 font-medium">2024</p>
                 </div>
               </div>
@@ -394,7 +454,10 @@ export default function CareersPage() {
             <div className="pt-0 lg:pt-14">
               <ul className="divide-y divide-neutral-200">
                 {benefits.map((benefit, i) => (
-                  <li key={benefit} className="flex items-start gap-4 py-5 group">
+                  <li
+                    key={benefit}
+                    className="flex items-start gap-4 py-5 group"
+                  >
                     <CheckCircle
                       size={16}
                       className="text-brand shrink-0 mt-0.5 opacity-60 group-hover:opacity-100 transition-opacity"
@@ -415,13 +478,16 @@ export default function CareersPage() {
         <div className="max-w-5xl mx-auto px-6 lg:px-8 py-24 lg:py-32">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-14 pb-8 border-b border-white/10">
             <div>
-              <p className="text-brand text-xs font-semibold tracking-[0.35em] uppercase mb-3">Now Hiring</p>
+              <p className="text-brand text-xs font-semibold tracking-[0.35em] uppercase mb-3">
+                Now Hiring
+              </p>
               <h2 className="font-serif text-4xl lg:text-5xl font-bold text-white leading-tight">
                 Open Positions
               </h2>
             </div>
             <p className="text-white/30 text-xs leading-relaxed max-w-xs sm:text-right">
-              Clearfield, UT · Equal opportunity employer committed to a diverse, inclusive team.
+              Clearfield, UT · Equal opportunity employer committed to a
+              diverse, inclusive team.
             </p>
           </div>
 
@@ -513,7 +579,10 @@ export default function CareersPage() {
                       </h4>
                       <ul className="space-y-3">
                         {role.requirements.map((req) => (
-                          <li key={req} className="flex items-start gap-3 text-sm text-white/50">
+                          <li
+                            key={req}
+                            className="flex items-start gap-3 text-sm text-white/50"
+                          >
                             <span className="w-1 h-1 rounded-full bg-brand/50 shrink-0 mt-2" />
                             {req}
                           </li>
@@ -526,7 +595,10 @@ export default function CareersPage() {
                       </h4>
                       <ul className="space-y-3">
                         {role.benefits.map((b) => (
-                          <li key={b} className="flex items-start gap-3 text-sm text-white/50">
+                          <li
+                            key={b}
+                            className="flex items-start gap-3 text-sm text-white/50"
+                          >
                             <span className="w-1 h-1 rounded-full bg-brand/50 shrink-0 mt-2" />
                             {b}
                           </li>
@@ -535,7 +607,10 @@ export default function CareersPage() {
                     </div>
                   </div>
 
-                  <CareerApplicationForm roleId={role.id} roleTitle={role.title} />
+                  <CareerApplicationForm
+                    roleId={role.id}
+                    roleTitle={role.title}
+                  />
                 </div>
               </details>
             ))}
@@ -547,13 +622,16 @@ export default function CareersPage() {
       <section className="max-w-7xl mx-auto px-6 lg:px-8 py-24 lg:py-32">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           <div>
-            <p className="text-brand text-xs font-semibold tracking-[0.35em] uppercase mb-3">Simple Process</p>
+            <p className="text-brand text-xs font-semibold tracking-[0.35em] uppercase mb-3">
+              Simple Process
+            </p>
             <h2 className="font-serif text-4xl lg:text-5xl font-bold text-brand-dark leading-tight mb-5">
               Three Steps to Joining Us
             </h2>
             <p className="text-neutral-500 text-sm leading-relaxed mb-14 max-w-sm">
-              No portals, no 12-page forms. Send your resume and a short note about why you want to
-              work with us — that&apos;s it. We keep hiring human.
+              No portals, no 12-page forms. Send your resume and a short note
+              about why you want to work with us — that&apos;s it. We keep
+              hiring human.
             </p>
 
             <div className="divide-y divide-neutral-100">
@@ -589,8 +667,12 @@ export default function CareersPage() {
                     className="shrink-0 rounded-xl w-[60px] h-[60px] object-cover"
                   />
                   <div className="pt-1">
-                    <h3 className="font-serif text-lg font-bold text-brand-dark mb-1.5">{s.title}</h3>
-                    <p className="text-sm text-neutral-500 leading-relaxed">{s.desc}</p>
+                    <h3 className="font-serif text-lg font-bold text-brand-dark mb-1.5">
+                      {s.title}
+                    </h3>
+                    <p className="text-sm text-neutral-500 leading-relaxed">
+                      {s.desc}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -609,20 +691,23 @@ export default function CareersPage() {
               />
             </div>
             <div className="relative z-10 p-10 lg:p-12">
-              <p className="text-brand text-xs font-semibold tracking-[0.35em] uppercase mb-4">Ready?</p>
+              <p className="text-brand text-xs font-semibold tracking-[0.35em] uppercase mb-4">
+                Ready?
+              </p>
               <h3 className="font-serif text-3xl lg:text-4xl font-bold text-white mb-4 leading-tight">
                 Let&apos;s Build Something Together
               </h3>
               <p className="text-white/50 text-sm leading-relaxed mb-8">
-                Whether you&apos;re a seasoned real estate professional or just starting out, we&apos;d love
-                a conversation. Send us your resume — no cover letter required.
+                Whether you&apos;re a seasoned real estate professional or just
+                starting out, we&apos;d love a conversation. Send us your resume
+                — no cover letter required.
               </p>
               <a
-                href="mailto:careers@primefamilyhousing.com"
+                href="mailto:career@primefamilyhousing.com"
                 className="inline-flex items-center gap-2.5 bg-brand text-white text-sm font-semibold px-7 py-3.5 rounded-sm hover:bg-brand/90 transition-colors duration-200"
               >
                 <Mail size={14} />
-                careers@primefamilyhousing.com
+                career@primefamilyhousing.com
               </a>
 
               <div className="mt-10 pt-8 border-t border-white/10 space-y-3">
@@ -643,16 +728,21 @@ export default function CareersPage() {
       {/* ── DON'T SEE A FIT ──────────────────────────────────────────────── */}
       <section className="border-t border-neutral-100 bg-[#F5F5F7]">
         <div className="max-w-3xl mx-auto px-6 lg:px-8 py-20 lg:py-28 text-center">
-          <p className="text-brand text-xs font-semibold tracking-[0.35em] uppercase mb-4">Open Application</p>
+          <p className="text-brand text-xs font-semibold tracking-[0.35em] uppercase mb-4">
+            Open Application
+          </p>
           <h2 className="font-serif text-3xl lg:text-4xl font-bold text-brand-dark mb-4 leading-tight">
             Don&apos;t See the Right Role?
           </h2>
           <p className="text-neutral-500 text-sm leading-relaxed max-w-md mx-auto mb-2">
-            If you&apos;re passionate about affordable housing and want to be part of our team,
-            send a general application. We keep strong candidates on file and reach out when new
-            roles open.
+            If you&apos;re passionate about affordable housing and want to be
+            part of our team, send a general application. We keep strong
+            candidates on file and reach out when new roles open.
           </p>
-          <CareerApplicationForm roleId="general" roleTitle="General Application" />
+          <CareerApplicationForm
+            roleId="general"
+            roleTitle="General Application"
+          />
         </div>
       </section>
     </div>
