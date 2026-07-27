@@ -1,45 +1,25 @@
 import type { MetadataRoute } from "next";
 
+// https://developers.google.com/search/docs/advanced/robots/robots_txt
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
-        // Googlebot-Image crawls property photos for Google Images / search thumbnails
-        // Explicitly allow it before the wildcard rule so /*?* doesn't inadvertently block image CDN redirects
-        userAgent: "Googlebot-Image",
-        allow: "/",
-        disallow: [],
-      },
-      {
         userAgent: "*",
         allow: "/",
-        // Private portal routes and internal Next.js paths only. Deliberately NOT
-        // blocking query-param URLs (/*?*): blocked URLs can never be recrawled, so
-        // Google froze thousands as "Duplicate without user-selected canonical".
-        // Param variants carry canonical tags pointing at the clean URLs — letting
-        // Google crawl them resolves them as "Alternate page with proper canonical",
-        // which is the correct, harmless end state.
-        disallow: ["/dashboard", "/portal", "/api", "/_next", "/admin"],
-      },
-      {
-        // Explicitly allow known LLM/AI crawlers to index the site
-        userAgent: [
-          "GPTBot",
-          "ChatGPT-User",
-          "Google-Extended",
-          "Claude-Web",
-          "Anthropic-AI",
-          "PerplexityBot",
-          "Bytespider",
-          "CCBot",
+        disallow: [
+          "/preview",
+          "/test",
+          "/docs",
+          "/api",
+          "/*.json",
+          "/admin",
         ],
-        allow: ["/", "/llms.txt", "/llms-full.txt"],
-        disallow: ["/dashboard", "/portal", "/api", "/_next", "/admin"],
       },
     ],
-    // No `host` directive: it's a deprecated Yandex-only extension that Googlebot
-    // ignores (GSC flags it as "Rule ignored"). Canonical host is signaled by the
-    // www→apex 301 and per-page canonical tags instead.
+    // Kept from the previous version: this is a separate top-level directive rather
+    // than part of the user-agent block, and dropping it would remove the only
+    // in-file pointer to the sitemap while Search Console is still being fixed.
     sitemap: "https://primefamilyhousing.com/sitemap.xml",
   };
 }
