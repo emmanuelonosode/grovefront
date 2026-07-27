@@ -52,11 +52,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       ? ` – $${Number(property.price).toLocaleString()}/mo`
       : ` – $${Number(property.price).toLocaleString()}`;
 
-    // Address-first title so address searches rank: "123 Main St, Atlanta GA — 3-Bed House for Rent"
+    // Address-first title so address searches rank. The full address is kept as one
+    // unbroken run — the previous form split it ("1 Linden Ave — 3-Bed House for Rent in
+    // Fox Lake, IL"), so the query someone actually types, "1 Linden Ave Fox Lake IL
+    // 60020", never appeared contiguously and the ZIP was absent entirely. Front-loading
+    // it also means the address survives Google's ~60-char display truncation.
     const streetAddress = property.address ?? "";
     const fullAddr = `${streetAddress}, ${property.city}, ${property.state}${property.zip_code ? " " + property.zip_code : ""}`;
     const seoTitle = streetAddress
-      ? `${streetAddress} — ${bedsLabel}${typeLabel} ${actionLabel} in ${property.city}, ${property.state}${priceLabel}`
+      ? `${fullAddr} — ${bedsLabel}${typeLabel} ${actionLabel}${priceLabel}`
       : `${bedsLabel}${typeLabel} ${actionLabel} in ${property.city}, ${property.state}${priceLabel}`;
 
     // Description leads with address + features so it shows in snippet for address searches
@@ -289,9 +293,77 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     ],
   };
 
+  // ── The physical home, as its own entity ──────────────────────────────────
+  // RealEstateListing is a subtype of WebPage: it describes this *page*, not the
+  // building. address/geo/floorSize/room-counts are Accommodation properties, so
+  // hanging them off the listing puts Place data on a WebPage node and leaves Google
+  // without an explicit place to bind the street address to. Address queries
+  // ("1 Linden Ave Fox Lake IL") are resolved against place entities, so the home now
+  // gets its own node that the listing references via mainEntity.
+  const residenceType =
+    property.type === "condo" || property.type === "apartment" ? "Apartment" :
+      property.type === "townhouse" ? "House" : "SingleFamilyResidence";
+
+  // Street-suffix variants. Searchers type "Ave" and "Avenue" interchangeably and
+  // Google does not reliably treat them as the same token, so both forms are declared
+  // rather than betting on whichever one the MLS feed happened to store.
+  const SUFFIXES: Record<string, string> = {
+    ave: "Avenue", st: "Street", rd: "Road", dr: "Drive", ln: "Lane", ct: "Court",
+    blvd: "Boulevard", pl: "Place", ter: "Terrace", cir: "Circle", pkwy: "Parkway",
+    hwy: "Highway", trl: "Trail", way: "Way",
+  };
+  const addressVariants: string[] = [];
+  if (property.address) {
+    const expanded = property.address.replace(
+      /\b([A-Za-z]+)\b\.?\s*$/,
+      (m, word: string) => SUFFIXES[word.toLowerCase()] ?? m,
+    );
+    if (expanded !== property.address) {
+      addressVariants.push(
+        `${expanded}, ${property.city}, ${property.state} ${property.zip_code ?? ""}`.trim(),
+      );
+    }
+  }
+
+  const residenceSchema = {
+    "@type": residenceType,
+    "@id": `https://primefamilyhousing.com/homes-for-rent/${property.slug}#residence`,
+    name: fullAddress,
+    ...(addressVariants.length > 0 && { alternateName: addressVariants }),
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: property.address,
+      addressLocality: property.city,
+      addressRegion: property.state,
+      postalCode: property.zip_code,
+      addressCountry: "US",
+    },
+    ...(hasCoords && {
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: currentMarker.lat,
+        longitude: currentMarker.lng,
+      },
+    }),
+    // numberOfBedrooms, not numberOfRooms: the latter is *total* rooms, so feeding it a
+    // bedroom count misstates the home. Both counts are coerced to Number — the API
+    // returns bathrooms as a string ("2.0"), and schema.org expects a numeric value.
+    ...(property.bedrooms != null && Number.isFinite(Number(property.bedrooms)) && {
+      numberOfBedrooms: Number(property.bedrooms),
+    }),
+    ...(property.bathrooms != null && Number.isFinite(Number(property.bathrooms)) && {
+      numberOfBathroomsTotal: Number(property.bathrooms),
+    }),
+    ...(property.sqft != null && {
+      floorSize: { "@type": "QuantitativeValue", value: property.sqft, unitCode: "FTK" },
+    }),
+    ...(isPetFriendly && { petsAllowed: true }),
+  };
+
   const listingSchema = {
     "@context": "https://schema.org",
     "@type": "RealEstateListing",
+    mainEntity: residenceSchema,
     // Lead with full address so Google indexes the address as the canonical name of this listing
     name: property.address
       ? `${property.address}, ${property.city}, ${property.state} ${property.zip_code ?? ""}`.trim()

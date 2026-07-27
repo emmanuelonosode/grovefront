@@ -1,5 +1,5 @@
 ﻿import type { Metadata } from "next";
-import Image from "next/image";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 
 export const metadata: Metadata = {
   title: "Brand & Design Kit — PrimeFamilyHousing",
@@ -87,17 +87,18 @@ export default function DesignHandoffPage() {
           <h2 className="font-sans text-2xl font-bold text-brand-dark mb-6">Logo</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="bg-white border border-neutral-200 rounded-sm p-10 flex items-center justify-center">
-              <Image src="/logo.svg" alt="Logo on white" width={220} height={40} />
+              <BrandLogo variant="on-white" height={48} />
             </div>
             <div className="bg-brand-dark border border-neutral-200 rounded-sm p-10 flex items-center justify-center">
-              <Image src="/logo.svg" alt="Logo on dark" width={220} height={40} className="brightness-0 invert" />
+              <BrandLogo variant="on-dark" height={48} />
             </div>
           </div>
           <div className="mt-4 bg-white border border-neutral-200 rounded-sm p-5 text-sm text-neutral-600 space-y-1">
-            <p><span className="font-semibold text-brand-dark">File:</span> <code className="bg-neutral-100 px-1.5 py-0.5 rounded text-xs">/public/logo.svg</code></p>
-            <p><span className="font-semibold text-brand-dark">On white backgrounds:</span> Use as-is.</p>
-            <p><span className="font-semibold text-brand-dark">On dark backgrounds:</span> Apply <code className="bg-neutral-100 px-1.5 py-0.5 rounded text-xs">filter: brightness(0) invert(1)</code> or use the white-inverted version.</p>
+            <p><span className="font-semibold text-brand-dark">Component:</span> <code className="bg-neutral-100 px-1.5 py-0.5 rounded text-xs">{`<BrandLogo variant="on-white" | "on-dark" mark="lockup" | "emblem" />`}</code></p>
+            <p><span className="font-semibold text-brand-dark">Files:</span> <code className="bg-neutral-100 px-1.5 py-0.5 rounded text-xs">/public/brand/logo-lockup-&#123;green|beige&#125;.svg</code></p>
+            <p><span className="font-semibold text-brand-dark">On dark backgrounds:</span> Use the beige variant. Do <em>not</em> apply <code className="bg-neutral-100 px-1.5 py-0.5 rounded text-xs">brightness(0) invert(1)</code> — it flattens the two-tone mark to solid white.</p>
             <p><span className="font-semibold text-brand-dark">Minimum size:</span> 120px wide. Never stretch or recolour the mark.</p>
+            <p className="pt-1 text-neutral-500"><span className="font-semibold text-brand-dark">Superseded:</span> <code className="bg-neutral-100 px-1.5 py-0.5 rounded text-xs">/public/logo.svg</code> is the old placeholder wordmark (&ldquo;Homes for Families&rdquo;). Do not use.</p>
           </div>
         </section>
 

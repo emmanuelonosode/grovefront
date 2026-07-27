@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 
 // Auth pages (login, register, password reset) must not appear in search results.
 // They have no unique SEO value and would waste crawl budget.
@@ -13,7 +13,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     <div className="min-h-screen bg-[#F5F5F7] flex flex-col">
       <header className="px-6 py-4 bg-white/80 backdrop-blur-xl border-b border-black/[0.06]">
         <Link href="/" className="inline-flex items-center">
-          <Image src="/logo.svg" alt="PrimeFamilyHousing" width={130} height={34} className="h-7 w-auto" />
+          <BrandLogo variant="on-white" height={28} />
         </Link>
       </header>
       <main className="flex-1 flex items-center justify-center px-4 py-12">

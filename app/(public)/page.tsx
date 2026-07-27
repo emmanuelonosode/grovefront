@@ -24,9 +24,12 @@ const HERO_IMAGES = [
 ];
 
 export const metadata = {
-  title: "PrimeFamilyHousing | Affordable Houses for Rent",
+  // Spaced brand in the homepage <title>: it is one of the signals Google weighs when
+  // choosing the site name printed under the result link, and the closed-up form read
+  // as the domain rather than a brand.
+  title: "Prime Family Housing | Affordable Houses for Rent",
   description:
-    "PrimeFamilyHousing — find affordable single-family houses for rent across Atlanta, Charlotte, Houston, Dallas, Tampa and Phoenix. Decisions in 24 hrs.",
+    "Prime Family Housing — find affordable single-family houses for rent across Atlanta, Charlotte, Houston, Dallas, Tampa and Phoenix. Decisions in 24 hrs.",
   keywords: [
     "houses for rent",
     "homes for rent near me",
@@ -46,11 +49,16 @@ export const metadata = {
     "primefamilyhousing.com",
   ],
   openGraph: {
-    title: "PrimeFamilyHousing | Affordable Houses for Rent",
-    description: "PrimeFamilyHousing — quality homes, well-maintained and move-in ready. Fast approvals. 12+ cities.",
+    // siteName must be repeated here. Next merges metadata shallowly, so a page that
+    // defines `openGraph` REPLACES the layout's block wholesale rather than merging into
+    // it — the layout's siteName was being dropped on the homepage, the one page where
+    // the site-name signal matters most.
+    siteName: BUSINESS.displayName,
+    title: "Prime Family Housing | Affordable Houses for Rent",
+    description: "Prime Family Housing — quality homes, well-maintained and move-in ready. Fast approvals. 12+ cities.",
     type: "website",
     url: "https://primefamilyhousing.com",
-    images: [{ url: "https://primefamilyhousing.com/opengraph-image", width: 1200, height: 630, alt: "PrimeFamilyHousing — Affordable Homes" }],
+    images: [{ url: "https://primefamilyhousing.com/opengraph-image", width: 1200, height: 630, alt: "Prime Family Housing — Affordable Homes" }],
   },
   twitter: {
     card: "summary_large_image",
@@ -70,14 +78,14 @@ const LOCAL_BUSINESS_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "RealEstateAgent",
   "@id": `${BASE_URL}/#local-business`,
-  name: "PrimeFamilyHousing",
-  legalName: "PrimeFamilyHousing",
+  name: "Prime Family Housing",
+  legalName: "Prime Family Housing",
   alternateName: ["Prime Family Housing", "PrimeFamilyHousing.com"],
   parentOrganization: { "@id": `${BASE_URL}/#organization` },
   url: BASE_URL,
-  logo: `${BASE_URL}/logo.svg`,
+  logo: BUSINESS.logo.url,
   image: `${BASE_URL}/opengraph-image`,
-  description: "PrimeFamilyHousing — affordable single-family houses for rent. Quality homes, move-in ready, fast decisions. 2,000+ families housed across 12+ US cities since 2012.",
+  description: "Prime Family Housing — affordable single-family houses for rent. Quality homes, move-in ready, fast decisions. 2,000+ families housed across 12+ US cities since 2012.",
   email: BUSINESS.email,
   telephone: BUSINESS.telephone,
   priceRange: "$$",
@@ -97,18 +105,20 @@ const LOCAL_BUSINESS_SCHEMA = {
     "Austin, TX", "Miami, FL", "Denver, CO", "Seattle, WA", "Las Vegas, NV", "Tampa, FL",
     "Raleigh, NC", "Orlando, FL", "San Antonio, TX", "Jacksonville, FL", "Philadelphia, PA",
   ],
-  sameAs: [
-    "https://www.instagram.com/primefamilyhousing",
-    "https://www.linkedin.com/company/primefamilyhousing",
-    "https://twitter.com/primefamilyhousing",
-    "https://www.facebook.com/primefamilyhousing",
-  ],
+  // Read from BUSINESS rather than hardcoding: this list had drifted out of sync —
+  // it was missing TikTok entirely and pointed at a /primefamilyhousing Facebook
+  // vanity URL while every other emitter used the /share/1G6G3YcUd3/ profile.
+  // Conflicting sameAs sets for one @id weaken entity resolution.
+  sameAs: [...BUSINESS.sameAs],
 };
 
 const WEBSITE_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "PrimeFamilyHousing",
+  // Must match the WebSite node in layout.tsx — conflicting names across two WebSite
+  // nodes is exactly the ambiguity that makes Google fall back to showing the domain.
+  name: BUSINESS.displayName,
+  alternateName: [...BUSINESS.alternateNames],
   url: BASE_URL,
   potentialAction: {
     "@type": "SearchAction",
@@ -121,21 +131,16 @@ const ORGANIZATION_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "Organization",
   "@id": `${BASE_URL}/#organization`,
-  name: "PrimeFamilyHousing",
-  legalName: "PrimeFamilyHousing",
+  name: "Prime Family Housing",
+  legalName: "Prime Family Housing",
   alternateName: ["Prime Family Housing", "PrimeFamilyHousing.com"],
   url: BASE_URL,
-  logo: `${BASE_URL}/logo.svg`,
+  logo: BUSINESS.logo.url,
   email: BUSINESS.email,
   telephone: BUSINESS.telephone,
   address: postalAddressSchema(),
   contactPoint: { "@type": "ContactPoint", email: BUSINESS.email, telephone: BUSINESS.telephone, contactType: "customer service", availableLanguage: "English" },
-  sameAs: [
-    "https://www.instagram.com/primefamilyhousing",
-    "https://www.linkedin.com/company/primefamilyhousing",
-    "https://twitter.com/primefamilyhousing",
-    "https://www.facebook.com/primefamilyhousing",
-  ],
+  sameAs: [...BUSINESS.sameAs],
 };
 
 const FAQ_SCHEMA = {
@@ -162,7 +167,7 @@ const HOW_IT_WORKS_SCHEMA = {
   name: "How to Rent a Home with PrimeFamilyHousing",
   description: "Apply for an affordable rental home in 3 simple steps. Decisions within 24 hours.",
   totalTime: "PT10M",
-  estimatedCost: { "@type": "MonetaryAmount", currency: "USD", value: "0" },
+  estimatedCost: { "@type": "MonetaryAmount", currency: "USD", value: "2" },
   step: [
     { "@type": "HowToStep", position: 1, name: "Browse available homes", text: "Filter by city, beds, and budget. Every listing has photos, full pricing, and pet policy.", url: `${BASE_URL}/homes-for-rent` },
     { "@type": "HowToStep", position: 2, name: "Apply in 10 minutes", text: "One online form. No paperwork run-around. Reviewed within 24 hours.", url: `${BASE_URL}/apply` },

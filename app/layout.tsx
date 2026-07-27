@@ -3,6 +3,7 @@ import { Montserrat, Source_Sans_3 } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
 import { TrackingScripts } from "@/components/TrackingScripts";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
+import { BUSINESS } from "@/lib/business";
 import "./globals.css";
 
 const sourceSans = Source_Sans_3({
@@ -99,7 +100,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://primefamilyhousing.com",
-    siteName: "PrimeFamilyHousing",
+    siteName: BUSINESS.displayName,
     title: "PrimeFamilyHousing | Affordable Houses for Rent",
     description: "Discover quality, affordable houses for rent — move-in ready single-family homes, fast approvals.",
   },
@@ -148,11 +149,11 @@ const jsonLd = {
     {
       "@type": "Organization",
       "@id": "https://primefamilyhousing.com/#organization",
-      "name": "PrimeFamilyHousing",
-      "legalName": "PrimeFamilyHousing",
+      "name": BUSINESS.displayName,
+      "legalName": BUSINESS.displayName,
       // alternateName teaches Google every branded query that points here
       "alternateName": [
-        "Prime Family Housing",
+        "PrimeFamilyHousing",
         "PrimeFamilyHousing.com",
         "Prime Family Housing LLC"
       ],
@@ -194,14 +195,11 @@ const jsonLd = {
           }
         }
       ],
-      "sameAs": [
-        "https://www.facebook.com/share/1G6G3YcUd3/",
-        "https://www.tiktok.com/@primefamilyhousing",
-        "https://www.instagram.com/primefamilyhousing",
-        "https://www.linkedin.com/company/primefamilyhousing",
-        "https://twitter.com/primefamilyhousing",
-        "https://primefamilyhousing.com"
-      ],
+      // Sourced from BUSINESS so the profile list can't drift between emitters again
+      // (the homepage Organization/LocalBusiness schemas had silently fallen out of
+      // sync — no TikTok, and a different Facebook URL). BUSINESS.url is appended to
+      // keep the self-reference this node has always carried.
+      "sameAs": [...BUSINESS.sameAs, BUSINESS.url],
       "slogan": "Quality Homes. Well-Maintained. Move-In Ready.",
       "numberOfEmployees": { "@type": "QuantitativeValue", "minValue": 10, "maxValue": 50 },
       "award": [
@@ -259,9 +257,11 @@ const jsonLd = {
       "@type": "WebSite",
       "@id": "https://primefamilyhousing.com/#website",
       "url": "https://primefamilyhousing.com",
-      "name": "PrimeFamilyHousing",
-      "alternateName": ["Prime Family Housing", "PrimeFamilyHousing.com"],
-      "description": "Official website of PrimeFamilyHousing — affordable rental homes and properties for sale across 12+ US cities. Founded 2012. Move-in ready homes.",
+      // This `name` is the primary signal for the site name Google prints under the
+      // result link. It must be the spaced brand, not the closed-up domain-alike form.
+      "name": BUSINESS.displayName,
+      "alternateName": [...BUSINESS.alternateNames],
+      "description": "Official website of Prime Family Housing — affordable rental homes and properties for sale across 12+ US cities. Founded 2012. Move-in ready homes.",
       "publisher": { "@id": "https://primefamilyhousing.com/#organization" },
       "potentialAction": {
         "@type": "SearchAction",

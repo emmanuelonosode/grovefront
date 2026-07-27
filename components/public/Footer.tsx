@@ -15,16 +15,6 @@ function InstagramIcon() {
   );
 }
 
-function LinkedinIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15">
-      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-      <rect x="2" y="9" width="4" height="12" />
-      <circle cx="4" cy="4" r="2" />
-    </svg>
-  );
-}
-
 function FacebookIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15">
@@ -128,7 +118,9 @@ export async function Footer() {
                 { href: "https://www.facebook.com/share/1G6G3YcUd3/?mibextid=wwXIfr", label: "Facebook",  Icon: FacebookIcon },
                 { href: "https://www.tiktok.com/@primefamilyhousing",                    label: "TikTok",    Icon: TikTokIcon },
                 { href: "https://www.instagram.com/primefamilyhousing",                       label: "Instagram", Icon: InstagramIcon },
-                { href: "https://www.linkedin.com/company/primefamilyhousing",                label: "LinkedIn",  Icon: LinkedinIcon },
+                // No LinkedIn: the company page doesn't exist, so this sent every
+                // visitor who clicked it to a 404. Restore alongside BUSINESS.sameAs
+                // if the page is ever created.
               ].map(({ href, label, Icon }) => (
                 <a
                   key={label}

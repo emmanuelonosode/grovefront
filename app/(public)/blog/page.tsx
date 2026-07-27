@@ -20,6 +20,9 @@ export const metadata = {
 
 const CATEGORIES = [
   { label: "All",             value: "" },
+  // Mirrors PostCategory in groveback/apps/blog/models.py — this list is hardcoded, so a
+  // category added on the backend stays unfilterable here until it's added below too.
+  { label: "Renter's Guide",  value: "RENTER_GUIDE" },
   { label: "Market Analysis", value: "MARKET_ANALYSIS" },
   { label: "Buyer's Guide",   value: "BUYERS_GUIDE" },
   { label: "Seller's Guide",  value: "SELLERS_GUIDE" },

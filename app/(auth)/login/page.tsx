@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Eye, EyeOff, AlertCircle } from "lucide-react";
-import Image from "next/image";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 import { identifyUser, trackEvent } from "@/lib/tracking";
 
 // Simulated high-quality images from Unsplash for real estate
@@ -103,13 +103,12 @@ function SplitScreenLogin() {
 
         {/* Branding — logo + tagline only, no glass */}
         <div className="absolute inset-0 z-20 flex flex-col justify-center items-center pointer-events-none">
-          <Image
-            src="/logo.svg"
-            alt="PrimeFamilyHousing"
-            width={180}
-            height={48}
-            className="brightness-0 invert mb-4"
-          />
+          {/* Beige brand variant, not the green one force-whitened with
+              brightness-0/invert — that filter flattened the mark to pure white and
+              threw away the two-tone artwork. */}
+          <div className="mb-4">
+            <BrandLogo variant="on-dark" height={48} />
+          </div>
           <p className="text-white/50 text-[14px] tracking-wide font-medium">
             Comfortable Living, Within Your Budget.
           </p>

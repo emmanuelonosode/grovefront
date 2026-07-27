@@ -66,10 +66,25 @@ export async function generateMetadata(
   const description = `Find ${filterLabel.toLowerCase()} rentals in ${city.name}, ${city.stateCode}. All homes inspected and move-in ready. 24-hour approval decisions. Browse current availability.`;
   const url = `https://primefamilyhousing.com/rentals/${slug}/${filter}`;
 
+  // Property-type filters are duplicates of the city page: PrimeFamilyHousing rents
+  // single-family houses only, so /residential-homes returns the same inventory as
+  // /rentals/[city] (every other type slug 404s for lack of listings). Both URLs were
+  // ranking for the same query — "houses for rent in concord nc" held #25 with the
+  // city page and #36 with /concord-nc/residential-homes — so the two split relevance
+  // and internal links instead of compounding on one URL. Canonicalize them onto the
+  // city page, which is also the meatier document (~5.9k words vs ~3.6k).
+  //
+  // Bedroom filters stay self-canonical: "1 bedroom homes for rent in atlanta ga" is a
+  // genuinely distinct query and /atlanta-ga/1-bedroom ranks for it on its own.
+  const canonical =
+    spec.kind === "property_type"
+      ? `https://primefamilyhousing.com/rentals/${slug}`
+      : url;
+
   return {
     title,
     description,
-    alternates: { canonical: url },
+    alternates: { canonical },
     openGraph: {
       title,
       description,
@@ -123,10 +138,9 @@ export default async function CityFilterPage(
   // 404 it so Google drops it instead of flagging a soft 404.
   if (totalCount === 0) notFound();
 
-  // Sibling filter links
+  // Sibling filter links. Condos/townhouses are omitted for the same reason as on the
+  // city page — no such inventory exists, so those URLs 404 in every city.
   const siblingFilters = [
-    { slug: "condos",            label: "Condos" },
-    { slug: "townhouses",        label: "Townhouses" },
     { slug: "residential-homes", label: "Homes" },
     { slug: "1-bedroom",         label: "1 Bed" },
     { slug: "2-bedroom",         label: "2 Bed" },

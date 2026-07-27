@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Clock, Calendar, Tag } from "lucide-react";
 import sanitizeHtml from "sanitize-html";
 import { fetchPostBySlug, fetchPosts, type BlogPost } from "@/lib/blog";
+import { BUSINESS } from "@/lib/business";
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -78,9 +79,14 @@ export default async function BlogPostPage({ params }: Props) {
     },
     publisher: {
       "@type": "Organization",
-      name: "PrimeFamilyHousing",
-      url: "https://primefamilyhousing.com",
-      logo: { "@type": "ImageObject", url: "https://primefamilyhousing.com/logo.svg" },
+      name: BUSINESS.displayName,
+      url: BUSINESS.url,
+      logo: {
+        "@type": "ImageObject",
+        url: BUSINESS.logo.url,
+        width: BUSINESS.logo.width,
+        height: BUSINESS.logo.height,
+      },
     },
     mainEntityOfPage: {
       "@type": "WebPage",

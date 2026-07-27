@@ -393,8 +393,11 @@ export default async function CityRentalsPage(
               { label: "2 Beds",      href: `/rentals/${slug}/2-bedroom`,  Icon: Bed },
               { label: "3 Beds",      href: `/rentals/${slug}/3-bedroom`,  Icon: Bed },
               { label: "4 Beds",      href: `/rentals/${slug}/4-bedroom`,  Icon: Bed },
-              { label: "Condos",      href: `/rentals/${slug}/condos`,     Icon: Building },
-              { label: "Townhouses",  href: `/rentals/${slug}/townhouses`, Icon: Building },
+              // No Condos/Townhouses links: PrimeFamilyHousing rents single-family
+              // houses only, so those filter URLs 404 in every city (the route calls
+              // notFound() on zero matches). Linking them from all ~760 city pages
+              // pointed ~1,500 internal links at dead ends, burning crawl budget and
+              // leaking internal PageRank out of the pages we actually want ranked.
               { label: "Pet-friendly", href: `/homes-for-rent?q=${encodeURIComponent(city.name)}&pets=true`, Icon: PawPrint },
             ].map(({ label, href, Icon }) => (
               <Link

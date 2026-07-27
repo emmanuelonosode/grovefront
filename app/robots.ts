@@ -19,7 +19,7 @@ export default function robots(): MetadataRoute.Robots {
         // Param variants carry canonical tags pointing at the clean URLs — letting
         // Google crawl them resolves them as "Alternate page with proper canonical",
         // which is the correct, harmless end state.
-        disallow: ["/dashboard", "/portal", "/api", "/_next"],
+        disallow: ["/dashboard", "/portal", "/api", "/_next", "/admin"],
       },
       {
         // Explicitly allow known LLM/AI crawlers to index the site
@@ -34,7 +34,7 @@ export default function robots(): MetadataRoute.Robots {
           "CCBot",
         ],
         allow: ["/", "/llms.txt", "/llms-full.txt"],
-        disallow: ["/dashboard", "/portal", "/api", "/_next"],
+        disallow: ["/dashboard", "/portal", "/api", "/_next", "/admin"],
       },
     ],
     // No `host` directive: it's a deprecated Yandex-only extension that Googlebot
