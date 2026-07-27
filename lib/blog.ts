@@ -68,7 +68,12 @@ export async function fetchPostBySlug(slug: string): Promise<BlogPost> {
 /** For sitemap.ts: returns slug + lastModified for all published blog posts. Throws on failure so sitemap.ts returns a 500 (Googlebot retries) instead of an empty list (Googlebot deindexes). */
 export async function fetchPostsForSitemap(): Promise<{ slug: string; lastModified: string }[]> {
   const res = await fetch(`${API_BASE}/api/v1/blog/sitemap/`, {
-    next: { revalidate: 3600 },
+    // Match the sitemap route's 5-min window, same as the property feed. At 3600 the
+    // sitemap route (revalidate = 300) rebuilt every 5 minutes but kept re-reading an
+    // hour-stale blog response, so newly published posts were missing from
+    // /sitemap.xml for up to an hour after going live — and buildCore swallows the
+    // staleness silently via Promise.allSettled, so nothing surfaces the gap.
+    next: { revalidate: 300 },
   });
   if (!res.ok) throw new Error(`Blog sitemap fetch failed: ${res.status}`);
   const data: { slug: string; updated_at: string; published_at: string | null }[] = await res.json();
