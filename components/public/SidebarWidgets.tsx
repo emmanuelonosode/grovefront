@@ -26,6 +26,8 @@ interface Agent {
   phone: string;
   email: string;
   avatar_url: string | null;
+  /** False when /agents/<id> would 404 — i.e. the owner isn't a role=AGENT user. */
+  has_public_profile?: boolean;
 }
 
 interface SidebarWidgetsProps {
@@ -143,12 +145,17 @@ export function SidebarWidgets({ property, agent, agentPhoto, agencyName }: Side
               </h3>
               <p className="text-[13px] text-[#6A6C70] font-medium mt-0.5">{agencyName}</p>
               
-              <a
-                href={`/agents/${agent.id}`}
-                className="inline-flex items-center gap-1 mt-1 text-[#1A73E8] text-[13px] font-bold hover:underline"
-              >
-                View profile →
-              </a>
+              {/* Only link when /agents/<id> will actually resolve. The public agent
+                  endpoints filter role=AGENT, so a listing owned by a staff or admin
+                  account would otherwise render a link straight to a 404. */}
+              {agent.has_public_profile !== false && (
+                <a
+                  href={`/agents/${agent.id}`}
+                  className="inline-flex items-center gap-1 mt-1 text-[#1A73E8] text-[13px] font-bold hover:underline"
+                >
+                  View profile →
+                </a>
+              )}
             </div>
           </div>
 
