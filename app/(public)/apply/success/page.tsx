@@ -108,7 +108,7 @@ function SuccessContent() {
               Email Us
             </a>
             <Link
-              href="/homes-for-rent"
+              href="/houses-for-rent"
               className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-white bg-brand px-3.5 py-2 rounded-xl hover:bg-brand-hover transition-colors"
             >
               <Home size={13} />

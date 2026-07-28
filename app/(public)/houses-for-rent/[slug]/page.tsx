@@ -94,12 +94,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         `${property.city} ${typeLabel.toLowerCase()} ${actionLabel} move-in ready`,
         `${property.city} ${actionLabel}`,
       ],
-      alternates: { canonical: `https://primefamilyhousing.com/homes-for-rent/${decodedSlug}` },
+      alternates: { canonical: `https://primefamilyhousing.com/houses-for-rent/${decodedSlug}` },
       openGraph: {
         title: `${seoTitle} | PrimeFamilyHousing`,
         description: seoDesc.slice(0, 160),
         type: "website",
-        url: `https://primefamilyhousing.com/homes-for-rent/${decodedSlug}`,
+        url: `https://primefamilyhousing.com/houses-for-rent/${decodedSlug}`,
         images: [{ url: ogImage, width: 1200, height: 630, alt: seoTitle }],
       },
       twitter: {
@@ -181,10 +181,10 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     allCities.some((c) => (c.state || "").toUpperCase() === property.state?.toUpperCase());
   const cityHref = cityPageExists
     ? `/rentals/${citySlug}`
-    : `/homes-for-rent?q=${encodeURIComponent(property.city)}`;
+    : `/houses-for-rent?q=${encodeURIComponent(property.city)}`;
   const stateHref = statePageExists
     ? `/rentals/${stateSlug}`
-    : `/homes-for-rent?state=${property.state}`;
+    : `/houses-for-rent?state=${property.state}`;
   const stateName = stateFullName(property.state);
 
   // Only use real coordinates from the backend — never approximate the pin location.
@@ -278,7 +278,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: "https://primefamilyhousing.com" },
-      { "@type": "ListItem", position: 2, name: "Homes for Rent", item: "https://primefamilyhousing.com/homes-for-rent" },
+      { "@type": "ListItem", position: 2, name: "Homes for Rent", item: "https://primefamilyhousing.com/houses-for-rent" },
       { "@type": "ListItem", position: 3, name: stateName, item: `https://primefamilyhousing.com${stateHref}` },
       { "@type": "ListItem", position: 4, name: `${property.city}, ${property.state}`, item: `https://primefamilyhousing.com${cityHref}` },
       {
@@ -288,7 +288,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
         name: property.address
           ? `${property.address}, ${property.city}, ${property.state}`
           : property.title,
-        item: `https://primefamilyhousing.com/homes-for-rent/${decodedSlug}`,
+        item: `https://primefamilyhousing.com/houses-for-rent/${decodedSlug}`,
       },
     ],
   };
@@ -327,7 +327,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
   const residenceSchema = {
     "@type": residenceType,
-    "@id": `https://primefamilyhousing.com/homes-for-rent/${property.slug}#residence`,
+    "@id": `https://primefamilyhousing.com/houses-for-rent/${property.slug}#residence`,
     name: fullAddress,
     ...(addressVariants.length > 0 && { alternateName: addressVariants }),
     address: {
@@ -370,7 +370,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
       : property.title,
     alternateName: property.title,
     description: property.description ?? "",
-    url: `https://primefamilyhousing.com/homes-for-rent/${property.slug}`,
+    url: `https://primefamilyhousing.com/houses-for-rent/${property.slug}`,
     image: images.length > 0
       ? images.map((img) => ({
         "@type": "ImageObject",
@@ -462,13 +462,13 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               {property.city}
             </Link>
             <span className="text-neutral-400 font-normal">&gt;</span>
-            <Link href={`/homes-for-rent?q=${property.zip_code}`} className="hover:text-blue-600 cursor-pointer">
+            <Link href={`/houses-for-rent?q=${property.zip_code}`} className="hover:text-blue-600 cursor-pointer">
               {property.zip_code}
             </Link>
             {property.neighborhood && (
               <>
                 <span className="text-neutral-400 font-normal">&gt;</span>
-                <Link href={`/homes-for-rent?q=${encodeURIComponent(property.neighborhood)}`} className="hover:text-blue-600 cursor-pointer font-medium text-neutral-800">
+                <Link href={`/houses-for-rent?q=${encodeURIComponent(property.neighborhood)}`} className="hover:text-blue-600 cursor-pointer font-medium text-neutral-800">
                   {property.neighborhood}
                 </Link>
               </>
@@ -758,7 +758,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   </div>
                   <div>
                     <div className="text-[12px] font-bold text-[#6A6C70] mb-0.5">Zip Code</div>
-                    <Link href={`/homes-for-rent?q=${property.zip_code}`} className="text-[#1A73E8] hover:underline cursor-pointer font-bold">
+                    <Link href={`/houses-for-rent?q=${property.zip_code}`} className="text-[#1A73E8] hover:underline cursor-pointer font-bold">
                       {property.zip_code}
                     </Link>
                   </div>
@@ -766,7 +766,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   {property.neighborhood && (
                     <div>
                       <div className="text-[12px] font-bold text-[#6A6C70] mb-0.5">Neighborhood</div>
-                      <Link href={`/homes-for-rent?q=${encodeURIComponent(property.neighborhood)}`} className="text-[#1A73E8] hover:underline cursor-pointer font-bold leading-tight">
+                      <Link href={`/houses-for-rent?q=${encodeURIComponent(property.neighborhood)}`} className="text-[#1A73E8] hover:underline cursor-pointer font-bold leading-tight">
                         {property.neighborhood}
                       </Link>
                     </div>
@@ -913,7 +913,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   {similar.slice(0, 4).map((simProp) => (
                     <Link
                       key={simProp.id}
-                      href={`/homes-for-rent/${simProp.slug}`}
+                      href={`/houses-for-rent/${simProp.slug}`}
                       className="group flex flex-col bg-white border border-neutral-200/80 rounded-xl overflow-hidden hover:shadow-md hover:border-neutral-300 transition-all"
                     >
                       <div className="relative aspect-[16/10] bg-neutral-100 overflow-hidden">

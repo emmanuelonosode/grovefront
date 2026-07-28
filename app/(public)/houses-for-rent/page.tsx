@@ -10,12 +10,12 @@ export const metadata = {
   title: "Homes for Rent & Affordable Houses Nationwide | PrimeFamilyHousing",
   description:
     "Browse affordable homes, houses, and apartments for rent across the U.S. — move-in ready, pet-friendly options, transparent pricing, and 24-hour application decisions. Find your next rental by city.",
-  alternates: { canonical: "https://primefamilyhousing.com/homes-for-rent" },
+  alternates: { canonical: "https://primefamilyhousing.com/houses-for-rent" },
   openGraph: {
     title: "Homes for Rent & Affordable Houses Nationwide | PrimeFamilyHousing",
     description: "Browse affordable houses for rent — inspected, move-in ready, 24-hour decisions.",
     type: "website",
-    url: "https://primefamilyhousing.com/homes-for-rent",
+    url: "https://primefamilyhousing.com/houses-for-rent",
   },
 };
 
@@ -86,7 +86,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home",       item: "https://primefamilyhousing.com" },
-      { "@type": "ListItem", position: 2, name: "Homes for Rent", item: "https://primefamilyhousing.com/homes-for-rent" },
+      { "@type": "ListItem", position: 2, name: "Homes for Rent", item: "https://primefamilyhousing.com/houses-for-rent" },
     ],
   };
 
@@ -99,7 +99,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
     itemListElement: results.slice(0, 24).map((p, i) => ({
       "@type": "ListItem",
       position: i + 1,
-      url: `https://primefamilyhousing.com/homes-for-rent/${p.slug}`,
+      url: `https://primefamilyhousing.com/houses-for-rent/${p.slug}`,
       name: p.title,
     })),
   };

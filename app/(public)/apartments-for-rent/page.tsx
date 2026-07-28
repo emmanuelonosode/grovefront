@@ -134,11 +134,11 @@ export default async function ApartmentsPage() {
           <div className="flex flex-wrap gap-3 mt-8">
             {live ? (
               <Button variant="accent" size="lg" asChild>
-                <Link href="/homes-for-rent?type=apartment">Browse Apartments <ArrowRight size={16} /></Link>
+                <Link href="/houses-for-rent?type=apartment">Browse Apartments <ArrowRight size={16} /></Link>
               </Button>
             ) : (
               <Button variant="accent" size="lg" asChild>
-                <Link href="/homes-for-rent">Browse Rental Homes <ArrowRight size={16} /></Link>
+                <Link href="/houses-for-rent">Browse Rental Homes <ArrowRight size={16} /></Link>
               </Button>
             )}
             <Button variant="outline-white" size="lg" asChild>
@@ -168,7 +168,7 @@ export default async function ApartmentsPage() {
                 <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-2">Available now</p>
                 <h2 className="font-serif text-3xl lg:text-4xl font-bold text-brand-dark">Apartments available to rent</h2>
               </div>
-              <Link href="/homes-for-rent?type=apartment" className="hidden sm:flex items-center gap-2 text-sm text-brand font-medium hover:underline">
+              <Link href="/houses-for-rent?type=apartment" className="hidden sm:flex items-center gap-2 text-sm text-brand font-medium hover:underline">
                 View all <ArrowRight size={14} />
               </Link>
             </div>
@@ -214,8 +214,8 @@ export default async function ApartmentsPage() {
             </p>
           </div>
           <div className="mt-8 flex flex-col sm:flex-row gap-3">
-            <Button variant="accent" asChild><Link href="/homes-for-rent">Browse Rentals</Link></Button>
-            <Button variant="outline-blue" asChild><Link href="/homes-for-rent?sort=price_asc">See Affordable Homes</Link></Button>
+            <Button variant="accent" asChild><Link href="/houses-for-rent">Browse Rentals</Link></Button>
+            <Button variant="outline-blue" asChild><Link href="/houses-for-rent?sort=price_asc">See Affordable Homes</Link></Button>
           </div>
         </div>
       </section>

@@ -122,7 +122,7 @@ const WEBSITE_SCHEMA = {
   url: BASE_URL,
   potentialAction: {
     "@type": "SearchAction",
-    target: { "@type": "EntryPoint", urlTemplate: `${BASE_URL}/homes-for-rent?q={search_term_string}` },
+    target: { "@type": "EntryPoint", urlTemplate: `${BASE_URL}/houses-for-rent?q={search_term_string}` },
     "query-input": "required name=search_term_string",
   },
 };
@@ -169,7 +169,7 @@ const HOW_IT_WORKS_SCHEMA = {
   totalTime: "PT10M",
   estimatedCost: { "@type": "MonetaryAmount", currency: "USD", value: "2" },
   step: [
-    { "@type": "HowToStep", position: 1, name: "Browse available homes", text: "Filter by city, beds, and budget. Every listing has photos, full pricing, and pet policy.", url: `${BASE_URL}/homes-for-rent` },
+    { "@type": "HowToStep", position: 1, name: "Browse available homes", text: "Filter by city, beds, and budget. Every listing has photos, full pricing, and pet policy.", url: `${BASE_URL}/houses-for-rent` },
     { "@type": "HowToStep", position: 2, name: "Apply in 10 minutes", text: "One online form. No paperwork run-around. Reviewed within 24 hours.", url: `${BASE_URL}/apply` },
     { "@type": "HowToStep", position: 3, name: "Move in", text: "Sign your lease, pay your deposit, get your keys. We handle the rest.", url: `${BASE_URL}/apply` },
   ],
@@ -337,7 +337,7 @@ export default async function HomePage() {
 
         <div className="mt-10 text-center">
           <Link
-            href="/homes-for-rent"
+            href="/houses-for-rent"
             className="inline-flex items-center gap-2 bg-primary text-on-primary text-[14px] font-semibold tracking-[0.05em] h-[50px] px-8 rounded-full hover:bg-primary-container transition-colors active:scale-95"
           >
             Browse all available homes
@@ -414,7 +414,7 @@ export default async function HomePage() {
               {/* CTA */}
               <div className="mt-9 flex flex-col sm:flex-row gap-3">
                 <Link
-                  href="/homes-for-rent"
+                  href="/houses-for-rent"
                   className="inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-hover text-white font-bold text-[15px] px-8 py-4 rounded-xl shadow-lg shadow-brand/20 hover:shadow-brand/30 transition-all"
                 >
                   Browse Houses for Rent <ArrowRight size={16} />
@@ -507,7 +507,7 @@ export default async function HomePage() {
                 ))}
               </div>
               <Link
-                href="/homes-for-rent?q=pet"
+                href="/houses-for-rent?q=pet"
                 className="inline-flex items-center gap-1.5 text-brand text-[14px] font-medium hover:opacity-80 transition-opacity"
               >
                 Browse pet-friendly rentals <ArrowRight size={14} />
@@ -605,7 +605,7 @@ export default async function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
-              href="/homes-for-rent"
+              href="/houses-for-rent"
               className="inline-flex items-center justify-center gap-2 bg-brand text-white h-[50px] px-7 rounded-sm text-[14px] font-medium tracking-[0.05em] hover:bg-brand-hover transition-colors"
             >
               Browse homes <ArrowRight size={14} />

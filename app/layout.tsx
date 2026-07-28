@@ -267,7 +267,7 @@ const jsonLd = {
         "@type": "SearchAction",
         "target": {
           "@type": "EntryPoint",
-          "urlTemplate": "https://primefamilyhousing.com/homes-for-rent?q={search_term_string}"
+          "urlTemplate": "https://primefamilyhousing.com/houses-for-rent?q={search_term_string}"
         },
         "query-input": "required name=search_term_string"
       },

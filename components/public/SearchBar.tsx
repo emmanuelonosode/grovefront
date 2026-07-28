@@ -102,7 +102,7 @@ export function SearchBar({ className }: SearchBarProps) {
       if (max) params.set("maxPrice", max);
     }
     if (bedrooms) params.set("beds", bedrooms);
-    router.push(`/homes-for-rent?${params.toString()}`);
+    router.push(`/houses-for-rent?${params.toString()}`);
   }
 
   return (

@@ -76,27 +76,37 @@ const nextConfig: NextConfig = {
         destination: "https://primefamilyhousing.com/:path*",
         permanent: true,
       },
-      // /properties → /homes-for-rent (route rename, 301 preserves SEO equity;
-      // points directly at the final path — no redirect chain through /houses-for-rent)
+      // Legacy property URLs → /houses-for-rent, the current canonical path.
+      //
+      // This route has now been renamed twice: /properties → /houses-for-rent →
+      // /homes-for-rent → back to /houses-for-rent. Every rule below therefore points
+      // DIRECTLY at /houses-for-rent rather than chaining through the intermediate
+      // names — a 301 chain leaks equity at each hop and Google gives up after a few.
+      //
+      // Note the direction of the /homes-for-rent rules: they are the reverse of what
+      // lived here before. Leaving the old direction in place after the rename would
+      // have produced /houses-for-rent → /houses-for-rent, an infinite self-redirect
+      // taking down every property page on the site.
       {
         source: "/properties",
-        destination: "/homes-for-rent",
+        destination: "/houses-for-rent",
         permanent: true,
       },
       {
         source: "/properties/:slug*",
-        destination: "/homes-for-rent/:slug*",
+        destination: "/houses-for-rent/:slug*",
         permanent: true,
       },
-      // /houses-for-rent → /homes-for-rent (route rename, 301 preserves SEO equity)
+      // /homes-for-rent → /houses-for-rent. These carry ~3,750 indexed property URLs,
+      // so this is the rule that preserves the existing index.
       {
-        source: "/houses-for-rent",
-        destination: "/homes-for-rent",
+        source: "/homes-for-rent",
+        destination: "/houses-for-rent",
         permanent: true,
       },
       {
-        source: "/houses-for-rent/:slug*",
-        destination: "/homes-for-rent/:slug*",
+        source: "/homes-for-rent/:slug*",
+        destination: "/houses-for-rent/:slug*",
         permanent: true,
       },
       // Legacy grouped sub-sitemaps → the single central sitemap. Keeps stale

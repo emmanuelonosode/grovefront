@@ -53,10 +53,10 @@ const footerCols = [
   {
     h: "Rent",
     links: [
-      { label: "Browse houses",        href: "/homes-for-rent" },
-      { label: "3+ bedroom houses",    href: "/homes-for-rent?beds=3" },
-      { label: "Pet-friendly houses",  href: "/homes-for-rent?q=pet" },
-      { label: "All cities",           href: "/homes-for-rent#all-cities" },
+      { label: "Browse houses",        href: "/houses-for-rent" },
+      { label: "3+ bedroom houses",    href: "/houses-for-rent?beds=3" },
+      { label: "Pet-friendly houses",  href: "/houses-for-rent?q=pet" },
+      { label: "All cities",           href: "/houses-for-rent#all-cities" },
     ],
   },
   {
@@ -181,7 +181,7 @@ export async function Footer() {
               </Link>
             ))}
             <Link
-              href="/homes-for-rent#all-cities"
+              href="/houses-for-rent#all-cities"
               className="transition-colors hover:text-white"
               style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 14.5, color: "#A3B18A", fontWeight: 600, textDecoration: "none" }}
             >

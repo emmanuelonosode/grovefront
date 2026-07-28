@@ -63,7 +63,7 @@ function makeBubble(L: any, price: number, label: string, active: boolean) {
 
 function buildPopup(m: MapMarker) {
   return `
-    <a href="/homes-for-rent/${m.slug}"
+    <a href="/houses-for-rent/${m.slug}"
        style="text-decoration:none;color:inherit;display:block;font-family:system-ui,sans-serif;">
       ${m.image_url
         ? `<img src="${m.image_url}" style="width:248px;height:148px;object-fit:cover;
@@ -147,7 +147,7 @@ export function PropertiesMap({ markers, center, activeSlug, onMarkerClick, onBo
 
         dot.on("mouseover", () => {
           dot.bindPopup(
-            `<a href="/homes-for-rent/${p.slug}"
+            `<a href="/houses-for-rent/${p.slug}"
                 style="text-decoration:none;color:inherit;display:block;font-family:system-ui;min-width:160px">
               ${p.image_url ? `<img src="${p.image_url}" style="width:248px;height:148px;object-fit:cover;border-radius:8px 8px 0 0;display:block;margin:-14px -14px 10px;max-width:none;"/>` : ""}
               <div style="font-size:15px;font-weight:800;color:${BLUE}">
@@ -166,7 +166,7 @@ export function PropertiesMap({ markers, center, activeSlug, onMarkerClick, onBo
           ).openPopup();
         });
 
-        dot.on("click", () => { window.location.href = `/homes-for-rent/${p.slug}`; });
+        dot.on("click", () => { window.location.href = `/houses-for-rent/${p.slug}`; });
         dot.bindTooltip(p.slug, { direction: "top", offset: [0, -4] });
         dot.addTo(layer);
       });
