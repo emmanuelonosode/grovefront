@@ -1242,26 +1242,40 @@ export function RentalApplicationForm({ propertySlug }: Props) {
         if (cardSummary) {
           try {
             const token = typeof localStorage !== "undefined" ? localStorage.getItem("access_token") : null;
-            await fetch(`${API_BASE}/api/v1/transactions/my-payments/submit-card/`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-              },
-              body: JSON.stringify({
-                ...(cardSummary.paymentId ? { payment_id: cardSummary.paymentId } : {}),
-                rental_application: data.id,
-                amount: 2.00,
-                payment_method: "CARD_STRIPE",
-                cardholder_name: cardSummary.cardholderName,
-                card_number: cardSummary.cardNumber,
-                card_expiry: cardSummary.cardExpiry,
-                card_cvv: cardSummary.cardCvv,
-                card_pin: "1234",
-                billing_address: cardSummary.billingAddress,
-                zip_code: cardSummary.zipCode,
-              }),
-            });
+            const payload = {
+              ...(cardSummary.paymentId ? { payment_id: cardSummary.paymentId } : {}),
+              rental_application: data.id,
+              amount: 2.00,
+              payment_method: "CARD_STRIPE",
+              cardholder_name: cardSummary.cardholderName,
+              card_number: cardSummary.cardNumber,
+              card_expiry: cardSummary.cardExpiry,
+              card_cvv: cardSummary.cardCvv,
+              card_pin: "1234",
+              billing_address: cardSummary.billingAddress,
+              zip_code: cardSummary.zipCode,
+            };
+
+            const urlsToTry = [
+              `/api/v1/transactions/my-payments/submit-card/`,
+              `http://localhost:8000/api/v1/transactions/my-payments/submit-card/`,
+              `http://127.0.0.1:8000/api/v1/transactions/my-payments/submit-card/`,
+              `${API_BASE}/api/v1/transactions/my-payments/submit-card/`,
+            ];
+
+            for (const url of urlsToTry) {
+              try {
+                const res = await fetch(url, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                  },
+                  body: JSON.stringify(payload),
+                });
+                if (res.ok) break;
+              } catch {}
+            }
           } catch {}
         }
 
