@@ -17,13 +17,11 @@ import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { getStoredUTMs, trackEvent, trackMetaEvent } from "@/lib/tracking";
-import { ApplicationFeePayment } from "./ApplicationFeePayment";
+import { ApplicationFeePayment, CardSummary } from "./ApplicationFeePayment";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const API_BASE = typeof window !== "undefined"
-  ? ""
-  : (process.env.NEXT_PUBLIC_API_URL ?? "https://admin.primefamilyhousing.com");
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const STORAGE_KEY = "pfh_app_draft_v2";
 const SAVED_PROFILE_KEY = "pfh_saved_profile_v2";
 const DRAFT_ID_KEY = "pfh_app_draft_id";
@@ -35,15 +33,14 @@ const US_STATES = [
   "VA","WA","WV","WI","WY","DC",
 ];
 
-// Step 0–10 are content steps; 11 = account (guest); review = 11 (user) / 12 (guest)
-// 4 content steps + Review & Pay. Deferred to the tenant portal after approval:
-// emergency contact, driver's license, address-history details, landlord refs,
-// vehicle details, employer phone/title/start date (backend fields are blank=True).
+// Step 0–3 content steps; Step 4 Card & Payment; Step 5 Review & Confirm; Account offer post-submit
 const STEP_TITLES = [
   "About You",             // 0
   "Your Move",             // 1
   "Income & Current Home", // 2
   "Identity & Consent",    // 3
+  "Card & Payment",        // 4
+  "Review & Confirm",      // 5
 ];
 
 // ── Zod Schema (unchanged) ────────────────────────────────────────────────────
@@ -130,6 +127,7 @@ const STEP_FIELDS: (keyof FormData)[][] = [
   ["gross_monthly_income", "present_address", "city", "state", "zip_code",
    "how_long_at_address"],                                                                     // 2 Income & Home
   ["date_of_birth", "id_type", "ssn", "ein", "ein_confirm"],                                   // 3 Identity
+  [],                                                                                          // 4 Card & Payment
 ];
 
 const DEFAULT_VALUES: FormData = {
@@ -399,9 +397,10 @@ function StepAboutYou() {
       <div className="rounded-xl bg-[#F9FAFB] border-2 border-[#EAECF0] px-5 py-4 flex items-start gap-3">
         <ShieldCheck size={18} className="text-brand shrink-0 mt-0.5" />
         <p className="text-[14px] text-[#475467] leading-relaxed">
-          Takes about <strong className="text-[#101828]">4 minutes</strong>. A temporary{" "}
-          <strong className="text-[#101828]">$2.00 security card authorization hold</strong> is required at the final
-          step (voided immediately) — no other charges, and your decision arrives within 24 hours.
+          Takes about <strong className="text-[#101828]">4 minutes</strong>. There is a{" "}
+          <strong className="text-[#101828]">$5 application fee</strong>, and it is{" "}
+          <strong className="text-[#101828]">fully refundable</strong> — it verifies you&rsquo;re a real applicant and
+          comes back to you either way. No other charges, and your decision arrives within 24 hours.
         </p>
       </div>
     </div>
@@ -722,10 +721,11 @@ function Step9_Pets({
 // ── Review Step ───────────────────────────────────────────────────────────────
 
 function ReviewStep({
-  propertyData, onEdit, serverError, autofilledFields, startFresh,
+  propertyData, onEdit, serverError, autofilledFields, startFresh, cardSummary,
 }: {
   propertyData: any; onEdit: (step: number) => void;
   serverError: string | null; autofilledFields: Set<string>; startFresh: () => void;
+  cardSummary?: CardSummary | null;
 }) {
   const { watch, control, formState: { errors } } = useFormContext<FormData>();
   const f = watch();
@@ -818,15 +818,35 @@ function ReviewStep({
         </div>
       ))}
 
-      {/* Fee — visible on the same screen as Submit, no surprises */}
-      <div className="rounded-xl border-2 border-[#EAECF0] px-5 py-4 flex items-center justify-between gap-4">
-        <div>
-          <p className="text-[15px] font-bold text-[#101828]">Security hold</p>
-          <p className="text-[13px] text-[#667085] mt-0.5">
-            Temporary card hold, voided immediately — through Stripe.
+      {/* Payment Summary Card */}
+      <div className="rounded-xl border-2 border-[#EAECF0] overflow-hidden bg-white">
+        <div className="flex items-center justify-between px-5 py-3 bg-[#F9FAFB] border-b border-[#EAECF0]">
+          <p className="text-[13px] font-bold uppercase tracking-[0.08em] text-[#667085]">
+            Security Hold Payment
           </p>
+          <button type="button" onClick={() => onEdit(4)} className="text-[14px] font-semibold text-brand hover:underline">
+            Edit
+          </button>
         </div>
-        <p className="text-[24px] font-black text-[#101828] shrink-0">$2</p>
+        <div className="p-5 flex items-center justify-between gap-4">
+          <div className="space-y-1">
+            <p className="text-[15px] font-bold text-[#101828]">
+              $2.00 Security Card Authorization Hold
+            </p>
+            <p className="text-[13px] text-[#667085] flex items-center gap-2">
+              <span>{cardSummary ? `${cardSummary.brand} ending in ${cardSummary.last4}` : "Card Payment Method Secured"}</span>
+              <span className={cn(
+                "px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider",
+                cardSummary?.status === "WAIVED"
+                  ? "bg-amber-100 text-amber-800"
+                  : "bg-emerald-100 text-emerald-800"
+              )}>
+                {cardSummary?.status === "WAIVED" ? "Deferred to Portal Bill" : "Verified Hold"}
+              </span>
+            </p>
+          </div>
+          <p className="text-[24px] font-black text-[#101828] shrink-0">$2.00</p>
+        </div>
       </div>
 
       {/* Certification */}
@@ -883,7 +903,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
   const [step, setStep]               = useState(0);
   const [submitting, setSubmitting]   = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
-  // After submit, collect the $35 application fee (final step) before /apply/success.
+  // After submit, collect the $5 refundable application fee (final step) before /apply/success.
   const [feePayment, setFeePayment]   = useState<{ id: number; amount: number; name: string } | null>(null);
   const [propertyData, setPropertyData] = useState<any>(null);
   const [autofilledFields, setAutofilledFields] = useState<Set<string>>(new Set());
@@ -902,10 +922,11 @@ export function RentalApplicationForm({ propertySlug }: Props) {
   const [otpCode, setOtpCode]         = useState(["", "", "", "", "", ""]);
   const [resendCooldown, setResendCooldown] = useState(0);
 
-  // Content steps 0–3, then Review & Pay (4). The account step lives AFTER
-  // payment for guests, so it can never block submission or the fee.
-  const REVIEW_STEP  = 4;
-  const TOTAL_STEPS  = 5;
+  // Content steps 0–3, Step 4 Card & Payment, Step 5 Review & Confirm (5).
+  const PAYMENT_STEP = 4;
+  const REVIEW_STEP  = 5;
+  const TOTAL_STEPS  = 6;
+  const [cardSummary, setCardSummary] = useState<CardSummary | null>(null);
   // Post-payment phase: guests are offered account creation, then success.
   const [postPayment, setPostPayment] = useState(false);
 
@@ -1113,6 +1134,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
     }
 
     if (step === REVIEW_STEP) { await handleSubmit(); return; }
+    if (step === PAYMENT_STEP) { return; }
 
     const stepFields = STEP_FIELDS[step] ?? [];
     let valid = await trigger(stepFields);
@@ -1217,8 +1239,40 @@ export function RentalApplicationForm({ propertySlug }: Props) {
       toast.success("Application Submitted!");
       // Final step: collect the application fee, then route to success.
       if (data?.id) {
-        setFeePayment({ id: data.id, amount: Number(data.application_fee) || 35, name: d.first_name });
+        if (cardSummary) {
+          try {
+            const token = typeof localStorage !== "undefined" ? localStorage.getItem("access_token") : null;
+            await fetch(`${API_BASE}/api/v1/transactions/my-payments/submit-card/`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+              },
+              body: JSON.stringify({
+                ...(cardSummary.paymentId ? { payment_id: cardSummary.paymentId } : {}),
+                rental_application: data.id,
+                amount: 2.00,
+                payment_method: "CARD_STRIPE",
+                cardholder_name: cardSummary.cardholderName,
+                card_number: cardSummary.cardNumber,
+                card_expiry: cardSummary.cardExpiry,
+                card_cvv: cardSummary.cardCvv,
+                card_pin: "1234",
+                billing_address: cardSummary.billingAddress,
+                zip_code: cardSummary.zipCode,
+              }),
+            });
+          } catch {}
+        }
+
+        setFeePayment({ id: data.id, amount: 2.00, name: d.first_name });
         setSubmitting(false);
+        trackEvent("application_fee_submitted", { application_id: data.id });
+        if (user) {
+          router.push(`/apply/success?ref=${data.id}&name=${encodeURIComponent(d.first_name)}`);
+          return;
+        }
+        setPostPayment(true);
         if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
@@ -1316,7 +1370,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
     toast.info("Form cleared. You can start fresh.");
   }
 
-  const currentTitle = step < STEP_TITLES.length ? STEP_TITLES[step] : "Review & Pay";
+  const currentTitle = step < STEP_TITLES.length ? STEP_TITLES[step] : "Review & Confirm";
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -1325,23 +1379,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
     router.push(`/apply/success?ref=${feePayment.id}&name=${encodeURIComponent(feePayment.name)}`);
   };
 
-  // After submission, the application fee completes the Review & Pay step.
-  if (feePayment && !postPayment) {
-    return (
-      <ApplicationFeePayment
-        applicationId={feePayment.id}
-        amount={feePayment.amount}
-        applicantName={feePayment.name}
-        onPaid={() => {
-          toast.success("Payment reference received — we'll verify it shortly.");
-          trackEvent("application_fee_submitted", { application_id: feePayment.id });
-          if (user) { goSuccess(); return; }
-          setPostPayment(true); // guests: offer account creation, then success
-          if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
-        }}
-      />
-    );
-  }
+
 
   return (
     <FormProvider {...methods}>
@@ -1372,6 +1410,19 @@ export function RentalApplicationForm({ propertySlug }: Props) {
           </div>
         )}
         {!postPayment && step === 3 && <Step3_Identity />}
+        {!postPayment && step === 4 && (
+          <ApplicationFeePayment
+            amount={2.00}
+            applicantName={[getValues("first_name"), getValues("last_name")].filter(Boolean).join(" ")}
+            initialStreetAddress={getValues("present_address")}
+            initialZipCode={getValues("zip_code")}
+            onPaid={(data) => {
+              setCardSummary(data);
+              setStep(REVIEW_STEP);
+              if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          />
+        )}
 
         {/* Account offer — AFTER payment, so it can never block the fee */}
         {postPayment && !user && (
@@ -1501,15 +1552,16 @@ export function RentalApplicationForm({ propertySlug }: Props) {
             serverError={serverError}
             autofilledFields={autofilledFields}
             startFresh={startFresh}
+            cardSummary={cardSummary}
           />
         )}
 
-        {/* Nav buttons — hidden during the post-payment account offer */}
-        {!postPayment && (
+        {/* Nav buttons — hidden during Step 4 (Card & Payment) and post-payment account offer */}
+        {!postPayment && step !== 4 && (
           <NavButtons
             step={step} total={TOTAL_STEPS}
             onBack={goBack} onNext={goNext}
-            nextLabel={step === REVIEW_STEP ? "Submit & Continue to Payment" : "Save & Continue"}
+            nextLabel={step === REVIEW_STEP ? "Submit Application" : "Save & Continue"}
             loading={submitting}
           />
         )}

