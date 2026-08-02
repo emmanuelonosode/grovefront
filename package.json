@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
-    "build": "npx rimraf .next && next build --turbo",
+    "build": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true,maxRetries:10,retryDelay:200})\" && next build --turbo",
     "start": "next start",
     "lint": "eslint"
   },
