@@ -6,7 +6,8 @@ import { HeroCarousel } from "@/components/public/HeroCarousel";
 import { HeroHeadline } from "@/components/public/HeroHeadline";
 import { WorkersScene, PetScene } from "@/components/public/HomepageIllustrations";
 import { StateDirectory } from "@/components/public/StateDirectory";
-import { fetchProperties } from "@/lib/properties";
+import { FeaturedPropertiesSection } from "@/components/public/FeaturedPropertiesSection";
+import { fetchProperties, fetchHomepageProperties, toPropertyCardShape } from "@/lib/properties";
 import { fetchAllCities, toDirectoryCities } from "@/lib/cities";
 import { BUSINESS, postalAddressSchema } from "@/lib/business";
 
@@ -199,12 +200,22 @@ const faqs = [
 const petTags = ["Dogs welcome", "Cats welcome", "$300 pet deposit", "$25/mo pet rent", "No breed restrictions"];
 
 export default async function HomePage() {
-  const [totalCountRaw, allCitiesRaw] = await Promise.allSettled([
+  const [totalCountRaw, homepageRaw, allCitiesRaw] = await Promise.allSettled([
     fetchProperties(),
+    // Purpose-built endpoint for the homepage grid: admin-curated homes, with a
+    // server-side fallback to is_featured when none are hand-picked. Showing real
+    // houses here is the clearest signal — to visitors and to Google — that this is a
+    // rentals site, not just a lead form.
+    fetchHomepageProperties(),
     fetchAllCities(),
   ]);
 
   const totalProperties = totalCountRaw.status === "fulfilled" ? totalCountRaw.value.count : null;
+
+  // Adapt the list-item API shape to the Property shape PropertyCard consumes — the
+  // same conversion the city pages use.
+  const homepageItems = homepageRaw.status === "fulfilled" ? homepageRaw.value : [];
+  const featuredProperties = homepageItems.map(toPropertyCardShape);
 
   const dbCities = allCitiesRaw.status === "fulfilled" ? allCitiesRaw.value : [];
   // Slim projection — the directory + city grid only need name/photo/count, so
@@ -247,6 +258,15 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ── FEATURED RENTALS ─────────────────────────────────────────────────
+          Real move-in-ready homes, directly below the hero. This is the first
+          thing a visitor (or crawler) sees after the search — concrete proof the
+          site lists actual houses for rent. Rendered only when we have listings so
+          a fetch failure degrades to the rest of the page rather than an empty grid. */}
+      {featuredProperties.length > 0 && (
+        <FeaturedPropertiesSection properties={featuredProperties} totalCount={totalProperties} />
+      )}
 
       {/* â”€â”€ STATS STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section style={{ background: "#081C15", color: "#fff" }}>

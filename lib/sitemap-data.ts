@@ -1,4 +1,4 @@
-import { fetchPropertiesForSitemap, fetchProperties, cleanImageUrl } from "@/lib/properties";
+import { fetchPropertiesForSitemap } from "@/lib/properties";
 import { fetchPostsForSitemap } from "@/lib/blog";
 import { fetchAgents } from "@/lib/agents";
 import { fetchAllCities, CITIES } from "@/lib/cities";
@@ -14,7 +14,6 @@ export interface SitemapEntry {
   lastModified?: Date;
   changeFrequency?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
   priority?: number;
-  images?: { loc: string; title?: string }[];
 }
 
 // ── Group builders ────────────────────────────────────────────────────────────
@@ -130,21 +129,17 @@ export async function buildProperties(): Promise<SitemapEntry[]> {
   // No .catch here — a failed fetch must propagate so the sitemap route can
   // return 503 instead of serving a sitemap missing every property URL.
   const all = await fetchPropertiesForSitemap();
-  // Property listings are the priority — highest non-homepage priority — and each
-  // carries its primary photo as an <image:image> so Google indexes listing
-  // images (Google Images + result thumbnails).
-  return all.map((p) => {
-    // <image:loc> must be a fully-qualified URL,
-    // so clean it and drop anything still not absolute (GSC rejects it otherwise).
-    const image = cleanImageUrl(p.image);
-    return {
-      url: `${BASE_URL}/houses-for-rent/${p.slug}`,
-      lastModified: new Date(p.lastModified),
-      changeFrequency: "daily" as const,
-      priority: 0.9,
-      images: image.startsWith("http") ? [{ loc: image, title: p.title }] : undefined,
-    };
-  });
+  // Property listings are the priority — highest non-homepage priority. Image sitemap
+  // extensions were removed: a clean <urlset> of plain <loc> URLs is the most reliably
+  // crawlable form, and Google discovers listing photos from each page's own markup
+  // (og:image + the RealEstateListing/SingleFamilyResidence JSON-LD) rather than needing
+  // <image:image> here.
+  return all.map((p) => ({
+    url: `${BASE_URL}/houses-for-rent/${p.slug}`,
+    lastModified: new Date(p.lastModified),
+    changeFrequency: "daily" as const,
+    priority: 0.9,
+  }));
 }
 
 // ── XML serializers ───────────────────────────────────────────────────────────
@@ -157,14 +152,9 @@ export function urlsetXml(entries: SitemapEntry[]): string {
     const lm = e.lastModified ? `<lastmod>${new Date(e.lastModified).toISOString()}</lastmod>` : "";
     const cf = e.changeFrequency ? `<changefreq>${e.changeFrequency}</changefreq>` : "";
     const pr = e.priority != null ? `<priority>${e.priority}</priority>` : "";
-    const imgs = (e.images ?? [])
-      .map((im) =>
-        `<image:image><image:loc>${escapeXml(im.loc)}</image:loc>` +
-        (im.title ? `<image:title>${escapeXml(im.title)}</image:title>` : "") +
-        `</image:image>`
-      )
-      .join("");
-    return `  <url><loc>${escapeXml(e.url)}</loc>${lm}${cf}${pr}${imgs}</url>`;
+    return `  <url><loc>${escapeXml(e.url)}</loc>${lm}${cf}${pr}</url>`;
   }).join("\n");
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${items}\n</urlset>`;
+  // Plain sitemaps namespace only — the image extension namespace is gone with the
+  // <image:image> tags it declared.
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${items}\n</urlset>`;
 }
