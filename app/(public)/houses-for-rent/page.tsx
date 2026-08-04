@@ -6,21 +6,39 @@ import { fetchAllCities, toDirectoryCities } from "@/lib/cities";
 
 export const revalidate = 0;
 
-export const metadata = {
-  title: "Homes for Rent & Affordable Houses Nationwide | PrimeFamilyHousing",
-  description:
-    "Browse affordable homes, houses, and apartments for rent across the U.S. — move-in ready, pet-friendly options, transparent pricing, and 24-hour application decisions. Find your next rental by city.",
-  alternates: { canonical: "https://primefamilyhousing.com/houses-for-rent" },
-  openGraph: {
-    title: "Homes for Rent & Affordable Houses Nationwide | PrimeFamilyHousing",
-    description: "Browse affordable houses for rent — inspected, move-in ready, 24-hour decisions.",
-    type: "website",
-    url: "https://primefamilyhousing.com/houses-for-rent",
-  },
-};
-
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+const BASE = "https://primefamilyhousing.com/houses-for-rent";
+// The facet params. When any is set the URL is a filtered view — those must NOT each
+// get their own canonical (infinite combinations = index bloat), so they consolidate to
+// the clean hub. Only pure ?page=N pagination is allowed a self-referential canonical.
+const FILTER_KEYS = ["q", "beds", "baths", "minPrice", "maxPrice", "minSqft", "maxSqft", "type", "pets", "listing_type", "sort"];
+
+export async function generateMetadata({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const pageNum = Math.max(1, parseInt((params.page as string) ?? "1", 10));
+  const hasFilters = FILTER_KEYS.some((k) => params[k]);
+
+  // Page 1 and every filtered view → clean hub. Deep pagination pages self-canonicalize
+  // so Googlebot follows the series through and each page's 24 listing links count.
+  const canonical = !hasFilters && pageNum > 1 ? `${BASE}?page=${pageNum}` : BASE;
+  // Distinct title per page so paginated pages aren't seen as duplicate titles.
+  const pageSuffix = pageNum > 1 ? ` — Page ${pageNum}` : "";
+
+  return {
+    title: `Homes for Rent & Affordable Houses Nationwide${pageSuffix} | PrimeFamilyHousing`,
+    description:
+      "Browse affordable homes, houses, and apartments for rent across the U.S. — move-in ready, pet-friendly options, transparent pricing, and 24-hour application decisions. Find your next rental by city.",
+    alternates: { canonical },
+    openGraph: {
+      title: `Homes for Rent & Affordable Houses Nationwide${pageSuffix} | PrimeFamilyHousing`,
+      description: "Browse affordable houses for rent — inspected, move-in ready, 24-hour decisions.",
+      type: "website",
+      url: canonical,
+    },
+  };
 }
 
 const PAGE_SIZE = 24;

@@ -869,6 +869,21 @@ export function PropertiesClient({
                 )}
               </div>
             )}
+
+            {/* Crawlable pagination. Googlebot never fires the infinite-scroll
+                IntersectionObserver above, so without these real <a href> links it could
+                only ever reach the first 24 listings from this hub. buildUrl preserves the
+                active filters and sets page=N, so every page of results is a followable
+                link. Kept visible: it's also the no-JS and keyboard-accessible fallback. */}
+            {!mapResults && totalPages > 1 && (
+              <nav aria-label="Pagination">
+                <PaginationBar
+                  currentPage={currentPageState}
+                  totalPages={totalPages}
+                  buildHref={(pg) => buildUrl({ page: pg > 1 ? String(pg) : undefined })}
+                />
+              </nav>
+            )}
           </div>
         </div>
       </div>
