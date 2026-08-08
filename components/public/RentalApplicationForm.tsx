@@ -21,7 +21,17 @@ import { ApplicationFeePayment, CardSummary } from "./ApplicationFeePayment";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+// In the browser, use a relative base ("") so every request goes through the Next.js
+// rewrite (/api/v1/* → backend) — same-origin, no CORS, no mixed content, and NO
+// dependency on a build-time env var. The old `process.env.NEXT_PUBLIC_API_URL ||
+// "http://localhost:8000"` inlined localhost into the production bundle whenever the
+// build lacked that env var, so the browser tried to POST to http://localhost:8000 and
+// every draft/submit/payment fetch died as "Failed to fetch". During SSR there is no
+// rewrite, so fall back to the absolute backend URL. Mirrors lib/auth.ts.
+const API_BASE =
+  typeof window !== "undefined"
+    ? ""
+    : process.env.NEXT_PUBLIC_API_URL ?? "https://admin.primefamilyhousing.com";
 const STORAGE_KEY = "pfh_app_draft_v2";
 const SAVED_PROFILE_KEY = "pfh_saved_profile_v2";
 const DRAFT_ID_KEY = "pfh_app_draft_id";
