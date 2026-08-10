@@ -255,6 +255,17 @@ const jobPostings = openRoles.map((role) => {
   oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
   const validThroughDate = oneYearFromNow.toISOString().split("T")[0];
 
+  const salaryMap: Record<string, number> = {
+    "remote-listing-specialist": 50000,
+    "real-estate-agent": 75000,
+    "leasing-consultant": 45000,
+    "property-manager": 65000,
+    "marketing-coordinator": 55000,
+    "maintenance-technician": 50000,
+    "tenant-relations-specialist": 48000,
+  };
+  const salary = salaryMap[role.id] || 50000;
+
   const jp: any = {
     "@context": "https://schema.org",
     "@type": "JobPosting",
@@ -278,6 +289,15 @@ const jobPostings = openRoles.map((role) => {
     jobBenefits: role.benefits.join(", "),
     skills: role.requirements.join("; "),
     directApply: true,
+    baseSalary: {
+      "@type": "MonetaryAmount",
+      currency: "USD",
+      value: {
+        "@type": "QuantitativeValue",
+        value: salary,
+        unitText: "YEAR"
+      }
+    }
   };
 
   if (isRemote) {
@@ -474,18 +494,18 @@ export default function CareersPage() {
       </section>
 
       {/* ── OPEN ROLES ───────────────────────────────────────────────────── */}
-      <section id="open-roles" className="bg-brand-dark">
+      <section id="open-roles" className="bg-white border-t border-neutral-100">
         <div className="max-w-5xl mx-auto px-6 lg:px-8 py-24 lg:py-32">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-14 pb-8 border-b border-white/10">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-14 pb-8 border-b border-neutral-200">
             <div>
               <p className="text-brand text-xs font-semibold tracking-[0.35em] uppercase mb-3">
                 Now Hiring
               </p>
-              <h2 className="font-serif text-4xl lg:text-5xl font-bold text-white leading-tight">
+              <h2 className="font-serif text-4xl lg:text-5xl font-bold text-neutral-900 leading-tight">
                 Open Positions
               </h2>
             </div>
-            <p className="text-white/30 text-xs leading-relaxed max-w-xs sm:text-right">
+            <p className="text-neutral-500 text-xs leading-relaxed max-w-xs sm:text-right">
               Clearfield, UT · Equal opportunity employer committed to a
               diverse, inclusive team.
             </p>
@@ -497,25 +517,25 @@ export default function CareersPage() {
               <p className="text-brand text-[10px] font-bold tracking-[0.35em] uppercase">
                 Featured Opportunity
               </p>
-              <div className="flex-1 border-t border-white/[0.07]" />
+              <div className="flex-1 border-t border-neutral-200" />
             </div>
             <FeaturedJobCard />
           </div>
 
           {/* ── ALL OPEN POSITIONS ──────────────────────────────────────── */}
           <div className="flex items-center gap-4 mb-10">
-            <div className="flex-1 border-t border-white/[0.07]" />
-            <p className="text-[9px] font-bold tracking-[0.35em] uppercase text-white/20">
+            <div className="flex-1 border-t border-neutral-200" />
+            <p className="text-[9px] font-bold tracking-[0.35em] uppercase text-neutral-400">
               All Open Positions
             </p>
-            <div className="flex-1 border-t border-white/[0.07]" />
+            <div className="flex-1 border-t border-neutral-200" />
           </div>
 
-          <div className="divide-y divide-white/[0.08]">
+          <div className="divide-y divide-neutral-200">
             {openRoles.map((role) => (
               <details
                 key={role.id}
-                className={`group overflow-hidden ${"featured" in role && role.featured ? "bg-brand/[0.06] -mx-4 px-4 rounded-sm" : ""}`}
+                className={`group overflow-hidden ${"featured" in role && role.featured ? "bg-brand/[0.04] -mx-4 px-4 rounded-sm" : ""}`}
               >
                 <summary className="flex items-center justify-between gap-6 py-6 cursor-pointer list-none hover:opacity-90 transition-opacity">
                   <div className="flex-1 min-w-0">
@@ -529,32 +549,32 @@ export default function CareersPage() {
                         </span>
                       )}
                       {"urgent" in role && role.urgent && (
-                        <span className="text-[9px] font-bold tracking-[0.15em] uppercase text-red-400 border border-red-400/30 px-2.5 py-0.5 rounded-sm">
+                        <span className="text-[9px] font-bold tracking-[0.15em] uppercase text-red-500 border border-red-200 bg-red-50 px-2.5 py-0.5 rounded-sm">
                           Urgently Hiring
                         </span>
                       )}
                     </div>
-                    <h3 className="font-serif text-lg lg:text-xl font-bold text-white group-open:text-brand transition-colors leading-snug">
+                    <h3 className="font-serif text-lg lg:text-xl font-bold text-neutral-900 group-open:text-brand transition-colors leading-snug">
                       {role.title}
                     </h3>
-                    <div className="flex items-center gap-3 mt-1.5 text-[11px] text-white/30">
+                    <div className="flex items-center gap-3 mt-1.5 text-[11px] text-neutral-500">
                       <span className="flex items-center gap-1">
                         <MapPin size={10} />
                         {role.location}
                       </span>
-                      <span className="text-white/20">·</span>
+                      <span className="text-neutral-300">·</span>
                       <span>{role.type}</span>
                     </div>
                   </div>
 
-                  <div className="shrink-0 w-8 h-8 border border-white/15 rounded-sm flex items-center justify-center group-open:border-brand group-open:bg-brand transition-colors duration-200">
+                  <div className="shrink-0 w-8 h-8 border border-neutral-200 rounded-sm flex items-center justify-center group-open:border-brand group-open:bg-brand transition-colors duration-200">
                     <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
                       <path
                         d="M6 1v10M1 6h10"
                         stroke="currentColor"
                         strokeWidth="1.5"
                         strokeLinecap="round"
-                        className="text-white/40 group-open:opacity-0 transition-opacity duration-200"
+                        className="text-neutral-400 group-open:opacity-0 transition-opacity duration-200"
                       />
                       <path
                         d="M1 6h10"
@@ -567,8 +587,8 @@ export default function CareersPage() {
                   </div>
                 </summary>
 
-                <div className="pb-10 border-t border-white/[0.07]">
-                  <p className="text-sm text-white/50 leading-relaxed mb-8 mt-6 max-w-2xl">
+                <div className="pb-10 border-t border-neutral-100">
+                  <p className="text-sm text-neutral-600 leading-relaxed mb-8 mt-6 max-w-2xl">
                     {role.description}
                   </p>
 
@@ -581,7 +601,7 @@ export default function CareersPage() {
                         {role.requirements.map((req) => (
                           <li
                             key={req}
-                            className="flex items-start gap-3 text-sm text-white/50"
+                            className="flex items-start gap-3 text-sm text-neutral-600"
                           >
                             <span className="w-1 h-1 rounded-full bg-brand/50 shrink-0 mt-2" />
                             {req}
@@ -597,7 +617,7 @@ export default function CareersPage() {
                         {role.benefits.map((b) => (
                           <li
                             key={b}
-                            className="flex items-start gap-3 text-sm text-white/50"
+                            className="flex items-start gap-3 text-sm text-neutral-600"
                           >
                             <span className="w-1 h-1 rounded-full bg-brand/50 shrink-0 mt-2" />
                             {b}
@@ -680,24 +700,15 @@ export default function CareersPage() {
           </div>
 
           {/* CTA card */}
-          <div className="relative overflow-hidden bg-brand-dark rounded-sm lg:sticky lg:top-28">
-            <div className="absolute inset-0">
-              <Image
-                src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1000&q=80"
-                alt="Welcoming home exterior"
-                fill
-                className="object-cover opacity-10"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
-            </div>
+          <div className="relative overflow-hidden bg-white border border-neutral-200 shadow-xl rounded-sm lg:sticky lg:top-28">
             <div className="relative z-10 p-10 lg:p-12">
               <p className="text-brand text-xs font-semibold tracking-[0.35em] uppercase mb-4">
                 Ready?
               </p>
-              <h3 className="font-serif text-3xl lg:text-4xl font-bold text-white mb-4 leading-tight">
+              <h3 className="font-serif text-3xl lg:text-4xl font-bold text-neutral-900 mb-4 leading-tight">
                 Let&apos;s Build Something Together
               </h3>
-              <p className="text-white/50 text-sm leading-relaxed mb-8">
+              <p className="text-neutral-500 text-sm leading-relaxed mb-8">
                 Whether you&apos;re a seasoned real estate professional or just
                 starting out, we&apos;d love a conversation. Send us your resume
                 — no cover letter required.
@@ -710,12 +721,12 @@ export default function CareersPage() {
                 career@primefamilyhousing.com
               </a>
 
-              <div className="mt-10 pt-8 border-t border-white/10 space-y-3">
-                <div className="flex items-center gap-3 text-sm text-white/30">
+              <div className="mt-10 pt-8 border-t border-neutral-100 space-y-3">
+                <div className="flex items-center gap-3 text-sm text-neutral-500">
                   <MapPin size={12} className="text-brand shrink-0" />
                   1425 S 1500 E Unit 222, Clearfield, UT 84015
                 </div>
-                <div className="flex items-center gap-3 text-sm text-white/30">
+                <div className="flex items-center gap-3 text-sm text-neutral-500">
                   <Clock size={12} className="text-brand shrink-0" />
                   Mon – Fri, 9 AM – 6 PM EST
                 </div>

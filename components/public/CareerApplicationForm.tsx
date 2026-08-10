@@ -113,7 +113,7 @@ export function CareerApplicationForm({ roleId, roleTitle }: Props) {
     const extraValue = firstExtra ? ((fd.get(firstExtra.name) as string) ?? "") : "";
 
     try {
-      const res = await fetch("/api/v1/careers/apply/", {
+      const res = await fetch("/api/v1/careers/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
