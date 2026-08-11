@@ -181,6 +181,11 @@ const nextConfig: NextConfig = {
         source: "/api/v1/:path*",
         destination: `${backendUrl}/api/v1/:path*/`,
       },
+      // Proxy all media files to the Django backend
+      {
+        source: "/media/:path*",
+        destination: `${backendUrl}/media/:path*`,
+      },
     ];
   },
 
