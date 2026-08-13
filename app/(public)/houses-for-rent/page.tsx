@@ -21,9 +21,14 @@ export async function generateMetadata({ searchParams }: PageProps) {
   const pageNum = Math.max(1, parseInt((params.page as string) ?? "1", 10));
   const hasFilters = FILTER_KEYS.some((k) => params[k]);
 
-  // Page 1 and every filtered view → clean hub. Deep pagination pages self-canonicalize
-  // so Googlebot follows the series through and each page's 24 listing links count.
-  const canonical = !hasFilters && pageNum > 1 ? `${BASE}?page=${pageNum}` : BASE;
+  const canonicalQuery = new URLSearchParams();
+  if (params.q) canonicalQuery.set("q", params.q as string);
+  if (pageNum > 1) canonicalQuery.set("page", String(pageNum));
+  const qs = canonicalQuery.toString();
+  
+  // Clean hub canonical, but preserve 'q' (city searches from /rentals/[city] pages) and 'page' 
+  // so deep properties aren't orphan-canonicalized out of existence.
+  const canonical = qs ? `${BASE}?${qs}` : BASE;
   // Distinct title per page so paginated pages aren't seen as duplicate titles.
   const pageSuffix = pageNum > 1 ? ` — Page ${pageNum}` : "";
 
@@ -153,7 +158,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
       </Suspense>
 
       {/* Crawlable internal-link hub to every city landing page (national SEO). */}
-      {/* <CityDirectory cities={mergedCities} counts={cityCounts} /> */}
+      <CityDirectory cities={mergedCities} counts={cityCounts} />
     </div>
   );
 }
