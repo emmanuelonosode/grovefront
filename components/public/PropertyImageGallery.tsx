@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
-import { X, ChevronLeft, ChevronRight, Grid3x3 } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Grid3x3, ZoomIn } from "lucide-react";
 
 interface Img {
   id: string | number;
@@ -18,36 +18,53 @@ interface Props {
 
 const FALLBACK = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&q=80";
 
+function toLocalUrl(url: string | null, fallbackUrl: string): string {
+  if (!url) return fallbackUrl || FALLBACK;
+  // Route primefamilyhousing media relative so it loads locally and on prod
+  if (url.startsWith("https://primefamilyhousing.com/media/") || url.startsWith("http://primefamilyhousing.com/media/")) {
+    return url.replace(/^https?:\/\/(www\.)?primefamilyhousing\.com/i, "");
+  }
+  return url;
+}
+
 export function PropertyImageGallery({ images, title, fallback }: Props) {
-  const allImages = images.length > 0 ? images : [{ id: "fb", image_url: fallback || FALLBACK }];
+  const allImages = images && images.length > 0 ? images : [{ id: "fb", image_url: fallback || FALLBACK }];
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // --- Lightbox helpers ---
-  const openLightbox = useCallback((i: number) => setLightboxIdx(i), []);
-  const closeLightbox = useCallback(() => setLightboxIdx(null), []);
-  const prev = useCallback(() =>
-    setLightboxIdx((i) => (i !== null ? (i - 1 + allImages.length) % allImages.length : 0)), [allImages.length]);
-  const next = useCallback(() =>
-    setLightboxIdx((i) => (i !== null ? (i + 1) % allImages.length : 0)), [allImages.length]);
+  const openLightbox = (idx: number) => setLightboxIdx(idx);
+  const closeLightbox = () => setLightboxIdx(null);
 
-  // Keyboard navigation
+  const prev = useCallback(() => {
+    setLightboxIdx((curr) => {
+      if (curr === null) return null;
+      return curr === 0 ? allImages.length - 1 : curr - 1;
+    });
+  }, [allImages.length]);
+
+  const next = useCallback(() => {
+    setLightboxIdx((curr) => {
+      if (curr === null) return null;
+      return curr === allImages.length - 1 ? 0 : curr + 1;
+    });
+  }, [allImages.length]);
+
   useEffect(() => {
     if (lightboxIdx === null) return;
-    const handler = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
       if (e.key === "ArrowLeft") prev();
-      else if (e.key === "ArrowRight") next();
-      else if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowRight") next();
     };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [lightboxIdx, prev, next, closeLightbox]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxIdx, prev, next]);
 
-  // Mobile carousel scroll tracker
   const handleScroll = useCallback(() => {
     if (!scrollRef.current) return;
-    const idx = Math.round(scrollRef.current.scrollLeft / scrollRef.current.clientWidth);
+    const el = scrollRef.current;
+    const idx = Math.round(el.scrollLeft / el.clientWidth);
     setCurrentSlide(idx);
   }, []);
 
@@ -59,53 +76,63 @@ export function PropertyImageGallery({ images, title, fallback }: Props) {
   const gallery = allImages.slice(0, 5);
 
   return (
-    <>
-      {/* ── DESKTOP: mosaic grid ── */}
-      <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-1.5 h-[520px]">
+    <div className="relative w-full overflow-hidden">
+      {/* ── DESKTOP: MOSAIC HERO GRID ── */}
+      <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-2 h-[480px] lg:h-[540px] p-2 bg-slate-950">
+        
+        {/* Large Main Feature Photo */}
         <div
-          className="col-span-2 row-span-2 relative overflow-hidden cursor-zoom-in group"
+          className="col-span-2 row-span-2 relative h-full w-full overflow-hidden rounded-xl cursor-pointer group bg-slate-900"
           onClick={() => openLightbox(0)}
         >
-          <Image
-            src={primary.image_url ?? fallback}
+          <img
+            src={toLocalUrl(primary.image_url, fallback)}
             alt={primary.caption ?? title}
-            fill className="object-cover group-hover:scale-105 transition-transform duration-500"
-            priority sizes="50vw" unoptimized
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           />
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+            <span className="text-white text-xs font-bold flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+              <ZoomIn size={14} /> Click to view full size
+            </span>
+          </div>
         </div>
+
+        {/* 4 Supporting Thumbnail Grid Photos */}
         {gallery.slice(1, 5).map((img, i) => (
           <div
-            key={img.id}
-            className="relative overflow-hidden bg-neutral-100 cursor-zoom-in group"
+            key={img.id || i}
+            className="relative h-full w-full overflow-hidden rounded-xl cursor-pointer group bg-slate-900"
             onClick={() => openLightbox(i + 1)}
           >
-            <Image
-              src={img.image_url ?? fallback}
+            <img
+              src={toLocalUrl(img.image_url, fallback)}
               alt={img.caption ?? `${title} photo ${i + 2}`}
-              fill className="object-cover group-hover:scale-105 transition-transform duration-300"
-              sizes="25vw" unoptimized
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
             />
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+            
+            {/* View All Photos Overlay Badge on 4th thumbnail */}
             {i === 3 && allImages.length > 5 && (
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-2 text-white font-semibold text-sm">
-                <Grid3x3 size={16} /> +{allImages.length - 5} more
+              <div className="absolute inset-0 bg-slate-950/75 backdrop-blur-xs flex flex-col items-center justify-center gap-1 text-white font-bold text-sm hover:bg-slate-950/85 transition-colors">
+                <Grid3x3 size={20} className="text-blue-400" />
+                <span>+{allImages.length - 5} More Photos</span>
               </div>
             )}
           </div>
         ))}
+
+        {/* Floating View All Button */}
+        {allImages.length > 1 && (
+          <button
+            onClick={() => openLightbox(0)}
+            className="absolute bottom-6 right-6 hidden md:flex items-center gap-2 bg-white text-slate-900 text-xs font-black px-4 py-2.5 rounded-xl shadow-xl hover:bg-blue-50 hover:text-blue-600 transition-all z-10 cursor-pointer border border-slate-200"
+          >
+            <Grid3x3 size={15} /> View All {allImages.length} Photos
+          </button>
+        )}
       </div>
 
-      {/* View all photos button — desktop only */}
-      {allImages.length > 1 && (
-        <button
-          onClick={() => openLightbox(0)}
-          className="hidden md:flex absolute bottom-4 left-4 items-center gap-1.5 bg-white/95 backdrop-blur-sm text-brand-dark text-xs font-semibold px-3 py-2 rounded-lg shadow-lg hover:bg-white transition-colors z-10"
-        >
-          <Grid3x3 size={13} /> View all {allImages.length} photos
-        </button>
-      )}
-
-      {/* ── MOBILE: scroll-snap carousel ── */}
+      {/* ── MOBILE: TOUCH SWIPE CAROUSEL ── */}
       <div className="md:hidden relative bg-black">
         <div
           ref={scrollRef}
@@ -115,17 +142,14 @@ export function PropertyImageGallery({ images, title, fallback }: Props) {
         >
           {allImages.map((img, i) => (
             <div
-              key={img.id}
-              className="relative w-screen shrink-0 snap-center"
-              style={{ aspectRatio: "4/3" }}
+              key={img.id || i}
+              className="relative w-screen shrink-0 snap-center aspect-[4/3] bg-slate-900"
               onClick={() => openLightbox(i)}
             >
-              <Image
-                src={img.image_url ?? fallback}
+              <img
+                src={toLocalUrl(img.image_url, fallback)}
                 alt={img.caption ?? title}
-                fill className="object-cover"
-                priority={i === 0}
-                sizes="100vw" unoptimized
+                className="w-full h-full object-cover"
               />
             </div>
           ))}
@@ -135,10 +159,10 @@ export function PropertyImageGallery({ images, title, fallback }: Props) {
         {allImages.length > 1 && currentSlide > 0 && (
           <button
             onClick={() => scrollToSlide(currentSlide - 1)}
-            className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/50 hover:bg-black/75 rounded-full flex items-center justify-center text-white transition-colors z-10"
+            className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center text-white z-10"
             aria-label="Previous photo"
           >
-            <ChevronLeft size={22} />
+            <ChevronLeft size={20} />
           </button>
         )}
 
@@ -146,109 +170,90 @@ export function PropertyImageGallery({ images, title, fallback }: Props) {
         {allImages.length > 1 && currentSlide < allImages.length - 1 && (
           <button
             onClick={() => scrollToSlide(currentSlide + 1)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/50 hover:bg-black/75 rounded-full flex items-center justify-center text-white transition-colors z-10"
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center text-white z-10"
             aria-label="Next photo"
           >
-            <ChevronRight size={22} />
+            <ChevronRight size={20} />
           </button>
         )}
 
         {/* Slide counter */}
-        <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full font-medium">
+        <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full font-bold">
           {currentSlide + 1} / {allImages.length}
         </div>
-
-        {/* Dot indicators (max 12 dots) */}
-        {allImages.length > 1 && allImages.length <= 12 && (
-          <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-1 pointer-events-none">
-            {allImages.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => scrollToSlide(i)}
-                className={`w-1.5 h-1.5 rounded-full transition-all pointer-events-auto ${
-                  i === currentSlide ? "bg-white w-3" : "bg-white/50"
-                }`}
-              />
-            ))}
-          </div>
-        )}
       </div>
 
-      {/* ── LIGHTBOX ── */}
+      {/* ── LIGHTBOX MODAL ── */}
       {lightboxIdx !== null && (
         <div
-          className="fixed inset-0 z-[9999] bg-black flex flex-col"
+          className="fixed inset-0 z-[9999] bg-slate-950 flex flex-col"
           onClick={closeLightbox}
         >
           {/* Header */}
           <div
-            className="shrink-0 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/80 to-transparent"
+            className="shrink-0 flex items-center justify-between px-6 py-4 bg-slate-900/90 backdrop-blur-md border-b border-slate-800"
             onClick={(e) => e.stopPropagation()}
           >
-            <span className="text-white/80 text-sm font-medium">
-              {lightboxIdx + 1} / {allImages.length}
-            </span>
+            <div className="text-white">
+              <p className="text-sm font-black">{title}</p>
+              <p className="text-xs text-slate-400">Photo {lightboxIdx + 1} of {allImages.length}</p>
+            </div>
             <button
               onClick={closeLightbox}
-              className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-white transition-colors"
+              className="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-colors cursor-pointer"
             >
               <X size={18} />
             </button>
           </div>
 
-          {/* Image */}
+          {/* Main Full View Photo */}
           <div
-            className="flex-1 relative"
+            className="flex-1 relative flex items-center justify-center p-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <Image
-              src={allImages[lightboxIdx].image_url ?? fallback}
+            <img
+              src={toLocalUrl(allImages[lightboxIdx].image_url, fallback)}
               alt={allImages[lightboxIdx].caption ?? title}
-              fill className="object-contain"
-              sizes="100vw" unoptimized
+              className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
             />
 
-            {/* Prev */}
             {allImages.length > 1 && (
-              <button
-                onClick={(e) => { e.stopPropagation(); prev(); }}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/40 hover:bg-black/70 rounded-full flex items-center justify-center text-white transition-colors"
-              >
-                <ChevronLeft size={22} />
-              </button>
-            )}
-
-            {/* Next */}
-            {allImages.length > 1 && (
-              <button
-                onClick={(e) => { e.stopPropagation(); next(); }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/40 hover:bg-black/70 rounded-full flex items-center justify-center text-white transition-colors"
-              >
-                <ChevronRight size={22} />
-              </button>
+              <>
+                <button
+                  onClick={(e) => { e.stopPropagation(); prev(); }}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/60 hover:bg-black/90 text-white rounded-full flex items-center justify-center cursor-pointer transition-colors"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); next(); }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/60 hover:bg-black/90 text-white rounded-full flex items-center justify-center cursor-pointer transition-colors"
+                >
+                  <ChevronRight size={24} />
+                </button>
+              </>
             )}
           </div>
 
-          {/* Thumbnail strip */}
+          {/* Thumbnail Strip */}
           {allImages.length > 1 && (
             <div
-              className="shrink-0 flex gap-1.5 px-4 py-3 overflow-x-auto bg-black/80"
+              className="shrink-0 flex gap-2 px-6 py-3.5 overflow-x-auto bg-slate-900/90 border-t border-slate-800"
               onClick={(e) => e.stopPropagation()}
               style={{ scrollbarWidth: "none" } as React.CSSProperties}
             >
               {allImages.map((img, i) => (
                 <button
-                  key={img.id}
+                  key={img.id || i}
                   onClick={() => setLightboxIdx(i)}
-                  className={`relative w-14 h-10 shrink-0 rounded overflow-hidden transition-all ${
-                    i === lightboxIdx ? "ring-2 ring-white" : "opacity-50 hover:opacity-80"
+                  className={`relative w-16 h-12 shrink-0 rounded-lg overflow-hidden transition-all cursor-pointer ${
+                    i === lightboxIdx ? "ring-2 ring-blue-500 scale-105" : "opacity-50 hover:opacity-100"
                   }`}
                 >
-                  <Image
-                    src={img.image_url ?? fallback}
-                    alt={img.caption ?? `${title} photo ${i + 1}`}
-                    fill className="object-cover"
-                    sizes="56px" unoptimized
+                  <img
+                    src={toLocalUrl(img.image_url, fallback)}
+                    alt={`${title} thumb ${i + 1}`}
+                    className="w-full h-full object-cover"
                   />
                 </button>
               ))}
@@ -256,6 +261,6 @@ export function PropertyImageGallery({ images, title, fallback }: Props) {
           )}
         </div>
       )}
-    </>
+    </div>
   );
 }

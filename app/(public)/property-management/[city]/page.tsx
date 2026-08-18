@@ -6,7 +6,7 @@ import {
   ArrowRight, ShieldCheck, DollarSign, Wrench, BarChart3,
   Clock, Users, Phone, Mail,
 } from "lucide-react";
-import { getAllCitySlugs, fetchAllCities, resolveCityData } from "@/lib/cities";
+import { getAllCitySlugs, getCityBySlug, resolveCityData } from "@/lib/cities";
 import { Button } from "@/components/ui/Button";
 
 export const revalidate = 300;
@@ -47,6 +47,9 @@ export async function generateMetadata(
       `investment property management ${city.name}`,
     ],
     alternates: { canonical: url },
+    // The dynamic variants share the same service copy. Only curated markets
+    // are editorial landing pages and therefore suitable for search indexing.
+    robots: getCityBySlug(slug) ? undefined : { index: false, follow: true },
     openGraph: {
       title,
       description,

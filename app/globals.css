@@ -2,69 +2,67 @@
 
 /* ─── Brand Design Tokens (Tailwind v4 CSS-first @theme) ──────────── */
 @theme {
-  /* PrimeFamilyHousing — deep forest green + warm earth palette.
-     Primary is a near-black forest green used for CTAs, links, and icons;
-     large dark surfaces (footer, dark sections) use forest-deep. Warm
-     terracotta/earth tones are the secondary accents. */
-  --color-brand:       #012d1d;   /* primary forest — CTAs, links, icons        */
-  --color-brand-hover: #1b4332;   /* primary-container — hover state            */
-  --color-brand-dark:  #081C15;   /* forest-deep — headings, footer, dark bands */
-  --color-brand-navy:  #1b4332;   /* alternate dark sections                    */
-  --color-brand-light: #f3f4ec;   /* pale sage tint — section backgrounds       */
-  --color-brand-muted: #c1ecd4;   /* light mint — badges, tags, chips           */
-  --color-accent:       #BC6C25;  /* warm terracotta — CTAs, highlights         */
-  --color-accent-hover: #a35a1c;  /* deeper terracotta hover state              */
+  /* PrimeFamilyHousing — Modern Royal Blue, Deep Navy & High-Trust Emerald */
+  --color-brand:       #0f172a;   /* slate-900 — primary text, deep surfaces   */
+  --color-brand-hover: #1e293b;   /* slate-800 — hover state                   */
+  --color-brand-dark:  #020617;   /* slate-950 — headings, footer, dark bands  */
+  --color-brand-navy:  #1e3a8a;   /* blue-900 — rich navy accents              */
+  --color-brand-light: #f8fafc;   /* slate-50 — crisp clean section background */
+  --color-brand-muted: #dbeafe;   /* blue-100 — badges, tags, chips            */
+  --color-accent:       #2563eb;  /* vibrant royal blue — primary CTAs, links  */
+  --color-accent-hover: #1d4ed8;  /* deeper royal blue hover state             */
 
-  /* Material-style role tokens (new design system) */
-  --color-primary:                   #012d1d;
+  /* Modern Material-style role tokens */
+  --color-primary:                   #2563eb;
   --color-on-primary:                #ffffff;
-  --color-primary-container:         #1b4332;
-  --color-on-primary-container:      #86af99;
-  --color-primary-fixed:             #c1ecd4;
-  --color-primary-fixed-dim:         #a5d0b9;
-  --color-on-primary-fixed:          #002114;
-  --color-on-primary-fixed-variant:  #274e3d;
-  --color-inverse-primary:           #a5d0b9;
-  --color-secondary:                 #7d562d;
+  --color-primary-container:         #1e3a8a;
+  --color-on-primary-container:      #bfdbfe;
+  --color-primary-fixed:             #dbeafe;
+  --color-primary-fixed-dim:         #93c5fd;
+  --color-on-primary-fixed:          #172554;
+  --color-on-primary-fixed-variant:  #1e40af;
+  --color-inverse-primary:           #60a5fa;
+  --color-secondary:                 #0284c7;
   --color-on-secondary:              #ffffff;
-  --color-secondary-container:       #ffca98;
-  --color-on-secondary-container:    #7a532a;
-  --color-secondary-fixed:           #ffdcbd;
-  --color-secondary-fixed-dim:       #f0bd8b;
-  --color-on-secondary-fixed:        #2c1600;
-  --color-on-secondary-fixed-variant:#623f18;
-  --color-tertiary:                  #26271a;
+  --color-secondary-container:       #bae6fd;
+  --color-on-secondary-container:    #0369a1;
+  --color-secondary-fixed:           #e0f2fe;
+  --color-secondary-fixed-dim:       #7dd3fc;
+  --color-on-secondary-fixed:        #082f49;
+  --color-on-secondary-fixed-variant:#075985;
+  --color-tertiary:                  #0f172a;
   --color-on-tertiary:               #ffffff;
-  --color-tertiary-container:        #3c3d2f;
-  --color-on-tertiary-container:     #a7a895;
-  --color-background:                #f9faf2;
-  --color-on-background:             #1a1c18;
-  --color-surface:                   #f9faf2;
-  --color-on-surface:                #1a1c18;
-  --color-surface-variant:           #e2e3db;
-  --color-on-surface-variant:        #414844;
+  --color-tertiary-container:        #334155;
+  --color-on-tertiary-container:     #cbd5e1;
+  --color-background:                #ffffff;
+  --color-on-background:             #0f172a;
+  --color-surface:                   #ffffff;
+  --color-on-surface:                #0f172a;
+  --color-surface-variant:           #f1f5f9;
+  --color-on-surface-variant:        #475569;
   --color-surface-container-lowest:  #ffffff;
-  --color-surface-container-low:     #f3f4ec;
-  --color-surface-container:         #edefe7;
-  --color-surface-container-high:    #e8e9e1;
-  --color-surface-container-highest: #e2e3db;
-  --color-surface-dim:               #d9dbd3;
-  --color-surface-bright:            #f9faf2;
-  --color-surface-tint:              #3f6653;
-  --color-inverse-surface:           #2f312c;
-  --color-inverse-on-surface:        #f0f1e9;
-  --color-outline:                   #717973;
-  --color-outline-variant:           #c1c8c2;
-  --color-error:                     #ba1a1a;
+  --color-surface-container-low:     #f8fafc;
+  --color-surface-container:         #f1f5f9;
+  --color-surface-container-high:    #e2e8f0;
+  --color-surface-container-highest: #cbd5e1;
+  --color-surface-dim:               #e2e8f0;
+  --color-surface-bright:            #ffffff;
+  --color-surface-tint:              #2563eb;
+  --color-inverse-surface:           #0f172a;
+  --color-inverse-on-surface:        #f8fafc;
+  --color-outline:                   #94a3b8;
+  --color-outline-variant:           #e2e8f0;
+  --color-error:                     #dc2626;
   --color-on-error:                  #ffffff;
-  --color-error-container:           #ffdad6;
-  --color-on-error-container:        #93000a;
+  --color-error-container:           #fee2e2;
+  --color-on-error-container:        #991b1b;
 
   /* Named brand accents */
-  --color-forest-deep:     #081C15;
-  --color-earth-beige:     #E9EDC6;
-  --color-terracotta-warm: #BC6C25;
-  --color-sage-soft:       #A3B18A;
+  --color-navy-deep:       #0f172a;
+  --color-royal-blue:      #2563eb;
+  --color-ocean-blue:      #0284c7;
+  --color-emerald-trust:   #10b981;
+  --color-slate-soft:      #f8fafc;
 
   /* Fonts — Source Sans 3 for body, Montserrat for headings */
   --font-sans:  var(--font-source-sans), system-ui, sans-serif;
@@ -93,22 +91,22 @@ body {
     transform      100ms ease-out;
 }
 
-/* ─── Scrollbar — neutral; the scrollbar is chrome, not brand space ── */
+/* ─── Scrollbar — neutral ─────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #f1f5f9; }
-::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+::-webkit-scrollbar-track { background: #f8fafc; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
 /* ─── Selection ──────────────────────────────────────────────────── */
-::selection { background: #1b4332; color: white; }
+::selection { background: #2563eb; color: white; }
 
 /* ─── Focus ring ─────────────────────────────────────────────────── */
-:focus-visible { outline: 2px solid #012d1d; outline-offset: 2px; }
+:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
 
 /* ─── Smooth scroll + scroll-padding for fixed navbar ───────────── */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5rem; /* matches navbar h-20 */
+  scroll-padding-top: 5rem;
 }
 
 /* ─── Hero staggered entrance animations ─────────────────────────── */
@@ -142,12 +140,11 @@ html {
   to   { transform: translateX(-50%); }
 }
 
-/* prefers-reduced-motion handled inline via style override */
 @media (prefers-reduced-motion: reduce) {
   [style*="marquee"] { animation: none !important; }
 }
 
-/* ─── Scrollbar hide (horizontal image strips, trust bar) ────── */
+/* ─── Scrollbar hide ─────────────────────────────────────────── */
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -163,13 +160,14 @@ html {
 /* ─── Leaflet property popup ─────────────────────────────────── */
 .property-popup .leaflet-popup-content-wrapper {
   padding: 14px;
-  border-radius: 10px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
   overflow: hidden;
+  border: 1px solid #e2e8f0;
 }
 .property-popup .leaflet-popup-content {
   margin: 0;
-  width: 248px !important;
+  width: 256px !important;
 }
 .property-popup .leaflet-popup-tip-container {
   margin-top: -1px;

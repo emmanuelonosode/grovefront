@@ -12,10 +12,14 @@ export function PropertyDetailsTabs({ hasMap, hasVirtualTour }: PropertyDetailsT
   const isClickScrolling = useRef(false);
 
   const tabs = useMemo(() => [
-    { id: "features", label: "Home Features" },
-    { id: "details", label: "Property Details" },
+    { id: "features", label: "Overview" },
+    { id: "cost-calculator", label: "Monthly Cost" },
+    { id: "details", label: "Amenities" },
+    { id: "pet-policy", label: "Pet Policy" },
+    { id: "neighborhood", label: "Neighborhood" },
+    { id: "faq", label: "FAQs" },
     ...(hasVirtualTour ? [{ id: "virtual-tour", label: "360 Tour" }] : []),
-    ...(hasMap ? [{ id: "map", label: "Location Map" }] : []),
+    ...(hasMap ? [{ id: "map", label: "Map" }] : []),
   ], [hasMap, hasVirtualTour]);
 
   const handleTabClick = (id: string) => {
@@ -25,14 +29,13 @@ export function PropertyDetailsTabs({ hasMap, hasVirtualTour }: PropertyDetailsT
     const element = document.getElementById(id);
     if (element) {
       const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-      const offsetPosition = elementPosition - 130; // Navbar + Tab strip offset
+      const offsetPosition = elementPosition - 130;
       window.scrollTo({
         top: offsetPosition,
         behavior: "smooth",
       });
     }
 
-    // Allow scroll spy to take over after scroll animation ends
     setTimeout(() => {
       isClickScrolling.current = false;
     }, 800);
@@ -42,15 +45,14 @@ export function PropertyDetailsTabs({ hasMap, hasVirtualTour }: PropertyDetailsT
     const handleScroll = () => {
       if (isClickScrolling.current) return;
 
-      const scrollPosition = window.scrollY + 160; // offset buffer
+      const scrollPosition = window.scrollY + 160;
       
-      // Find the active section based on scroll position
       let currentActive = "features";
       for (const tab of tabs) {
         const element = document.getElementById(tab.id);
         if (element) {
           const top = element.offsetTop;
-          if (scrollPosition >= top - 20) {
+          if (scrollPosition >= top - 30) {
             currentActive = tab.id;
           }
         }
@@ -59,22 +61,21 @@ export function PropertyDetailsTabs({ hasMap, hasVirtualTour }: PropertyDetailsT
     };
 
     window.addEventListener("scroll", handleScroll);
-    // Trigger initial run
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, [tabs]);
 
   return (
-    <div className="border-y border-neutral-200 bg-white lg:sticky lg:top-16 z-30 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 lg:px-8 flex items-center gap-6 overflow-x-auto text-[14px] font-semibold text-[#4A4B4D] h-12 scrollbar-none">
+    <div className="border-y border-slate-200 bg-white lg:sticky lg:top-16 z-30 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8 flex items-center gap-6 overflow-x-auto text-[14px] font-semibold text-slate-600 h-12 scrollbar-none">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => handleTabClick(tab.id)}
             className={`py-3 px-1 border-b-2 transition-all font-bold whitespace-nowrap cursor-pointer ${
               activeTab === tab.id
-                ? "text-[#1A73E8] border-[#1A73E8]"
-                : "text-neutral-500 border-transparent hover:text-black"
+                ? "text-blue-600 border-blue-600"
+                : "text-slate-500 border-transparent hover:text-slate-900"
             }`}
           >
             {tab.label}

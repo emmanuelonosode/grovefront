@@ -21,6 +21,11 @@ import { getStateBySlug, stateSlugForCode, STATE_NAMES } from "@/lib/states";
 
 export const revalidate = 300;
 
+// Keep database-only city pages with a handful of homes useful to visitors,
+// but do not ask Google to index them as standalone market pages. This must
+// match the sitemap gate in lib/sitemap-data.ts.
+const CITY_MIN_LISTINGS = 12;
+
 /* ── Static Params ──────────────────────────────────────────────────── */
 
 export async function generateStaticParams() {
@@ -97,6 +102,9 @@ export async function generateMetadata(
       `${city.name} ${city.stateCode} rental homes`,
     ],
     alternates: { canonical: url },
+    robots: !getCityBySlug(slug) && (city.stats?.count ?? 0) < CITY_MIN_LISTINGS
+      ? { index: false, follow: true }
+      : undefined,
     openGraph: {
       title,
       description,

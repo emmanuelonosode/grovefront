@@ -12,6 +12,10 @@ import { Button } from "@/components/ui/Button";
 
 export const revalidate = 300;
 
+// Filters with a few results are thin variants of their city page. Keep them
+// accessible for people, but reserve indexing for pages with real selection.
+const FILTER_MIN_LISTINGS = 12;
+
 /* ── Filter parsing ─────────────────────────────────────────────────── */
 
 const PROPERTY_TYPE_MAP = {
@@ -81,10 +85,19 @@ export async function generateMetadata(
       ? `https://primefamilyhousing.com/rentals/${slug}`
       : url;
 
+  // `resolveCityData` already fetched these aggregate counts. Reusing them keeps
+  // metadata generation from adding a second backend request to every crawl.
+  const matchingCount = spec.kind === "bedroom"
+    ? city.stats?.bedrooms?.[String(spec.count)] ?? 0
+    : 0;
+
   return {
     title,
     description,
     alternates: { canonical },
+    robots: spec.kind === "property_type" || matchingCount < FILTER_MIN_LISTINGS
+      ? { index: false, follow: true }
+      : undefined,
     openGraph: {
       title,
       description,

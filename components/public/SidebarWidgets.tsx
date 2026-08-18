@@ -151,7 +151,7 @@ export function SidebarWidgets({ property, agent, agentPhoto, agencyName }: Side
               {agent.has_public_profile !== false && (
                 <a
                   href={`/agents/${agent.id}`}
-                  className="inline-flex items-center gap-1 mt-1 text-[#1A73E8] text-[13px] font-bold hover:underline"
+                  className="inline-flex items-center gap-1 mt-1 text-blue-600 text-[13px] font-bold hover:underline"
                 >
                   View profile →
                 </a>
@@ -161,14 +161,14 @@ export function SidebarWidgets({ property, agent, agentPhoto, agencyName }: Side
 
           <div className="pt-3 border-t border-neutral-100">
             {showPhone ? (
-              <a href={`tel:${agent.phone}`} className="flex items-center gap-1.5 text-[#1A73E8] text-[14px] font-bold hover:underline">
+              <a href={`tel:${agent.phone}`} className="flex items-center gap-1.5 text-blue-600 text-[14px] font-bold hover:underline">
                 <Phone size={14} className="shrink-0" />
                 <span>{agent.phone}</span>
               </a>
             ) : (
               <button 
                 onClick={() => setShowPhone(true)}
-                className="flex items-center gap-1.5 text-[#1A73E8] text-[14px] font-bold hover:underline cursor-pointer bg-transparent border-none p-0"
+                className="flex items-center gap-1.5 text-blue-600 text-[14px] font-bold hover:underline cursor-pointer bg-transparent border-none p-0"
               >
                 <Phone size={14} className="shrink-0" />
                 <span>View phone</span>
@@ -192,7 +192,7 @@ export function SidebarWidgets({ property, agent, agentPhoto, agencyName }: Side
         <a
           href={`/apply?property=${property.slug}`}
           onClick={() => trackClick("apply_now", { slug: property.slug, where: "sidebar" })}
-          className="w-full flex items-center justify-center gap-1.5 h-12 bg-accent hover:bg-accent-hover text-neutral-900 text-sm font-bold rounded transition-colors text-center cursor-pointer shadow-md shadow-amber-500/20"
+          className="w-full flex items-center justify-center gap-1.5 h-12 bg-blue-600 hover:bg-blue-700 text-white text-neutral-900 text-sm font-bold rounded transition-colors text-center cursor-pointer shadow-md shadow-amber-500/20"
         >
           Apply Now
         </a>
@@ -217,7 +217,7 @@ export function SidebarWidgets({ property, agent, agentPhoto, agencyName }: Side
               onClick={handleOpenTour}
               className={`border rounded-lg p-2.5 flex flex-col items-center justify-center transition-all ${
                 index === 0
-                  ? "border-[#1A73E8] bg-[#E8F0FE] text-[#1A73E8]"
+                  ? "border-[#1A73E8] bg-[#E8F0FE] text-blue-600"
                   : "border-neutral-200 text-neutral-800 hover:border-neutral-300"
               }`}
             >
@@ -231,7 +231,7 @@ export function SidebarWidgets({ property, agent, agentPhoto, agencyName }: Side
         <div className="mt-4 text-center">
           <button 
             onClick={handleOpenTour}
-            className="text-[#1A73E8] hover:underline text-[13.5px] font-bold cursor-pointer bg-transparent border-none p-0"
+            className="text-blue-600 hover:underline text-[13.5px] font-bold cursor-pointer bg-transparent border-none p-0"
           >
             Other dates
           </button>
@@ -291,7 +291,7 @@ export function SidebarWidgets({ property, agent, agentPhoto, agencyName }: Side
           </p>
           <button 
             onClick={handleOpenTour}
-            className="text-[#1A73E8] hover:underline text-[13px] font-bold cursor-pointer inline-flex items-center gap-0.5 mt-1 bg-transparent border-none p-0"
+            className="text-blue-600 hover:underline text-[13px] font-bold cursor-pointer inline-flex items-center gap-0.5 mt-1 bg-transparent border-none p-0"
           >
             Connect with your agent now <span className="text-[10px]">➔</span>
           </button>

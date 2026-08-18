@@ -7,6 +7,10 @@ import { stateSlugForCode } from "@/lib/states";
 export const BASE_URL = "https://primefamilyhousing.com";
 
 const BEDROOM_FILTERS = ["1-bedroom", "2-bedroom", "3-bedroom", "4-bedroom"];
+// A URL in the sitemap is an indexing recommendation, not a catalogue entry.
+// Small inventory pages are overwhelmingly near-duplicates of the main search
+// page and were consuming the crawl budget needed for individual listings.
+const CITY_MIN_LISTINGS = 12;
 const FILTER_MIN_LISTINGS = 12;
 
 export interface SitemapEntry {
@@ -85,14 +89,19 @@ export async function buildCities(): Promise<SitemapEntry[]> {
   const lastModBySlug = new Map(dbCities.map((c) => [c.slug, cityLastMod(c)]));
   const allCitySlugs = [...new Set([...Object.keys(CITIES), ...dbCities.map((c) => c.slug)])];
 
-  const cityPages: SitemapEntry[] = allCitySlugs.map((slug) => ({
+  // Curated cities have substantial, editorial market guides. Database-only
+  // pages need enough live inventory to be useful as a standalone landing page.
+  const indexableCitySlugs = allCitySlugs.filter((slug) =>
+    Boolean(CITIES[slug]) || (dbCities.find((c) => c.slug === slug)?.count ?? 0) >= CITY_MIN_LISTINGS
+  );
+
+  const cityPages: SitemapEntry[] = indexableCitySlugs.map((slug) => ({
     url: `${BASE_URL}/rentals/${slug}`, lastModified: lastModBySlug.get(slug), changeFrequency: "daily" as const, priority: 0.85,
   }));
 
-  const filterCitySlugs = new Set<string>([
-    ...Object.keys(CITIES),
-    ...dbCities.filter((c) => (c.count ?? 0) >= FILTER_MIN_LISTINGS).map((c) => c.slug),
-  ]);
+  const filterCitySlugs = new Set(
+    dbCities.filter((c) => (c.count ?? 0) >= FILTER_MIN_LISTINGS).map((c) => c.slug)
+  );
 
   // Per-city bedroom inventory. A bedroom filter page 404s (notFound) when that
   // city has no listings with that bed count, so emitting one purely because the
@@ -108,17 +117,17 @@ export async function buildCities(): Promise<SitemapEntry[]> {
       // omits `bedrooms`) — keep prior behaviour rather than dropping the page.
       if (!beds) return true;
       const n = Number(filter.split("-")[0]);
-      return (beds[String(n)] ?? 0) > 0;
+      return (beds[String(n)] ?? 0) >= FILTER_MIN_LISTINGS;
     }).map((filter) => ({
       url: `${BASE_URL}/rentals/${slug}/${filter}`, lastModified: lastModBySlug.get(slug), changeFrequency: "weekly" as const, priority: 0.6,
     }));
   });
 
-  // Property-management pages use the same inventory gate as bedroom filters —
-  // emitting one for all ~550 cities created hundreds of near-identical thin
-  // pages ("Crawled - currently not indexed" in GSC). Their content doesn't
-  // track listing churn, so they carry no lastmod.
-  const propertyManagementPages: SitemapEntry[] = [...filterCitySlugs].map((slug) => ({
+  // These service pages have the same body copy apart from city substitutions.
+  // Submit only the curated markets, where the editorial city guide establishes
+  // a meaningful local landing page. Dynamic service pages remain available to
+  // visitors but are intentionally not indexing targets.
+  const propertyManagementPages: SitemapEntry[] = Object.keys(CITIES).map((slug) => ({
     url: `${BASE_URL}/property-management/${slug}`, changeFrequency: "monthly" as const, priority: 0.5,
   }));
 
