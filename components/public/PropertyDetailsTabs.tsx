@@ -66,7 +66,7 @@ export function PropertyDetailsTabs({ hasMap, hasVirtualTour }: PropertyDetailsT
   }, [tabs]);
 
   return (
-    <div className="border-y border-slate-200 bg-white lg:sticky lg:top-16 z-30 shadow-sm">
+    <div className="border-y border-slate-200 bg-white lg:sticky lg:top-20 z-30 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 lg:px-8 flex items-center gap-6 overflow-x-auto text-[14px] font-semibold text-slate-600 h-12 scrollbar-none">
         {tabs.map((tab) => (
           <button

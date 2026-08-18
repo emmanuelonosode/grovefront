@@ -7,6 +7,7 @@ import {
   TreePine, CheckCircle2, Refrigerator, Microwave,
   Flame, ShowerHead, Wifi, Fence, Sparkles, Clock, DollarSign,
   HelpCircle, ChevronRight, School, Bus, ShoppingBag,
+  HeartHandshake, Award, Wrench, KeyRound, Check,
   type LucideIcon,
 } from "lucide-react";
 import { fetchPropertyBySlug, fetchProperties, toPropertyCardShape } from "@/lib/properties";
@@ -133,7 +134,6 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     const listRes = await fetchProperties({
       city: property.city,
       page_size: "4",
-      
     });
     similarProperties = listRes.results
       .filter((p: any) => p.slug !== decodedSlug && p.id !== property.id)
@@ -190,7 +190,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   }));
 
   const hasCoords = Number(currentMarker.lat) !== 0 && Number(currentMarker.lng) !== 0;
-  const fullAddress = `${property.address}, ${property.city}, ${property.state}${property.zip_code ? " " + property.zip_code : ""}`.trim();
+  const fullAddress = `${property.address}, ${property.city}, ${property.state} ${property.zip_code ?? ""}`.trim();
   const stateName = stateFullName(property.state);
   const stateSlug = stateSlugForCode(property.state);
   const citySlug = cityToSlug(property.city, property.state);
@@ -348,7 +348,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   } : null;
 
   return (
-    <div className="min-h-screen bg-slate-50/60 text-slate-900">
+    <div className="min-h-screen bg-slate-50/70 text-slate-900 pt-20">
       <PropertyIntentCapture city={property.city} listingType={property.listing_type} />
       <PropertyPageTracker slug={property.slug} price={Number(property.price)} listingType={property.listing_type} />
       
@@ -360,34 +360,32 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(videoSchema) }} />
       )}
 
-      {/* ── TOP BREADCRUMB ── */}
+      {/* ── TOP BREADCRUMB (Clean Spacing Below 80px Navbar) ── */}
       <div className="bg-white border-b border-slate-200/80">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-2.5 flex items-center gap-2 text-[13px] text-slate-500 overflow-x-auto whitespace-nowrap">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-3.5 flex items-center gap-2 text-[13px] text-slate-500 overflow-x-auto whitespace-nowrap">
           <Link href="/" className="hover:text-blue-600 font-medium">Home</Link>
-          <span>/</span>
+          <span className="text-slate-300">/</span>
           <Link href="/houses-for-rent" className="hover:text-blue-600 font-medium">Houses for Rent</Link>
-          <span>/</span>
+          <span className="text-slate-300">/</span>
           <Link href={stateHref} className="hover:text-blue-600 font-medium">{stateName}</Link>
-          <span>/</span>
+          <span className="text-slate-300">/</span>
           <Link href={cityHref} className="hover:text-blue-600 font-medium">{property.city}</Link>
-          <span>/</span>
-          <span className="text-slate-900 font-semibold truncate">{property.address}</span>
+          <span className="text-slate-300">/</span>
+          <span className="text-slate-900 font-bold truncate">{property.address}</span>
         </div>
       </div>
 
       {/* ── IMAGE GALLERY HERO ── */}
-      <div className="bg-slate-900 text-white">
-        <div className="max-w-7xl mx-auto">
-          <PropertyImageGallery
-            images={images}
-            title={property.title}
-            fallback={FALLBACK_IMAGE}
-          />
-        </div>
+      <div className="max-w-7xl mx-auto px-4 lg:px-8 pt-5 pb-2">
+        <PropertyImageGallery
+          images={images}
+          title={property.title}
+          fallback={FALLBACK_IMAGE}
+        />
       </div>
 
       {/* ── PRICE & ADDRESS INFO BAND ── */}
-      <div className="bg-white border-b border-slate-200 shadow-sm">
+      <div className="bg-white border-y border-slate-200/80 shadow-xs mt-3">
         <div className="max-w-7xl mx-auto px-4 lg:px-8 py-6 flex flex-col md:flex-row md:items-start justify-between gap-6">
           <div className="flex-1 min-w-0 space-y-3">
             
@@ -404,18 +402,18 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               )}
 
               {monthlySavings > 0 && (
-                <span className="bg-blue-50 text-blue-700 text-xs font-black px-2.5 py-1 rounded-full border border-blue-200 uppercase tracking-wider">
+                <span className="bg-blue-50 text-blue-700 text-xs font-black px-3 py-1 rounded-full border border-blue-200 uppercase tracking-wider">
                   Save ${formatNumber(monthlySavings)}/mo (15% Off)
                 </span>
               )}
 
-              <span className="bg-emerald-50 text-emerald-700 text-xs font-black px-2.5 py-1 rounded-full border border-emerald-200 uppercase tracking-wider flex items-center gap-1.5">
+              <span className="bg-emerald-50 text-emerald-700 text-xs font-black px-3 py-1 rounded-full border border-emerald-200 uppercase tracking-wider flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 {isAvailable ? "Available Now" : property.status.replace("-", " ")}
               </span>
 
               {isPetFriendly && (
-                <span className="bg-indigo-50 text-indigo-700 text-xs font-black px-2.5 py-1 rounded-full border border-indigo-200 uppercase tracking-wider flex items-center gap-1">
+                <span className="bg-indigo-50 text-indigo-700 text-xs font-black px-3 py-1 rounded-full border border-indigo-200 uppercase tracking-wider flex items-center gap-1">
                   <PawPrint size={12} /> Pet Friendly
                 </span>
               )}
@@ -457,7 +455,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
           </div>
 
           {/* Hero Action CTA Card */}
-          <div className="shrink-0 bg-slate-50 border border-slate-200/90 rounded-2xl p-5 w-full md:w-80 shadow-sm flex flex-col gap-3">
+          <div className="shrink-0 bg-slate-50/80 border border-slate-200/90 rounded-2xl p-5 w-full md:w-80 shadow-xs flex flex-col gap-3">
             <BookTourButton
               label="Schedule Self Tour"
               className="w-full px-5 py-3.5 bg-blue-600 hover:bg-blue-700 text-white text-center text-sm font-bold rounded-xl transition-all shadow-md shadow-blue-600/25 flex items-center justify-center gap-2 cursor-pointer"
@@ -477,7 +475,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
         </div>
       </div>
 
-      {/* ── TABS NAVIGATION STRIP ── */}
+      {/* ── TABS NAVIGATION STRIP (Fixed 80px Sticky Offset) ── */}
       <PropertyDetailsTabs hasMap={hasCoords} hasVirtualTour={!!virtualTourUrl} />
 
       {/* ── MAIN CONTENT BODY ── */}
@@ -488,7 +486,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
           <div className="flex-1 min-w-0 space-y-8">
 
             {/* 1. OVERVIEW & SEO DESCRIPTION */}
-            <section id="features" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-sm space-y-5">
+            <section id="features" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-xs space-y-5">
               <div className="border-b border-slate-100 pb-4">
                 <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                   About {property.address}
@@ -524,7 +522,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             </section>
 
             {/* 2. TRANSPARENT MONTHLY COST & AFFORDABILITY ESTIMATOR */}
-            <section id="cost-calculator" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-sm space-y-5">
+            <section id="cost-calculator" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-xs space-y-5">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
@@ -558,15 +556,17 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-xl p-5 flex flex-col justify-between shadow-md">
+                <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-2xl p-6 flex flex-col justify-between shadow-md">
                   <div>
                     <p className="text-xs uppercase tracking-wider text-blue-200 font-bold">Total Estimated Monthly</p>
                     <p className="text-3xl font-black mt-1">${formatNumber(priceNum + 192)}<span className="text-sm text-blue-200 font-normal">/mo</span></p>
-                    <p className="text-xs text-blue-100 mt-2">Includes base rent, smart security hub, HVAC filter replacement program, and standard estimated municipal utilities.</p>
+                    <p className="text-xs text-blue-100 mt-2.5 leading-relaxed">
+                      Includes base rent, smart security hub, HVAC filter replacement program, and standard estimated municipal utilities.
+                    </p>
                   </div>
                   <a
                     href={`/apply?property=${property.slug}`}
-                    className="mt-4 w-full py-2.5 bg-white text-blue-700 hover:bg-blue-50 text-center font-bold text-sm rounded-lg transition-colors shadow-sm block"
+                    className="mt-5 w-full py-3 bg-white text-blue-700 hover:bg-blue-50 text-center font-bold text-sm rounded-xl transition-colors shadow-sm block"
                   >
                     Lock In This Rate
                   </a>
@@ -575,7 +575,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             </section>
 
             {/* 3. HOME AMENITIES & SMART FEATURES */}
-            <section id="details" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-sm space-y-5">
+            <section id="details" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-xs space-y-5">
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                 Amenities & Premium Features
               </h2>
@@ -587,7 +587,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                     return (
                       <div
                         key={name}
-                        className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-blue-200 transition-colors"
+                        className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50/80 border border-slate-100 hover:border-blue-200 transition-colors"
                       >
                         <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                           <Icon size={18} />
@@ -602,57 +602,108 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               )}
             </section>
 
-            {/* 4. PRIME RESIDENT FIRST QUALITY GUARANTEE */}
-            <section className="bg-slate-900 text-white rounded-2xl p-6 md:p-8 shadow-md space-y-6">
-              <div className="border-b border-slate-800 pb-4">
-                <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
-                  <Shield className="text-emerald-400" size={24} />
-                  The Prime Family Housing Guarantee
-                </h2>
-                <p className="text-xs text-slate-400 mt-1">Standard with every single-family home in our residential network</p>
+            {/* 4. REDESIGNED RESIDENT FIRST GUARANTEE (Editorial-Grade Human Design) */}
+            <section className="bg-white border border-slate-200/90 rounded-2xl p-7 md:p-8 shadow-xs space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold mb-2">
+                    <Award size={14} /> The Prime Resident Promise
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
+                    Why Rent with Prime Family Housing?
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Professional single-family home management designed around family peace of mind
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3 text-left bg-slate-50 p-3 rounded-xl border border-slate-100">
+                  <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-sm shrink-0">
+                    4.9
+                  </div>
+                  <div>
+                    <p className="text-xs font-black text-slate-900">Verified Quality</p>
+                    <p className="text-[11px] text-slate-500">Based on 1,200+ resident reviews</p>
+                  </div>
+                </div>
               </div>
 
+              {/* 4 Clean Editorial Feature Pillars */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-slate-800/80 p-4 rounded-xl border border-slate-700/60">
-                  <div className="flex items-center gap-2.5 font-bold text-emerald-400 text-sm mb-1.5">
-                    <Clock size={18} /> 24/7 Priority Emergency Maintenance
+                
+                {/* Pillar 1 */}
+                <div className="p-5 rounded-xl bg-slate-50/70 border border-slate-200/70 hover:border-blue-200 transition-colors space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                      <Wrench size={18} />
+                    </div>
+                    <h3 className="font-bold text-slate-900 text-sm">
+                      24/7 Priority Maintenance Response
+                    </h3>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    Submit maintenance requests instantly via our tenant portal. Our dedicated technicians handle critical repairs promptly.
+                  <p className="text-xs text-slate-600 leading-relaxed pl-12">
+                    Direct emergency dispatch and mobile portal ticket tracking. Critical plumbing, HVAC, and electrical issues handled by certified technicians.
                   </p>
                 </div>
 
-                <div className="bg-slate-800/80 p-4 rounded-xl border border-slate-700/60">
-                  <div className="flex items-center gap-2.5 font-bold text-blue-400 text-sm mb-1.5">
-                    <CheckCircle2 size={18} /> Certified 120-Point Move-In Inspection
+                {/* Pillar 2 */}
+                <div className="p-5 rounded-xl bg-slate-50/70 border border-slate-200/70 hover:border-emerald-200 transition-colors space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                      <CheckCircle2 size={18} />
+                    </div>
+                    <h3 className="font-bold text-slate-900 text-sm">
+                      Certified 120-Point Move-In Inspection
+                    </h3>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    Every property undergoes HVAC servicing, plumbing pressure testing, electrical safety checks, and deep sanitization before key handover.
+                  <p className="text-xs text-slate-600 leading-relaxed pl-12">
+                    Every home undergoes a comprehensive 120-point mechanical check, fresh lock replacement, sanitization, and full appliance diagnostic before your move-in date.
                   </p>
                 </div>
 
-                <div className="bg-slate-800/80 p-4 rounded-xl border border-slate-700/60">
-                  <div className="flex items-center gap-2.5 font-bold text-indigo-400 text-sm mb-1.5">
-                    <Zap size={18} /> Integrated Smart Home System
+                {/* Pillar 3 */}
+                <div className="p-5 rounded-xl bg-slate-50/70 border border-slate-200/70 hover:border-indigo-200 transition-colors space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
+                      <KeyRound size={18} />
+                    </div>
+                    <h3 className="font-bold text-slate-900 text-sm">
+                      Keyless Digital Access & Smart Climate
+                    </h3>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    Control door locks, smart thermostats, and security alerts from your mobile phone for complete peace of mind.
+                  <p className="text-xs text-slate-600 leading-relaxed pl-12">
+                    Self-guided tours with instant temporary access codes, smart climate controls for energy savings, and seamless smartphone lock management.
                   </p>
                 </div>
 
-                <div className="bg-slate-800/80 p-4 rounded-xl border border-slate-700/60">
-                  <div className="flex items-center gap-2.5 font-bold text-amber-400 text-sm mb-1.5">
-                    <DollarSign size={18} /> Zero Hidden Fees & Transparent Leasing
+                {/* Pillar 4 */}
+                <div className="p-5 rounded-xl bg-slate-50/70 border border-slate-200/70 hover:border-amber-200 transition-colors space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                      <Shield size={18} />
+                    </div>
+                    <h3 className="font-bold text-slate-900 text-sm">
+                      Transparent Pricing & No Hidden Fees
+                    </h3>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    Clear itemized monthly statements, straightforward lease extension options, and no unexpected fee markups.
+                  <p className="text-xs text-slate-600 leading-relaxed pl-12">
+                    Itemized monthly statements, straightforward lease extension terms, and no unexpected administrative fees upon move-out.
                   </p>
                 </div>
+
+              </div>
+
+              {/* Trust Features Strip */}
+              <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600 font-medium">
+                <span className="flex items-center gap-1.5"><Check size={15} className="text-emerald-600" /> Fast 24-Hour Application Review</span>
+                <span className="flex items-center gap-1.5"><Check size={15} className="text-emerald-600" /> 100% Online Rent Payments</span>
+                <span className="flex items-center gap-1.5"><Check size={15} className="text-emerald-600" /> Flexible 12–24 Month Leases</span>
+                <span className="flex items-center gap-1.5"><Check size={15} className="text-emerald-600" /> Pet-Friendly Homes</span>
               </div>
             </section>
 
             {/* 5. PET POLICY & LEASING GUIDELINES */}
-            <section id="pet-policy" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-sm space-y-5">
+            <section id="pet-policy" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-xs space-y-5">
               <div className="border-b border-slate-100 pb-4">
                 <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
                   <PawPrint className="text-blue-600" size={24} />
@@ -683,7 +734,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             </section>
 
             {/* 6. NEIGHBORHOOD & LIFESTYLE HIGHLIGHTS */}
-            <section id="neighborhood" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-sm space-y-5">
+            <section id="neighborhood" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-xs space-y-5">
               <div className="border-b border-slate-100 pb-4">
                 <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
                   <MapPin className="text-blue-600" size={24} />
@@ -693,8 +744,8 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="p-4 rounded-xl bg-blue-50/50 border border-blue-100">
-                  <div className="flex items-center gap-2 text-blue-700 font-bold text-sm mb-1">
+                <div className="p-4.5 rounded-xl bg-blue-50/50 border border-blue-100">
+                  <div className="flex items-center gap-2 text-blue-700 font-bold text-sm mb-1.5">
                     <School size={16} /> Schools & Education
                   </div>
                   <p className="text-xs text-slate-700 leading-relaxed">
@@ -702,8 +753,8 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-blue-50/50 border border-blue-100">
-                  <div className="flex items-center gap-2 text-blue-700 font-bold text-sm mb-1">
+                <div className="p-4.5 rounded-xl bg-blue-50/50 border border-blue-100">
+                  <div className="flex items-center gap-2 text-blue-700 font-bold text-sm mb-1.5">
                     <Bus size={16} /> Commuter Access
                   </div>
                   <p className="text-xs text-slate-700 leading-relaxed">
@@ -711,8 +762,8 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-blue-50/50 border border-blue-100">
-                  <div className="flex items-center gap-2 text-blue-700 font-bold text-sm mb-1">
+                <div className="p-4.5 rounded-xl bg-blue-50/50 border border-blue-100">
+                  <div className="flex items-center gap-2 text-blue-700 font-bold text-sm mb-1.5">
                     <ShoppingBag size={16} /> Dining & Retail
                   </div>
                   <p className="text-xs text-slate-700 leading-relaxed">
@@ -723,7 +774,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             </section>
 
             {/* 7. FREQUENTLY ASKED QUESTIONS (FAQ SECTION FOR GOOGLE SERP) */}
-            <section id="faq" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-sm space-y-5">
+            <section id="faq" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-xs space-y-5">
               <div className="border-b border-slate-100 pb-4">
                 <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
                   <HelpCircle className="text-blue-600" size={24} />
@@ -733,7 +784,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               </div>
 
               <div className="space-y-3.5">
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                <div className="p-4.5 rounded-xl bg-slate-50 border border-slate-100">
                   <h3 className="text-sm font-bold text-slate-900">
                     How do I apply for {property.address}?
                   </h3>
@@ -742,7 +793,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                <div className="p-4.5 rounded-xl bg-slate-50 border border-slate-100">
                   <h3 className="text-sm font-bold text-slate-900">
                     Can I schedule an in-person self tour?
                   </h3>
@@ -751,7 +802,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                <div className="p-4.5 rounded-xl bg-slate-50 border border-slate-100">
                   <h3 className="text-sm font-bold text-slate-900">
                     What are the income and credit requirements?
                   </h3>
@@ -760,7 +811,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                <div className="p-4.5 rounded-xl bg-slate-50 border border-slate-100">
                   <h3 className="text-sm font-bold text-slate-900">
                     How are maintenance requests handled?
                   </h3>
@@ -773,18 +824,18 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
             {/* 8. 360 VIRTUAL TOUR */}
             {virtualTourUrl && (
-              <section id="virtual-tour" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-sm space-y-4">
+              <section id="virtual-tour" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-xs space-y-4">
                 <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                   Interactive 3D Virtual Tour
                 </h2>
-                <div className="max-w-3xl rounded-xl overflow-hidden shadow-sm border border-slate-200">
+                <div className="max-w-3xl rounded-xl overflow-hidden shadow-xs border border-slate-200">
                   <VirtualTourButton url={virtualTourUrl} thumbnailUrl={primaryImage?.image_url ?? FALLBACK_IMAGE} />
                 </div>
               </section>
             )}
 
             {/* 9. LOCATION MAP */}
-            <section id="map" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-sm space-y-4">
+            <section id="map" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
@@ -820,7 +871,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
             {/* 10. SIMILAR HOMES FOR RENT */}
             {similarProperties.length > 0 && (
-              <section className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-sm space-y-5">
+              <section className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-xs space-y-5">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                   <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                     Similar Houses for Rent in {property.city}
@@ -884,7 +935,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
           {/* RIGHT COLUMN: Sticky Sidebar */}
           <div className="w-full lg:w-[340px] shrink-0 space-y-6">
-            <div className="sticky top-[136px] space-y-6">
+            <div className="sticky top-[156px] space-y-6">
               <SidebarWidgets
                 property={{
                   id: property.id,

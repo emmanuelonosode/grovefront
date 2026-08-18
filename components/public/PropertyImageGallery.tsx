@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
-import { X, ChevronLeft, ChevronRight, Grid3x3, ZoomIn } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Grid3x3, ZoomIn, ShieldCheck, MapPin } from "lucide-react";
 
 interface Img {
   id: string | number;
@@ -18,7 +18,7 @@ interface Props {
 
 const FALLBACK = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&q=80";
 
-function toLocalUrl(url: string | null, fallbackUrl: string): string {
+function toBackendUrl(url: string | null, fallbackUrl: string): string {
   if (!url) return fallbackUrl || FALLBACK;
   if (url.startsWith("/media/")) {
     return "https://admin.primefamilyhousing.com" + url;
@@ -29,8 +29,21 @@ function toLocalUrl(url: string | null, fallbackUrl: string): string {
   return url;
 }
 
+function isFloorplan(url: string | null, caption?: string | null): boolean {
+  if (!url) return false;
+  const str = (url + " " + (caption || "")).toLowerCase();
+  return str.includes("floorplan") || str.includes("floor-plan") || str.includes("schematic") || str.includes("layout");
+}
+
 export function PropertyImageGallery({ images, title, fallback }: Props) {
-  const allImages = images && images.length > 0 ? images : [{ id: "fb", image_url: fallback || FALLBACK }];
+  // Sort real photos first so floorplans don't dominate the top 5 hero mosaic
+  const sortedImages = [...(images || [])].sort((a, b) => {
+    const aFp = isFloorplan(a.image_url, a.caption) ? 1 : 0;
+    const bFp = isFloorplan(b.image_url, b.caption) ? 1 : 0;
+    return aFp - bFp;
+  });
+
+  const allImages = sortedImages.length > 0 ? sortedImages : [{ id: "fb", image_url: fallback || FALLBACK }];
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -78,44 +91,44 @@ export function PropertyImageGallery({ images, title, fallback }: Props) {
   const gallery = allImages.slice(0, 5);
 
   return (
-    <div className="relative w-full overflow-hidden">
+    <div className="relative w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 shadow-xs">
       {/* ── DESKTOP: MOSAIC HERO GRID ── */}
-      <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-2 h-[480px] lg:h-[540px] p-2 bg-slate-950">
+      <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-2 h-[460px] lg:h-[520px] p-2 bg-slate-900/5">
         
         {/* Large Main Feature Photo */}
         <div
-          className="col-span-2 row-span-2 relative h-full w-full overflow-hidden rounded-xl cursor-pointer group bg-slate-900"
+          className="col-span-2 row-span-2 relative h-full w-full overflow-hidden rounded-xl cursor-pointer group bg-slate-200"
           onClick={() => openLightbox(0)}
         >
           <img
-            src={toLocalUrl(primary.image_url, fallback)}
+            src={toBackendUrl(primary.image_url, fallback)}
             alt={primary.caption ?? title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+            className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500 ease-out"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-            <span className="text-white text-xs font-bold flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-lg">
-              <ZoomIn size={14} /> Click to view full size
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+            <span className="text-white text-xs font-semibold flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg">
+              <ZoomIn size={14} /> View full photo gallery
             </span>
           </div>
         </div>
 
-        {/* 4 Supporting Thumbnail Grid Photos */}
+        {/* 4 Supporting Mosaic Photos */}
         {gallery.slice(1, 5).map((img, i) => (
           <div
             key={img.id || i}
-            className="relative h-full w-full overflow-hidden rounded-xl cursor-pointer group bg-slate-900"
+            className="relative h-full w-full overflow-hidden rounded-xl cursor-pointer group bg-slate-200"
             onClick={() => openLightbox(i + 1)}
           >
             <img
-              src={toLocalUrl(img.image_url, fallback)}
+              src={toBackendUrl(img.image_url, fallback)}
               alt={img.caption ?? `${title} photo ${i + 2}`}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
             />
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors" />
             
             {/* View All Photos Overlay Badge on 4th thumbnail */}
             {i === 3 && allImages.length > 5 && (
-              <div className="absolute inset-0 bg-slate-950/75 backdrop-blur-xs flex flex-col items-center justify-center gap-1 text-white font-bold text-sm hover:bg-slate-950/85 transition-colors">
+              <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-xs flex flex-col items-center justify-center gap-1 text-white font-bold text-sm hover:bg-slate-950/80 transition-colors">
                 <Grid3x3 size={20} className="text-blue-400" />
                 <span>+{allImages.length - 5} More Photos</span>
               </div>
@@ -127,15 +140,15 @@ export function PropertyImageGallery({ images, title, fallback }: Props) {
         {allImages.length > 1 && (
           <button
             onClick={() => openLightbox(0)}
-            className="absolute bottom-6 right-6 hidden md:flex items-center gap-2 bg-white text-slate-900 text-xs font-black px-4 py-2.5 rounded-xl shadow-xl hover:bg-blue-50 hover:text-blue-600 transition-all z-10 cursor-pointer border border-slate-200"
+            className="absolute bottom-5 right-5 hidden md:flex items-center gap-2 bg-white/95 backdrop-blur-sm text-slate-900 text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg hover:bg-white hover:text-blue-600 transition-all z-10 cursor-pointer border border-slate-200"
           >
-            <Grid3x3 size={15} /> View All {allImages.length} Photos
+            <Grid3x3 size={15} className="text-blue-600" /> View All {allImages.length} Photos
           </button>
         )}
       </div>
 
       {/* ── MOBILE: TOUCH SWIPE CAROUSEL ── */}
-      <div className="md:hidden relative bg-black">
+      <div className="md:hidden relative bg-slate-950">
         <div
           ref={scrollRef}
           onScroll={handleScroll}
@@ -149,7 +162,7 @@ export function PropertyImageGallery({ images, title, fallback }: Props) {
               onClick={() => openLightbox(i)}
             >
               <img
-                src={toLocalUrl(img.image_url, fallback)}
+                src={toBackendUrl(img.image_url, fallback)}
                 alt={img.caption ?? title}
                 className="w-full h-full object-cover"
               />
@@ -188,16 +201,16 @@ export function PropertyImageGallery({ images, title, fallback }: Props) {
       {/* ── LIGHTBOX MODAL ── */}
       {lightboxIdx !== null && (
         <div
-          className="fixed inset-0 z-[9999] bg-slate-950 flex flex-col"
+          className="fixed inset-0 z-[9999] bg-slate-950/95 backdrop-blur-md flex flex-col"
           onClick={closeLightbox}
         >
           {/* Header */}
           <div
-            className="shrink-0 flex items-center justify-between px-6 py-4 bg-slate-900/90 backdrop-blur-md border-b border-slate-800"
+            className="shrink-0 flex items-center justify-between px-6 py-4 bg-slate-900/80 border-b border-slate-800"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="text-white">
-              <p className="text-sm font-black">{title}</p>
+              <p className="text-sm font-bold truncate">{title}</p>
               <p className="text-xs text-slate-400">Photo {lightboxIdx + 1} of {allImages.length}</p>
             </div>
             <button
@@ -214,9 +227,9 @@ export function PropertyImageGallery({ images, title, fallback }: Props) {
             onClick={(e) => e.stopPropagation()}
           >
             <img
-              src={toLocalUrl(allImages[lightboxIdx].image_url, fallback)}
+              src={toBackendUrl(allImages[lightboxIdx].image_url, fallback)}
               alt={allImages[lightboxIdx].caption ?? title}
-              className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+              className="max-w-full max-h-[82vh] object-contain rounded-lg shadow-2xl"
             />
 
             {allImages.length > 1 && (
@@ -253,7 +266,7 @@ export function PropertyImageGallery({ images, title, fallback }: Props) {
                   }`}
                 >
                   <img
-                    src={toLocalUrl(img.image_url, fallback)}
+                    src={toBackendUrl(img.image_url, fallback)}
                     alt={`${title} thumb ${i + 1}`}
                     className="w-full h-full object-cover"
                   />
