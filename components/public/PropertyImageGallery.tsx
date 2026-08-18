@@ -20,9 +20,11 @@ const FALLBACK = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=12
 
 function toLocalUrl(url: string | null, fallbackUrl: string): string {
   if (!url) return fallbackUrl || FALLBACK;
-  // Route primefamilyhousing media relative so it loads locally and on prod
-  if (url.startsWith("https://primefamilyhousing.com/media/") || url.startsWith("http://primefamilyhousing.com/media/")) {
-    return url.replace(/^https?:\/\/(www\.)?primefamilyhousing\.com/i, "");
+  if (url.startsWith("/media/")) {
+    return "https://admin.primefamilyhousing.com" + url;
+  }
+  if (url.startsWith("https://primefamilyhousing.com/media/")) {
+    return url.replace("https://primefamilyhousing.com/media/", "https://admin.primefamilyhousing.com/media/");
   }
   return url;
 }
