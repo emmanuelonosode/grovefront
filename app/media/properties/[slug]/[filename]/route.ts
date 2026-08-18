@@ -12,13 +12,13 @@ export async function GET(
     return new NextResponse("Bad Request", { status: 400 });
   }
 
-  // 1. Try local Django proxy endpoint first
   const backendUrl = "http://127.0.0.1:8000/media/properties/" + encodeURIComponent(slug) + "/" + encodeURIComponent(filename);
 
   try {
     const backendRes = await fetch(backendUrl, {
       headers: {
-        Accept: "image/*",
+        Accept: "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       },
     });
 
@@ -38,12 +38,12 @@ export async function GET(
     console.error("[Next.js Media Proxy] Error fetching from backend:", err);
   }
 
-  // 2. Direct fallback origin streaming
   const directCdnUrl = "https://images.invitationhomes.com/web/w_1500,h_1000,c_limit,q_auto/" + encodeURIComponent(slug) + "/" + encodeURIComponent(filename);
   try {
     const cdnRes = await fetch(directCdnUrl, {
       headers: {
-        Accept: "image/*",
+        Accept: "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       },
     });
 
