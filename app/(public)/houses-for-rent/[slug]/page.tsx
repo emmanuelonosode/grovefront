@@ -193,7 +193,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const fullAddress = `${property.address}, ${property.city}, ${property.state}${property.zip_code ? " " + property.zip_code : ""}`.trim();
   const stateName = stateFullName(property.state);
   const stateSlug = stateSlugForCode(property.state);
-  const citySlug = cityToSlug(property.city);
+  const citySlug = cityToSlug(property.city, property.state);
   const stateHref = `/houses-for-rent?state=${property.state}`;
   const cityHref = `/rentals/${citySlug}`;
 
