@@ -33,12 +33,12 @@ export async function generateMetadata({ searchParams }: PageProps) {
   const pageSuffix = pageNum > 1 ? ` — Page ${pageNum}` : "";
 
   return {
-    title: `Homes for Rent & Affordable Houses Nationwide${pageSuffix} | PrimeFamilyHousing`,
+    title: `Homes for Rent & Affordable Houses Nationwide${pageSuffix} | Prime Family Housing`,
     description:
       "Browse affordable homes, houses, and apartments for rent across the U.S. — move-in ready, pet-friendly options, transparent pricing, and 24-hour application decisions. Find your next rental by city.",
     alternates: { canonical },
     openGraph: {
-      title: `Homes for Rent & Affordable Houses Nationwide${pageSuffix} | PrimeFamilyHousing`,
+      title: `Homes for Rent & Affordable Houses Nationwide${pageSuffix} | Prime Family Housing`,
       description: "Browse affordable houses for rent — inspected, move-in ready, 24-hour decisions.",
       type: "website",
       url: canonical,
@@ -129,7 +129,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
 
   return (
     <div>
-      <h1 className="sr-only">Houses for Rent — Affordable Houses Nationwide | PrimeFamilyHousing</h1>
+      <h1 className="sr-only">Houses for Rent — Affordable Houses Nationwide | Prime Family Housing</h1>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}

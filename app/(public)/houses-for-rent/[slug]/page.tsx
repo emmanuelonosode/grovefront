@@ -72,7 +72,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       : FALLBACK_IMAGE;
 
     return {
-      title: `${seoTitle} | PrimeFamilyHousing`,
+      title: `${seoTitle} | Prime Family Housing`,
       description: seoDesc.slice(0, 160),
       keywords: [
         ...(streetAddress ? [
@@ -91,17 +91,30 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         `Prime Family Housing ${property.city}`,
       ],
       alternates: { canonical: `https://primefamilyhousing.com/houses-for-rent/${decodedSlug}` },
+      robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          "max-video-preview": -1,
+          "max-image-preview": "large",
+          "max-snippet": -1,
+        },
+      },
       openGraph: {
-        title: `${seoTitle} | PrimeFamilyHousing`,
+        title: `${seoTitle} | Prime Family Housing`,
         description: seoDesc.slice(0, 160),
         url: `https://primefamilyhousing.com/houses-for-rent/${decodedSlug}`,
-        images: [{ url: ogImage, width: 1200, height: 630, alt: property.title }],
-        type: "website",
+        siteName: "Prime Family Housing",
+        images: [{ url: ogImage, width: 1200, height: 800, alt: `${property.address} - Prime Family Housing` }],
+        type: "article",
       },
       twitter: {
         card: "summary_large_image",
-        title: `${seoTitle} | PrimeFamilyHousing`,
+        title: `${seoTitle} | Prime Family Housing`,
         description: seoDesc.slice(0, 160),
+        site: "@primefamilyhousing",
         images: [ogImage],
       },
     };
@@ -254,15 +267,18 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     name: `${fullAddress} — Single Family House for Rent`,
     description: property.description ?? "",
     url: `https://primefamilyhousing.com/houses-for-rent/${property.slug}`,
+    thumbnailUrl: primaryImage?.image_url ?? FALLBACK_IMAGE,
+    primaryImageOfPage: {
+      "@type": "ImageObject",
+      "url": primaryImage?.image_url ?? FALLBACK_IMAGE,
+      "contentUrl": primaryImage?.image_url ?? FALLBACK_IMAGE,
+      "width": 1200,
+      "height": 800,
+      "caption": `${property.address} — Prime Family Housing`
+    },
     image: images.length > 0
-      ? images.map((img: any) => ({
-          "@type": "ImageObject",
-          url: img.image_url ?? FALLBACK_IMAGE,
-          width: 1200,
-          height: 630,
-          caption: img.caption ?? property.title,
-        }))
-      : [{ "@type": "ImageObject", url: FALLBACK_IMAGE, width: 1200, height: 630 }],
+      ? images.map((img: any) => img.image_url ?? FALLBACK_IMAGE)
+      : [FALLBACK_IMAGE],
     offers: {
       "@type": "Offer",
       price: property.price,

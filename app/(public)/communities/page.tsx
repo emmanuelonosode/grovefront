@@ -5,12 +5,12 @@ import { fetchAllCities, toDirectoryCities } from "@/lib/cities";
 import { STATE_NAMES, stateSlugForCode } from "@/lib/states";
 
 export const metadata = {
-  title: "Communities by State | PrimeFamilyHousing",
+  title: "Communities by State | Prime Family Housing",
   description:
     "Explore PrimeFamilyHousing's family-centric communities across the country. Select a state to discover available neighborhoods and move-in ready homes.",
   alternates: { canonical: "https://primefamilyhousing.com/communities" },
   openGraph: {
-    title: "Communities by State | PrimeFamilyHousing",
+    title: "Communities by State | Prime Family Housing",
     description:
       "Explore our carefully curated family-centric neighborhoods in top states — find a sanctuary where your family can thrive.",
     url: "https://primefamilyhousing.com/communities",

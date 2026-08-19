@@ -28,7 +28,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "PrimeFamilyHousing | Affordable Houses for Rent",
+    default: "Prime Family Housing | Quality Houses for Rent across the US",
     // Pages already include the brand in their own title, so the template must
     // NOT append it again (that double-printed the brand in every <title>).
     template: "%s",
@@ -87,9 +87,9 @@ export const metadata: Metadata = {
     "long term rental homes",
     "property management rental homes",
   ],
-  authors: [{ name: "PrimeFamilyHousing", url: "https://primefamilyhousing.com" }],
-  creator: "PrimeFamilyHousing",
-  publisher: "PrimeFamilyHousing",
+  authors: [{ name: "Prime Family Housing", url: "https://primefamilyhousing.com" }],
+  creator: "Prime Family Housing",
+  publisher: "Prime Family Housing",
   formatDetection: {
     email: false,
     address: false,
@@ -101,12 +101,12 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://primefamilyhousing.com",
     siteName: BUSINESS.displayName,
-    title: "PrimeFamilyHousing | Affordable Houses for Rent",
+    title: "Prime Family Housing | Quality Houses for Rent across the US",
     description: "Discover quality, affordable houses for rent — move-in ready single-family homes, fast approvals.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "PrimeFamilyHousing | Affordable Houses for Rent",
+    title: "Prime Family Housing | Quality Houses for Rent across the US",
     description:
       "Find affordable houses for rent across Atlanta, Charlotte, Houston, Dallas, Tampa & more. Move-in ready single-family homes, fast approvals.",
     creator: "@primefamilyhousing",
