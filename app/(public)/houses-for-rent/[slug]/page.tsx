@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import {
   MapPin, Eye, Home,
@@ -134,11 +134,45 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   try {
     property = await fetchPropertyBySlug(decodedSlug);
   } catch {
-    notFound();
+    property = null;
   }
 
+  // Smart 301 Fallback for expired/delisted properties:
+  // Instead of returning a hard 404 that hurts Google crawl budget and GSC indexing,
+  // permanently redirect the user and Googlebot to the relevant city rental hub or main catalog.
   if (!property) {
-    notFound();
+    const s = decodedSlug.toLowerCase();
+    const cityMap: Record<string, string> = {
+      "atlanta": "atlanta-ga",
+      "charlotte": "charlotte-nc",
+      "houston": "houston-tx",
+      "dallas": "dallas-tx",
+      "tampa": "tampa-fl",
+      "orlando": "orlando-fl",
+      "jacksonville": "jacksonville-fl",
+      "las-vegas": "las-vegas-nv",
+      "vegas": "las-vegas-nv",
+      "phoenix": "phoenix-az",
+      "mesa": "phoenix-az",
+      "sacramento": "sacramento-ca",
+      "denver": "denver-co",
+      "seattle": "seattle-wa",
+      "chicago": "chicago-il",
+      "austin": "austin-tx",
+      "san-antonio": "san-antonio-tx",
+      "minneapolis": "minneapolis-mn",
+      "salt-lake": "salt-lake-city-ut",
+      "miami": "miami-fl",
+    };
+
+    for (const [key, citySlug] of Object.entries(cityMap)) {
+      if (s.includes(key)) {
+        redirect(`/rentals/${citySlug}`);
+      }
+    }
+
+    // Default fallback to main catalog
+    redirect("/houses-for-rent");
   }
 
   // Fetch similar homes
