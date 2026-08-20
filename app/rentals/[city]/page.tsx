@@ -48,13 +48,11 @@ export async function generateMetadata(
   const stateInfo = getStateBySlug(slug);
   if (stateInfo) {
     const dbCities = await fetchAllCities().catch(() => []);
-    const hasInventory =
-      dbCities.some((c) => (c.state || "").toUpperCase() === stateInfo.code) ||
-      Object.values(CITIES).some((c) => c.stateCode === stateInfo.code);
-    if (!hasInventory) return { title: "Not Found" };
-
-    const title = `Houses for Rent in ${stateInfo.name} | PrimeFamilyHousing`;
-    const description = `Browse affordable houses for rent across ${stateInfo.name} — move-in ready homes in cities and communities statewide. Pet-friendly options, transparent pricing, 24-hour application decisions.`;
+    const stateCities = dbCities.filter((c) => (c.state || "").toUpperCase() === stateInfo.code);
+    const totalCount = stateCities.reduce((sum, c) => sum + (c.count || 0), 0);
+    const countText = totalCount > 0 ? `Explore ${totalCount.toLocaleString()}+ verified houses for rent` : `Find single-family houses for rent`;
+    const title = `Houses for Rent in ${stateInfo.name} | Prime Family Housing`;
+    const description = `${countText} across ${stateInfo.name}. Move-in ready single-family homes with fenced yards, pet-friendly options, 24/7 maintenance, and fast 24-hour approvals.`;
     const url = `https://primefamilyhousing.com/rentals/${stateInfo.slug}`;
     return {
       title,

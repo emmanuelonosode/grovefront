@@ -54,22 +54,24 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       : ` – $${Number(property.price).toLocaleString()}`;
 
     const streetAddress = property.address ?? "";
-    const fullAddr = `${streetAddress}, ${property.city}, ${property.state}${property.zip_code ? " " + property.zip_code : ""}`;
+    const fullAddr = `${streetAddress}, ${property.city}, ${property.state}${property.zip_code ? " " + property.zip_code : ""}`.trim();
+    const formattedPrice = property.price ? `$${Number(property.price).toLocaleString()}/mo` : "";
+
+    // Clean, high-impact Title matching InvitationHomes & Zillow address search intent
     const seoTitle = streetAddress
-      ? `${fullAddr} — ${bedsLabel}${typeLabel} ${actionLabel}${priceLabel}`
-      : `${bedsLabel}${typeLabel} ${actionLabel} in ${property.city}, ${property.state}${priceLabel}`;
+      ? `${fullAddr} — ${formattedPrice}`
+      : `${bedsLabel}${typeLabel} ${actionLabel} in ${property.city}, ${property.state} — ${formattedPrice}`;
 
     const featureList = [
       property.bedrooms ? `${property.bedrooms} bed` : null,
       property.bathrooms ? `${property.bathrooms} bath` : null,
-      property.sqft ? `${Number(property.sqft).toLocaleString()} sqft` : null,
+      property.sqft ? `${Number(property.sqft).toLocaleString()} sq ft` : null,
     ].filter(Boolean).join(", ");
-    const addrPrefix = streetAddress ? `${fullAddr}. ` : "";
-    const seoDesc = `${addrPrefix}${featureList ? featureList + ". " : ""}Inspected, move-in ready luxury single family home for rent managed by Prime Family Housing. 24/7 maintenance, pet friendly, apply online.`;
 
-    const ogImage = property.images?.[0]?.image_url
-      ? property.images[0].image_url
-      : FALLBACK_IMAGE;
+    // Price + Address right at the start of description for rich snippet visibility
+    const seoDesc = `${formattedPrice ? formattedPrice + " — " : ""}${fullAddr}. Move-in ready ${featureList ? featureList + " " : ""}single-family home for rent. Pet friendly, 24/7 maintenance, 24-hour application approval. Schedule a self-tour online.`;
+
+    const ogImage = property.images?.[0]?.image_url || FALLBACK_IMAGE;
 
     return {
       title: `${seoTitle} | Prime Family Housing`,
@@ -79,6 +81,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
           streetAddress,
           `${streetAddress} ${property.city}`,
           `${streetAddress} ${property.city} ${property.state}`,
+          `${fullAddr}`,
           `${fullAddr} rental`,
           `${fullAddr} for rent`,
           `houses for rent in ${property.city} ${property.state}`,
@@ -107,7 +110,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         description: seoDesc.slice(0, 160),
         url: `https://primefamilyhousing.com/houses-for-rent/${decodedSlug}`,
         siteName: "Prime Family Housing",
-        images: [{ url: ogImage, width: 1200, height: 800, alt: `${property.address} - Prime Family Housing` }],
+        images: [{ url: ogImage, width: 1200, height: 800, alt: `${fullAddr} - Prime Family Housing` }],
         type: "article",
       },
       twitter: {
@@ -120,8 +123,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
   } catch {
     return {
-      title: "Property Details | PrimeFamilyHousing",
-      description: "Explore available houses for rent with Prime Family Housing.",
+      title: "Houses for Rent | Prime Family Housing",
+      description: "Explore available move-in ready houses for rent with Prime Family Housing.",
     };
   }
 }
@@ -296,10 +299,10 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
   const listingSchema = {
     "@context": "https://schema.org",
-    "@type": "RealEstateListing",
+    "@type": ["RealEstateListing", "Product"],
     mainEntity: residenceSchema,
-    name: `${fullAddress} — Single Family House for Rent`,
-    description: property.description ?? "",
+    name: fullAddress,
+    description: `${fullAddress} is a ${property.bedrooms || 3}-bedroom single-family rental home in ${property.city}, ${property.state}. Monthly rent is $${Number(property.price).toLocaleString()}/month.`,
     url: `https://primefamilyhousing.com/houses-for-rent/${property.slug}`,
     thumbnailUrl: primaryImage?.image_url ?? FALLBACK_IMAGE,
     primaryImageOfPage: {
@@ -308,19 +311,21 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
       "contentUrl": primaryImage?.image_url ?? FALLBACK_IMAGE,
       "width": 1200,
       "height": 800,
-      "caption": `${property.address} — Prime Family Housing`
+      "caption": `${fullAddress} — Prime Family Housing`
     },
     image: images.length > 0
       ? images.map((img: any) => img.image_url ?? FALLBACK_IMAGE)
-      : [FALLBACK_IMAGE],
+      : [primaryImage?.image_url ?? FALLBACK_IMAGE],
     offers: {
       "@type": "Offer",
-      price: property.price,
+      price: String(property.price),
       priceCurrency: "USD",
+      url: `https://primefamilyhousing.com/houses-for-rent/${property.slug}`,
       availability: isAvailable ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
+      itemCondition: "https://schema.org/NewCondition",
       priceSpecification: {
         "@type": "UnitPriceSpecification",
-        price: property.price,
+        price: String(property.price),
         priceCurrency: "USD",
         unitCode: "MON",
         billingIncrement: 1,
@@ -336,9 +341,9 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     datePosted: (property as any).created_at ?? new Date().toISOString(),
     broker: {
       "@type": "RealEstateAgent",
-      name: "Prime Family Housing Leasing Team",
-      email: "leasing@primefamilyhousing.com",
-      telephone: "(888) 774-6310",
+      name: "Prime Family Housing",
+      email: "info@primefamilyhousing.com",
+      telephone: "+17577924480",
       url: "https://primefamilyhousing.com",
     },
   };
