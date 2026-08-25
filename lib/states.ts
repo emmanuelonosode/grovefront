@@ -51,3 +51,21 @@ export function getStateBySlug(slug: string): StateInfo | null {
 export function stateFullName(code: string): string {
   return STATE_NAMES[code?.toUpperCase()] ?? code;
 }
+
+export interface StateMedia {
+  hero: string;
+  og: string;
+  feature?: string;
+}
+
+export const STATE_HERO_IMAGES: Record<string, StateMedia> = {
+  FL: {
+    hero: "/images/states/florida/florida-hero.jpg",
+    og: "https://primefamilyhousing.com/images/states/florida/florida-og.jpg",
+    feature: "/images/states/florida/florida-beach-palms.jpg",
+  },
+};
+
+export function getStateMedia(code: string): StateMedia | null {
+  return STATE_HERO_IMAGES[code?.toUpperCase()] ?? null;
+}

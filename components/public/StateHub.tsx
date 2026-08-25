@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { CityLeadCapture } from "@/components/public/CityLeadCapture";
 import { TrustSignals } from "@/components/public/TrustSignals";
 import { CITIES, type CityData } from "@/lib/cities";
-import type { StateInfo } from "@/lib/states";
+import { getStateMedia, type StateInfo } from "@/lib/states";
 import { realEstateAgentSchema } from "@/lib/business";
 
 interface Props {
@@ -42,13 +42,16 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
     return cb - ca || a.name.localeCompare(b.name);
   });
 
-  // Hero photo: the state's best curated city skyline, falling back to any
-  // city image (mirrors the StateDirectory card logic).
+  // Hero photo: explicit state media, or the state's best curated city skyline,
+  // falling back to any city image (mirrors the StateDirectory card logic).
+  const stateMedia = getStateMedia(state.code);
   const curated = sortedCities.find((c) => CITIES[c.slug]?.heroImage);
   const heroImage =
+    stateMedia?.hero ??
     (curated ? CITIES[curated.slug].heroImage : sortedCities[0]?.heroImage) ??
     "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1600&q=80";
 
+  const featureImage = stateMedia?.feature ?? heroImage;
   const topCityNames = sortedCities.slice(0, 5).map((c) => c.name).join(", ");
 
   const collectionSchema = {
@@ -337,7 +340,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
         <div className="px-4 md:px-12 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
           <div className="w-full md:w-1/2 relative h-[400px]">
             <Image
-              src={heroImage}
+              src={featureImage}
               alt={`Living in ${state.name}`}
               fill
               className="rounded-xl shadow-md object-cover"

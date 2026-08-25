@@ -17,7 +17,7 @@ import { PropertyCard } from "@/components/public/PropertyCard";
 import { Button } from "@/components/ui/Button";
 import { CityLeadCapture } from "@/components/public/CityLeadCapture";
 import { StateHub } from "@/components/public/StateHub";
-import { getStateBySlug, stateSlugForCode, STATE_NAMES } from "@/lib/states";
+import { getStateBySlug, getStateMedia, stateSlugForCode, STATE_NAMES } from "@/lib/states";
 
 export const revalidate = 300;
 
@@ -54,6 +54,9 @@ export async function generateMetadata(
     const title = `Houses for Rent in ${stateInfo.name} | Prime Family Housing`;
     const description = `${countText} across ${stateInfo.name}. Move-in ready single-family homes with fenced yards, pet-friendly options, 24/7 maintenance, and fast 24-hour approvals.`;
     const url = `https://primefamilyhousing.com/rentals/${stateInfo.slug}`;
+    const stateMedia = getStateMedia(stateInfo.code);
+    const ogImage = stateMedia?.og || `https://primefamilyhousing.com/images/states/florida/florida-og.jpg`;
+
     return {
       title,
       description,
@@ -67,8 +70,26 @@ export async function generateMetadata(
         `cheap houses for rent ${stateInfo.name}`,
       ],
       alternates: { canonical: url },
-      openGraph: { title, description, type: "website", url },
-      twitter: { card: "summary_large_image", title, description },
+      openGraph: {
+        title,
+        description,
+        type: "website",
+        url,
+        images: [
+          {
+            url: ogImage,
+            width: 1200,
+            height: 630,
+            alt: `Houses for rent in ${stateInfo.name} — Prime Family Housing`,
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: [ogImage],
+      },
     };
   }
 
