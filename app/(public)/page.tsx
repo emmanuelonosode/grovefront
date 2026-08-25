@@ -11,17 +11,11 @@ import { fetchProperties, fetchHomepageProperties, toPropertyCardShape } from "@
 import { fetchAllCities, toDirectoryCities } from "@/lib/cities";
 import { BUSINESS, postalAddressSchema } from "@/lib/business";
 
-// Hero background rotates every 2 hours (recomputed on each ISR regeneration, revalidate=300)
-// so the homepage feels fresh. All curated, verified, and bandwidth-optimized (webp).
-// All bright daylight exteriors — no dusk/night shots (visually audited).
+// Hero background carousel rotates through the 3 curated residential community photos
 const HERO_IMAGES = [
-  "https://images.unsplash.com/photo-1560184897-ae75f418493e?w=1600&q=75&fm=webp&auto=format",
-  "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=1600&q=75&fm=webp&auto=format",
-  "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1600&q=75&fm=webp&auto=format",
-  "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1600&q=75&fm=webp&auto=format",
-  "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=1600&q=75&fm=webp&auto=format",
-  "https://images.unsplash.com/photo-1576941089067-2de3c901e126?w=1600&q=75&fm=webp&auto=format",
-  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600&q=75&fm=webp&auto=format",
+  "/images/hero/hero-townhomes.jpg",
+  "/images/hero/hero-contemporary-homes.jpg",
+  "/images/hero/hero-suburban-neighborhood.jpg",
 ];
 
 export const metadata = {
