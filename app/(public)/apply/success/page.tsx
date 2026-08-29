@@ -25,8 +25,8 @@ function SuccessContent() {
       <div className="max-w-xl mx-auto px-4 sm:px-6 py-10 space-y-4">
 
         {/* Confirmation card */}
-        <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-8 text-center border-t-4 border-brand">
-          <div className="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center mx-auto mb-6">
+        <div className="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-8 text-center border-t-4 border-brand">
+          <div className="w-16 h-16 rounded-xl bg-emerald-50 flex items-center justify-center mx-auto mb-6">
             <CheckCircle size={32} className="text-emerald-500" strokeWidth={2} />
           </div>
           <h1 className="text-[26px] font-semibold tracking-tight text-[#1D1D1F] mb-2">
@@ -35,7 +35,7 @@ function SuccessContent() {
           <p className="text-[15px] text-[#6E6E73] leading-relaxed">
             Thank you, <span className="font-semibold text-[#1D1D1F]">{name}</span>. Your application has been successfully received and is now under review.
           </p>
-          <div className="mt-6 inline-flex items-center gap-3 bg-[#F5F5F7] px-5 py-3 rounded-2xl border border-black/[0.03]">
+          <div className="mt-6 inline-flex items-center gap-3 bg-[#F5F5F7] px-5 py-3 rounded-xl border border-black/[0.03]">
             <div>
               <p className="text-[10px] text-[#6E6E73] font-bold uppercase tracking-widest text-left">Application ID</p>
               <p className="text-[16px] font-bold text-[#1D1D1F] font-mono">{refId}</p>
@@ -49,7 +49,7 @@ function SuccessContent() {
         </div>
 
         {/* What happens next */}
-        <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6">
+        <div className="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-6">
           <h3 className="text-[16px] font-bold text-[#1D1D1F] mb-6 flex items-center gap-2">
             What Happens Next
           </h3>
@@ -94,7 +94,7 @@ function SuccessContent() {
         </div>
 
         {/* Questions */}
-        <div className="bg-[#081C15] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="bg-[#081C15] rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <p className="text-[13px] font-semibold text-white tracking-tight">Questions about your application?</p>
             <p className="text-[12px] text-white/40 mt-0.5">Reference your ID when emailing us.</p>
@@ -118,7 +118,7 @@ function SuccessContent() {
         </div>
 
         {/* Portal CTA */}
-        <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-5 flex items-center justify-between gap-4">
+        <div className="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-5 flex items-center justify-between gap-4">
           <div>
             <p className="text-[13px] font-semibold text-[#1D1D1F] tracking-tight">Track your application</p>
             <p className="text-[12px] text-[#6E6E73] mt-0.5">Sign in to your tenant portal to view status updates.</p>

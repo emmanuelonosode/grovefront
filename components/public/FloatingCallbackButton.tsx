@@ -113,7 +113,7 @@ export function FloatingCallbackButton() {
       {showFloating && (
         <button
           onClick={() => { trackClick("callback_open", { where: "floating" }); setOpen(true); }}
-          className="fixed bottom-24 right-4 lg:bottom-6 lg:right-6 z-40 flex items-center gap-2 bg-brand hover:bg-brand-hover text-white font-bold text-sm px-4 py-3 lg:px-5 lg:py-3.5 rounded-full shadow-xl shadow-brand/30 hover:shadow-brand/40 transition-all active:scale-95 cursor-pointer group"
+          className="fixed bottom-24 right-4 lg:bottom-6 lg:right-6 z-40 flex items-center gap-2 bg-brand hover:bg-brand-hover text-white font-bold text-sm px-4 py-3 lg:px-5 lg:py-3.5 rounded-lg shadow-xl shadow-brand/30 hover:shadow-brand/40 transition-all active:scale-95 cursor-pointer group"
           aria-label="Request a callback"
         >
           <Phone size={16} className="shrink-0 group-hover:animate-bounce" />
@@ -128,7 +128,7 @@ export function FloatingCallbackButton() {
 
           <div
             role="dialog" aria-modal="true" aria-labelledby="callback-modal-title"
-            className="relative w-full sm:max-w-sm bg-white sm:rounded-3xl rounded-t-3xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-200"
+            className="relative w-full sm:max-w-sm bg-white sm:rounded-xl rounded-t-3xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-200"
           >
             {/* Header */}
             <div className="px-5 pt-5 pb-4 border-b border-neutral-100 flex items-start justify-between gap-3">
@@ -217,7 +217,7 @@ export function FloatingCallbackButton() {
                 </form>
               ) : (
                 <div className="text-center py-4 space-y-3 animate-in fade-in duration-300">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto">
+                  <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto">
                     <Check size={24} className="text-emerald-500" />
                   </div>
                   <p className="font-serif font-bold text-neutral-900">Expect a call soon!</p>

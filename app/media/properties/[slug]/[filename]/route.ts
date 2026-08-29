@@ -41,7 +41,15 @@ export async function GET(
     console.error("[Next.js Media Proxy] Error fetching from backend:", err);
   }
 
-  // 2. Direct fallback origin streaming
+  // 2. Direct fallback origin streaming.
+  //
+  // This is the ONE place the syndication CDN may still be named, and it must
+  // stay: it is how the bytes are actually obtained when the Django proxy has
+  // not yet cached a file. The fetch is server-side, so the hostname never
+  // reaches the browser, appears in no HTML, and is not subject to (or exempted
+  // by) the CSP — which is why `images.invitationhomes.com` was removed from
+  // `img-src` in next.config.ts without breaking images. Deleting this block
+  // would 404 every photo that is not already on disk.
   const directCdnUrl = "https://images.invitationhomes.com/web/w_1500,h_1000,c_limit,q_auto/" + encodeURIComponent(slug) + "/" + encodeURIComponent(filename);
   try {
     const cdnRes = await fetch(directCdnUrl, {

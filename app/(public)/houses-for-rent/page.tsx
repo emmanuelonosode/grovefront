@@ -1,8 +1,6 @@
 import { Suspense } from "react";
 import { fetchProperties, type PropertyListItemAPI } from "@/lib/properties";
 import { PropertiesClient } from "@/components/public/PropertiesClient";
-import { CityDirectory } from "@/components/public/CityDirectory";
-import { fetchAllCities, toDirectoryCities } from "@/lib/cities";
 
 export const revalidate = 0;
 
@@ -71,7 +69,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
   // the same street/estate don't cluster together on the default browse page.
   // Search results + city directory are independent — fetch in parallel.
   const effectiveSort = sort ?? "diverse";
-  const [propertiesResult, citiesResult] = await Promise.allSettled([
+  const [propertiesResult] = await Promise.allSettled([
     fetchProperties({
       listing_type: listingType,
       q,
@@ -87,22 +85,11 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
       page_size: String(PAGE_SIZE),
       page: String(currentPage),
     }),
-    fetchAllCities(),
   ]);
   if (propertiesResult.status === "fulfilled") {
     results = propertiesResult.value.results;
     total   = propertiesResult.value.count;
   } /* else: API offline — render empty state */
-
-  // Cities for the crawlable directory (server-rendered internal links to every
-  // city page). Slim projection only — never ship full seoContent to the client.
-  let mergedCities = toDirectoryCities([]);
-  let cityCounts: Record<string, number> = {};
-  if (citiesResult.status === "fulfilled") {
-    const dbCities = citiesResult.value;
-    mergedCities = toDirectoryCities(dbCities);
-    cityCounts = Object.fromEntries(dbCities.map((c) => [c.slug, c.count]));
-  } /* else: keep CITIES fallback */
 
   const breadcrumb = {
     "@context": "https://schema.org",
@@ -156,9 +143,6 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
           initialSort={sort ?? "diverse"}
         />
       </Suspense>
-
-      {/* Crawlable internal-link hub to every city landing page (national SEO). */}
-      <CityDirectory cities={mergedCities} counts={cityCounts} />
     </div>
   );
 }

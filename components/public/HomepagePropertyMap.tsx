@@ -96,7 +96,7 @@ export function HomepagePropertyMap() {
       });
 
       L.control.zoom({ position: "bottomright" }).addTo(map);
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
         maxZoom: 19,
       }).addTo(map);
@@ -214,7 +214,7 @@ export function HomepagePropertyMap() {
             <button
               key={t}
               onClick={() => setListingType(t)}
-              className={`px-3 py-2 rounded-full text-xs font-semibold shadow-lg border transition-colors whitespace-nowrap ${
+              className={`px-3 py-2 rounded-md text-xs font-semibold shadow-lg border transition-colors whitespace-nowrap ${
                 listingType === t
                   ? "bg-brand text-white border-transparent"
                   : "bg-white text-neutral-700 border-neutral-200 hover:border-brand hover:text-brand"
@@ -227,7 +227,7 @@ export function HomepagePropertyMap() {
 
         <Link
           href={`/houses-for-rent${listingType !== "all" ? `?listing_type=${listingType}` : ""}`}
-          className="ml-auto hidden sm:flex items-center gap-1.5 bg-brand text-white text-xs font-semibold px-4 py-2 rounded-full shadow-lg hover:bg-brand-hover transition-colors whitespace-nowrap"
+          className="ml-auto hidden sm:flex items-center gap-1.5 bg-brand text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg hover:bg-brand-hover transition-colors whitespace-nowrap"
         >
           Browse All <ArrowRight size={12} />
         </Link>

@@ -346,7 +346,7 @@ export default function CareersPage() {
         />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pb-12 lg:pb-16 pt-16 w-full">
-          <div className="max-w-2xl bg-white rounded-2xl shadow-2xl p-8 lg:p-12">
+          <div className="max-w-2xl bg-white rounded-xl shadow-2xl p-8 lg:p-12">
             <span className="block w-12 h-1.5 rounded-full bg-accent mb-5" />
             <p className="text-[#B87400] text-xs font-bold tracking-[0.35em] uppercase mb-4">
               Now Hiring · Clearfield

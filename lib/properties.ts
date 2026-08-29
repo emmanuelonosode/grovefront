@@ -63,7 +63,27 @@ export interface PropertyListItemAPI {
   longitude: number | null;
 }
 
-/** Shape returned by GET /api/v1/properties/<slug>/ (detail) */
+/**
+ * Shape returned by GET /api/v1/properties/<slug>/ (detail).
+ *
+ * IMPORTANT: the deployed API at admin.primefamilyhousing.com currently returns
+ * only 36 of these fields. The eight marked "extended" below are declared on
+ * `PropertyDetailSerializer` and ARE populated in the database (schools on
+ * 4285/4303 rows, fees on 4286, office_info on 4286), but the running backend
+ * is on older code and omits them. Every consumer must therefore treat them as
+ * optional. They light up automatically once groveback is redeployed.
+ *
+ * Reliability notes for the fields that ARE always returned:
+ *   year_built  null on most rows; 2018 is a seeded placeholder on the rest.
+ *   stories     1 on every row, i.e. the model default, not real data.
+ *   neighborhood / lot_size / cross_street / virtual_tour_url / tour_360_url
+ *               present but empty on every row sampled.
+ *   recent_view_count  0 until the listing accumulates 30-day PageVisit rows.
+ *   amenities / amenity_categories  populated on roughly 70% of listings.
+ *
+ * `original_price` is on the model but never serialized, and in the database it
+ * never exceeds `price` (0 rows out of 4303). There is no discount to show.
+ */
 export interface PropertyDetailAPI extends PropertyListItemAPI {
   description: string;
   zip_code: string;
@@ -83,6 +103,66 @@ export interface PropertyDetailAPI extends PropertyListItemAPI {
   agent: PropertyAgentAPI;
   updated_at: string;
   recent_view_count?: number;
+
+  // ── Extended fields (see note above) ──────────────────────────────────
+  /** Always leads with a "Base Rent" row that duplicates `price`; exclude it. */
+  fees?: PropertyFeeAPI[] | null;
+  /** Exactly 3 entries wherever present. */
+  schools?: PropertySchoolAPI[] | null;
+  floor_plans?: PropertyFloorPlanAPI[] | null;
+  office_info?: PropertyOfficeInfoAPI | null;
+  /** ISO 8601, e.g. "2026-08-19T00:00:00.000Z". May be a future date. */
+  available_on?: string | null;
+  is_pet_friendly?: boolean;
+  has_pool?: boolean;
+  /** False on ~12% of homes, which cannot be toured unaccompanied. */
+  allow_selfshow?: boolean;
+  /**
+   * The concession currently running on this home, or null. Read out of
+   * `raw_data` by the serializer and already date-filtered server-side, so an
+   * expired offer never reaches the page. Present on roughly 5% of listings.
+   */
+  leasing_special?: PropertyLeasingSpecialAPI | null;
+}
+
+export interface PropertyLeasingSpecialAPI {
+  /** e.g. "Special offer: Get a month of base rent free!" */
+  title: string;
+  description: string;
+  /** ISO date, e.g. "2026-08-27". */
+  ends_on: string;
+}
+
+/** A recurring charge billed alongside rent. */
+export interface PropertyFeeAPI {
+  title?: string;
+  name?: string;
+  description?: string;
+  /** Formatted with thousands separators, e.g. "2,320.00" or "9.95". */
+  fee_amount?: string | number;
+  frequency?: string;
+  is_required?: boolean;
+}
+
+export interface PropertySchoolAPI {
+  name?: string;
+  /** Miles from the property. */
+  distance?: number;
+  detail_url?: string;
+  /** e.g. "PK-5", "6-8", "9-12", "KG-8". */
+  grade_level_description?: string;
+}
+
+export interface PropertyFloorPlanAPI {
+  image_url?: string;
+  thumbnail_url?: string;
+}
+
+export interface PropertyOfficeInfoAPI {
+  /** Unformatted digits, e.g. "8132570126". */
+  phone_digits?: string;
+  email_address?: string;
+  brokerage_license_number?: string;
 }
 
 export interface PaginatedProperties {

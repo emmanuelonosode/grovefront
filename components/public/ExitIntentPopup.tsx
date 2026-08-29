@@ -18,7 +18,7 @@ const COOLDOWN_MS    = 24 * 60 * 60 * 1000;
 const TIMER_DELAY_MS = 30_000;                    // calm — only after real browsing
 
 const INPUT_CLS =
-  "w-full h-[50px] rounded-2xl border border-neutral-200 bg-neutral-50/60 pl-11 pr-4 " +
+  "w-full h-[50px] rounded-xl border border-neutral-200 bg-neutral-50/60 pl-11 pr-4 " +
   "text-[15px] text-brand-dark placeholder:text-neutral-400 transition-all " +
   "focus:outline-none focus:border-brand focus:ring-4 focus:ring-brand/10 focus:bg-white";
 
@@ -138,7 +138,7 @@ export function ExitIntentPopup() {
       {/* Card */}
       <div
         role="dialog" aria-modal="true" aria-labelledby="exit-popup-title"
-        className="relative w-full max-w-md bg-white rounded-[28px] overflow-hidden shadow-[0_24px_70px_-12px_rgba(0,20,60,0.35)] ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-200"
+        className="relative w-full max-w-md bg-white rounded-xl overflow-hidden shadow-[0_24px_70px_-12px_rgba(0,20,60,0.35)] ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-200"
       >
         {/* Close */}
         <button
@@ -153,7 +153,7 @@ export function ExitIntentPopup() {
           <>
             {/* Header — warm, calm, centered */}
             <div className="px-7 pt-10 pb-5 text-center">
-              <div className="mx-auto w-14 h-14 rounded-2xl bg-brand-light ring-1 ring-brand/10 flex items-center justify-center mb-4">
+              <div className="mx-auto w-14 h-14 rounded-xl bg-brand-light ring-1 ring-brand/10 flex items-center justify-center mb-4">
                 <PhoneCall size={22} className="text-brand" />
               </div>
               <span className="block mx-auto w-10 h-1.5 rounded-full bg-accent mb-3" />
@@ -223,7 +223,7 @@ export function ExitIntentPopup() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-[52px] mt-1 bg-brand text-white font-semibold rounded-2xl hover:bg-brand-hover shadow-lg shadow-brand/20 transition-all flex items-center justify-center gap-2 text-[15px] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full h-[52px] mt-1 bg-brand text-white font-semibold rounded-xl hover:bg-brand-hover shadow-lg shadow-brand/20 transition-all flex items-center justify-center gap-2 text-[15px] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {loading
                   ? <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -238,7 +238,7 @@ export function ExitIntentPopup() {
         ) : (
           /* Success */
           <div className="px-7 py-12 text-center animate-in fade-in slide-in-from-bottom-3 duration-300">
-            <div className="mx-auto w-16 h-16 rounded-2xl bg-emerald-50 ring-1 ring-emerald-200 flex items-center justify-center mb-5">
+            <div className="mx-auto w-16 h-16 rounded-xl bg-emerald-50 ring-1 ring-emerald-200 flex items-center justify-center mb-5">
               <Check size={30} className="text-emerald-500" />
             </div>
             <h4 className="font-serif text-2xl font-bold text-neutral-900">You&apos;re all set</h4>
@@ -248,7 +248,7 @@ export function ExitIntentPopup() {
             </p>
             <button
               onClick={() => setVisible(false)}
-              className="mt-6 inline-flex h-11 items-center justify-center px-6 rounded-2xl border border-neutral-200 text-neutral-800 text-sm font-semibold hover:bg-neutral-50 transition-colors cursor-pointer"
+              className="mt-6 inline-flex h-11 items-center justify-center px-6 rounded-xl border border-neutral-200 text-neutral-800 text-sm font-semibold hover:bg-neutral-50 transition-colors cursor-pointer"
             >
               Keep browsing
             </button>

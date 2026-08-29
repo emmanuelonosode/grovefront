@@ -191,7 +191,7 @@ export default async function PropertyManagementCityPage(
           sizes="100vw"
         />
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pb-12 pt-32">
-          <div className="max-w-2xl bg-white rounded-2xl shadow-2xl p-8 lg:p-12">
+          <div className="max-w-2xl bg-white rounded-xl shadow-2xl p-8 lg:p-12">
             <nav aria-label="Breadcrumb" className="mb-5">
               <ol className="flex items-center gap-2 text-xs text-neutral-500">
                 <li><Link href="/" className="hover:text-brand">Home</Link></li>

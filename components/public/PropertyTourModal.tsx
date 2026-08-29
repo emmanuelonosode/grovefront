@@ -52,7 +52,7 @@ export function PropertyTourModal(props: Props) {
         role="dialog"
         aria-modal="true"
         aria-label="Book a tour"
-        className="relative w-full sm:max-w-md my-0 sm:my-8 max-h-[100vh] sm:max-h-[90vh] overflow-y-auto sm:rounded-3xl shadow-[0_24px_70px_-12px_rgba(0,20,60,0.35)] ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-200"
+        className="relative w-full sm:max-w-md my-0 sm:my-8 max-h-[100vh] sm:max-h-[90vh] overflow-y-auto sm:rounded-xl shadow-[0_24px_70px_-12px_rgba(0,20,60,0.35)] ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-200"
       >
         <button
           onClick={() => setOpen(false)}

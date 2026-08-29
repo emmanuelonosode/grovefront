@@ -323,12 +323,12 @@ export default async function HomePage() {
                 <div className={`absolute bottom-0 left-0 w-full ${isLarge ? "p-8" : "p-6"}`}>
                   <div className="flex flex-wrap gap-2 mb-3">
                     {homeCount != null && homeCount > 0 && (
-                      <span className="bg-earth-beige text-on-secondary-container text-[12px] leading-4 px-3 py-1 rounded-full font-semibold">
+                      <span className="bg-earth-beige text-on-secondary-container text-[12px] leading-4 px-3 py-1 rounded-md font-semibold">
                         {homeCount} Home{homeCount === 1 ? "" : "s"} Available
                       </span>
                     )}
                     {city.avgRent && (
-                      <span className="bg-surface/90 text-primary text-[12px] leading-4 px-3 py-1 rounded-full backdrop-blur-sm">
+                      <span className="bg-surface/90 text-primary text-[12px] leading-4 px-3 py-1 rounded-md backdrop-blur-sm">
                         from {city.avgRent}/mo
                       </span>
                     )}

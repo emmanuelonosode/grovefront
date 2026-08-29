@@ -38,7 +38,7 @@ const securityHeaders = [
       "font-src 'self' https://fonts.gstatic.com",
       // Images: same origin, Unsplash, InvitationHomes, Rently CDN + S3, CARTO tiles, HAR static
       // (Google/Meta tracking hosts removed — no third-party analytics.)
-      "img-src 'self' data: blob: https://admin.primefamilyhousing.com https://images.unsplash.com https://images.invitationhomes.com https://*.invitationhomes.com https://*.zillowstatic.com https://d39tc8gklidfbm.cloudfront.net https://s3.amazonaws.com https://maps.gstatic.com https://maps.googleapis.com https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com https://unpkg.com https://*.harstatic.com",
+      "img-src 'self' data: blob: https://admin.primefamilyhousing.com https://images.unsplash.com https://*.zillowstatic.com https://d39tc8gklidfbm.cloudfront.net https://s3.amazonaws.com https://maps.gstatic.com https://maps.googleapis.com https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com https://unpkg.com https://*.harstatic.com",
       // API connections: same origin + backend API + CARTO + IP geolocation (native location capture).
       // (GTM / GA4 / Meta Pixel hosts removed — analytics is first-party only.)
       "connect-src 'self' https://admin.primefamilyhousing.com https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com https://ipapi.co",
@@ -131,16 +131,6 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "images.unsplash.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "images.invitationhomes.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "*.invitationhomes.com",
         pathname: "/**",
       },
       {

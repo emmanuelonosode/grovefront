@@ -33,6 +33,35 @@ async function getUrlsFromSitemap() {
     }
 }
 
+
+/**
+ * This file is published at /llms-full.txt, so whatever lands in it is public.
+ * Two things therefore have to be rewritten on every run:
+ *
+ *  - Upstream CDN image URLs. Listing data is syndicated, and the origin host
+ *    names the operator we source from. They are re-pointed at our own
+ *    /media/properties/... proxy, which is what the API already serves.
+ *  - The legacy /homes-for-rent/ path, which 301s to /houses-for-rent/. Emitting
+ *    it made every link in a 2.5MB file cost a crawler an extra redirect hop.
+ *
+ * Keep these rules in step with groveback/apps/properties/sanitize.py.
+ */
+function sanitize(text) {
+    if (!text) return text;
+    return text
+        .replace(
+            /https?:\/\/images\.invitationhomes\.com\/(?:web\/[^/]+\/)?([^\s"'<>)\]]+)/gi,
+            (_, path) => '/media/properties/' + path.split('?')[0].replace(/^\/+|\/+$/g, '')
+        )
+        .replace(/https?:\/\/(?:www\.)?invitationhomes\.com[^\s"'<>)\]]*/gi, 'https://primefamilyhousing.com')
+        .replace(/(?:images\.|www\.)?invitationhomes\.com/gi, 'primefamilyhousing.com')
+        .replace(/\bInvitation\s*Homes?\b/gi, 'Prime Family Housing')
+        // Lookbehind: /media/properties/... is the image proxy path written just
+        // above, not a legacy listing URL. Without it the rewrite corrupts it.
+        .replace(/(?<!\/media)\/properties\//g, '/houses-for-rent/')
+        .replace(/\/homes-for-rent\//g, '/houses-for-rent/');
+}
+
 async function scrapePage(url) {
     try {
         const response = await axios.get(url);
@@ -47,12 +76,10 @@ async function scrapePage(url) {
         // Convert the messy HTML into clean Markdown for the AI
         let markdown = turndownService.turndown(mainContent);
         
-        // Proactively rewrite legacy URL structures in scraped text/links to canonical /homes-for-rent/
-        markdown = markdown.replace(/\/properties\//g, '/homes-for-rent/');
-        markdown = markdown.replace(/\/homes-for-rent\//g, '/homes-for-rent/');
-        
+        markdown = sanitize(markdown);
+
         // Format it nicely for the llms-full.txt
-        return `\n\n---\n\n# URL: ${url.replace(/\/properties\//g, '/homes-for-rent/').replace(/\/homes-for-rent\//g, '/homes-for-rent/')}\n\n${markdown}`;
+        return `\n\n---\n\n# URL: ${sanitize(url)}\n\n${markdown}`;
         
     } catch (error) {
         console.log(`⚠️ Failed to scrape ${url}: ${error.message}`);

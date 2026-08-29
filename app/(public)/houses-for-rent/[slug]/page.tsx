@@ -1,34 +1,44 @@
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
-  MapPin, Eye, Home,
-  Utensils, Zap, Waves, PawPrint, Thermometer, Info,
-  Wind, WashingMachine, Car, Shield, Dumbbell,
-  TreePine, CheckCircle2, Refrigerator, Microwave,
-  Flame, ShowerHead, Wifi, Fence, Sparkles, Clock, DollarSign,
-  HelpCircle, ChevronRight, School, Bus, ShoppingBag,
-  HeartHandshake, Award, Wrench, KeyRound, Check,
-  type LucideIcon,
+  MapPin, BedDouble, ShowerHead, Ruler, Car, Check, ChevronRight,
+  CalendarDays, Wallet, Wrench, KeyRound, Eye, House, PawPrint, Waves,
+  Phone, Mail,
 } from "lucide-react";
-import { fetchPropertyBySlug, fetchProperties, toPropertyCardShape } from "@/lib/properties";
-import { fetchAllCities, cityToSlug } from "@/lib/cities";
-import { stateFullName, stateSlugForCode } from "@/lib/states";
+import { fetchPropertyBySlug, fetchProperties } from "@/lib/properties";
+import type { PropertyDetailAPI, PropertyListItemAPI } from "@/lib/properties";
+import {
+  buildMonthlyCost, buildSchools, buildLeasingOffice, parseAvailability, formatMoney,
+  toParagraphs, tourProvider,
+} from "@/lib/propertyDetail";
+import { cityToSlug } from "@/lib/cities";
+import { stateFullName } from "@/lib/states";
 import { PropertyIntentCapture } from "@/components/public/PropertyIntentCapture";
-import { VirtualTourButton, VirtualTourBadge, VirtualTourChip } from "@/components/public/VirtualTourButton";
-import { PropertyImageGallery } from "@/components/public/PropertyImageGallery";
-import { BookTourButton } from "@/components/public/BookTourButton";
 import { PropertyTourModal } from "@/components/public/PropertyTourModal";
 import { PropertyDetailMapLoader } from "@/components/public/PropertyDetailMapLoader";
 import type { DetailMarker } from "@/components/public/PropertyDetailMap";
 import { PropertyPageTracker } from "@/components/public/PropertyPageTracker";
-import { SidebarWidgets } from "@/components/public/SidebarWidgets";
-import { PropertyDetailsTabs } from "@/components/public/PropertyDetailsTabs";
-import { PropertyActionStrip } from "@/components/public/PropertyActionStrip";
-import { formatPrice, formatNumber } from "@/lib/utils";
+import { PdpGallery } from "@/components/public/pdp/PdpGallery";
+import { PdpLeadRail } from "@/components/public/pdp/PdpLeadRail";
+import { PdpSectionNav } from "@/components/public/pdp/PdpSectionNav";
+import { PdpMobileBar } from "@/components/public/pdp/PdpMobileBar";
+import { PdpFaq, type FaqItem } from "@/components/public/pdp/PdpFaq";
+import { PdpMonthlyCost } from "@/components/public/pdp/PdpMonthlyCost";
+import { PdpSchools } from "@/components/public/pdp/PdpSchools";
+import { PdpFloorPlans } from "@/components/public/pdp/PdpFloorPlans";
+import { PdpVirtualTour } from "@/components/public/pdp/PdpVirtualTour";
+import { PdpOfferBanner } from "@/components/public/pdp/PdpOfferBanner";
+import { PdpTourAutoOpen } from "@/components/public/pdp/PdpTourAutoOpen";
+import { FavoriteButton } from "@/components/public/FavoriteButton";
+import { amenityIconFor } from "@/components/public/pdp/amenityIcon";
+import { formatNumber } from "@/lib/utils";
 
 export const revalidate = 300;
 
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&q=80";
+
+/** Below this, the view count reads as "nobody is looking" and hurts more than it helps. */
+const MIN_VIEWS_TO_SHOW = 8;
 
 export async function generateStaticParams() {
   return [];
@@ -49,18 +59,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const actionLabel =
       property.listing_type === "for-sale" ? "for Sale" :
         property.listing_type === "for-lease" ? "for Lease" : "for Rent";
-    const priceLabel = property.listing_type === "for-rent"
-      ? ` – $${Number(property.price).toLocaleString()}/mo`
-      : ` – $${Number(property.price).toLocaleString()}`;
 
     const streetAddress = property.address ?? "";
     const fullAddr = `${streetAddress}, ${property.city}, ${property.state}${property.zip_code ? " " + property.zip_code : ""}`.trim();
-    const formattedPrice = property.price ? `$${Number(property.price).toLocaleString()}/mo` : "";
+    const formattedPrice = property.price
+      ? `$${Math.round(Number(property.price)).toLocaleString()}/mo`
+      : "";
 
-    // Clean, high-impact Title matching InvitationHomes & Zillow address search intent
     const seoTitle = streetAddress
-      ? `${fullAddr} — ${formattedPrice}`
-      : `${bedsLabel}${typeLabel} ${actionLabel} in ${property.city}, ${property.state} — ${formattedPrice}`;
+      ? `${fullAddr} · ${formattedPrice}`
+      : `${bedsLabel}${typeLabel} ${actionLabel} in ${property.city}, ${property.state} · ${formattedPrice}`;
 
     const featureList = [
       property.bedrooms ? `${property.bedrooms} bed` : null,
@@ -68,8 +76,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       property.sqft ? `${Number(property.sqft).toLocaleString()} sq ft` : null,
     ].filter(Boolean).join(", ");
 
-    // Price + Address right at the start of description for rich snippet visibility
-    const seoDesc = `${formattedPrice ? formattedPrice + " — " : ""}${fullAddr}. Move-in ready ${featureList ? featureList + " " : ""}single-family home for rent. Pet friendly, 24/7 maintenance, 24-hour application approval. Schedule a self-tour online.`;
+    const seoDesc = `${formattedPrice ? formattedPrice + ". " : ""}${fullAddr}. Move-in ready ${featureList ? featureList + " " : ""}single-family home for rent. 24-hour application approval. Schedule a self-tour online.`;
 
     const ogImage = property.images?.[0]?.image_url || FALLBACK_IMAGE;
 
@@ -133,83 +140,104 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
 
-  let property: any;
+  let property: PropertyDetailAPI | null = null;
   try {
     property = await fetchPropertyBySlug(decodedSlug);
   } catch {
     property = null;
   }
 
-  // Smart 301 Fallback for expired/delisted properties:
-  // Instead of returning a hard 404 that hurts Google crawl budget and GSC indexing,
-  // permanently redirect the user and Googlebot to the relevant city rental hub or main catalog.
+  // Smart 301 fallback for expired/delisted listings: a hard 404 burns crawl budget
+  // and drops the URL from the index, so send the visitor and Googlebot to the
+  // relevant city hub instead.
   if (!property) {
     const s = decodedSlug.toLowerCase();
     const cityMap: Record<string, string> = {
-      "atlanta": "atlanta-ga",
-      "charlotte": "charlotte-nc",
-      "houston": "houston-tx",
-      "dallas": "dallas-tx",
-      "tampa": "tampa-fl",
-      "orlando": "orlando-fl",
-      "jacksonville": "jacksonville-fl",
-      "las-vegas": "las-vegas-nv",
-      "vegas": "las-vegas-nv",
-      "phoenix": "phoenix-az",
-      "mesa": "phoenix-az",
-      "sacramento": "sacramento-ca",
-      "denver": "denver-co",
-      "seattle": "seattle-wa",
-      "chicago": "chicago-il",
-      "austin": "austin-tx",
-      "san-antonio": "san-antonio-tx",
-      "minneapolis": "minneapolis-mn",
-      "salt-lake": "salt-lake-city-ut",
-      "miami": "miami-fl",
+      "atlanta": "atlanta-ga", "charlotte": "charlotte-nc", "houston": "houston-tx",
+      "dallas": "dallas-tx", "tampa": "tampa-fl", "orlando": "orlando-fl",
+      "jacksonville": "jacksonville-fl", "las-vegas": "las-vegas-nv", "vegas": "las-vegas-nv",
+      "phoenix": "phoenix-az", "mesa": "phoenix-az", "sacramento": "sacramento-ca",
+      "denver": "denver-co", "seattle": "seattle-wa", "chicago": "chicago-il",
+      "austin": "austin-tx", "san-antonio": "san-antonio-tx", "minneapolis": "minneapolis-mn",
+      "salt-lake": "salt-lake-city-ut", "miami": "miami-fl",
     };
-
     for (const [key, citySlug] of Object.entries(cityMap)) {
-      if (s.includes(key)) {
-        redirect(`/rentals/${citySlug}`);
-      }
+      if (s.includes(key)) redirect(`/rentals/${citySlug}`);
     }
-
-    // Default fallback to main catalog
     redirect("/houses-for-rent");
   }
 
-  // Fetch similar homes
-  let similarProperties: any[] = [];
+  // Deliberately NOT toPropertyCardShape(): that maps to a camelCase `Property`
+  // with no primary_image_url and no coordinates, which silently left every
+  // nearby card imageless and every nearby map pin at lat/lng 0,0.
+  let similarProperties: PropertyListItemAPI[] = [];
   try {
-    const listRes = await fetchProperties({
-      city: property.city,
-      page_size: "4",
-    });
+    const listRes = await fetchProperties({ city: property.city, page_size: "4" });
     similarProperties = listRes.results
-      .filter((p: any) => p.slug !== decodedSlug && p.id !== property.id)
-      .slice(0, 3)
-      .map(toPropertyCardShape);
+      .filter((p) => p.slug !== decodedSlug && p.id !== property!.id)
+      .slice(0, 3);
   } catch {
     similarProperties = [];
   }
 
   const images = property.images && property.images.length > 0 ? property.images : [];
-  const primaryImage = images.find((img: any) => img.is_primary) ?? images[0];
+  const primaryImage = images.find((img) => img.is_primary) ?? images[0];
 
   const agent = property.agent;
   const agentPhoto = agent?.avatar_url || "/images/agent-placeholder.jpg";
-  const agencyName = "Prime Family Housing";
+
+  // Amenities arrive either flat or grouped by category. Prefer the grouped shape
+  // when the API supplies it. The categories are real structure worth showing.
+  const rawCategories: { name: string; amenities: string[] }[] =
+    (property.amenity_categories ?? [])
+      .map((c) => ({
+        name: c.name,
+        amenities: (c.amenities ?? [])
+          .map((a) => (typeof a === "string" ? a : a?.name))
+          .filter((n): n is string => Boolean(n && n.trim())),
+      }))
+      .filter((c) => c.amenities.length > 0);
+
+  const flatAmenities: string[] = (property.amenities ?? [])
+    .map((a) => (typeof a === "string" ? a : a?.name))
+    .filter((n): n is string => Boolean(n && n.trim()));
+
+  const amenityGroups = rawCategories.length > 0
+    ? rawCategories
+    : flatAmenities.length > 0
+      ? [{ name: "Features", amenities: flatAmenities }]
+      : [];
 
   const allAmenityNames: string[] = [
-    ...(property.amenities?.map((a: any) => (typeof a === "string" ? a : a.name)) ?? []),
-    ...(property.amenity_categories?.flatMap((c: any) => c.amenities?.map((a: any) => a.name) ?? []) ?? []),
+    ...flatAmenities,
+    ...rawCategories.flatMap((c) => c.amenities),
   ].filter((v, i, a) => a.indexOf(v) === i);
 
-  const isPetFriendly = allAmenityNames.some((name) =>
-    /pet|dog|cat|fenced|yard|animal/i.test(name)
-  );
+  // Extended feed data. The deployed API omits these today (see PropertyDetailAPI),
+  // so every block below is guarded and simply does not render until it ships.
+  const monthlyCost = buildMonthlyCost(property.fees, Math.round(Number(property.price)) || 0);
+  const schools = buildSchools(property.schools);
+  const leasingOffice = buildLeasingOffice(property.office_info);
+  const availability = parseAvailability(property.available_on);
+  const floorPlans = (property.floor_plans ?? []).filter((fp) => fp?.image_url);
+  const descriptionParagraphs = toParagraphs(property.description);
+  // Already date-filtered server-side, so anything here is claimable today.
+  const offer = property.leasing_special ?? null;
 
-  const virtualTourUrl = property.virtual_tour_url || (property as any).tour_360_url || null;
+  // The boolean is authoritative when present; fall back to reading the amenity
+  // list only when the backend hasn't sent it.
+  const isPetFriendly =
+    property.is_pet_friendly ??
+    allAmenityNames.some((name) => /pet|dog|cat|fenced|yard|animal/i.test(name));
+  const hasPool =
+    property.has_pool ?? allAmenityNames.some((name) => /pool|spa|hot tub/i.test(name));
+  // ~12% of homes cannot be toured unaccompanied, so the self-tour promise has
+  // to be conditional rather than blanket.
+  const allowsSelfTour = property.allow_selfshow !== false;
+
+  // Populated on ~49% of listings: insidemaps (63%) and Zillow 3D Home (37%).
+  const virtualTourUrl = property.virtual_tour_url || property.tour_360_url || null;
+  const tourHost = tourProvider(virtualTourUrl);
 
   const currentMarker: DetailMarker = {
     slug: property.slug,
@@ -225,7 +253,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     state: property.state,
   };
 
-  const nearbyMarkers: DetailMarker[] = similarProperties.map((sim: any) => ({
+  const nearbyMarkers: DetailMarker[] = similarProperties.map((sim) => ({
     slug: sim.slug,
     title: sim.title,
     price: Number(sim.price),
@@ -242,18 +270,62 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const hasCoords = Number(currentMarker.lat) !== 0 && Number(currentMarker.lng) !== 0;
   const fullAddress = `${property.address}, ${property.city}, ${property.state} ${property.zip_code ?? ""}`.trim();
   const stateName = stateFullName(property.state);
-  const stateSlug = stateSlugForCode(property.state);
   const citySlug = cityToSlug(property.city, property.state);
   const stateHref = `/houses-for-rent?state=${property.state}`;
   const cityHref = `/rentals/${citySlug}`;
 
-  // Price formatting
-  const priceNum = Number(property.price) || 0;
-  const originalPriceNum = Number(property.original_price) || (priceNum > 0 ? Math.round(priceNum / 0.85) : 0);
-  const monthlySavings = originalPriceNum > priceNum ? originalPriceNum - priceNum : 0;
+  // `price` is a Decimal(12,2), so it arrives with cents. Rent is quoted in
+  // whole dollars, so round once here and derive everything from it.
+  const priceNum = Math.round(Number(property.price)) || 0;
+  const priceLabel = property.price_label || "/mo";
   const isAvailable = property.status === "available";
+  const incomeGuideline = priceNum * 3;
+  const recentViews = Number(property.recent_view_count ?? 0);
 
-  // Breadcrumbs Schema
+  // Only spec rows the API actually populated. `stories` is excluded on purpose:
+  // it is the model default (1) on every record, so it carries no information.
+  const specRows: { label: string; value: string }[] = [
+    { label: "Property type", value: "Single-family home" },
+    ...(property.year_built ? [{ label: "Year built", value: String(property.year_built) }] : []),
+    ...(property.sqft ? [{ label: "Interior", value: `${formatNumber(property.sqft)} sq ft` }] : []),
+    ...(property.lot_size ? [{ label: "Lot size", value: `${property.lot_size} acres` }] : []),
+    ...(property.garage ? [{ label: "Garage", value: `${property.garage}-car` }] : []),
+    ...(property.condition ? [{ label: "Condition", value: property.condition === "new" ? "New construction" : property.condition.charAt(0).toUpperCase() + property.condition.slice(1) }] : []),
+    // `neighborhood` is deliberately omitted: it holds the operator's market name
+    // (only 24 distinct values across 4303 rows, e.g. "Denver" on a Colorado
+    // Springs home), which contradicts the address shown directly above it.
+    ...(availability ? [{ label: "Available", value: availability.label.replace(/^Available /, "") }] : []),
+  ];
+
+  // One source of truth for the FAQ so the rendered copy and the JSON-LD can
+  // never drift apart.
+  const faqItems: FaqItem[] = [
+    {
+      q: `How do I apply for ${property.address}?`,
+      a: "Applying is entirely online. Submit your contact details, proof of income and ID verification, and you will have a decision within 24 business hours.",
+    },
+    {
+      q: "Can I tour the home before applying?",
+      a: allowsSelfTour
+        ? "Yes. Schedule a self-guided tour for a time that suits you and you will receive a secure temporary access code to visit the home on your own."
+        : "Yes. This home is shown by appointment, so pick a time that suits you and a leasing specialist will meet you there.",
+    },
+    {
+      q: "What are the income and credit requirements?",
+      a: `We look for verifiable household gross income of roughly 3x the monthly rent, which is about $${formatNumber(incomeGuideline)} per month for this home, along with a clean rental history. Co-signer and guarantor applications are also accepted.`,
+    },
+    {
+      q: isPetFriendly ? "Are pets allowed at this home?" : "What is the pet policy for this home?",
+      a: isPetFriendly
+        ? "This home is pet friendly. Pet deposits, monthly pet rent and breed restrictions vary by home, so confirm the specifics with the leasing team before you apply. Assistance and service animals are exempt from pet fees."
+        : "Pet policies vary by home. Contact the leasing team to confirm whether pets can be accommodated at this address before you apply.",
+    },
+    {
+      q: "How are maintenance requests handled?",
+      a: "Residents submit requests through the online resident portal at any time, and there is a hotline for emergencies. Work is carried out by vetted, licensed contractors.",
+    },
+  ];
+
   const breadcrumb = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -266,7 +338,6 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     ],
   };
 
-  // Structured Data Schema
   const residenceSchema = {
     "@type": "SingleFamilyResidence",
     "@id": `https://primefamilyhousing.com/houses-for-rent/${property.slug}#residence`,
@@ -280,41 +351,46 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
       addressCountry: "US",
     },
     ...(hasCoords && {
-      geo: {
-        "@type": "GeoCoordinates",
-        latitude: currentMarker.lat,
-        longitude: currentMarker.lng,
-      },
+      geo: { "@type": "GeoCoordinates", latitude: currentMarker.lat, longitude: currentMarker.lng },
     }),
-    numberOfBedrooms: Number(property.bedrooms || 3),
-    numberOfBathroomsTotal: Number(property.bathrooms || 2),
-    floorSize: { "@type": "QuantitativeValue", value: property.sqft || 1500, unitCode: "FTK" },
+    ...(property.bedrooms ? { numberOfBedrooms: Number(property.bedrooms) } : {}),
+    ...(property.bathrooms ? { numberOfBathroomsTotal: Number(property.bathrooms) } : {}),
+    ...(property.sqft
+      ? { floorSize: { "@type": "QuantitativeValue", value: property.sqft, unitCode: "FTK" } }
+      : {}),
+    ...(property.year_built ? { yearBuilt: Number(property.year_built) } : {}),
     petsAllowed: isPetFriendly,
-    amenityFeature: allAmenityNames.slice(0, 15).map((name) => ({
-      "@type": "LocationFeatureSpecification",
-      name,
-      value: true,
-    })),
+    ...(allAmenityNames.length > 0
+      ? {
+          amenityFeature: allAmenityNames.slice(0, 15).map((name) => ({
+            "@type": "LocationFeatureSpecification",
+            name,
+            value: true,
+          })),
+        }
+      : {}),
   };
 
+  // Note: no aggregateRating. There is no review data behind this listing, and
+  // marking up ratings the site cannot show is a structured-data violation.
   const listingSchema = {
     "@context": "https://schema.org",
     "@type": ["RealEstateListing", "Product"],
     mainEntity: residenceSchema,
     name: fullAddress,
-    description: `${fullAddress} is a ${property.bedrooms || 3}-bedroom single-family rental home in ${property.city}, ${property.state}. Monthly rent is $${Number(property.price).toLocaleString()}/month.`,
+    description: `${fullAddress} is a ${property.bedrooms || 3}-bedroom single-family rental home in ${property.city}, ${property.state}. Monthly rent is $${formatNumber(priceNum)}/month.`,
     url: `https://primefamilyhousing.com/houses-for-rent/${property.slug}`,
     thumbnailUrl: primaryImage?.image_url ?? FALLBACK_IMAGE,
     primaryImageOfPage: {
       "@type": "ImageObject",
-      "url": primaryImage?.image_url ?? FALLBACK_IMAGE,
-      "contentUrl": primaryImage?.image_url ?? FALLBACK_IMAGE,
-      "width": 1200,
-      "height": 800,
-      "caption": `${fullAddress} — Prime Family Housing`
+      url: primaryImage?.image_url ?? FALLBACK_IMAGE,
+      contentUrl: primaryImage?.image_url ?? FALLBACK_IMAGE,
+      width: 1200,
+      height: 800,
+      caption: `${fullAddress} - Prime Family Housing`,
     },
     image: images.length > 0
-      ? images.map((img: any) => img.image_url ?? FALLBACK_IMAGE)
+      ? images.map((img) => img.image_url ?? FALLBACK_IMAGE)
       : [primaryImage?.image_url ?? FALLBACK_IMAGE],
     offers: {
       "@type": "Offer",
@@ -322,7 +398,6 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
       priceCurrency: "USD",
       url: `https://primefamilyhousing.com/houses-for-rent/${property.slug}`,
       availability: isAvailable ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
-      itemCondition: "https://schema.org/NewCondition",
       priceSpecification: {
         "@type": "UnitPriceSpecification",
         price: String(property.price),
@@ -331,14 +406,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
         billingIncrement: 1,
       },
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "34",
-      bestRating: "5",
-      worstRating: "1",
-    },
-    datePosted: (property as any).created_at ?? new Date().toISOString(),
+    datePosted: property.created_at ?? new Date().toISOString(),
     broker: {
       "@type": "RealEstateAgent",
       name: "Prime Family Housing",
@@ -348,66 +416,47 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     },
   };
 
-  // FAQ Schema
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: `What is the monthly rent and deposit for ${property.address}, ${property.city}?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `The monthly rent for this ${property.bedrooms}-bedroom home is $${formatNumber(priceNum)}/month. Security deposits are typically equivalent to one month's rent subject to credit approval.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: `Are pets allowed at ${property.address}?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: isPetFriendly
-            ? `Yes! This single-family home is pet-friendly for cats and dogs with a nominal deposit and monthly pet rent. Up to 2 pets welcome.`
-            : `Please contact our leasing team regarding pet policies and exceptions for this property.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: `What smart home amenities are included with this house?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `Every Prime Family Housing rental comes equipped with keyless smart digital locks, video doorbell access, smart climate controls, and high-speed media wiring.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: `How quickly can I move into this ${property.city} home?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `Applications receive decisions within 24 hours. Move-ins can be scheduled immediately following lease verification and signing.`,
-        },
-      },
-    ],
+    mainEntity: faqItems.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
   };
 
-  // Video Schema
   const videoSchema = virtualTourUrl ? {
     "@context": "https://schema.org",
     "@type": "VideoObject",
-    name: `Virtual Tour — ${fullAddress}`,
-    description: `Take an interactive 3D virtual tour of ${fullAddress} in ${property.city}, ${property.state}.`,
+    name: `Virtual tour of ${fullAddress}`,
+    description: `Interactive 3D virtual tour of ${fullAddress} in ${property.city}, ${property.state}.`,
     thumbnailUrl: [primaryImage?.image_url ?? FALLBACK_IMAGE],
-    uploadDate: (property as any).created_at ?? new Date().toISOString(),
+    uploadDate: property.created_at ?? new Date().toISOString(),
     contentUrl: virtualTourUrl,
     embedUrl: virtualTourUrl,
   } : null;
 
+  const leadRailProps = {
+    slug: property.slug,
+    propertyId: property.id,
+    address: property.address,
+    city: property.city,
+    price: priceNum,
+    priceLabel,
+    isAvailable,
+    totalMonthly: monthlyCost?.requiredTotal ?? null,
+    availabilityLabel: availability?.label ?? null,
+    allowsSelfTour,
+    agent,
+    agentPhoto,
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50/70 text-slate-900 pt-20">
+    <div className="pdp min-h-screen pt-20">
       <PropertyIntentCapture city={property.city} listingType={property.listing_type} />
-      <PropertyPageTracker slug={property.slug} price={Number(property.price)} listingType={property.listing_type} />
-      
-      {/* JSON-LD Schemas */}
+      <PropertyPageTracker slug={property.slug} price={priceNum} listingType={property.listing_type} />
+
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(listingSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
@@ -415,605 +464,494 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(videoSchema) }} />
       )}
 
-      {/* ── TOP BREADCRUMB (Clean Spacing Below 80px Navbar) ── */}
-      <div className="bg-white border-b border-slate-200/80">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-3.5 flex items-center gap-2 text-[13px] text-slate-500 overflow-x-auto whitespace-nowrap">
-          <Link href="/" className="hover:text-blue-600 font-medium">Home</Link>
-          <span className="text-slate-300">/</span>
-          <Link href="/houses-for-rent" className="hover:text-blue-600 font-medium">Houses for Rent</Link>
-          <span className="text-slate-300">/</span>
-          <Link href={stateHref} className="hover:text-blue-600 font-medium">{stateName}</Link>
-          <span className="text-slate-300">/</span>
-          <Link href={cityHref} className="hover:text-blue-600 font-medium">{property.city}</Link>
-          <span className="text-slate-300">/</span>
-          <span className="text-slate-900 font-bold truncate">{property.address}</span>
-        </div>
+      {/* ── Breadcrumb ─────────────────────────────────────────────────── */}
+      <nav aria-label="Breadcrumb" className="mx-auto max-w-[1280px] px-4 pt-5 lg:px-8">
+        <ol className="pdp-rail flex items-center gap-1.5 overflow-x-auto whitespace-nowrap text-[14px] leading-[1.43] tracking-[-0.14px]">
+          <li><Link href="/" className="-my-2 inline-flex min-h-11 items-center py-2 text-[#5d6c7b] hover:text-[#0064e0]">Home</Link></li>
+          <li aria-hidden="true" className="text-[#8595a4]">/</li>
+          <li><Link href="/houses-for-rent" className="-my-2 inline-flex min-h-11 items-center py-2 text-[#5d6c7b] hover:text-[#0064e0]">Houses for Rent</Link></li>
+          <li aria-hidden="true" className="text-[#8595a4]">/</li>
+          <li><Link href={stateHref} className="-my-2 inline-flex min-h-11 items-center py-2 text-[#5d6c7b] hover:text-[#0064e0]">{stateName}</Link></li>
+          <li aria-hidden="true" className="text-[#8595a4]">/</li>
+          <li><Link href={cityHref} className="-my-2 inline-flex min-h-11 items-center py-2 text-[#5d6c7b] hover:text-[#0064e0]">{property.city}</Link></li>
+          <li aria-hidden="true" className="text-[#8595a4]">/</li>
+          <li aria-current="page" className="font-bold text-[#1c1e21]">{property.address}</li>
+        </ol>
+      </nav>
+
+      {/* ── Gallery hero ───────────────────────────────────────────────── */}
+      <div className="relative mx-auto mt-4 max-w-[1280px] px-4 lg:px-8">
+        <PdpGallery images={images} title={fullAddress} fallback={FALLBACK_IMAGE} />
       </div>
 
-      {/* ── IMAGE GALLERY HERO ── */}
-      <div className="max-w-7xl mx-auto px-4 lg:px-8 pt-5 pb-2">
-        <PropertyImageGallery
-          images={images}
-          title={property.title}
-          fallback={FALLBACK_IMAGE}
-        />
-      </div>
+      {/* ── Content + sticky lead rail ─────────────────────────────────
+          One grid spanning the identity band AND the body, so the rail keeps
+          sticking all the way down the page instead of scrolling away with
+          the header. `items-start` stops the aside stretching to full grid
+          height, which would make `position: sticky` a no-op. */}
+      <div className="mx-auto max-w-[1280px] px-4 lg:px-8">
+        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-10">
+          <div className="min-w-0">
 
-      {/* ── PRICE & ADDRESS INFO BAND ── */}
-      <div className="bg-white border-y border-slate-200/80 shadow-xs mt-3">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-6 flex flex-col md:flex-row md:items-start justify-between gap-6">
-          <div className="flex-1 min-w-0 space-y-3">
-            
-            {/* Price & Badges */}
-            <div className="flex flex-wrap items-baseline gap-3">
-              <span className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900">
-                {formatPrice(property.price)}{property.price_label || "/mo"}
-              </span>
-
-              {originalPriceNum > priceNum && (
-                <span className="text-base sm:text-lg text-slate-400 line-through font-semibold">
-                  ${formatNumber(originalPriceNum)}/mo
+            {/* Identity band */}
+            <header className="pt-8">
+              <div className="flex flex-wrap items-center gap-2">
+              {!isAvailable ? (
+                <span className="inline-flex items-center rounded-[8px] bg-[#f7b928] px-2.5 py-1 text-[12px] font-bold leading-[1.33] text-[#0a1317] capitalize">
+                  {String(property.status).replace("-", " ")}
+                </span>
+              ) : availability && !availability.isNow ? (
+                /* A real move-in date beats a vague "available now". */
+                <span className="inline-flex items-center gap-1.5 rounded-[8px] bg-[#0a1317] px-2.5 py-1 text-[12px] font-bold leading-[1.33] text-white">
+                  <CalendarDays size={12} strokeWidth={2.5} aria-hidden="true" />
+                  {availability.label}
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 rounded-[8px] bg-[#31a24c] px-2.5 py-1 text-[12px] font-bold leading-[1.33] text-white">
+                  <Check size={12} strokeWidth={3} aria-hidden="true" /> Available now
                 </span>
               )}
-
-              {monthlySavings > 0 && (
-                <span className="bg-blue-50 text-blue-700 text-xs font-black px-3 py-1 rounded-full border border-blue-200 uppercase tracking-wider">
-                  Save ${formatNumber(monthlySavings)}/mo (15% Off)
-                </span>
-              )}
-
-              <span className="bg-emerald-50 text-emerald-700 text-xs font-black px-3 py-1 rounded-full border border-emerald-200 uppercase tracking-wider flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                {isAvailable ? "Available Now" : property.status.replace("-", " ")}
-              </span>
 
               {isPetFriendly && (
-                <span className="bg-indigo-50 text-indigo-700 text-xs font-black px-3 py-1 rounded-full border border-indigo-200 uppercase tracking-wider flex items-center gap-1">
-                  <PawPrint size={12} /> Pet Friendly
+                <span className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#ced0d4] px-2.5 py-1 text-[12px] font-bold leading-[1.33] text-[#1c1e21]">
+                  <PawPrint size={12} strokeWidth={2.5} aria-hidden="true" /> Pet friendly
+                </span>
+              )}
+              {hasPool && (
+                <span className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#ced0d4] px-2.5 py-1 text-[12px] font-bold leading-[1.33] text-[#1c1e21]">
+                  <Waves size={12} strokeWidth={2.5} aria-hidden="true" /> Pool
+                </span>
+              )}
+              {allowsSelfTour && (
+                <span className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#ced0d4] px-2.5 py-1 text-[12px] font-bold leading-[1.33] text-[#1c1e21]">
+                  <KeyRound size={12} strokeWidth={2.5} aria-hidden="true" /> Self-guided tour
+                </span>
+              )}
+              {recentViews >= MIN_VIEWS_TO_SHOW && (
+                <span className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#ced0d4] px-2.5 py-1 text-[12px] font-bold leading-[1.33] text-[#1c1e21]">
+                  <Eye size={12} strokeWidth={2.5} aria-hidden="true" /> {recentViews} views this month
                 </span>
               )}
             </div>
 
-            {/* Address & Direct Actions */}
-            <div>
-              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                {property.address}, {property.city}, {property.state} {property.zip_code}
-              </h1>
-              <p className="text-sm text-slate-500 font-medium mt-0.5">
-                {property.bedrooms} Bed, {String(property.bathrooms)} Bath Single-Family Rental in {property.city} • Managed by Prime Family Housing
-              </p>
-            </div>
-
-            {/* Key Specs Strip */}
-            <div className="pt-2 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-700 font-semibold">
-              <div className="flex items-center gap-1.5">
-                <Home size={16} className="text-blue-600" />
-                <span>{property.bedrooms} <span className="text-slate-500 font-normal">Bedrooms</span></span>
-              </div>
-              <span className="text-slate-300">|</span>
-              <div className="flex items-center gap-1.5">
-                <ShowerHead size={16} className="text-blue-600" />
-                <span>{String(property.bathrooms)} <span className="text-slate-500 font-normal">Bathrooms</span></span>
-              </div>
-              <span className="text-slate-300">|</span>
-              <div className="flex items-center gap-1.5">
-                <Sparkles size={16} className="text-blue-600" />
-                <span>{property.sqft ? formatNumber(property.sqft) : "1,500"} <span className="text-slate-500 font-normal">Sq Ft</span></span>
-              </div>
-              <span className="text-slate-300">|</span>
-              <div className="flex items-center gap-1.5">
-                <Car size={16} className="text-blue-600" />
-                <span>{property.garage || 2} <span className="text-slate-500 font-normal">Car Garage</span></span>
-              </div>
-            </div>
-
-          </div>
-
-          {/* Hero Action CTA Card */}
-          <div className="shrink-0 bg-slate-50/80 border border-slate-200/90 rounded-2xl p-5 w-full md:w-80 shadow-xs flex flex-col gap-3">
-            <BookTourButton
-              label="Schedule Self Tour"
-              className="w-full px-5 py-3.5 bg-blue-600 hover:bg-blue-700 text-white text-center text-sm font-bold rounded-xl transition-all shadow-md shadow-blue-600/25 flex items-center justify-center gap-2 cursor-pointer"
-            />
-            <a
-              href={`/apply?property=${property.slug}`}
-              className="w-full px-5 py-3.5 bg-slate-900 hover:bg-slate-800 text-white text-center text-sm font-bold rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer"
-            >
-              Apply Online Now
-            </a>
-            <div className="flex items-center justify-between text-[11px] text-slate-500 px-1 pt-1 font-medium">
-              <span className="flex items-center gap-1"><Clock size={12} className="text-blue-600" /> 24-Hour Approval</span>
-              <span className="flex items-center gap-1"><Shield size={12} className="text-emerald-600" /> Move-In Guarantee</span>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {/* ── TABS NAVIGATION STRIP (Fixed 80px Sticky Offset) ── */}
-      <PropertyDetailsTabs hasMap={hasCoords} hasVirtualTour={!!virtualTourUrl} />
-
-      {/* ── MAIN CONTENT BODY ── */}
-      <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
-
-          {/* LEFT COLUMN: Deep Content Modules (Eliminating Thin Content) */}
-          <div className="flex-1 min-w-0 space-y-8">
-
-            {/* 1. OVERVIEW & SEO DESCRIPTION */}
-            <section id="features" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-xs space-y-5">
-              <div className="border-b border-slate-100 pb-4">
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                  About {property.address}
-                </h2>
-                <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mt-1">
-                  Prime Family Housing Certified Rental
+            <div className="mt-4 flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <h1 className="text-[28px] font-medium leading-[1.21] text-[#0a1317] sm:text-[36px] sm:leading-[1.28] lg:text-[48px] lg:leading-[1.17]">
+                  {property.address}
+                </h1>
+                <p className="mt-2 text-[18px] font-normal leading-[1.44] text-[#5d6c7b]">
+                  {property.city}, {property.state} {property.zip_code}
                 </p>
               </div>
+              <FavoriteButton
+                propertyId={property.id}
+                size={18}
+                showText
+                className="-my-2 inline-flex min-h-11 shrink-0 items-center gap-2 rounded-[8px] border border-[#ced0d4] px-4 py-2 text-[14px] font-bold leading-[1.43] tracking-[-0.14px] text-[#0a1317] transition-colors hover:bg-[#f1f4f7]"
+              />
+            </div>
 
-              <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed text-[15px] space-y-4">
-                <p>{property.description}</p>
-              </div>
-
-              {/* Key Highlights Grid */}
-              <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                <div className="bg-slate-50 rounded-xl p-3.5 border border-slate-100">
-                  <p className="text-xs text-slate-500 font-bold uppercase">Year Built</p>
-                  <p className="text-base font-black text-slate-900 mt-0.5">{property.year_built || "2018"}</p>
-                </div>
-                <div className="bg-slate-50 rounded-xl p-3.5 border border-slate-100">
-                  <p className="text-xs text-slate-500 font-bold uppercase">Property Type</p>
-                  <p className="text-base font-black text-slate-900 mt-0.5">Single Family</p>
-                </div>
-                <div className="bg-slate-50 rounded-xl p-3.5 border border-slate-100">
-                  <p className="text-xs text-slate-500 font-bold uppercase">Stories</p>
-                  <p className="text-base font-black text-slate-900 mt-0.5">{property.stories || 1}</p>
-                </div>
-                <div className="bg-slate-50 rounded-xl p-3.5 border border-slate-100">
-                  <p className="text-xs text-slate-500 font-bold uppercase">Status</p>
-                  <p className="text-base font-black text-emerald-600 mt-0.5">Move-In Ready</p>
-                </div>
-              </div>
-            </section>
-
-            {/* 2. TRANSPARENT MONTHLY COST & AFFORDABILITY ESTIMATOR */}
-            <section id="cost-calculator" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-xs space-y-5">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                <div>
-                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                    <DollarSign className="text-blue-600" size={24} />
-                    Estimated Monthly Living Cost
-                  </h2>
-                  <p className="text-xs text-slate-500 mt-0.5">Transparent, upfront pricing breakdown with zero hidden surprises</p>
-                </div>
-                <span className="bg-blue-50 text-blue-700 text-xs font-black px-3 py-1 rounded-full border border-blue-200">
-                  Affordable Rent
+            <div className="mt-6">
+              <div className="flex flex-wrap items-baseline gap-x-2">
+                <span className="pdp-display text-[36px] font-medium leading-[1.28] text-[#0a1317]">
+                  ${formatNumber(priceNum)}
                 </span>
+                <span className="text-[18px] font-normal leading-[1.44] text-[#5d6c7b]">{priceLabel}</span>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <div className="flex justify-between py-2.5 border-b border-slate-100 text-sm font-medium">
-                    <span className="text-slate-600">Base Monthly Rent</span>
-                    <span className="font-bold text-slate-900">${formatNumber(priceNum)}/mo</span>
-                  </div>
-                  <div className="flex justify-between py-2.5 border-b border-slate-100 text-sm font-medium">
-                    <span className="text-slate-600">Smart Home & Keyless Package</span>
-                    <span className="font-bold text-slate-900">$20/mo</span>
-                  </div>
-                  <div className="flex justify-between py-2.5 border-b border-slate-100 text-sm font-medium">
-                    <span className="text-slate-600">Air Filter Delivery Service</span>
-                    <span className="font-bold text-slate-900">$12/mo</span>
-                  </div>
-                  <div className="flex justify-between py-2.5 border-b border-slate-100 text-sm font-medium">
-                    <span className="text-slate-600">Estimated Utilities (Water/Gas/Elec)</span>
-                    <span className="font-bold text-slate-500">~$160/mo</span>
-                  </div>
-                </div>
-
-                <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-2xl p-6 flex flex-col justify-between shadow-md">
-                  <div>
-                    <p className="text-xs uppercase tracking-wider text-blue-200 font-bold">Total Estimated Monthly</p>
-                    <p className="text-3xl font-black mt-1">${formatNumber(priceNum + 192)}<span className="text-sm text-blue-200 font-normal">/mo</span></p>
-                    <p className="text-xs text-blue-100 mt-2.5 leading-relaxed">
-                      Includes base rent, smart security hub, HVAC filter replacement program, and standard estimated municipal utilities.
-                    </p>
-                  </div>
-                  <a
-                    href={`/apply?property=${property.slug}`}
-                    className="mt-5 w-full py-3 bg-white text-blue-700 hover:bg-blue-50 text-center font-bold text-sm rounded-xl transition-colors shadow-sm block"
-                  >
-                    Lock In This Rate
+              {monthlyCost && monthlyCost.requiredTotal > priceNum && (
+                <p className="mt-1.5 text-[14px] leading-[1.43] tracking-[-0.14px] text-[#5d6c7b]">
+                  ${formatMoney(monthlyCost.requiredTotal)}{priceLabel} with required monthly charges.{" "}
+                  <a href="#costs" className="-my-1 inline-block py-1 font-bold text-[#0064e0] hover:underline">
+                    See the breakdown
                   </a>
+                </p>
+              )}
+
+              {offer && (
+                <div className="mt-5">
+                  <PdpOfferBanner offer={offer} />
+                </div>
+              )}
+            </div>
+
+            {/* Key specs. Four facts, no dividers, no card chrome. */}
+            <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-5 border-t border-[#dee3e9] pt-6 sm:grid-cols-4">
+              <div className="flex items-start gap-2.5">
+                <BedDouble size={20} strokeWidth={1.75} aria-hidden="true" className="mt-0.5 shrink-0 text-[#5d6c7b]" />
+                <div>
+                  <dt className="text-[12px] leading-[1.33] text-[#5d6c7b]">Bedrooms</dt>
+                  <dd className="text-[18px] font-bold leading-[1.44] text-[#0a1317]">{property.bedrooms}</dd>
                 </div>
               </div>
-            </section>
-
-            {/* 3. HOME AMENITIES & SMART FEATURES */}
-            <section id="details" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-xs space-y-5">
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                Amenities & Premium Features
-              </h2>
-              {allAmenityNames.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
-                  {allAmenityNames.map((name) => {
-                    const cfg = getAmenityConfig(name);
-                    const Icon = cfg.Icon;
-                    return (
-                      <div
-                        key={name}
-                        className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50/80 border border-slate-100 hover:border-blue-200 transition-colors"
-                      >
-                        <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                          <Icon size={18} />
-                        </div>
-                        <span className="text-sm font-semibold text-slate-800">{name}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <p className="text-sm text-slate-500">Complete features available upon scheduled tour.</p>
-              )}
-            </section>
-
-            {/* 4. REDESIGNED RESIDENT FIRST GUARANTEE (Editorial-Grade Human Design) */}
-            <section className="bg-white border border-slate-200/90 rounded-2xl p-7 md:p-8 shadow-xs space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+              <div className="flex items-start gap-2.5">
+                <ShowerHead size={20} strokeWidth={1.75} aria-hidden="true" className="mt-0.5 shrink-0 text-[#5d6c7b]" />
                 <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold mb-2">
-                    <Award size={14} /> The Prime Resident Promise
-                  </div>
-                  <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
-                    Why Rent with Prime Family Housing?
-                  </h2>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Professional single-family home management designed around family peace of mind
-                  </p>
+                  <dt className="text-[12px] leading-[1.33] text-[#5d6c7b]">Bathrooms</dt>
+                  <dd className="text-[18px] font-bold leading-[1.44] text-[#0a1317]">{String(property.bathrooms)}</dd>
                 </div>
-
-                <div className="flex items-center gap-3 text-left bg-slate-50 p-3 rounded-xl border border-slate-100">
-                  <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-sm shrink-0">
-                    4.9
-                  </div>
+              </div>
+              {property.sqft ? (
+                <div className="flex items-start gap-2.5">
+                  <Ruler size={20} strokeWidth={1.75} aria-hidden="true" className="mt-0.5 shrink-0 text-[#5d6c7b]" />
                   <div>
-                    <p className="text-xs font-black text-slate-900">Verified Quality</p>
-                    <p className="text-[11px] text-slate-500">Based on 1,200+ resident reviews</p>
+                    <dt className="text-[12px] leading-[1.33] text-[#5d6c7b]">Interior</dt>
+                    <dd className="text-[18px] font-bold leading-[1.44] text-[#0a1317]">{formatNumber(property.sqft)} sq ft</dd>
                   </div>
                 </div>
-              </div>
-
-              {/* 4 Clean Editorial Feature Pillars */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                
-                {/* Pillar 1 */}
-                <div className="p-5 rounded-xl bg-slate-50/70 border border-slate-200/70 hover:border-blue-200 transition-colors space-y-2">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
-                      <Wrench size={18} />
-                    </div>
-                    <h3 className="font-bold text-slate-900 text-sm">
-                      24/7 Priority Maintenance Response
-                    </h3>
-                  </div>
-                  <p className="text-xs text-slate-600 leading-relaxed pl-12">
-                    Direct emergency dispatch and mobile portal ticket tracking. Critical plumbing, HVAC, and electrical issues handled by certified technicians.
-                  </p>
-                </div>
-
-                {/* Pillar 2 */}
-                <div className="p-5 rounded-xl bg-slate-50/70 border border-slate-200/70 hover:border-emerald-200 transition-colors space-y-2">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                      <CheckCircle2 size={18} />
-                    </div>
-                    <h3 className="font-bold text-slate-900 text-sm">
-                      Certified 120-Point Move-In Inspection
-                    </h3>
-                  </div>
-                  <p className="text-xs text-slate-600 leading-relaxed pl-12">
-                    Every home undergoes a comprehensive 120-point mechanical check, fresh lock replacement, sanitization, and full appliance diagnostic before your move-in date.
-                  </p>
-                </div>
-
-                {/* Pillar 3 */}
-                <div className="p-5 rounded-xl bg-slate-50/70 border border-slate-200/70 hover:border-indigo-200 transition-colors space-y-2">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
-                      <KeyRound size={18} />
-                    </div>
-                    <h3 className="font-bold text-slate-900 text-sm">
-                      Keyless Digital Access & Smart Climate
-                    </h3>
-                  </div>
-                  <p className="text-xs text-slate-600 leading-relaxed pl-12">
-                    Self-guided tours with instant temporary access codes, smart climate controls for energy savings, and seamless smartphone lock management.
-                  </p>
-                </div>
-
-                {/* Pillar 4 */}
-                <div className="p-5 rounded-xl bg-slate-50/70 border border-slate-200/70 hover:border-amber-200 transition-colors space-y-2">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
-                      <Shield size={18} />
-                    </div>
-                    <h3 className="font-bold text-slate-900 text-sm">
-                      Transparent Pricing & No Hidden Fees
-                    </h3>
-                  </div>
-                  <p className="text-xs text-slate-600 leading-relaxed pl-12">
-                    Itemized monthly statements, straightforward lease extension terms, and no unexpected administrative fees upon move-out.
-                  </p>
-                </div>
-
-              </div>
-
-              {/* Trust Features Strip */}
-              <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600 font-medium">
-                <span className="flex items-center gap-1.5"><Check size={15} className="text-emerald-600" /> Fast 24-Hour Application Review</span>
-                <span className="flex items-center gap-1.5"><Check size={15} className="text-emerald-600" /> 100% Online Rent Payments</span>
-                <span className="flex items-center gap-1.5"><Check size={15} className="text-emerald-600" /> Flexible 12–24 Month Leases</span>
-                <span className="flex items-center gap-1.5"><Check size={15} className="text-emerald-600" /> Pet-Friendly Homes</span>
-              </div>
-            </section>
-
-            {/* 5. PET POLICY & LEASING GUIDELINES */}
-            <section id="pet-policy" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-xs space-y-5">
-              <div className="border-b border-slate-100 pb-4">
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <PawPrint className="text-blue-600" size={24} />
-                  Pet Policy & Lease Terms
-                </h2>
-                <p className="text-xs text-slate-500 mt-0.5">We love pets! Review guidelines and move-in requirements below.</p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-                  <p className="text-xs font-bold text-slate-500 uppercase">Dogs & Cats</p>
-                  <p className="text-base font-black text-slate-900 mt-1">Welcome (Up to 2)</p>
-                  <p className="text-xs text-slate-600 mt-1">All non-aggressive breeds welcome with registration.</p>
-                </div>
-
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-                  <p className="text-xs font-bold text-slate-500 uppercase">Pet Deposit & Rent</p>
-                  <p className="text-base font-black text-slate-900 mt-1">$300 Deposit / $35 Mo</p>
-                  <p className="text-xs text-slate-600 mt-1">Assistance & service animals exempt from all fees.</p>
-                </div>
-
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-                  <p className="text-xs font-bold text-slate-500 uppercase">Lease Lengths</p>
-                  <p className="text-base font-black text-slate-900 mt-1">12 to 24 Months</p>
-                  <p className="text-xs text-slate-600 mt-1">Flexible renewal terms with predictable rate locks.</p>
-                </div>
-              </div>
-            </section>
-
-            {/* 6. NEIGHBORHOOD & LIFESTYLE HIGHLIGHTS */}
-            <section id="neighborhood" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-xs space-y-5">
-              <div className="border-b border-slate-100 pb-4">
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <MapPin className="text-blue-600" size={24} />
-                  Neighborhood & Commute in {property.city}, {property.state}
-                </h2>
-                <p className="text-xs text-slate-500 mt-0.5">Local education, commute access, and neighborhood amenities</p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="p-4.5 rounded-xl bg-blue-50/50 border border-blue-100">
-                  <div className="flex items-center gap-2 text-blue-700 font-bold text-sm mb-1.5">
-                    <School size={16} /> Schools & Education
-                  </div>
-                  <p className="text-xs text-slate-700 leading-relaxed">
-                    Served by {property.city} Public School District with top-rated elementary and high schools within a 10-minute drive.
-                  </p>
-                </div>
-
-                <div className="p-4.5 rounded-xl bg-blue-50/50 border border-blue-100">
-                  <div className="flex items-center gap-2 text-blue-700 font-bold text-sm mb-1.5">
-                    <Bus size={16} /> Commuter Access
-                  </div>
-                  <p className="text-xs text-slate-700 leading-relaxed">
-                    Fast connectivity to regional highway corridors, bus transit lines, and major employer hubs across {stateName}.
-                  </p>
-                </div>
-
-                <div className="p-4.5 rounded-xl bg-blue-50/50 border border-blue-100">
-                  <div className="flex items-center gap-2 text-blue-700 font-bold text-sm mb-1.5">
-                    <ShoppingBag size={16} /> Dining & Retail
-                  </div>
-                  <p className="text-xs text-slate-700 leading-relaxed">
-                    Minutes from {property.city} town center, supermarkets, fitness centers, and family entertainment venues.
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {/* 7. FREQUENTLY ASKED QUESTIONS (FAQ SECTION FOR GOOGLE SERP) */}
-            <section id="faq" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-xs space-y-5">
-              <div className="border-b border-slate-100 pb-4">
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <HelpCircle className="text-blue-600" size={24} />
-                  Frequently Asked Questions
-                </h2>
-                <p className="text-xs text-slate-500 mt-0.5">Common questions about renting {property.address}</p>
-              </div>
-
-              <div className="space-y-3.5">
-                <div className="p-4.5 rounded-xl bg-slate-50 border border-slate-100">
-                  <h3 className="text-sm font-bold text-slate-900">
-                    How do I apply for {property.address}?
-                  </h3>
-                  <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
-                    Applying is 100% online through Prime Family Housing. Submit your basic contact info, proof of income, and ID verification. Decisions are typically delivered within 24 business hours.
-                  </p>
-                </div>
-
-                <div className="p-4.5 rounded-xl bg-slate-50 border border-slate-100">
-                  <h3 className="text-sm font-bold text-slate-900">
-                    Can I schedule an in-person self tour?
-                  </h3>
-                  <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
-                    Yes! Click "Schedule Self Tour" above to pick a date and time that fits your schedule. You will receive a secure temporary digital access code to tour the home at your convenience.
-                  </p>
-                </div>
-
-                <div className="p-4.5 rounded-xl bg-slate-50 border border-slate-100">
-                  <h3 className="text-sm font-bold text-slate-900">
-                    What are the income and credit requirements?
-                  </h3>
-                  <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
-                    We generally look for verifiable household gross income of at least 3x the monthly rent and a clean rental history. Co-signers and guarantor applications are also accepted.
-                  </p>
-                </div>
-
-                <div className="p-4.5 rounded-xl bg-slate-50 border border-slate-100">
-                  <h3 className="text-sm font-bold text-slate-900">
-                    How are maintenance requests handled?
-                  </h3>
-                  <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
-                    Residents have 24/7 access to our online maintenance portal and emergency hotline. Routine maintenance is scheduled with verified, bonded service professionals.
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {/* 8. 360 VIRTUAL TOUR */}
-            {virtualTourUrl && (
-              <section id="virtual-tour" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-xs space-y-4">
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                  Interactive 3D Virtual Tour
-                </h2>
-                <div className="max-w-3xl rounded-xl overflow-hidden shadow-xs border border-slate-200">
-                  <VirtualTourButton url={virtualTourUrl} thumbnailUrl={primaryImage?.image_url ?? FALLBACK_IMAGE} />
-                </div>
-              </section>
-            )}
-
-            {/* 9. LOCATION MAP */}
-            <section id="map" className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-xs space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                <div>
-                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                    Property Location & Street Map
-                  </h2>
-                  <p className="text-xs text-slate-500 mt-0.5">{fullAddress}</p>
-                </div>
-                <a
-                  href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1"
-                >
-                  Directions <ChevronRight size={14} />
-                </a>
-              </div>
-
-              {hasCoords ? (
-                <div className="space-y-4">
-                  <div className="rounded-xl overflow-hidden border border-slate-200 h-[380px]">
-                    <PropertyDetailMapLoader current={currentMarker} nearby={nearbyMarkers} satellite={true} />
+              ) : null}
+              {property.garage ? (
+                <div className="flex items-start gap-2.5">
+                  <Car size={20} strokeWidth={1.75} aria-hidden="true" className="mt-0.5 shrink-0 text-[#5d6c7b]" />
+                  <div>
+                    <dt className="text-[12px] leading-[1.33] text-[#5d6c7b]">Garage</dt>
+                    <dd className="text-[18px] font-bold leading-[1.44] text-[#0a1317]">{property.garage}-car</dd>
                   </div>
                 </div>
-              ) : (
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-6 text-sm">
-                  <p className="font-bold text-slate-900 flex items-center gap-2">
-                    <MapPin size={16} className="text-blue-600 shrink-0" />
-                    {fullAddress}
-                  </p>
-                </div>
-              )}
-            </section>
+              ) : null}
+            </dl>
 
-            {/* 10. SIMILAR HOMES FOR RENT */}
-            {similarProperties.length > 0 && (
-              <section className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-xs space-y-5">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                    Similar Houses for Rent in {property.city}
-                  </h2>
-                  <Link href={cityHref} className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1">
-                    View all {property.city} rentals <ChevronRight size={14} />
-                  </Link>
+            </header>
+
+            {/* Mobile and tablet get the conversion panel inline, right after
+                the facts, since they have no rail column. */}
+            <div className="mt-8 lg:hidden">
+              <PdpLeadRail {...leadRailProps} variant="inline" />
+            </div>
+
+            {/* Section nav sticks under the 80px navbar, inside the content
+                column so it never overlaps the rail. */}
+            <div className="sticky top-20 z-30 -mx-4 mt-10 border-y border-[#dee3e9] bg-white/95 px-4 backdrop-blur-sm lg:mx-0 lg:px-0">
+              <PdpSectionNav
+                hasMap={hasCoords}
+                hasAmenities={amenityGroups.length > 0}
+                hasTour={!!virtualTourUrl}
+                hasCosts={monthlyCost !== null}
+                hasFloorPlans={floorPlans.length > 0}
+                hasSchools={schools.length > 0}
+              />
+            </div>
+
+            {/* ── Body ─────────────────────────────────────────────────── */}
+            <main className="pb-16">
+
+            {/* Overview: prose left, spec table right. */}
+            <section id="overview" className="pt-12 pb-14">
+              <h2 className="text-[28px] font-medium leading-[1.21] text-[#0a1317] sm:text-[36px] sm:leading-[1.28]">
+                About this home
+              </h2>
+              <div className="mt-6 grid gap-8 md:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+                <div className="max-w-[65ch] space-y-4">
+                  {descriptionParagraphs.map((para, i) => (
+                    <p key={i} className="text-[16px] leading-[1.5] tracking-[-0.16px] text-[#444950]">
+                      {para}
+                    </p>
+                  ))}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {similarProperties.map((simProp: any) => (
-                    <Link
-                      key={simProp.id}
-                      href={`/houses-for-rent/${simProp.slug}`}
-                      className="group border border-slate-200 rounded-xl overflow-hidden hover:shadow-lg transition-all flex flex-col bg-white"
-                    >
-                      <div className="relative aspect-[4/3] bg-slate-100 overflow-hidden">
-                        {simProp.primary_image_url ? (
-                          <img
-                            src={simProp.primary_image_url}
-                            alt={simProp.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-slate-400">
-                            <Home size={28} />
-                          </div>
-                        )}
-                        <span className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-black px-2 py-0.5 rounded shadow-sm">
-                          {formatPrice(simProp.price, { perMonth: true })}
-                        </span>
-                      </div>
-                      <div className="p-3.5 flex-1 flex flex-col justify-between">
-                        <div>
-                          <p className="font-bold text-sm text-slate-900 truncate group-hover:text-blue-600 transition-colors">
-                            {simProp.address}
-                          </p>
-                          <p className="text-slate-500 text-xs mt-0.5 truncate">
-                            {simProp.city}, {simProp.state}
-                          </p>
+                {specRows.length > 0 && (
+                  <div className="rounded-[8px] bg-[#f1f4f7] p-6">
+                    <h3 className="text-[18px] font-bold leading-[1.44] text-[#0a1317]">The details</h3>
+                    <dl className="mt-4 space-y-3">
+                      {specRows.map((row) => (
+                        <div key={row.label} className="flex items-baseline justify-between gap-4">
+                          <dt className="text-[14px] font-bold leading-[1.43] tracking-[-0.14px] text-[#1c1e21]">{row.label}</dt>
+                          <dd className="text-right text-[14px] leading-[1.43] tracking-[-0.14px] text-[#444950]">{row.value}</dd>
                         </div>
-                        <div className="flex items-center gap-2 mt-2.5 pt-2.5 border-t border-slate-100 text-xs font-semibold text-slate-600">
-                          <span>{simProp.bedrooms} Bed</span>
-                          <span>•</span>
-                          <span>{simProp.bathrooms} Bath</span>
-                          {simProp.sqft && (
-                            <>
-                              <span>•</span>
-                              <span>{formatNumber(simProp.sqft)} Sqft</span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </Link>
+                      ))}
+                    </dl>
+                  </div>
+                )}
+              </div>
+            </section>
+
+            {/* Features: amenity chips, grouped by the category the API returns. */}
+            {amenityGroups.length > 0 && (
+              <section id="features" className="border-t border-[#dee3e9] py-14">
+                <h2 className="text-[28px] font-medium leading-[1.21] text-[#0a1317] sm:text-[36px] sm:leading-[1.28]">
+                  What this home has
+                </h2>
+                <div className="mt-6 space-y-8">
+                  {amenityGroups.map((group) => (
+                    <div key={group.name}>
+                      <h3 className="text-[18px] font-bold leading-[1.44] text-[#0a1317]">{group.name}</h3>
+                      <ul className="mt-3 flex flex-wrap gap-2">
+                        {group.amenities.map((name) => {
+                          const Icon = amenityIconFor(name);
+                          return (
+                            <li
+                              key={name}
+                              className="inline-flex items-center gap-2 rounded-[8px] border border-[#ced0d4] bg-white px-4 py-2 text-[14px] font-bold leading-[1.43] tracking-[-0.14px] text-[#1c1e21]"
+                            >
+                              <Icon size={15} strokeWidth={2} aria-hidden="true" className="shrink-0 text-[#5d6c7b]" />
+                              {name}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
                   ))}
                 </div>
               </section>
             )}
 
+            {/* 3D walkthrough, where the listing has one. */}
+            {virtualTourUrl && (
+              <section id="tour" className="border-t border-[#dee3e9] py-14">
+                <h2 className="text-[28px] font-medium leading-[1.21] text-[#0a1317] sm:text-[36px] sm:leading-[1.28]">
+                  Take the tour
+                </h2>
+                <p className="mt-3 max-w-[62ch] text-[16px] leading-[1.5] tracking-[-0.16px] text-[#5d6c7b]">
+                  Walk the whole home room by room before you book a visit.
+                </p>
+                <div className="mt-8">
+                  <PdpVirtualTour
+                    url={virtualTourUrl}
+                    provider={tourHost}
+                    posterUrl={primaryImage?.image_url ?? FALLBACK_IMAGE}
+                    address={fullAddress}
+                    slug={property.slug}
+                  />
+                </div>
+              </section>
+            )}
+
+            {/* Monthly cost: every figure itemised from the `fees` feed. */}
+            {monthlyCost && (
+              <section id="costs" className="border-t border-[#dee3e9] py-14">
+                <h2 className="text-[28px] font-medium leading-[1.21] text-[#0a1317] sm:text-[36px] sm:leading-[1.28]">
+                  What it costs each month
+                </h2>
+                <p className="mt-3 max-w-[62ch] text-[16px] leading-[1.5] tracking-[-0.16px] text-[#5d6c7b]">
+                  The charges below are billed with your rent. There are no others.
+                </p>
+                <div className="mt-8">
+                  <PdpMonthlyCost cost={monthlyCost} priceLabel={priceLabel} />
+                </div>
+              </section>
+            )}
+
+            {/* Floor plans, when the feed carries the scans. */}
+            {floorPlans.length > 0 && (
+              <section id="floorplans" className="border-t border-[#dee3e9] py-14">
+                <h2 className="text-[28px] font-medium leading-[1.21] text-[#0a1317] sm:text-[36px] sm:leading-[1.28]">
+                  Floor {floorPlans.length === 1 ? "plan" : "plans"}
+                </h2>
+                <div className="mt-8">
+                  <PdpFloorPlans plans={floorPlans} address={property.address} />
+                </div>
+              </section>
+            )}
+
+            {/* Nearby schools, nearest first. */}
+            {schools.length > 0 && (
+              <section id="schools" className="border-t border-[#dee3e9] py-14">
+                <h2 className="text-[28px] font-medium leading-[1.21] text-[#0a1317] sm:text-[36px] sm:leading-[1.28]">
+                  Schools nearby
+                </h2>
+                <div className="mt-8">
+                  <PdpSchools schools={schools} city={property.city} />
+                </div>
+              </section>
+            )}
+
+            {/* Location: full-bleed map. */}
+            {hasCoords && (
+              <section id="location" className="border-t border-[#dee3e9] py-14">
+                <div className="flex flex-wrap items-end justify-between gap-4">
+                  <div>
+                    <h2 className="text-[28px] font-medium leading-[1.21] text-[#0a1317] sm:text-[36px] sm:leading-[1.28]">
+                      Where it is
+                    </h2>
+                    <p className="mt-2 flex items-center gap-1.5 text-[16px] leading-[1.5] tracking-[-0.16px] text-[#5d6c7b]">
+                      <MapPin size={16} strokeWidth={2} aria-hidden="true" className="shrink-0" />
+                      {fullAddress}
+                    </p>
+                  </div>
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-[8px] border-2 border-[rgba(10,19,23,0.12)] px-[22px] py-[10px] text-[14px] font-bold leading-[1.43] tracking-[-0.14px] text-[#0a1317] transition-colors hover:bg-[#f1f4f7]"
+                  >
+                    Get directions
+                    <ChevronRight size={15} strokeWidth={2.5} aria-hidden="true" />
+                  </a>
+                </div>
+                <div className="mt-6 h-[420px] overflow-hidden rounded-[8px] border border-[#dee3e9]">
+                  <PropertyDetailMapLoader current={currentMarker} nearby={nearbyMarkers} satellite />
+                </div>
+              </section>
+            )}
+
+            {/* Leasing: dark promo strip. Four steps, then the money facts. */}
+            <section id="leasing" className="border-t border-[#dee3e9] py-14">
+              <div className="rounded-[8px] bg-[#0a1317] p-8 text-white sm:p-12">
+                <h2 className="max-w-[18ch] text-[28px] font-medium leading-[1.21] sm:text-[36px] sm:leading-[1.28]">
+                  From tour to keys in four steps
+                </h2>
+                <p className="mt-4 max-w-[52ch] text-[16px] leading-[1.5] tracking-[-0.16px] text-[#ced0d4]">
+                  Every part of leasing this home happens online, on your schedule.
+                </p>
+
+                <ol className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+                  {[
+                    {
+                      Icon: CalendarDays,
+                      title: "Tour it",
+                      body: allowsSelfTour
+                        ? "Book a self-guided tour and get a temporary access code for the front door."
+                        : "Book a tour and a leasing specialist will meet you at the home.",
+                    },
+                    { Icon: KeyRound, title: "Apply online", body: "Submit income and ID verification from your phone in about ten minutes." },
+                    { Icon: Wallet, title: "Get a decision", body: "Applications receive a decision within 24 business hours." },
+                    { Icon: Wrench, title: "Move in", body: "Sign the lease digitally, then manage rent and repairs from the resident portal." },
+                  ].map(({ Icon, title, body }) => (
+                    <li key={title}>
+                      <Icon size={24} strokeWidth={1.75} aria-hidden="true" className="text-white" />
+                      <h3 className="mt-4 text-[18px] font-bold leading-[1.44] text-white">{title}</h3>
+                      <p className="mt-2 text-[14px] leading-[1.43] tracking-[-0.14px] text-[#ced0d4]">{body}</p>
+                    </li>
+                  ))}
+                </ol>
+
+                <div className="mt-10 flex flex-col gap-5 border-t border-white/15 pt-8 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="max-w-[52ch] text-[14px] leading-[1.43] tracking-[-0.14px] text-[#ced0d4]">
+                    Income guideline for this home is about{" "}
+                    <span className="font-bold text-white">${formatNumber(incomeGuideline)}/mo</span>{" "}
+                    gross household income. Co-signers accepted.
+                  </p>
+                  <Link
+                    href={`/apply?property=${property.slug}`}
+                    className="inline-flex shrink-0 items-center justify-center rounded-[8px] bg-white px-7 py-3.5 text-[14px] font-bold leading-[1.43] tracking-[-0.14px] text-[#0a1317] transition-colors hover:bg-[#f1f4f7]"
+                  >
+                    Apply now
+                  </Link>
+                </div>
+
+                {/* The office that actually manages this address. */}
+                {leasingOffice && (
+                  <div className="mt-8 border-t border-white/15 pt-8">
+                    <p className="text-[14px] font-bold leading-[1.43] tracking-[-0.14px] text-white">
+                      Leasing office for this home
+                    </p>
+                    <div className="mt-3 flex flex-wrap items-center gap-x-8 gap-y-3">
+                      {leasingOffice.phone && (
+                        <a
+                          href={leasingOffice.phoneHref}
+                          className="-my-2 inline-flex min-h-11 items-center gap-2 py-2 text-[14px] leading-[1.43] tracking-[-0.14px] text-[#ced0d4] hover:text-white"
+                        >
+                          <Phone size={15} strokeWidth={2} aria-hidden="true" />
+                          {leasingOffice.phone}
+                        </a>
+                      )}
+                      {leasingOffice.email && (
+                        <a
+                          href={`mailto:${leasingOffice.email}`}
+                          className="-my-2 inline-flex min-h-11 items-center gap-2 py-2 text-[14px] leading-[1.43] tracking-[-0.14px] text-[#ced0d4] hover:text-white"
+                        >
+                          <Mail size={15} strokeWidth={2} aria-hidden="true" />
+                          {leasingOffice.email}
+                        </a>
+                      )}
+                      {leasingOffice.license && (
+                        <span className="text-[14px] leading-[1.43] tracking-[-0.14px] text-[#8595a4]">
+                          Brokerage license {leasingOffice.license}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
+
+            {/* Questions: accordion. */}
+            <section id="faq" className="border-t border-[#dee3e9] py-14">
+              <h2 className="text-[28px] font-medium leading-[1.21] text-[#0a1317] sm:text-[36px] sm:leading-[1.28]">
+                Questions renters ask
+              </h2>
+              <div className="mt-6">
+                <PdpFaq items={faqItems} />
+              </div>
+            </section>
+
+            {/* Nearby: card grid, exactly as many cells as there are homes. */}
+            <section id="nearby" className="border-t border-[#dee3e9] pt-14">
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <h2 className="text-[28px] font-medium leading-[1.21] text-[#0a1317] sm:text-[36px] sm:leading-[1.28]">
+                  More homes in {property.city}
+                </h2>
+                <Link
+                  href={cityHref}
+                  className="-my-2 inline-flex min-h-11 items-center gap-1 py-2 text-[16px] font-bold leading-[1.5] tracking-[-0.16px] text-[#0064e0] hover:underline"
+                >
+                  See all
+                  <ChevronRight size={16} strokeWidth={2.5} aria-hidden="true" />
+                </Link>
+              </div>
+
+              {similarProperties.length > 0 ? (
+                <ul
+                  className={`mt-6 grid gap-5 sm:grid-cols-2 ${
+                    similarProperties.length >= 3 ? "lg:grid-cols-3" : ""
+                  }`}
+                >
+                  {similarProperties.map((sim) => (
+                    <li key={sim.id}>
+                      <Link href={`/houses-for-rent/${sim.slug}`} className="group block">
+                        <div className="relative aspect-[4/3] overflow-hidden rounded-[8px] bg-[#f1f4f7]">
+                          {sim.primary_image_url ? (
+                            <img
+                              src={sim.primary_image_url}
+                              alt={`${sim.address}, ${sim.city}`}
+                              loading="lazy"
+                              className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-[#8595a4]">
+                              <House size={28} strokeWidth={1.5} aria-hidden="true" />
+                            </div>
+                          )}
+                        </div>
+                        <p className="mt-3 text-[18px] font-bold leading-[1.44] text-[#0a1317]">
+                          ${formatNumber(Math.round(Number(sim.price)))}
+                          <span className="text-[14px] font-normal text-[#5d6c7b]">{sim.price_label || "/mo"}</span>
+                        </p>
+                        <p className="mt-0.5 truncate text-[14px] leading-[1.43] tracking-[-0.14px] text-[#1c1e21] group-hover:text-[#0064e0]">
+                          {sim.address}
+                        </p>
+                        <p className="mt-0.5 text-[14px] leading-[1.43] tracking-[-0.14px] text-[#5d6c7b]">
+                          {sim.bedrooms} bd · {sim.bathrooms} ba
+                          {sim.sqft ? ` · ${formatNumber(sim.sqft)} sq ft` : ""}
+                        </p>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="mt-6 rounded-[8px] bg-[#f1f4f7] p-8 text-center">
+                  <p className="text-[16px] leading-[1.5] tracking-[-0.16px] text-[#444950]">
+                    This is currently our only listing in {property.city}.
+                  </p>
+                  <Link
+                    href="/houses-for-rent"
+                    className="mt-4 inline-flex items-center justify-center rounded-[8px] bg-[#0a1317] px-[30px] py-[14px] text-[14px] font-bold leading-[1.43] tracking-[-0.14px] text-white transition-colors hover:bg-[#444950]"
+                  >
+                    Browse all homes
+                  </Link>
+                </div>
+              )}
+            </section>
+            </main>
           </div>
 
-          {/* RIGHT COLUMN: Sticky Sidebar */}
-          <div className="w-full lg:w-[340px] shrink-0 space-y-6">
-            <div className="sticky top-[156px] space-y-6">
-              <SidebarWidgets
-                property={{
-                  id: property.id,
-                  slug: property.slug,
-                  title: property.title,
-                  address: property.address,
-                  city: property.city,
-                  state: property.state,
-                  zip_code: property.zip_code,
-                  listing_type: property.listing_type,
-                  status: property.status,
-                  price: Number(property.price)
-                }}
-                agent={agent}
-                agentPhoto={agentPhoto}
-                agencyName={agencyName}
-              />
-            </div>
-          </div>
-
+          {/* Desktop sticky lead rail. top-24 clears the 80px navbar. */}
+          <aside className="hidden lg:block lg:sticky lg:top-24">
+            <PdpLeadRail {...leadRailProps} variant="rail" />
+          </aside>
         </div>
       </div>
 
+      <PdpTourAutoOpen />
       <PropertyTourModal
         propertySlug={property.slug}
         propertyTitle={property.title}
@@ -1022,81 +960,8 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
         propertyCity={property.city}
       />
 
-      {/* Mobile bottom sticky bar */}
-      <div
-        className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-slate-200 shadow-xl"
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
-      >
-        <div className="flex items-center justify-between px-4 pt-2.5">
-          <p className="text-lg font-black text-slate-900 leading-none">
-            ${formatNumber(priceNum)}<span className="text-xs font-bold text-slate-500">/mo</span>
-          </p>
-          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Available Now
-          </span>
-        </div>
-        <div className="px-4 pt-2 pb-3 grid grid-cols-2 gap-2.5">
-          <BookTourButton
-            label="Book a Tour"
-            withIcon={false}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 text-sm font-bold transition-colors text-center block cursor-pointer shadow-md shadow-blue-500/20"
-          />
-          <a
-            href={`/apply?property=${property.slug}`}
-            className="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-xl py-3 text-sm font-bold transition-colors text-center block"
-          >
-            Apply Now
-          </a>
-        </div>
-      </div>
-
-      <div className="lg:hidden h-28" />
+      <PdpMobileBar slug={property.slug} price={priceNum} priceLabel={priceLabel} />
+      <div className="h-24 lg:hidden" aria-hidden="true" />
     </div>
   );
-}
-
-// ── Amenity Icon Helper ────────────────────────────────────────────────────────
-interface AmenityConfig { Icon: LucideIcon; iconCls: string; bgCls: string; }
-
-function getAmenityConfig(name: string): AmenityConfig {
-  const n = name.toLowerCase();
-  if (/granite|quartz|counter|island|kitchen|dishwasher|utensil|cook/.test(n))
-    return { Icon: Utensils, iconCls: "text-blue-600", bgCls: "bg-blue-100" };
-  if (/refrigerator|fridge/.test(n))
-    return { Icon: Refrigerator, iconCls: "text-blue-600", bgCls: "bg-blue-100" };
-  if (/microwave/.test(n))
-    return { Icon: Microwave, iconCls: "text-blue-600", bgCls: "bg-blue-100" };
-  if (/stove|range|oven|fireplace/.test(n))
-    return { Icon: Flame, iconCls: "text-blue-600", bgCls: "bg-blue-100" };
-  if (/stainless|appliance/.test(n))
-    return { Icon: Sparkles, iconCls: "text-blue-600", bgCls: "bg-blue-100" };
-  if (/washer|dryer|laundry|washing/.test(n))
-    return { Icon: WashingMachine, iconCls: "text-blue-600", bgCls: "bg-blue-100" };
-  if (/air.condition|central.air|\bac\b|hvac/.test(n))
-    return { Icon: Wind, iconCls: "text-cyan-600", bgCls: "bg-cyan-100" };
-  if (/heat|furnace|thermostat/.test(n))
-    return { Icon: Thermometer, iconCls: "text-red-600", bgCls: "bg-red-100" };
-  if (/shower|bath/.test(n))
-    return { Icon: ShowerHead, iconCls: "text-sky-600", bgCls: "bg-sky-100" };
-  if (/electric|utility|power/.test(n))
-    return { Icon: Zap, iconCls: "text-yellow-600", bgCls: "bg-yellow-100" };
-  if (/wifi|internet|cable|network/.test(n))
-    return { Icon: Wifi, iconCls: "text-blue-600", bgCls: "bg-blue-100" };
-  if (/pool|swim/.test(n))
-    return { Icon: Waves, iconCls: "text-blue-600", bgCls: "bg-blue-100" };
-  if (/garage|parking|car/.test(n))
-    return { Icon: Car, iconCls: "text-slate-600", bgCls: "bg-slate-100" };
-  if (/yard|fence|patio|outdoor|garden|balcony/.test(n))
-    return { Icon: Fence, iconCls: "text-emerald-600", bgCls: "bg-emerald-100" };
-  if (/tree|park|trail|walk|nature/.test(n))
-    return { Icon: TreePine, iconCls: "text-emerald-600", bgCls: "bg-emerald-100" };
-  if (/gym|fitness|dumbbell|workout/.test(n))
-    return { Icon: Dumbbell, iconCls: "text-blue-600", bgCls: "bg-blue-100" };
-  if (/gated|security|guard|camera|alarm/.test(n))
-    return { Icon: Shield, iconCls: "text-emerald-600", bgCls: "bg-emerald-100" };
-  if (/pet|dog|cat|animal/.test(n))
-    return { Icon: PawPrint, iconCls: "text-indigo-600", bgCls: "bg-indigo-100" };
-  if (/hoa|community|club/.test(n))
-    return { Icon: Home, iconCls: "text-blue-600", bgCls: "bg-blue-100" };
-  return { Icon: CheckCircle2, iconCls: "text-blue-600", bgCls: "bg-blue-100" };
 }

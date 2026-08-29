@@ -57,14 +57,16 @@ export function truncate(str: string, length: number): string {
  * `images.unoptimized` in next.config, the full-size file ships to the
  * browser. Only URL patterns we recognize are rewritten; anything else is
  * returned untouched so an upstream format change can never break images.
+ *
+ * Listing photos are now served from our own /media/properties/... proxy, which
+ * caches one canonical size and takes no width parameter — so there is nothing
+ * to rewrite for them and they fall through unchanged. (The branch that
+ * rewrote the syndication CDN's transform segment was removed with the URLs
+ * themselves; resizing those would now mean teaching the proxy to accept a
+ * size hint, not string-editing the path.)
  */
 export function toCardImageUrl(url: string): string {
   if (!url) return url;
-  if (url.includes("images.invitationhomes.com")) {
-    return url
-      .replace("/w_1500,h_1000,", "/w_640,h_427,")
-      .replace("/c_fill,w_1200/", "/c_fill,w_640/");
-  }
   if (url.includes("images.unsplash.com")) {
     return url.replace("w=1600", "w=800");
   }

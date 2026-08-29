@@ -139,7 +139,7 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
         {post.featured_image_url && (
           <div className="max-w-4xl mx-auto px-6 lg:px-8 pb-12">
-            <div className="relative aspect-[16/8] rounded-2xl overflow-hidden">
+            <div className="relative aspect-[16/8] rounded-xl overflow-hidden">
               <Image
                 src={post.featured_image_url}
                 alt={post.title}
@@ -189,7 +189,7 @@ export default async function BlogPostPage({ params }: Props) {
                 {post.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs bg-brand-light border border-brand-muted text-brand-dark px-3 py-1 rounded-full"
+                    className="text-xs bg-brand-light border border-brand-muted text-brand-dark px-3 py-1 rounded-md"
                   >
                     {tag}
                   </span>

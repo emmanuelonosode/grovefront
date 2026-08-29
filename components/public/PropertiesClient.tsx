@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { BrandLogo } from "@/components/ui/BrandLogo";
 import { CardImageCarousel } from "./CardImageCarousel";
+import { trackClick } from "@/lib/telemetry";
 import { FavoriteButton } from "./FavoriteButton";
 import { captureSearchIntent, getBestKnownCity, getDeviceContext, getStoredReferralCode, getStoredUTMs, trackEvent } from "@/lib/tracking";
 import { PropertiesMapLoader } from "./PropertiesMapLoader";
@@ -335,7 +336,7 @@ export function PropertiesClient({
     .map((p) => ({ ...p, latitude: Number(p.latitude), longitude: Number(p.longitude) }))
     .filter((p) => Number.isFinite(p.latitude) && Number.isFinite(p.longitude) && p.latitude !== 0 && p.longitude !== 0)
     .map((p) => ({
-      slug: p.slug, title: p.title, price: p.price, price_label: p.price_label,
+      slug: p.slug, title: p.title, price: Math.round(Number(p.price) || 0), price_label: p.price_label,
       city: p.city, state: p.state, lat: p.latitude, lng: p.longitude,
       image_url: p.primary_image_url, beds: p.bedrooms, baths: p.bathrooms,
     }));
@@ -717,7 +718,7 @@ export function PropertiesClient({
           {initialTotal > 50 && !leadCaptured && !bannerDismissed && (
             <div className="shrink-0 bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex items-center justify-between gap-3">
               <p className="text-xs font-semibold text-amber-800 leading-snug">
-                <span className="font-black">{initialTotal.toLocaleString()} homes</span> — overwhelmed? Let an agent narrow it down.
+                <span className="font-black">{initialTotal.toLocaleString()} homes</span>. Overwhelmed? Let an agent narrow it down.
               </p>
               <div className="flex items-center gap-1.5 shrink-0">
                 <button
@@ -796,7 +797,7 @@ export function PropertiesClient({
                 <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400 mb-1">No results</p>
                 <p className="text-brand-dark font-black text-[16px] mb-2">No homes match your filters</p>
                 <p className="text-neutral-400 text-[13px] mb-4 max-w-[240px] leading-relaxed">
-                  Try widening your search — these usually bring back results:
+                  Try widening your search. These usually bring back results:
                 </p>
 
                 {/* Relaxed-search suggestions — drop one filter at a time */}
@@ -958,80 +959,97 @@ function FilterPill({
 function PanelCard({ property, isActive }: { property: PropertyListItemAPI; isActive: boolean }) {
   const isRental   = property.listing_type !== "for-sale";
   const detailHref = `/houses-for-rent/${property.slug}`;
+  // `?tour=1` is picked up by PdpTourAutoOpen on the detail page and opens the
+  // booking modal straight away, so the card CTA lands on the same flow the
+  // detail page uses rather than a second, divergent one.
+  const tourHref   = `${detailHref}?tour=1`;
   const applyHref  = `/apply?property=${property.slug}`;
   const images     = property.image_urls?.length
     ? property.image_urls
     : property.primary_image_url ? [property.primary_image_url] : [];
 
   return (
-    <article className={`flex flex-col flex-1 rounded-xl overflow-hidden border bg-white group transition-all duration-150 ${
+    <article className={`flex flex-1 flex-col overflow-hidden rounded-[8px] border bg-white transition-shadow duration-150 ${
       isActive
-        ? "border-brand shadow-lg ring-2 ring-brand/15"
-        : "border-neutral-200 hover:shadow-md hover:border-neutral-300"
+        ? "border-[#0064e0] shadow-[rgba(20,22,26,0.3)_0px_1px_4px_0px]"
+        : "border-[#dee3e9] hover:shadow-[rgba(20,22,26,0.3)_0px_1px_4px_0px]"
     }`}>
 
       {/* Photo — swipeable carousel at base, overlays at z-10 */}
-      <div className="relative h-[200px] shrink-0 bg-neutral-100 overflow-hidden">
+      <div className="relative h-[200px] shrink-0 overflow-hidden bg-[#f1f4f7]">
         <CardImageCarousel images={images} alt={property.title} href={detailHref} />
 
-        {/* Badges — non-interactive */}
-        <div className="absolute top-2 left-2 z-10 flex gap-1 pointer-events-none">
-          <span className={`text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-wide ${
-            property.listing_type === "for-sale"
-              ? "bg-emerald-500 text-white"
-              : "bg-brand text-white"
+        <div className="pointer-events-none absolute left-2 top-2 z-10 flex gap-1.5">
+          <span className={`rounded-[8px] px-2 py-1 text-[12px] font-bold leading-[1.33] ${
+            property.listing_type === "for-sale" ? "bg-[#31a24c] text-white" : "bg-[#0a1317] text-white"
           }`}>
-            {property.listing_type === "for-sale" ? "For Sale" : "For Rent"}
+            {property.listing_type === "for-sale" ? "For sale" : "For rent"}
           </span>
           {property.is_featured && (
-            <span className="bg-amber-500 text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wide">
+            <span className="rounded-[8px] bg-[#f7b928] px-2 py-1 text-[12px] font-bold leading-[1.33] text-[#0a1317]">
               Featured
             </span>
           )}
         </div>
 
-        {/* Favorite — z-10, fully independent from the card link */}
-        <div className="absolute top-2 right-2 z-10 w-8 h-8 bg-white/95 rounded-full flex items-center justify-center shadow-sm">
-          <FavoriteButton propertyId={property.id} size={13} className="hover:scale-110 active:scale-90 transition-transform" />
+        <div className="absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-[rgba(20,22,26,0.3)_0px_1px_4px_0px]">
+          <FavoriteButton propertyId={property.id} size={14} className="transition-transform hover:scale-110 active:scale-90" />
         </div>
 
-        {/* Available pill */}
-        <div className="absolute bottom-2 right-2 z-10 pointer-events-none">
-          <span className="flex items-center gap-1 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block shrink-0" />
+        <div className="pointer-events-none absolute bottom-2 right-2 z-10">
+          <span className="rounded-[8px] bg-[#0a1317]/75 px-2 py-1 text-[12px] font-bold leading-[1.33] text-white">
             Available
           </span>
         </div>
       </div>
 
-      {/* Body — fully linked to property detail */}
-      <Link href={detailHref} className="p-3 flex flex-col gap-1 flex-1">
-        <p className="text-[16px] font-black text-brand-dark leading-none">
-          ${property.price.toLocaleString()}
-          {isRental && <span className="text-[11px] font-semibold text-neutral-400">/mo</span>}
+      {/* Body — the whole block links through to the detail page */}
+      <Link href={detailHref} className="flex flex-1 flex-col gap-1.5 px-4 pb-3 pt-3.5">
+        <p className="text-[18px] font-bold leading-[1.44] text-[#0a1317]">
+          ${Math.round(Number(property.price) || 0).toLocaleString()}
+          {isRental && <span className="text-[14px] font-normal text-[#5d6c7b]">/mo</span>}
         </p>
 
-        <div className="flex items-center gap-3 text-[12px] font-semibold text-neutral-600">
-          <span className="flex items-center gap-1">
-            <Bed size={14} className="text-neutral-400" />
-            {property.bedrooms === 0 ? "Studio" : <>{property.bedrooms} bed</>}
+        <div className="flex items-center gap-3 text-[14px] leading-[1.43] tracking-[-0.14px] text-[#1c1e21]">
+          <span className="flex items-center gap-1.5">
+            <Bed size={15} strokeWidth={1.75} aria-hidden="true" className="text-[#5d6c7b]" />
+            {property.bedrooms === 0 ? "Studio" : <>{property.bedrooms} bd</>}
           </span>
-          <span className="flex items-center gap-1">
-            <Bath size={14} className="text-neutral-400" />
-            {property.bathrooms} bath
+          <span className="flex items-center gap-1.5">
+            <Bath size={15} strokeWidth={1.75} aria-hidden="true" className="text-[#5d6c7b]" />
+            {property.bathrooms} ba
           </span>
           {property.sqft > 0 && (
-            <span className="flex items-center gap-1">
-              <Maximize size={13} className="text-neutral-400" />
+            <span className="flex items-center gap-1.5">
+              <Maximize size={14} strokeWidth={1.75} aria-hidden="true" className="text-[#5d6c7b]" />
               {property.sqft.toLocaleString()} sqft
             </span>
           )}
         </div>
 
-        <p className="text-[11px] text-neutral-400 truncate leading-tight">
+        <p className="truncate text-[14px] leading-[1.43] tracking-[-0.14px] text-[#5d6c7b]">
           {property.address ? `${property.address}, ` : ""}{property.city}, {property.state}
         </p>
       </Link>
+
+      {/* Actions — siblings of the card link, never nested inside it, so the
+          anchors stay valid and the clicks don't fight the card navigation. */}
+      <div className="flex items-center gap-2 px-4 pb-4">
+        <Link
+          href={applyHref}
+          onClick={() => trackClick("apply_now", { slug: property.slug, where: "listing_card" })}
+          className="flex min-h-11 flex-1 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#0064e0] px-3 text-[14px] font-bold leading-[1.43] tracking-[-0.14px] text-white transition-colors hover:bg-[#0457cb]"
+        >
+          Apply now
+        </Link>
+        <Link
+          href={tourHref}
+          onClick={() => trackClick("book_tour", { slug: property.slug, where: "listing_card" })}
+          className="flex min-h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-[8px] border-2 border-[#0a1317] px-3.5 text-[14px] font-bold leading-[1.43] tracking-[-0.14px] text-[#0a1317] transition-colors hover:bg-[#f1f4f7]"
+        >
+          Schedule a tour
+        </Link>
+      </div>
 
     </article>
   );
@@ -1248,7 +1266,7 @@ function PaginationBar({
   for (let i = Math.max(1, currentPage - delta); i <= Math.min(totalPages, currentPage + delta); i++) {
     pages.push(i);
   }
-  const base = "px-4 py-3 text-[12px] font-semibold rounded-xl border-2 transition-colors min-h-[44px] flex items-center justify-center";
+  const base = "px-4 py-3 text-[12px] font-semibold rounded-lg border-2 transition-colors min-h-[44px] flex items-center justify-center";
   const inactive = "border-neutral-200 text-neutral-500 hover:border-brand hover:text-brand bg-white";
   const active   = "bg-brand text-white border-brand";
 

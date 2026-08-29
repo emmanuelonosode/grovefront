@@ -200,7 +200,7 @@ export default async function PropertyManagementPage() {
             </div>
 
             {/* Hero Image / Badge */}
-            <div className="lg:col-span-5 relative w-full aspect-[4/3] sm:aspect-[16/10] lg:aspect-square bg-brand-dark rounded-none overflow-hidden border border-white/10 shadow-2xl">
+            <div className="lg:col-span-5 relative w-full aspect-[4/3] sm:aspect-[16/10] lg:aspect-square bg-brand-dark rounded-xl overflow-hidden border border-white/10 shadow-2xl">
               <Image
                 src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80"
                 alt="Professional property management handshake and home keys"
@@ -392,7 +392,7 @@ export default async function PropertyManagementPage() {
             {faqItems.map((faq) => (
               <details
                 key={faq.q}
-                className="group border border-neutral-200 rounded-none bg-[#f3f4ec]/10 overflow-hidden hover:border-brand/40 transition-colors"
+                className="group border border-neutral-200 rounded-xl bg-[#f3f4ec]/10 overflow-hidden hover:border-brand/40 transition-colors"
               >
                 <summary className="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer list-none hover:bg-neutral-50 transition-colors">
                   <span className="font-medium text-sm text-[#0B1F3A] leading-snug">{faq.q}</span>

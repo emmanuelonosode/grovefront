@@ -144,7 +144,7 @@ export function TourBookingForm({ propertySlug, propertyTitle, propertyId, prope
   /* ── Success ─────────────────────────────────────────── */
   if (step === 3) {
     return (
-      <div className="bg-white rounded-t-3xl sm:rounded-3xl p-8 text-center">
+      <div className="bg-white rounded-t-3xl sm:rounded-xl p-8 text-center">
         <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-5">
           <CheckCircle size={32} className="text-emerald-500" strokeWidth={1.8} />
         </div>
@@ -164,7 +164,7 @@ export function TourBookingForm({ propertySlug, propertyTitle, propertyId, prope
     step === 0 ? "Pick a date & time" : step === 1 ? "Where can we reach you?" : "Verify your identity";
 
   return (
-    <div className="bg-white rounded-t-3xl sm:rounded-3xl overflow-hidden">
+    <div className="bg-white rounded-t-3xl sm:rounded-xl overflow-hidden">
       {/* Header */}
       <div className="px-6 pt-6 pb-4 border-b border-neutral-100">
         <p className="text-[11px] font-bold tracking-[0.15em] uppercase text-brand mb-1">Book a self-tour</p>

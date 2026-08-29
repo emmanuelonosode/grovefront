@@ -77,7 +77,7 @@ export function PropertyManagementLeadForm() {
 
   if (done) {
     return (
-      <div className="text-center py-12 px-6 bg-[#f3f4ec] border border-[#c1ecd4] rounded-none shadow-sm max-w-xl mx-auto">
+      <div className="text-center py-12 px-6 bg-[#f3f4ec] border border-[#c1ecd4] rounded-xl shadow-sm max-w-xl mx-auto">
         <div className="w-16 h-16 rounded-full bg-brand/10 flex items-center justify-center mx-auto mb-6">
           <CheckCircle size={32} className="text-brand" />
         </div>
@@ -93,7 +93,7 @@ export function PropertyManagementLeadForm() {
   }
 
   return (
-    <div className="bg-white border border-neutral-200 p-8 rounded-none shadow-sm max-w-xl mx-auto">
+    <div className="bg-white border border-neutral-200 p-8 rounded-xl shadow-sm max-w-xl mx-auto">
       <h3 className="font-serif text-2xl font-bold text-[#0B1F3A] mb-2">Request a Free Rental Analysis</h3>
       <p className="text-neutral-500 text-xs mb-6 leading-relaxed">
         Submit your property details below. We will assess local rental comps and provide a detailed monthly income estimate. No cost, no obligation.
@@ -108,7 +108,7 @@ export function PropertyManagementLeadForm() {
             placeholder="Your full name *"
             value={name}
             onChange={(e) => { setName(e.target.value); setError(""); }}
-            className="w-full bg-[#f3f4ec]/20 border border-neutral-200 rounded-none pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all"
+            className="w-full bg-[#f3f4ec]/20 border border-neutral-200 rounded-xl pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all"
           />
         </div>
 
@@ -121,7 +121,7 @@ export function PropertyManagementLeadForm() {
               placeholder="Email address *"
               value={email}
               onChange={(e) => { setEmail(e.target.value); setError(""); }}
-              className="w-full bg-[#f3f4ec]/20 border border-neutral-200 rounded-none pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all"
+              className="w-full bg-[#f3f4ec]/20 border border-neutral-200 rounded-xl pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all"
             />
           </div>
           <div className="relative">
@@ -131,7 +131,7 @@ export function PropertyManagementLeadForm() {
               placeholder="Phone number"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full bg-[#f3f4ec]/20 border border-neutral-200 rounded-none pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all"
+              className="w-full bg-[#f3f4ec]/20 border border-neutral-200 rounded-xl pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all"
             />
           </div>
         </div>
@@ -142,7 +142,7 @@ export function PropertyManagementLeadForm() {
           <select
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            className="w-full bg-[#f3f4ec]/20 border border-neutral-200 rounded-none pl-10 pr-4 py-3 text-[#111827] text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all appearance-none cursor-pointer"
+            className="w-full bg-[#f3f4ec]/20 border border-neutral-200 rounded-xl pl-10 pr-4 py-3 text-[#111827] text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all appearance-none cursor-pointer"
           >
             {SUPPORTED_CITIES.map((c) => (
               <option key={c.value} value={c.value}>
@@ -165,7 +165,7 @@ export function PropertyManagementLeadForm() {
             placeholder="Property street address, City, State, ZIP *"
             value={address}
             onChange={(e) => { setAddress(e.target.value); setError(""); }}
-            className="w-full bg-[#f3f4ec]/20 border border-neutral-200 rounded-none pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all"
+            className="w-full bg-[#f3f4ec]/20 border border-neutral-200 rounded-xl pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all"
           />
         </div>
 
@@ -177,7 +177,7 @@ export function PropertyManagementLeadForm() {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             rows={3}
-            className="w-full bg-[#f3f4ec]/20 border border-neutral-200 rounded-none pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all resize-none"
+            className="w-full bg-[#f3f4ec]/20 border border-neutral-200 rounded-xl pl-10 pr-4 py-3 text-[#111827] placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/10 transition-all resize-none"
           />
         </div>
 
@@ -193,7 +193,7 @@ export function PropertyManagementLeadForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-brand hover:bg-brand-hover text-white font-bold py-4 rounded-none transition-colors flex items-center justify-center gap-2 disabled:opacity-70 cursor-pointer text-sm tracking-wider uppercase active:scale-[0.98]"
+          className="w-full bg-brand hover:bg-brand-hover text-white font-bold py-4 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-70 cursor-pointer text-sm tracking-wider uppercase active:scale-[0.98]"
         >
           {loading ? (
             <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

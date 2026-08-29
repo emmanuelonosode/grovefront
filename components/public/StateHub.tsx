@@ -194,7 +194,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
               <Link
                 key={t.label}
                 href={t.href}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-neutral-200 text-sm font-medium text-brand-dark hover:border-brand hover:text-brand hover:bg-brand-light transition-colors"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-neutral-200 text-sm font-medium text-brand-dark hover:border-brand hover:text-brand hover:bg-brand-light transition-colors"
               >
                 <Home size={14} className="text-brand" /> {t.label}
               </Link>
@@ -238,7 +238,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />
                     {i === 0 && (
-                      <div className="absolute top-4 left-4 bg-earth-beige text-on-secondary-container text-[14px] leading-5 font-semibold px-3 py-1 rounded-full shadow-sm flex items-center gap-1">
+                      <div className="absolute top-4 left-4 bg-earth-beige text-on-secondary-container text-[14px] leading-5 font-semibold px-3 py-1 rounded-md shadow-sm flex items-center gap-1">
                         <TrendingUp size={15} /> High Demand
                       </div>
                     )}
@@ -256,13 +256,13 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
                       <p className="text-[16px] leading-6 text-on-surface-variant mb-6 line-clamp-2">{c.tagline}</p>
                     )}
                     <div className="flex flex-wrap gap-2 mb-6">
-                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-surface-container-low text-on-surface-variant text-[12px] leading-4 rounded-full border border-outline-variant/50">
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-surface-container-low text-on-surface-variant text-[12px] leading-4 rounded-md border border-outline-variant/50">
                         <GraduationCap size={14} className="text-sage-soft" /> Family Schools
                       </span>
-                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-surface-container-low text-on-surface-variant text-[12px] leading-4 rounded-full border border-outline-variant/50">
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-surface-container-low text-on-surface-variant text-[12px] leading-4 rounded-md border border-outline-variant/50">
                         <TreePine size={14} className="text-sage-soft" /> Parks & Trails
                       </span>
-                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-surface-container-low text-on-surface-variant text-[12px] leading-4 rounded-full border border-outline-variant/50">
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-surface-container-low text-on-surface-variant text-[12px] leading-4 rounded-md border border-outline-variant/50">
                         <Home size={14} className="text-sage-soft" /> from {c.avgRent}/mo
                       </span>
                     </div>
@@ -479,7 +479,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
                 <Link
                   key={s.slug}
                   href={`/rentals/${s.slug}`}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-neutral-200 text-sm font-medium text-brand-dark hover:border-brand hover:text-brand hover:bg-brand-light transition-colors"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-neutral-200 text-sm font-medium text-brand-dark hover:border-brand hover:text-brand hover:bg-brand-light transition-colors"
                 >
                   <MapPin size={13} className="text-brand" /> {s.name}
                 </Link>

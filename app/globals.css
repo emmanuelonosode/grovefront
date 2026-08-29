@@ -2,15 +2,15 @@
 
 /* ─── Brand Design Tokens (Tailwind v4 CSS-first @theme) ──────────── */
 @theme {
-  /* PrimeFamilyHousing — Modern Royal Blue, Deep Navy & High-Trust Emerald */
-  --color-brand:       #0f172a;   /* slate-900 — primary text, deep surfaces   */
-  --color-brand-hover: #1e293b;   /* slate-800 — hover state                   */
-  --color-brand-dark:  #020617;   /* slate-950 — headings, footer, dark bands  */
-  --color-brand-navy:  #1e3a8a;   /* blue-900 — rich navy accents              */
-  --color-brand-light: #f8fafc;   /* slate-50 — crisp clean section background */
-  --color-brand-muted: #dbeafe;   /* blue-100 — badges, tags, chips            */
-  --color-accent:       #2563eb;  /* vibrant royal blue — primary CTAs, links  */
-  --color-accent-hover: #1d4ed8;  /* deeper royal blue hover state             */
+  /* Facebook Design System Tokens */
+  --color-brand:       #1c1e21;   /* primary text   */
+  --color-brand-hover: #111112;   /* hover state    */
+  --color-brand-dark:  #1c1e21;   /* headings       */
+  --color-brand-navy:  #385898;   /* accent         */
+  --color-brand-light: #dfe2e5;   /* surface        */
+  --color-brand-muted: #d0d3d6;   /* border/muted   */
+  --color-accent:       #385898;  /* accent         */
+  --color-accent-hover: #2d4373;  /* hover accent   */
 
   /* Modern Material-style role tokens */
   --color-primary:                   #2563eb;
@@ -64,9 +64,18 @@
   --color-emerald-trust:   #10b981;
   --color-slate-soft:      #f8fafc;
 
-  /* Fonts — Source Sans 3 for body, Montserrat for headings */
-  --font-sans:  var(--font-source-sans), system-ui, sans-serif;
-  --font-serif: var(--font-montserrat), system-ui, sans-serif;
+  /* Facebook Fonts */
+  --font-sans: "Segoe UI Historic", "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-serif: "Optimistic", "Segoe UI Historic", "Segoe UI", Helvetica, Arial, sans-serif;
+  
+  /* Facebook Radii */
+  --radius-sm: 16px;
+  --radius: 22px;
+  --radius-md: 22px;
+  --radius-lg: 40px;
+  --radius-xl: 40px;
+  --radius-2xl: 40px;
+  --radius-3xl: 40px;
 }
 
 /* ─── Base surface ────────────────────────────────────────────────── */
@@ -171,4 +180,67 @@ html {
 }
 .property-popup .leaflet-popup-tip-container {
   margin-top: -1px;
+}
+
+/* ─── Property Detail Page (PDP) — Meta design-system tokens ──────────
+   Scoped to .pdp so the token set can't leak into the rest of the site.
+   Light-only by design: the Meta system has no published dark-mode token
+   set, and the rest of this site is light-only, so the page theme is locked. */
+.pdp {
+  --pdp-primary:        #0064e0;
+  --pdp-primary-deep:   #0457cb;
+  --pdp-ink-button:     #000000;
+  --pdp-ink-deep:       #0a1317;
+  --pdp-ink:            #1c1e21;
+  --pdp-charcoal:       #444950;
+  --pdp-slate:          #4b4c4f;
+  --pdp-steel:          #5d6c7b;
+  --pdp-stone:          #8595a4;
+  --pdp-canvas:         #ffffff;
+  --pdp-surface-soft:   #f1f4f7;
+  --pdp-hairline:       #ced0d4;
+  --pdp-hairline-soft:  #dee3e9;
+  --pdp-success:        #31a24c;
+  --pdp-warning:        #f7b928;
+  --pdp-critical:       #e41e3f;
+
+  background: var(--pdp-canvas);
+  color: var(--pdp-ink-deep);
+  /* Optimistic VF is Meta-proprietary; Montserrat is its documented fallback
+     and is already loaded by the root layout. */
+  font-family: var(--font-montserrat), Helvetica, Arial, "Noto Sans", sans-serif;
+}
+
+/* Headline roles carry ss01 + ss02 as a paired package, per the system. */
+.pdp h1, .pdp h2, .pdp h3, .pdp .pdp-display {
+  font-feature-settings: "ss01", "ss02";
+  font-family: var(--font-montserrat), Helvetica, Arial, "Noto Sans", sans-serif;
+}
+
+/* Body roles run the system's snug negative tracking. */
+.pdp-body    { font-size: 16px; line-height: 1.5;  letter-spacing: -0.16px; }
+.pdp-body-sm { font-size: 14px; line-height: 1.43; letter-spacing: -0.14px; }
+
+/* Hide the horizontal scrollbar on pill-tab and carousel rails. */
+.pdp-rail::-webkit-scrollbar { display: none; }
+.pdp-rail { scrollbar-width: none; -ms-overflow-style: none; }
+
+/* Section anchors clear the 80px fixed navbar plus the 56px sticky tab rail. */
+.pdp [id] { scroll-margin-top: 9.5rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pdp *, .pdp *::before, .pdp *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* The PDP's sticky action bar owns the bottom of the viewport on small screens.
+   The cookie banner sits at z-[9999] and would otherwise cover the primary
+   "Schedule a tour" CTA outright on a first visit, so lift it clear of the bar. */
+@media (max-width: 1023px) {
+  body:has(.pdp) .cookie-consent {
+    bottom: calc(5.75rem + env(safe-area-inset-bottom));
+  }
 }

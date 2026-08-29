@@ -146,7 +146,7 @@ export function StateDirectory({ cities, counts = {} }: Props) {
               return (
                 <div
                   key={state.code}
-                  className="group flex flex-col bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] border border-surface-variant hover:-translate-y-1 transition-transform duration-300"
+                  className="group flex flex-col bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] border border-surface-variant hover:-translate-y-1 transition-transform duration-300"
                 >
                   {/* Landmark photo header — links to the state hub */}
                   <Link href={`/rentals/${state.slug}`} className="relative block h-64 w-full overflow-hidden bg-surface-container">

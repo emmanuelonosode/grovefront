@@ -137,7 +137,7 @@ export function Navbar() {
                 <Link
                   href="/login"
                   className={cn(
-                    "text-[14px] font-semibold tracking-[0.05em] px-4 py-2 rounded-full transition-colors active:scale-95",
+                    "text-[14px] font-semibold tracking-[0.05em] px-4 py-2 rounded-lg transition-colors active:scale-95",
                     solidBg
                       ? "text-primary hover:bg-surface-container-low"
                       : "text-white/90 hover:bg-white/10"

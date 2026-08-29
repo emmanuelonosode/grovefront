@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { BrandLogo } from "@/components/ui/BrandLogo";
+import { HideOnPropertyDetail } from "@/components/public/HideOnPropertyDetail";
 import { CITIES, fetchAllCities } from "@/lib/cities";
 import { STATE_NAMES, stateSlugForCode } from "@/lib/states";
 import { BUSINESS } from "@/lib/business";
@@ -160,36 +161,39 @@ export async function Footer() {
         </div>
       </div>
 
-      {/* Rentals by state */}
-      <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-        <div className="max-w-7xl mx-auto px-8 py-6">
-          <div
-            className="mb-3"
-            style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 11.5, fontWeight: 600, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(255,255,255,0.85)" }}
-          >
-            Houses for rent by state
-          </div>
-          <div className="flex flex-wrap gap-x-5 gap-y-2">
-            {stateLinks.map((s) => (
-              <Link
-                key={s.slug}
-                href={`/rentals/${s.slug}`}
-                className="transition-colors hover:text-white"
-                style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 14.5, color: "rgba(255,255,255,0.55)", textDecoration: "none" }}
-              >
-                Houses for Rent in {s.name}
-              </Link>
-            ))}
-            <Link
-              href="/houses-for-rent#all-cities"
-              className="transition-colors hover:text-white"
-              style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 14.5, color: "#A3B18A", fontWeight: 600, textDecoration: "none" }}
+      {/* Rentals by state. Hidden on property detail pages, where the
+          page already carries its own city and state breadcrumb links. */}
+      <HideOnPropertyDetail>
+        <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+          <div className="max-w-7xl mx-auto px-8 py-6">
+            <div
+              className="mb-3"
+              style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 11.5, fontWeight: 600, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(255,255,255,0.85)" }}
             >
-              Browse all cities →
-            </Link>
+              Houses for rent by state
+            </div>
+            <div className="flex flex-wrap gap-x-5 gap-y-2">
+              {stateLinks.map((s) => (
+                <Link
+                  key={s.slug}
+                  href={`/rentals/${s.slug}`}
+                  className="transition-colors hover:text-white"
+                  style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 14.5, color: "rgba(255,255,255,0.55)", textDecoration: "none" }}
+                >
+                  Houses for Rent in {s.name}
+                </Link>
+              ))}
+              <Link
+                href="/houses-for-rent#all-cities"
+                className="transition-colors hover:text-white"
+                style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 14.5, color: "#A3B18A", fontWeight: 600, textDecoration: "none" }}
+              >
+                Browse all cities →
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      </HideOnPropertyDetail>
 
       {/* Compliance strip */}
       <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>

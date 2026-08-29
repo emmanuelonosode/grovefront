@@ -29,7 +29,7 @@ export function CookieConsentBanner() {
     <div
       role="dialog"
       aria-label="Cookie consent"
-      className="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:left-6 sm:bottom-6 z-[9999] sm:max-w-sm bg-white rounded-2xl shadow-[0_16px_48px_rgba(0,20,80,0.22)] ring-1 ring-black/5 p-5 menu-animate"
+      className="cookie-consent fixed bottom-4 inset-x-4 sm:inset-x-auto sm:left-6 sm:bottom-6 z-[9999] sm:max-w-sm bg-white rounded-2xl shadow-[0_16px_48px_rgba(0,20,80,0.22)] ring-1 ring-black/5 p-5 menu-animate"
     >
       <div className="flex items-start gap-3">
         <span className="w-9 h-9 rounded-full bg-brand-light flex items-center justify-center shrink-0">

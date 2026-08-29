@@ -45,14 +45,14 @@ export function FeaturedJobCard() {
         <div className="relative z-10 p-7 lg:p-10">
           {/* Badges row */}
           <div className="flex flex-wrap items-center gap-2 mb-6">
-            <span className="inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] font-bold tracking-[0.25em] uppercase px-3 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] font-bold tracking-[0.25em] uppercase px-3 py-1 rounded-md">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Actively Hiring
             </span>
-            <span className="text-[9px] font-bold tracking-[0.25em] uppercase text-brand border border-brand/25 bg-brand/5 px-3 py-1 rounded-full">
+            <span className="text-[9px] font-bold tracking-[0.25em] uppercase text-brand border border-brand/25 bg-brand/5 px-3 py-1 rounded-md">
               Priority Role
             </span>
-            <span className="text-[9px] font-bold tracking-[0.25em] uppercase text-white/25 border border-white/10 px-3 py-1 rounded-full">
+            <span className="text-[9px] font-bold tracking-[0.25em] uppercase text-white/25 border border-white/10 px-3 py-1 rounded-md">
               Client Services
             </span>
           </div>

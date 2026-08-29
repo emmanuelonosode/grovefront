@@ -159,11 +159,11 @@ export default async function CommunitiesPage() {
                   <div className="p-6 flex justify-between items-center bg-surface">
                     <div className="flex gap-2">
                       {s.homeCount > 0 && (
-                        <span className="bg-earth-beige/50 text-on-secondary-container px-3 py-1 rounded-full text-[12px] leading-4 border border-earth-beige tabular-nums">
+                        <span className="bg-earth-beige/50 text-on-secondary-container px-3 py-1 rounded-md text-[12px] leading-4 border border-earth-beige tabular-nums">
                           {s.homeCount} Homes
                         </span>
                       )}
-                      <span className="bg-earth-beige/50 text-on-secondary-container px-3 py-1 rounded-full text-[12px] leading-4 border border-earth-beige">
+                      <span className="bg-earth-beige/50 text-on-secondary-container px-3 py-1 rounded-md text-[12px] leading-4 border border-earth-beige">
                         Family-Ready
                       </span>
                     </div>

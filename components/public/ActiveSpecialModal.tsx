@@ -191,7 +191,7 @@ export function ActiveSpecialModal({
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-lg bg-white rounded-3xl overflow-hidden shadow-2xl border border-neutral-100 animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-lg bg-white rounded-xl overflow-hidden shadow-2xl border border-neutral-100 animate-in fade-in zoom-in-95 duration-200">
 
         {/* ── Header (dark navy — no purple) ── */}
         <div className="bg-brand-dark px-6 py-7 text-white relative overflow-hidden">
@@ -201,7 +201,7 @@ export function ActiveSpecialModal({
           </div>
 
           <div className="relative z-10 space-y-2.5 max-w-[75%]">
-            <span className="inline-flex items-center gap-1.5 bg-amber-400/20 border border-amber-400/30 text-amber-300 text-[9px] font-black tracking-[0.25em] uppercase px-3 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1.5 bg-amber-400/20 border border-amber-400/30 text-amber-300 text-[9px] font-black tracking-[0.25em] uppercase px-3 py-1 rounded-md">
               Limited Time Offer
             </span>
             <h3 className="font-serif text-2xl sm:text-3xl font-bold leading-tight text-white">
@@ -229,7 +229,7 @@ export function ActiveSpecialModal({
             <form onSubmit={handleSubmit} className="space-y-4">
 
               {/* Countdown timer */}
-              <div className="flex items-center justify-between bg-amber-50 border border-amber-100 rounded-2xl p-4">
+              <div className="flex items-center justify-between bg-amber-50 border border-amber-100 rounded-xl p-4">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 shrink-0">
                     <Timer size={18} />
@@ -328,7 +328,7 @@ export function ActiveSpecialModal({
           ) : (
             /* ── Success / Code Reveal ── */
             <div className="space-y-5 text-center py-1 animate-in fade-in slide-in-from-bottom-4 duration-300">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto">
+              <div className="w-14 h-14 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto">
                 <Check size={28} className="text-emerald-500" />
               </div>
 
@@ -343,7 +343,7 @@ export function ActiveSpecialModal({
               </div>
 
               {/* Coupon box */}
-              <div className="border border-neutral-200 rounded-2xl overflow-hidden max-w-sm mx-auto">
+              <div className="border border-neutral-200 rounded-xl overflow-hidden max-w-sm mx-auto">
                 <div className="bg-neutral-50 border-b border-neutral-100 px-4 py-2">
                   <p className="text-[9px] font-black tracking-widest uppercase text-neutral-400 text-center">Exclusive Code</p>
                 </div>

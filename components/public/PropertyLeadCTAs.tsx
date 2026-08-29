@@ -92,7 +92,7 @@ export function PropertyLeadCTAs({
   if (mode === "banner") {
     return (
       <>
-        <div className="rounded-2xl bg-amber-50 border border-amber-200/60 p-4 sm:p-5 hover:shadow-sm transition-shadow duration-300">
+        <div className="rounded-xl bg-amber-50 border border-amber-200/60 p-4 sm:p-5 hover:shadow-sm transition-shadow duration-300">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-start gap-3">
               <div className="shrink-0 w-10 h-10 rounded-xl bg-amber-500/15 flex items-center justify-center text-amber-600 border border-amber-500/20">

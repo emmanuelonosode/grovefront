@@ -28,7 +28,7 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
   // ─── Horizontal variant ────────────────────────────────────────────
   if (variant === "horizontal") {
     return (
-      <article className="group flex bg-white border border-neutral-200 rounded-2xl overflow-hidden hover:shadow-md hover:border-neutral-300 transition-all duration-200">
+      <article className="group flex bg-white border border-neutral-200 rounded-xl overflow-hidden hover:shadow-md hover:border-neutral-300 transition-all duration-200">
         {/* Image */}
         <div className="relative w-36 sm:w-52 shrink-0 overflow-hidden bg-neutral-100">
           <Link href={detailHref} className="absolute inset-0 z-0 block" tabIndex={-1} aria-hidden="true" />
@@ -72,7 +72,7 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
 
   // ─── Default / compact variant ─────────────────────────────────────
   return (
-    <article className="group flex flex-col bg-white border border-neutral-200 rounded-2xl overflow-hidden hover:shadow-lg hover:border-neutral-300 transition-all duration-200">
+    <article className="group flex flex-col bg-white border border-neutral-200 rounded-xl overflow-hidden hover:shadow-lg hover:border-neutral-300 transition-all duration-200">
 
       {/* Image — swipeable carousel */}
       <div className="relative aspect-[3/2] overflow-hidden bg-neutral-100">

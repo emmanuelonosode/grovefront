@@ -313,7 +313,7 @@ export function PropertyEligibilityDrawer({
         <div className="bg-white px-6 pt-6 pb-0 shrink-0">
           <div className="flex items-start justify-between gap-3 mb-5">
             <div className="flex items-center gap-4">
-              <div className="w-11 h-11 rounded-2xl bg-brand/10 flex items-center justify-center shrink-0">
+              <div className="w-11 h-11 rounded-xl bg-brand/10 flex items-center justify-center shrink-0">
                 <HouseIllustration className="w-7 h-7 text-brand" />
               </div>
               <div>
@@ -390,7 +390,7 @@ export function PropertyEligibilityDrawer({
                     </p>
                   </div>
 
-                  <div className="border border-neutral-200 rounded-2xl overflow-hidden">
+                  <div className="border border-neutral-200 rounded-xl overflow-hidden">
                     <div className="bg-neutral-50 px-4 py-2.5 border-b border-neutral-100">
                       <p className="text-[9px] font-black tracking-widest uppercase text-neutral-400">Qualification Summary</p>
                     </div>
@@ -429,7 +429,7 @@ export function PropertyEligibilityDrawer({
                     </h3>
                   </div>
 
-                  <div className="border border-amber-200/70 rounded-2xl overflow-hidden">
+                  <div className="border border-amber-200/70 rounded-xl overflow-hidden">
                     <div className="bg-amber-50/50 px-4 py-2.5 border-b border-amber-100">
                       <p className="text-[9px] font-black tracking-widest uppercase text-amber-700">Income Gap</p>
                     </div>
@@ -459,7 +459,7 @@ export function PropertyEligibilityDrawer({
                   </div>
 
                   {/* Alert subscription — clean teal card, no purple */}
-                  <div className="border border-brand/20 rounded-2xl overflow-hidden">
+                  <div className="border border-brand/20 rounded-xl overflow-hidden">
                     <div className="bg-brand/5 px-4 py-3 flex items-center gap-3 border-b border-brand/10">
                       <div className="w-8 h-8 rounded-xl bg-brand/10 flex items-center justify-center shrink-0">
                         <Bell size={14} className="text-brand" />
@@ -664,7 +664,7 @@ export function PropertyEligibilityDrawer({
 
                     {/* 3x rent preview */}
                     {parsedIncome > 0 && (
-                      <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border text-xs transition-all ${
+                      <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border text-xs transition-all ${
                         passesIncomeRatio
                           ? "border-emerald-200 bg-emerald-50/50 text-emerald-800"
                           : "border-amber-200 bg-amber-50/50 text-amber-800"

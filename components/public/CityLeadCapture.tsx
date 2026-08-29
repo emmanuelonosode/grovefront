@@ -80,7 +80,7 @@ export function CityLeadCapture({ cityName }: Props) {
             placeholder="Your full name *"
             value={name}
             onChange={(e) => { setName(e.target.value); setError(""); }}
-            className="w-full bg-white border border-neutral-200 rounded-xl pl-10 pr-4 py-3.5 text-brand-dark placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all"
+            className="w-full bg-white border border-neutral-200 rounded-lg pl-10 pr-4 py-3.5 text-brand-dark placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all"
           />
         </div>
         <div className="relative">
@@ -90,7 +90,7 @@ export function CityLeadCapture({ cityName }: Props) {
             placeholder="Email address *"
             value={email}
             onChange={(e) => { setEmail(e.target.value); setError(""); }}
-            className="w-full bg-white border border-neutral-200 rounded-xl pl-10 pr-4 py-3.5 text-brand-dark placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all"
+            className="w-full bg-white border border-neutral-200 rounded-lg pl-10 pr-4 py-3.5 text-brand-dark placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all"
           />
         </div>
       </div>
@@ -101,7 +101,7 @@ export function CityLeadCapture({ cityName }: Props) {
           placeholder="Phone number (optional — for faster follow-up)"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          className="w-full bg-white border border-neutral-200 rounded-xl pl-10 pr-4 py-3.5 text-brand-dark placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all"
+          className="w-full bg-white border border-neutral-200 rounded-lg pl-10 pr-4 py-3.5 text-brand-dark placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all"
         />
       </div>
       {error && (
@@ -113,7 +113,7 @@ export function CityLeadCapture({ cityName }: Props) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-brand text-white font-bold py-4 rounded-xl hover:bg-brand-hover transition-colors flex items-center justify-center gap-2 disabled:opacity-70 cursor-pointer text-[14px]"
+        className="w-full bg-brand text-white font-bold py-4 rounded-lg hover:bg-brand-hover transition-colors flex items-center justify-center gap-2 disabled:opacity-70 cursor-pointer text-[14px]"
       >
         {loading ? (
           <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
