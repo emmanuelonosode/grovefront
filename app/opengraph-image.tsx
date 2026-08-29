@@ -241,7 +241,10 @@ export default function Image() {
               border: '1px solid rgba(255,255,255,0.13)',
               borderRadius: 10,
               padding: '13px 22px',
-              width: 'fit-content',
+              // Satori has no `fit-content`; it logged a warning on every OG
+              // render and fell back to stretching the badge full-width.
+              // alignSelf on a flex child is the supported way to shrink to content.
+              alignSelf: 'flex-start',
               marginBottom: 'auto',
             }}
           >

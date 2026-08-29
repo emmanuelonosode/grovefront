@@ -57,6 +57,16 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Build output directory. `npm run build` deletes this before it starts, so
+  // building in place takes the live site down for the whole build — the cause
+  // of the 139 "Could not find a production build" errors in the pm2 log, and
+  // of the ChunkLoadError/"Failed to find Server Action" bursts from clients
+  // still holding references to the previous build's chunks.
+  //
+  // Deploy instead builds into .next-build and swaps it in afterwards:
+  //   NEXT_DIST_DIR=.next-build npm run build
+  //   mv .next .next-old && mv .next-build .next && pm2 restart pfh-frontend
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   // Prevent Next.js from redirecting /api/v1/auth/token/ → /api/v1/auth/token
   // before the rewrite proxy runs. Without this, POST bodies are lost on 308.
   skipTrailingSlashRedirect: true,
