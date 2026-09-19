@@ -270,10 +270,10 @@ export function ApplicationFeePayment({
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    if (adultsCount && adultsCount !== adults) {
+    if (adultsCount && adultsCount >= 1) {
       setAdults(adultsCount);
     }
-  }, [adultsCount, adults]);
+  }, [adultsCount]);
 
   const FEE_PER_ADULT = 35.00;
   const currentTotal = adults * FEE_PER_ADULT;
@@ -298,9 +298,7 @@ export function ApplicationFeePayment({
             if (manualOnly.length > 0) {
               setMethods(manualOnly);
               // If current method is not in returned list, select first
-              if (!manualOnly.some((m: PaymentConfig) => m.method === method)) {
-                setMethod(manualOnly[0].method);
-              }
+              setMethod((prev) => (manualOnly.some((m: PaymentConfig) => m.method === prev) ? prev : manualOnly[0].method));
             }
           }
         }
@@ -310,7 +308,7 @@ export function ApplicationFeePayment({
     }
     fetchConfigs();
     return () => { active = false; };
-  }, [method]);
+  }, []);
 
   // Clean up object URL on unmount if it was a blob URL
   useEffect(() => {
