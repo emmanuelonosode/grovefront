@@ -62,6 +62,71 @@ export function ZelleLogo() {
   );
 }
 
+export function getMethodMeta(methodKey: string) {
+  const k = (methodKey || "").toUpperCase();
+  if (k === "BANK_TRANSFER" || k.includes("ZELLE") || k.includes("BANK")) {
+    return {
+      name: "Zelle / Bank Transfer",
+      logo: "/logo/Zelle_id9UrjyZ9y_1.svg",
+      typeBadge: "Zero Processing Fee",
+      placeholder: "e.g. Zelle Sender Name or Wire Confirmation #",
+      sendLabel: "Send via Zelle / Bank Transfer",
+    };
+  }
+  if (k.includes("CHIME")) {
+    return {
+      name: "Chime",
+      logo: "/logo/chime.png",
+      typeBadge: "Chime Pay",
+      placeholder: "Your $ChimeSign or Email",
+      sendLabel: "Send via Chime",
+    };
+  }
+  if (k.includes("VENMO")) {
+    return {
+      name: "Venmo",
+      logo: "/logo/Venmo_idYMSlb9QP_1.png",
+      typeBadge: "Instant Transfer",
+      placeholder: "Your @VenmoHandle or Phone",
+      sendLabel: "Send via Venmo",
+    };
+  }
+  if (k.includes("CASH")) {
+    return {
+      name: "Cash App",
+      logo: "/logo/Cash_App_Logo_1.png",
+      typeBadge: "Cash App Pay",
+      placeholder: "Your $Cashtag",
+      sendLabel: "Send via Cash App",
+    };
+  }
+  if (k.includes("PAYPAL")) {
+    return {
+      name: "PayPal",
+      logo: "/logo/PayPal_Logo_Alternative_2.webp",
+      typeBadge: "PayPal Transfer",
+      placeholder: "Your PayPal Email or Name",
+      sendLabel: "Send via PayPal",
+    };
+  }
+  if (k.includes("APPLE")) {
+    return {
+      name: "Apple Pay",
+      logo: "/logo/Apple_Logo_2.webp",
+      typeBadge: "Apple Cash",
+      placeholder: "Your Apple Cash Name or Phone",
+      sendLabel: "Send via Apple Cash",
+    };
+  }
+  return {
+    name: "Direct Transfer",
+    logo: "/logo/logo.png",
+    typeBadge: "Verified",
+    placeholder: "Transaction Reference ID",
+    sendLabel: "Send Payment",
+  };
+}
+
 export const PAYMENT_LOGOS: Record<string, React.ReactNode> = {
   VENMO: <VenmoLogo />,
   PAYPAL: <PayPalLogo />,
@@ -179,25 +244,44 @@ export type CardSummary = {
 
 interface Props {
   amount?: number;
+  adultsCount?: number;
+  onAdultsCountChange?: (count: number) => void;
   applicantName?: string;
   initialData?: ManualPaymentSummary | null;
   onPaid: (paymentData: ManualPaymentSummary) => void;
 }
 
 export function ApplicationFeePayment({
-  amount = 2.00,
+  amount = 35.00,
+  adultsCount = 1,
+  onAdultsCountChange,
   applicantName,
   initialData,
   onPaid,
 }: Props) {
   const fileInputId = useId();
+  const [adults, setAdults] = useState<number>(adultsCount || 1);
   const [methods, setMethods] = useState<PaymentConfig[]>(FALLBACK_METHODS);
-  const [method, setMethod] = useState<string>(initialData?.method || "CASHAPP");
+  const [method, setMethod] = useState<string>(initialData?.method || "BANK_TRANSFER");
   const [refId, setRefId] = useState<string>(initialData?.referenceId || "");
   const [file, setFile] = useState<File | null>(initialData?.proofFile || null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialData?.proofPreviewUrl || null);
   const [copied, setCopied] = useState<string | null>(null);
   const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    if (adultsCount && adultsCount !== adults) {
+      setAdults(adultsCount);
+    }
+  }, [adultsCount, adults]);
+
+  const FEE_PER_ADULT = 35.00;
+  const currentTotal = adults * FEE_PER_ADULT;
+
+  const handleAdultsChange = (next: number) => {
+    setAdults(next);
+    onAdultsCountChange?.(next);
+  };
 
   // Fetch active payment methods from backend
   useEffect(() => {
@@ -245,7 +329,8 @@ export function ApplicationFeePayment({
   }, []);
 
   const current = methods.find((m) => m.method === method) || methods[0] || FALLBACK_METHODS[0];
-  const isBankTransfer = current.method === "BANK_TRANSFER";
+  const currentMeta = getMethodMeta(current.method);
+  const isBankTransfer = current.method === "BANK_TRANSFER" || current.method.includes("ZELLE");
   const hasBankDetails = !!(current.account_number || current.routing_number || current.recipient_name);
 
   const bankRows = [
@@ -268,7 +353,7 @@ export function ApplicationFeePayment({
       setError(
         isBankTransfer
           ? "Please enter your wire or transfer confirmation number."
-          : `Please enter your ${current.display_name} username or transaction reference.`
+          : `Please enter your ${currentMeta.name} username or transaction reference.`
       );
       return;
     }
@@ -280,13 +365,13 @@ export function ApplicationFeePayment({
 
     onPaid({
       method: current.method,
-      displayName: current.display_name,
+      displayName: currentMeta.name,
       referenceId: refId.trim(),
       proofFile: file,
       proofFileName: file?.name || initialData?.proofFileName || "payment-receipt.png",
       proofFileSize: file?.size || initialData?.proofFileSize || 0,
       proofPreviewUrl: previewUrl || initialData?.proofPreviewUrl,
-      amount,
+      amount: currentTotal,
     });
   };
 
@@ -299,11 +384,11 @@ export function ApplicationFeePayment({
         </p>
         <div className="flex items-baseline justify-between gap-3">
           <h2 className="text-[24px] font-bold text-[#101828] tracking-tight">
-            Pay {fmt(amount)} Refundable Fee
+            Pay {fmt(currentTotal)} Refundable Fee
           </h2>
           <div className="flex items-baseline gap-1 bg-[#F5F5F7] px-3 py-1 rounded-xl shrink-0">
             <span className="text-[20px] font-black text-[#101828] tabular-nums">
-              {fmt(amount)}
+              {fmt(currentTotal)}
             </span>
             <span className="text-[11px] font-bold text-[#6E6E73] uppercase tracking-wider">
               USD
@@ -316,12 +401,59 @@ export function ApplicationFeePayment({
           <span>Pay using your preferred payment app. 100% refundable if not approved.</span>
         </p>
 
+        {/* Adult Selection Card */}
+        <div className="mt-4 bg-[#f8f9fa] border border-[#e6ebf1] rounded-2xl p-4 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <p className="text-[14px] font-bold text-[#101828]">
+                Number of Adult Applicants (18+)
+              </p>
+              <p className="text-[12px] text-[#667085] mt-0.5">
+                $35.00 screening fee per adult
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center border border-neutral-300 rounded-xl bg-white overflow-hidden shadow-xs">
+                <button
+                  type="button"
+                  onClick={() => handleAdultsChange(Math.max(1, adults - 1))}
+                  disabled={adults <= 1}
+                  className="w-9 h-9 flex items-center justify-center text-lg font-bold text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                  aria-label="Decrease adults"
+                >
+                  –
+                </button>
+                <span className="w-12 text-center text-[15px] font-black text-brand-dark tabular-nums select-none">
+                  {adults}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleAdultsChange(Math.min(10, adults + 1))}
+                  disabled={adults >= 10}
+                  className="w-9 h-9 flex items-center justify-center text-lg font-bold text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                  aria-label="Increase adults"
+                >
+                  +
+                </button>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="text-[10px] font-bold text-[#667085] uppercase tracking-wider">Total Fee</p>
+                <p className="text-[17px] font-black text-brand tabular-nums">{fmt(currentTotal)}</p>
+              </div>
+            </div>
+          </div>
+          <div className="mt-2.5 pt-2.5 border-t border-neutral-200/60 flex items-center justify-between text-[11.5px] text-[#667085]">
+            <span>Calculation: {adults} {adults === 1 ? "adult" : "adults"} × $35.00</span>
+            <span className="font-semibold text-brand-dark">Amount Due: {fmt(currentTotal)}</span>
+          </div>
+        </div>
+
         {/* Info Box */}
         <div className="mt-3.5 text-[12px] text-[#475467] leading-relaxed bg-[#f8f9fa] border border-[#e6ebf1] rounded-xl p-3.5 flex items-start gap-2.5">
           <Info size={16} className="text-brand shrink-0 mt-0.5" />
           <div>
             <p>
-              Send exactly <strong>{fmt(amount)}</strong> using any of our verified payment options below. Once transferred, enter your reference username and upload a quick screenshot receipt.
+              Send exactly <strong>{fmt(currentTotal)}</strong> using any of our verified payment options below. Once transferred, enter your reference username and upload a quick screenshot receipt.
             </p>
           </div>
         </div>
@@ -336,6 +468,7 @@ export function ApplicationFeePayment({
           <div className="grid grid-cols-1 gap-2.5">
             {methods.map((m) => {
               const active = method === m.method;
+              const meta = getMethodMeta(m.method);
               return (
                 <button
                   key={m.method}
@@ -345,22 +478,38 @@ export function ApplicationFeePayment({
                     setError("");
                   }}
                   className={cn(
-                    "w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl border-2 transition-all text-left cursor-pointer",
+                    "w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl border-2 transition-all text-left cursor-pointer",
                     active
                       ? "border-brand bg-brand/[0.04] shadow-sm ring-2 ring-brand/10"
                       : "border-[#E5E5EA] bg-white hover:border-[#D1D1D6]"
                   )}
                 >
-                  <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 shadow-sm flex items-center justify-center">
-                    {PAYMENT_LOGOS[m.method] || <FileText size={22} className="text-brand" />}
+                  <div className="w-12 h-12 rounded-xl bg-white border border-neutral-200/80 shadow-xs shrink-0 flex items-center justify-center p-1.5 overflow-hidden">
+                    {meta.logo ? (
+                      <img
+                        src={meta.logo}
+                        alt={meta.name}
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      PAYMENT_LOGOS[m.method] || <FileText size={22} className="text-brand" />
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className={cn("text-[14.5px] font-bold leading-tight", active ? "text-brand" : "text-[#101828]")}>
-                      {m.display_name}
+                    <div className="flex items-center gap-2">
+                      <p className={cn("text-[15px] font-black leading-tight", active ? "text-brand" : "text-[#101828]")}>
+                        {meta.name}
+                      </p>
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-600">
+                        {meta.typeBadge}
+                      </span>
+                    </div>
+                    <p className="text-[12.5px] text-[#475467] font-semibold mt-0.5 truncate">
+                      {m.display_name && m.display_name !== meta.name ? m.display_name : (m.recipient_name || "Official Account")}
                     </p>
-                    {(m.handle || m.recipient_name) && (
-                      <p className="text-[12px] text-[#667085] mt-0.5 truncate font-medium">
-                        {m.handle || m.recipient_name}
+                    {m.handle && (
+                      <p className="text-[11.5px] text-[#667085] truncate font-mono">
+                        {m.handle}
                       </p>
                     )}
                   </div>
@@ -379,28 +528,32 @@ export function ApplicationFeePayment({
         {/* ── Payment Details Card (matching portal payments styling) ── */}
         <div>
           <label className="block text-[11px] font-bold text-[#475467] uppercase tracking-[0.12em] mb-2.5">
-            2. Send {fmt(amount)} to Account
+            2. Send {fmt(currentTotal)} to Account
           </label>
 
           {isBankTransfer ? (
             /* Bank Transfer — dark navy header + stacked rows with Copy buttons */
             <div className="rounded-2xl overflow-hidden border border-[#D0D5DD] shadow-sm">
               <div className="bg-[#1A3557] px-4 py-4 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0">
-                  {PAYMENT_LOGOS["BANK_TRANSFER"]}
+                <div className="w-11 h-11 rounded-xl bg-white p-1 overflow-hidden shrink-0 flex items-center justify-center">
+                  <img
+                    src={currentMeta.logo || "/logo/Zelle_id9UrjyZ9y_1.svg"}
+                    alt={currentMeta.name}
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest">
-                    {hasBankDetails ? "Wire / ACH Transfer" : current.display_name}
+                    {hasBankDetails ? "Wire / ACH Transfer" : currentMeta.name}
                   </p>
                   <p className="text-[15px] font-bold text-white leading-tight truncate">
-                    {current.bank_name || "Bank Transfer"}
+                    {current.bank_name || currentMeta.name}
                   </p>
                 </div>
                 <div className="shrink-0 text-right">
                   <p className="text-[10px] text-white/60 leading-none mb-0.5">Amount due</p>
                   <p className="text-[18px] font-bold text-white leading-none tabular-nums">
-                    {fmt(amount)}
+                    {fmt(currentTotal)}
                   </p>
                 </div>
               </div>
@@ -413,7 +566,7 @@ export function ApplicationFeePayment({
                         {row.label}
                       </p>
                       <div className="flex items-start gap-2.5">
-                        <p className="flex-1 text-[14px] font-semibold text-[#101828] leading-snug break-words min-w-0">
+                        <p className="flex-1 text-[14px] font-semibold text-[#101828] leading-snug break-words min-w-0 font-mono">
                           {row.value}
                         </p>
                         {row.copyable && row.value && (
@@ -451,19 +604,32 @@ export function ApplicationFeePayment({
           ) : (
             /* P2P (Venmo, Cash App, PayPal, Chime) — dark forest container */
             <div className="bg-[#081C15] rounded-2xl p-5 text-white shadow-sm">
-              <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-3">
-                Send to PrimeFamilyHousing
-              </p>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">
+                  Send via {currentMeta.name}
+                </p>
+                <span className="text-[10.5px] font-bold px-2 py-0.5 rounded-md bg-white/10 text-white/80">
+                  {currentMeta.typeBadge}
+                </span>
+              </div>
               <div className="flex items-start gap-3.5 mb-4">
-                <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 shadow-md mt-0.5">
-                  {PAYMENT_LOGOS[current.method]}
+                <div className="w-12 h-12 rounded-xl bg-white p-1.5 overflow-hidden shrink-0 shadow-md mt-0.5 flex items-center justify-center">
+                  {currentMeta.logo ? (
+                    <img
+                      src={currentMeta.logo}
+                      alt={currentMeta.name}
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    PAYMENT_LOGOS[current.method]
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[21px] font-bold tracking-tight break-all leading-snug font-mono">
                     {current.handle}
                   </p>
-                  <p className="text-[12.5px] text-white/60 mt-0.5 font-medium">
-                    {current.display_name}
+                  <p className="text-[13px] text-white/70 mt-0.5 font-medium">
+                    {current.display_name && current.display_name !== currentMeta.name ? current.display_name : (current.recipient_name || "Official Account")}
                   </p>
                 </div>
                 {current.handle && (
@@ -495,7 +661,7 @@ export function ApplicationFeePayment({
               <div className="pt-3 border-t border-white/10 flex items-center justify-between">
                 <p className="text-[12px] text-white/60">Amount to send</p>
                 <p className="text-[20px] font-black tabular-nums text-white">
-                  {fmt(amount)}
+                  {fmt(currentTotal)}
                 </p>
               </div>
 
@@ -521,7 +687,7 @@ export function ApplicationFeePayment({
           {/* Reference ID input */}
           <div>
             <label htmlFor="ref-id-input" className="block text-[13px] font-semibold text-[#344054] mb-1.5">
-              {isBankTransfer ? "Transaction / Wire Confirmation Number *" : `Your ${current.display_name} Username / Ref *`}
+              {isBankTransfer ? "Transaction / Wire Confirmation Number *" : `Your ${currentMeta.name} Username / Ref *`}
             </label>
             <input
               id="ref-id-input"
@@ -531,12 +697,7 @@ export function ApplicationFeePayment({
                 setRefId(e.target.value);
                 setError("");
               }}
-              placeholder={
-                current.method === "CASHAPP"       ? "$YourCashtag" :
-                current.method === "VENMO"         ? "@YourVenmoHandle" :
-                current.method === "BANK_TRANSFER" ? "e.g. Wire Confirmation Number or Sender Name" :
-                "Confirmation ID or Email"
-              }
+              placeholder={currentMeta.placeholder}
               className="w-full h-11 px-3.5 rounded-xl border border-[#D0D5DD] shadow-sm text-[14.5px] text-[#101828] outline-none transition-all placeholder:text-[#98A2B3] bg-white focus:border-brand focus:ring-2 focus:ring-brand/20"
             />
           </div>

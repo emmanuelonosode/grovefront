@@ -18,7 +18,7 @@ import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { getStoredUTMs, trackEvent, trackMetaEvent } from "@/lib/tracking";
-import { ApplicationFeePayment, ManualPaymentSummary, PAYMENT_LOGOS } from "./ApplicationFeePayment";
+import { ApplicationFeePayment, ManualPaymentSummary, PAYMENT_LOGOS, getMethodMeta } from "./ApplicationFeePayment";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -102,6 +102,7 @@ const schema = z.object({
   move_in_date:                   z.string().min(1, "Required"),
   intended_stay_duration:         z.string().min(1, "Required"),
   months_rent_upfront:            z.number().min(1),
+  number_of_adults:               z.number().min(1, "At least 1 adult applicant required"),
   has_kids:                       z.boolean(),
   number_of_kids:                 z.number(),
   has_vehicles:                   z.boolean(),
@@ -132,7 +133,7 @@ type FormData = z.infer<typeof schema>;
 // Fields validated per step
 const STEP_FIELDS: (keyof FormData)[][] = [
   ["first_name", "last_name", "email", "cell_phone"],                                          // 0 About You
-  ["move_in_date", "intended_stay_duration", "months_rent_upfront",
+  ["move_in_date", "intended_stay_duration", "months_rent_upfront", "number_of_adults",
    "has_kids", "number_of_kids", "has_vehicles", "number_of_vehicles",
    "has_pets", "has_housing_assistance"],                                                      // 1 Your Move
   ["gross_monthly_income", "present_address", "city", "state", "zip_code",
@@ -155,6 +156,7 @@ const DEFAULT_VALUES: FormData = {
   how_long_at_address: "", reason_for_leaving: "",
   current_landlord_name: "", current_landlord_phone: "",
   move_in_date: "", intended_stay_duration: "", months_rent_upfront: 1,
+  number_of_adults: 1,
   has_kids: false, number_of_kids: 0,
   has_vehicles: false, number_of_vehicles: 0,
   has_pets: false, animals: [],
@@ -587,6 +589,22 @@ function Step8_Household() {
   return (
     <div className="space-y-8">
       <div>
+        <p className="text-[17px] font-semibold text-[#101828] mb-1">
+          How many adult applicants (18+) will live here?
+        </p>
+        <p className="text-[14px] text-[#667085] mb-4">
+          Each adult applicant (18+) is required to complete background screening ($35.00 fee per adult).
+        </p>
+        <FieldGroup label="Number of Adults (18+)" required error={errors.number_of_adults?.message}>
+          <BigInput
+            type="number" min={1} max={10} placeholder="1"
+            {...register("number_of_adults", { valueAsNumber: true })}
+            className="max-w-[200px]"
+          />
+        </FieldGroup>
+      </div>
+
+      <div className="border-t border-[#EAECF0] pt-8">
         <p className="text-[17px] font-semibold text-[#101828] mb-4">
           Do you have children or dependents who will live here?
         </p>
@@ -854,15 +872,22 @@ function ReviewStep({
         </div>
         <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start gap-3.5">
-            {manualPayment && (
-              <div className="w-11 h-11 rounded-xl overflow-hidden shrink-0 shadow-xs border border-black/5 flex items-center justify-center">
-                {PAYMENT_LOGOS[manualPayment.method] || <FileText size={20} className="text-brand" />}
-              </div>
-            )}
+            {manualPayment && (() => {
+              const meta = getMethodMeta(manualPayment.method);
+              return (
+                <div className="w-12 h-12 rounded-xl bg-white border border-neutral-200/80 shadow-xs shrink-0 flex items-center justify-center p-1.5 overflow-hidden">
+                  {meta.logo ? (
+                    <img src={meta.logo} alt={meta.name} className="w-full h-full object-contain" />
+                  ) : (
+                    PAYMENT_LOGOS[manualPayment.method] || <FileText size={20} className="text-brand" />
+                  )}
+                </div>
+              );
+            })()}
             <div className="space-y-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="text-[15px] font-bold text-[#101828]">
-                  {manualPayment?.displayName || "Manual Payment"}
+                  {manualPayment ? getMethodMeta(manualPayment.method).name : "Manual Payment"}
                 </p>
                 <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide bg-emerald-100 text-emerald-800 border border-emerald-200">
                   Proof Attached
@@ -883,8 +908,12 @@ function ReviewStep({
             </div>
           </div>
           <div className="sm:text-right shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#F2F4F7]">
-            <p className="text-[10.5px] font-bold text-[#667085] uppercase tracking-wider">Fee Amount</p>
-            <p className="text-[24px] font-black text-[#101828] tabular-nums">$2.00</p>
+            <p className="text-[10.5px] font-bold text-[#667085] uppercase tracking-wider">
+              Fee Amount ({watch("number_of_adults") || 1} {(watch("number_of_adults") || 1) === 1 ? "Adult" : "Adults"})
+            </p>
+            <p className="text-[24px] font-black text-[#101828] tabular-nums">
+              ${Number(manualPayment?.amount || ((watch("number_of_adults") || 1) * 35)).toFixed(2)}
+            </p>
           </div>
         </div>
       </div>
@@ -1279,11 +1308,12 @@ export function RentalApplicationForm({ propertySlug }: Props) {
       toast.success("Application Submitted!");
       // Final step: submit payment proof, then route to success.
       if (data?.id) {
+        const finalFee = Number(manualPayment?.amount || ((watch("number_of_adults") || 1) * 35.00));
         if (manualPayment) {
           try {
             const formData = new FormData();
             formData.append("rental_application", String(data.id));
-            formData.append("amount", String(manualPayment.amount || 2.00));
+            formData.append("amount", String(finalFee));
             formData.append("payment_method", manualPayment.method);
             formData.append("reference_id", manualPayment.referenceId.trim());
             if (manualPayment.proofFile) {
@@ -1314,7 +1344,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
           }
         }
 
-        setFeePayment({ id: data.id, amount: 2.00, name: d.first_name });
+        setFeePayment({ id: data.id, amount: finalFee, name: d.first_name });
         setSubmitting(false);
         trackEvent("application_fee_submitted", { application_id: data.id });
         if (user) {
@@ -1461,7 +1491,8 @@ export function RentalApplicationForm({ propertySlug }: Props) {
         {!postPayment && step === 3 && <Step3_Identity />}
         {!postPayment && step === 4 && (
           <ApplicationFeePayment
-            amount={2.00}
+            adultsCount={watch("number_of_adults") || 1}
+            onAdultsCountChange={(count) => setValue("number_of_adults", count)}
             applicantName={[getValues("first_name"), getValues("last_name")].filter(Boolean).join(" ")}
             initialData={manualPayment}
             onPaid={(data) => {
