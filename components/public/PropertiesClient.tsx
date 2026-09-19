@@ -221,7 +221,7 @@ export function PropertiesClient({
       if (entries[0].isIntersecting) {
         setLoadingMore(true);
         const nextPage = currentPageState + 1;
-        const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "https://admin.primefamilyhousing.com";
+        const apiBase = typeof window !== "undefined" ? "" : (process.env.NEXT_PUBLIC_API_URL ?? "https://admin.primefamilyhousing.com");
         const p = new URLSearchParams();
         const [prMin, prMax] = (priceRange || "").split("-");
         const base: Record<string, string | undefined> = {
@@ -320,7 +320,7 @@ export function PropertiesClient({
         ...(listingType && { listing_type: listingType }),
         ...(q && { q }),
       });
-      const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "https://admin.primefamilyhousing.com";
+      const apiBase = typeof window !== "undefined" ? "" : (process.env.NEXT_PUBLIC_API_URL ?? "https://admin.primefamilyhousing.com");
       const res = await fetch(`${apiBase}/api/v1/properties/?${p}`);
       if (res.ok) setMapResults((await res.json()).results);
     } finally { setMapLoading(false); }

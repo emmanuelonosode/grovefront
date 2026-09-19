@@ -178,14 +178,15 @@ export function PropertyDetailMap({ current, nearby, satellite }: Props) {
 
       const tileUrl = satellite
         ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-        : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+        : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
       const attribution = satellite
         ? "Tiles &copy; Esri &mdash; Source: Esri"
-        : '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+        : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
       L.tileLayer(tileUrl, {
         attribution,
-        maxZoom: 19,
+        subdomains: "abcd",
+        maxZoom: 20,
       }).addTo(map);
 
       addMarkers(L, map, current, nearby, markersRef);

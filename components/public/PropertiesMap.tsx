@@ -212,13 +212,18 @@ export function PropertiesMap({ markers, center, activeSlug, onMarkerClick, onBo
       } catch { return; }
 
       L.control.zoom({ position: "bottomright" }).addTo(map);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
-        maxZoom: 19,
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: "abcd",
+        maxZoom: 20,
       }).addTo(map);
 
+      let userInteracted = false;
+      map.on("dragstart", () => { userInteracted = true; });
+      map.on("zoomstart", () => { userInteracted = true; });
+
       const emitBounds = () => {
-        if (!mountedRef.current) return;
+        if (!mountedRef.current || !userInteracted) return;
         map.invalidateSize();
         const b = map.getBounds();
         if (b.getNorth() === b.getSouth() || b.getEast() === b.getWest()) return;
@@ -234,8 +239,8 @@ export function PropertiesMap({ markers, center, activeSlug, onMarkerClick, onBo
       // Load ALL property dots in background
       loadAllDots(L, map, searchQuery);
 
-      // Trigger initial search-as-I-move after layout paints
-      setTimeout(() => { map.invalidateSize(); emitBounds(); }, 700);
+      // Settle layout
+      setTimeout(() => { if (mapRef.current) mapRef.current.invalidateSize(); }, 700);
     });
 
     return () => {
