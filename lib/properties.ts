@@ -324,10 +324,23 @@ export async function fetchHomepageProperties(): Promise<PropertyListItemAPI[]> 
     const res = await fetch(`${API_BASE}/api/v1/properties/homepage/`, {
       next: { revalidate: 300 },
     });
-    if (!res.ok) return [];
-    const data: PropertyListItemAPI[] | PaginatedProperties = await res.json();
-    const list = Array.isArray(data) ? data : (data as PaginatedProperties).results ?? [];
-    return list.map(cleanPropertyListItem);
+    if (res.ok) {
+      const data: PropertyListItemAPI[] | PaginatedProperties = await res.json();
+      const list = Array.isArray(data) ? data : (data as PaginatedProperties).results ?? [];
+      if (list.length > 0) {
+        return list.map(cleanPropertyListItem);
+      }
+    }
+    // Fallback: if homepage returns empty, fetch the 6 latest published properties
+    const fallbackRes = await fetch(`${API_BASE}/api/v1/properties/?page_size=6`, {
+      next: { revalidate: 300 },
+    });
+    if (fallbackRes.ok) {
+      const data = await fallbackRes.json();
+      const list = Array.isArray(data) ? data : (data as PaginatedProperties).results ?? [];
+      return list.map(cleanPropertyListItem);
+    }
+    return [];
   } catch (err) {
     console.error("fetchHomepageProperties failed:", err);
     return [];

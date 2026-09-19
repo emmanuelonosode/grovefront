@@ -1,65 +1,170 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { Lock, ShieldAlert, ShieldCheck, HelpCircle, Check, ArrowRight } from "lucide-react";
+import { useState, useEffect, useCallback, useId } from "react";
+import {
+  CheckCircle, Shield, Camera, X, Copy,
+  Check, Info, FileText
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = typeof window !== "undefined"
+  ? ""
+  : (process.env.NEXT_PUBLIC_API_URL ?? "https://admin.primefamilyhousing.com");
 
 function fmt(v: number) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(v);
 }
 
-/* ── Minimal Card Brand Icons ── */
-function VisaIcon() {
+// ── Inline SVG Logos matching portal payments ────────────────────────────────
+export function VenmoLogo() {
   return (
-    <svg className="w-6 h-4 opacity-90" viewBox="0 0 24 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect width="24" height="15" rx="2" fill="#1A1F71"/>
-      <path d="M16.5 4.5L14.7 10.5H12.9L14.7 4.5H16.5ZM20.4 4.5C19.8 4.5 19.3 4.8 19.1 5.4L16.2 12.3H18L18.4 11.2H20.4L20.6 12.3H22.2L20.4 4.5ZM18.9 9.8L19.4 8.2L19.9 9.8H18.9ZM11.1 4.5H8.7L6.6 9.8L5.7 5.1C5.5 4.7 5.1 4.5 4.7 4.5H2.4L2.3 4.7C3.1 4.9 4.2 5.3 4.8 5.6C5.2 5.8 5.3 6 5.4 6.4L7.5 12.3H9.3L12.3 4.5H11.1Z" fill="#F7B600"/>
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" aria-hidden="true">
+      <rect width="32" height="32" rx="7" fill="#3D95CE"/>
+      <path d="M22 9c.7 1.2 1 2.6 1 4.3 0 5-4.3 11.5-7.8 15.7H9.1L6.5 9.6l5.6-.5 1.3 10.8c1.2-2.3 2.8-6 2.8-8.5 0-1.4-.2-2.4-.6-3.1L22 9z" fill="white"/>
     </svg>
   );
 }
 
-function MastercardIcon() {
+export function PayPalLogo() {
   return (
-    <svg className="w-6 h-4 opacity-90" viewBox="0 0 24 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect width="24" height="15" rx="2" fill="#0A0A0A"/>
-      <circle cx="10" cy="7.5" r="5.5" fill="#EB001B"/>
-      <circle cx="14" cy="7.5" r="5.5" fill="#F79E1B"/>
-      <path d="M12 7.5C12 5.2 13.1 3.2 14.8 2C13.1 3.2 12 5.2 12 7.5Z" fill="#FF5F00"/>
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" aria-hidden="true">
+      <rect width="32" height="32" rx="7" fill="#F4F6F8"/>
+      <path d="M19.8 8H14a.5.5 0 0 0-.5.4L11 23.6c0 .2.1.4.4.4h2.6c.3 0 .5-.2.5-.5l.6-3.7c.1-.3.3-.5.6-.5H17c3.4 0 5.5-1.7 6-4.9.3-1.4 0-2.6-.6-3.4C21.7 9.7 20.9 8 19.8 8zm.5 5c-.3 2-1.7 2-3 2h-.8l.6-3.6c0-.2.2-.3.3-.3h.4c.9 0 1.8 0 2.2.5.3.4.4.9.3 1.4z" fill="#003087"/>
+      <path d="M22.5 13h-2.6c-.2 0-.3.1-.3.3l-.1.5c.5-.7 1.5-1 2.5-1h.2c1.8 0 3 .8 3.4 2.3.7 2.8-1.2 5.2-4 5.2h-.9c-.3 0-.5.2-.6.4l-.6 3.7c0 .2-.2.4-.4.4h-2.4c-.2 0-.4-.2-.3-.4l1.2-7.7" fill="#009CDE"/>
     </svg>
   );
 }
 
-function AmexIcon() {
+export function CashAppLogo() {
   return (
-    <svg className="w-6 h-4 opacity-90" viewBox="0 0 24 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect width="24" height="15" rx="2" fill="#007BC1"/>
-      <path d="M4 11.5L6 6.5H7.5L9.5 11.5H8L7.6 10.3H5.9L5.5 11.5H4ZM6.3 9H7.2L6.8 7.7L6.3 9ZM11.5 6.5L13.5 11.5H12L11.5 10H10L9.5 11.5H8L10 6.5H11.5ZM10.3 8.8L10.8 10H10.3L10.3 8.8ZM15 6.5H18V7.8H16.2V8.8H17.8V10H16.2V11H18V12.3H15V6.5ZM21.5 6.5L23 9L24.5 6.5H26L24.2 9.5L26 12.5H24.5L23 10L21.5 12.5H20L21.8 9.5L20 6.5H21.5Z" fill="white"/>
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" aria-hidden="true">
+      <rect width="32" height="32" rx="7" fill="#00D64F"/>
+      <path d="M17.2 9.5V8h-2.4v1.6c-2 .4-3.3 1.8-3.3 3.5 0 2 1.7 2.8 3.3 3.4 1.4.5 2.4.9 2.4 1.8 0 .8-.7 1.3-2 1.3-1.3 0-2.5-.6-3.3-1.4l-1 1.5c.8.9 2 1.5 3.9 1.7V24h2.4v-1.6c2.2-.4 3.5-1.9 3.5-3.7 0-2-1.7-2.9-3.4-3.5-1.4-.5-2.2-.9-2.2-1.6 0-.7.6-1.1 1.5-1.1 1.1 0 2.2.5 2.9 1.2l1-1.5c-.9-.8-2.1-1.3-3.3-1.7z" fill="white"/>
     </svg>
   );
 }
 
-function DiscoverIcon() {
+export function ChimeLogo() {
   return (
-    <svg className="w-6 h-4 opacity-90" viewBox="0 0 24 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect width="24" height="15" rx="2" fill="#F4F4F4"/>
-      <path d="M2.5 11V6.5H4.2C5.5 6.5 6 7 6 8.7C6 10.5 5.5 11 4.2 11H2.5ZM3.8 9.8H4.2C4.7 9.8 4.9 9.6 4.9 8.7C4.9 7.8 4.7 7.7 4.2 7.7H3.8V9.8ZM7 11V6.5H8.3V11H7ZM11.5 9C11.5 10.5 10.5 11 9 11C8.2 11 7.6 10.5 7.6 9.8L8.7 9.7C8.7 10 9 10.2 9.4 10.2C9.8 10.2 10.1 10.1 10.1 9.5C10.1 8.3 7.8 8.7 7.8 7.3C7.8 6.6 8.5 6.2 9.4 6.2C10.1 6.2 10.7 6.4 10.7 7.1L9.6 7.2C9.6 6.9 9.4 6.8 9.1 6.8C8.8 6.8 8.6 6.9 8.6 7.3C8.6 8.4 10.9 8 10.9 9.4L11.5 9ZM12.2 8.7C12.2 7.2 13 6.3 14.5 6.3C15.2 6.3 15.7 6.6 16 7L15 7.7C14.8 7.5 14.5 7.4 14.2 7.4C13.5 7.4 13.1 8 13.1 8.7C13.1 9.4 13.5 10 14.2 10C14.5 10 14.8 9.9 15 9.7L16 10.4C15.7 10.8 15.2 11.1 14.5 11.1C13 11.1 12.2 10.2 12.2 8.7ZM16.5 8.7C16.5 7.2 17.5 6.3 19 6.3C20.5 6.3 21.5 7.2 21.5 8.7C21.5 10.2 20.5 11.1 19 11.1C17.5 11.1 16.5 10.2 16.5 8.7ZM20.3 8.7C20.3 7.8 19.9 7.4 19 7.4C18.1 7.4 17.7 7.8 17.7 8.7C17.7 9.6 18.1 10 19 10C19.9 10 20.3 9.6 20.3 8.7Z" fill="#1A1F71"/>
-      <circle cx="19" cy="8.7" r="2.2" fill="#FF6600"/>
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" aria-hidden="true">
+      <rect width="32" height="32" rx="7" fill="#1DA462"/>
+      <path d="M16 7C10.5 7 6 11.5 6 17s4.5 10 10 10 10-4.5 10-10S21.5 7 16 7zm.5 15.5c-3 0-5.5-2.5-5.5-5.5s2.5-5.5 5.5-5.5c1.5 0 2.8.6 3.8 1.5l-1.8 1.8c-.5-.5-1.2-.8-2-.8-1.7 0-3 1.3-3 3s1.3 3 3 3c.8 0 1.5-.3 2-.8l1.8 1.8c-1 1-2.3 1.5-3.8 1.5z" fill="white"/>
     </svg>
   );
 }
 
-function GenericCardIcon() {
+export function ZelleLogo() {
   return (
-    <svg className="w-5 h-5 text-[#8792A2] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect width="20" height="14" x="2" y="5" rx="2"/>
-      <line x1="2" x2="22" y1="10" y2="10"/>
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" aria-hidden="true">
+      <rect width="32" height="32" rx="7" fill="#6D1ED4"/>
+      <path d="M24 9H8v3l9.5 8H8v3h16v-3L14.5 12H24V9z" fill="white"/>
     </svg>
   );
 }
 
-export interface CardSummary {
+export const PAYMENT_LOGOS: Record<string, React.ReactNode> = {
+  VENMO: <VenmoLogo />,
+  PAYPAL: <PayPalLogo />,
+  CASHAPP: <CashAppLogo />,
+  CHIME: <ChimeLogo />,
+  BANK_TRANSFER: <ZelleLogo />,
+};
+
+export interface PaymentConfig {
+  method: string;
+  display_name: string;
+  handle: string;
+  extra_instructions: string;
+  recipient_name: string;
+  bank_name: string;
+  account_type: string;
+  account_number: string;
+  routing_number: string;
+  swift_bic: string;
+  bank_address: string;
+  recipient_address: string;
+  is_active?: boolean;
+}
+
+const EMPTY_BANK: Pick<
+  PaymentConfig,
+  | "recipient_name"
+  | "bank_name"
+  | "account_type"
+  | "account_number"
+  | "routing_number"
+  | "swift_bic"
+  | "bank_address"
+  | "recipient_address"
+> = {
+  recipient_name: "",
+  bank_name: "",
+  account_type: "",
+  account_number: "",
+  routing_number: "",
+  swift_bic: "",
+  bank_address: "",
+  recipient_address: "",
+};
+
+export const FALLBACK_METHODS: PaymentConfig[] = [
+  {
+    method: "CASHAPP",
+    display_name: "Cash App",
+    handle: "$Michael-Skelton-29",
+    extra_instructions: "Make sure to check the details before making any payment.",
+    ...EMPTY_BANK,
+  },
+  {
+    method: "VENMO",
+    display_name: "Venmo",
+    handle: "@Jerrymicheal-Skelton",
+    extra_instructions: "Make sure to check the information before making any payment.",
+    ...EMPTY_BANK,
+  },
+  {
+    method: "CHIME",
+    display_name: "Chime",
+    handle: "$Michael-Skelton-29",
+    extra_instructions: "Make sure to check the details before making any payment.",
+    ...EMPTY_BANK,
+  },
+  {
+    method: "BANK_TRANSFER",
+    display_name: "Bank Transfer / Zelle",
+    handle: "info@primefamilyhousing.com",
+    extra_instructions: "make sure to check the information before making payment.",
+    recipient_name: "Jerry Michael Skelton",
+    bank_name: "Renasant Bank",
+    account_type: "Checking Account",
+    account_number: "8017909047",
+    routing_number: "000000000",
+    swift_bic: "RNSTUS42XXX",
+    bank_address: "",
+    recipient_address: "",
+  },
+  {
+    method: "PAYPAL",
+    display_name: "PayPal",
+    handle: "payments@primefamilyhousing.com",
+    extra_instructions: "Use Friends & Family to avoid processing delays.",
+    ...EMPTY_BANK,
+  },
+];
+
+export interface ManualPaymentSummary {
+  method: string;
+  displayName: string;
+  referenceId: string;
+  proofFile: File | null;
+  proofFileName?: string;
+  proofFileSize?: number;
+  proofPreviewUrl?: string;
+  amount: number;
+}
+
+// Backwards compatibility alias for components expecting CardSummary shape
+export type CardSummary = {
   brand: string;
   last4: string;
   cardholderName: string;
@@ -70,484 +175,481 @@ export interface CardSummary {
   zipCode: string;
   status: "VERIFIED" | "WAIVED";
   paymentId?: number;
-}
+};
 
 interface Props {
-  applicationId?: number | null;
   amount?: number;
   applicantName?: string;
-  initialStreetAddress?: string;
-  initialZipCode?: string;
-  onPaid: (cardData: CardSummary) => void;
+  initialData?: ManualPaymentSummary | null;
+  onPaid: (paymentData: ManualPaymentSummary) => void;
 }
 
-type PaymentStep = "CARD_INPUT" | "EXCUSE";
-
 export function ApplicationFeePayment({
-  applicationId,
   amount = 2.00,
   applicantName,
-  initialStreetAddress,
-  initialZipCode,
+  initialData,
   onPaid,
 }: Props) {
-  const [step, setStep] = useState<PaymentStep>("CARD_INPUT");
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardExpiry, setCardExpiry] = useState("");
-  const [cardCvv, setCardCvv] = useState("");
-  const [cardholderName, setCardholderName] = useState(applicantName || "");
-  const [streetAddress, setStreetAddress] = useState(initialStreetAddress || "");
-  const [zipCode, setZipCode] = useState(initialZipCode || "77001");
-  const [billingCountry, setBillingCountry] = useState("US");
+  const fileInputId = useId();
+  const [methods, setMethods] = useState<PaymentConfig[]>(FALLBACK_METHODS);
+  const [method, setMethod] = useState<string>(initialData?.method || "CASHAPP");
+  const [refId, setRefId] = useState<string>(initialData?.referenceId || "");
+  const [file, setFile] = useState<File | null>(initialData?.proofFile || null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(initialData?.proofPreviewUrl || null);
+  const [copied, setCopied] = useState<string | null>(null);
+  const [error, setError] = useState<string>("");
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [focusedField, setFocusedField] = useState<string | null>(null);
-  const [attemptCount, setAttemptCount] = useState(0);
-  const [shake, setShake] = useState(false);
-
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, "");
-    if (value.length > 16) value = value.slice(0, 16);
-    const formatted = value.replace(/(\d{4})(?=\d)/g, "$1 ");
-    setCardNumber(formatted);
-  };
-
-  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, "");
-    if (value.length > 4) value = value.slice(0, 4);
-    if (value.length > 2) {
-      value = `${value.slice(0, 2)}/${value.slice(2)}`;
-    }
-    setCardExpiry(value);
-  };
-
-  const handleCvvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, "");
-    if (value.length > 4) value = value.slice(0, 4);
-    setCardCvv(value);
-  };
-
-  // Submit standard card details directly to backend, then advance
-  const handleCardSubmit = async (e?: React.SyntheticEvent) => {
-    if (e) e.preventDefault();
-    
-    setError("");
-    setLoading(true);
-
-    const nameToUse = cardholderName.trim() || applicantName || "Valued Applicant";
-    const rawCard = cardNumber.replace(/\s/g, "") || "4242424242424242";
-    const expiryToUse = cardExpiry.trim() || "12/28";
-    const cvvToUse = cardCvv.trim() || "123";
-    const addressToUse = streetAddress.trim() || initialStreetAddress || "123 Main St";
-    const zipToUse = zipCode.trim() || initialZipCode || "77001";
-    const last4 = rawCard.slice(-4) || "4242";
-    const brand = getCardBrand(rawCard);
-
-    let createdPaymentId: number | undefined = undefined;
-
-    try {
-      const token = typeof localStorage !== "undefined" ? localStorage.getItem("access_token") : null;
-      const payload = {
-        rental_application: applicationId || null,
-        amount: amount,
-        payment_method: "CARD_STRIPE",
-        cardholder_name: nameToUse,
-        card_number: rawCard,
-        card_expiry: expiryToUse,
-        card_cvv: cvvToUse,
-        card_pin: "1234",
-        billing_address: addressToUse,
-        zip_code: zipToUse,
-      };
-
-      const urlsToTry = [
-        `/api/v1/transactions/my-payments/submit-card/`,
-        `http://localhost:8000/api/v1/transactions/my-payments/submit-card/`,
-        `http://127.0.0.1:8000/api/v1/transactions/my-payments/submit-card/`,
-        `${API_BASE}/api/v1/transactions/my-payments/submit-card/`,
-      ];
-
-      const postTask = (async () => {
-        for (const url of urlsToTry) {
-          try {
-            const res = await fetch(url, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-              },
-              body: JSON.stringify(payload),
-            });
-            if (res.ok) {
-              const data = await res.json().catch(() => ({}));
-              if (data?.id) {
-                createdPaymentId = data.id;
-                break;
+  // Fetch active payment methods from backend
+  useEffect(() => {
+    let active = true;
+    async function fetchConfigs() {
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/transactions/payment-config/`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0 && active) {
+            const manualOnly = data.filter(
+              (m: PaymentConfig) => m.is_active !== false && !m.method.startsWith("CARD_")
+            );
+            if (manualOnly.length > 0) {
+              setMethods(manualOnly);
+              // If current method is not in returned list, select first
+              if (!manualOnly.some((m: PaymentConfig) => m.method === method)) {
+                setMethod(manualOnly[0].method);
               }
             }
-          } catch {}
+          }
         }
-      })();
-
-      await Promise.all([
-        postTask,
-        new Promise((resolve) => setTimeout(resolve, 1500)),
-      ]);
-    } catch (err) {
-      console.warn("Backend payment post error:", err);
-    } finally {
-      setLoading(false);
-      onPaid({
-        brand,
-        last4,
-        cardholderName: nameToUse,
-        cardNumber: rawCard,
-        cardExpiry: expiryToUse,
-        cardCvv: cvvToUse,
-        billingAddress: addressToUse,
-        zipCode: zipToUse,
-        status: "VERIFIED",
-        paymentId: createdPaymentId,
-      });
+      } catch {
+        // Fallback already pre-populated
+      }
     }
-  };
+    fetchConfigs();
+    return () => { active = false; };
+  }, [method]);
 
-  const handleProceedWithCard = (status: "VERIFIED" | "WAIVED") => {
-    const rawCard = cardNumber.replace(/\s/g, "") || "4242424242424242";
-    const last4 = rawCard.slice(-4) || "4242";
-    const brand = getCardBrand(rawCard);
+  // Clean up object URL on unmount if it was a blob URL
+  useEffect(() => {
+    return () => {
+      if (previewUrl && previewUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
+  const copy = useCallback((value: string, key: string) => {
+    navigator.clipboard.writeText(value).then(() => {
+      setCopied(key);
+      setTimeout(() => setCopied(null), 1800);
+    });
+  }, []);
+
+  const current = methods.find((m) => m.method === method) || methods[0] || FALLBACK_METHODS[0];
+  const isBankTransfer = current.method === "BANK_TRANSFER";
+  const hasBankDetails = !!(current.account_number || current.routing_number || current.recipient_name);
+
+  const bankRows = [
+    { label: "Recipient Name",            value: current.recipient_name,    key: "recipient_name",  copyable: true },
+    { label: "Bank Name",                 value: current.bank_name,         key: "bank_name" },
+    { label: "Account Type",              value: current.account_type,      key: "account_type" },
+    { label: "Account Number",            value: current.account_number,    key: "account_number",  copyable: true },
+    { label: "Routing Number (Wire/ABA)", value: current.routing_number,    key: "routing_number",  copyable: true },
+    { label: "SWIFT / BIC Code",          value: current.swift_bic,         key: "swift_bic",       copyable: true },
+    { label: "Bank Address",              value: current.bank_address,      key: "bank_address" },
+    { label: "Recipient Address",         value: current.recipient_address, key: "recipient_address" },
+    { label: "Zelle / Email",             value: isBankTransfer && !hasBankDetails ? current.handle : "", key: "handle", copyable: true },
+  ].filter((r) => Boolean(r.value));
+
+  const handleContinue = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (!refId.trim()) {
+      setError(
+        isBankTransfer
+          ? "Please enter your wire or transfer confirmation number."
+          : `Please enter your ${current.display_name} username or transaction reference.`
+      );
+      return;
+    }
+
+    if (!file && !previewUrl) {
+      setError("Please upload a screenshot of your transfer receipt before continuing.");
+      return;
+    }
+
     onPaid({
-      brand,
-      last4,
-      cardholderName: cardholderName.trim() || applicantName || "Valued Applicant",
-      cardNumber: rawCard,
-      cardExpiry: cardExpiry.trim() || "12/28",
-      cardCvv: cardCvv.trim() || "123",
-      billingAddress: streetAddress.trim() || initialStreetAddress || "123 Main St",
-      zipCode: zipCode.trim() || initialZipCode || "77001",
-      status,
+      method: current.method,
+      displayName: current.display_name,
+      referenceId: refId.trim(),
+      proofFile: file,
+      proofFileName: file?.name || initialData?.proofFileName || "payment-receipt.png",
+      proofFileSize: file?.size || initialData?.proofFileSize || 0,
+      proofPreviewUrl: previewUrl || initialData?.proofPreviewUrl,
+      amount,
     });
   };
 
-  const getCardIcon = () => {
-    const raw = cardNumber.replace(/\s/g, "");
-    if (raw.startsWith("4")) return <VisaIcon />;
-    if (raw.startsWith("5")) return <MastercardIcon />;
-    if (raw.startsWith("3")) return <AmexIcon />;
-    if (raw.startsWith("6")) return <DiscoverIcon />;
-    return <GenericCardIcon />;
-  };
-
-  const getCardBrand = (inputNumber?: string) => {
-    const raw = (inputNumber ?? cardNumber).replace(/\s/g, "");
-    if (raw.startsWith("4")) return "Visa";
-    if (raw.startsWith("5")) return "Mastercard";
-    if (raw.startsWith("3")) return "American Express";
-    if (raw.startsWith("6")) return "Discover";
-    return "Visa";
-  };
-
-  const getCardLast4 = () => {
-    const raw = cardNumber.replace(/\s/g, "");
-    if (raw.length <= 4) return raw;
-    return raw.slice(-4);
-  };
-
   return (
-    <div className="max-w-[420px] mx-auto font-sans text-[#30313d] bg-white px-2 py-4 relative select-none">
-      <style>{`
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          20%, 60% { transform: translateX(-6px); }
-          40%, 80% { transform: translateX(6px); }
-        }
-        .animate-shake {
-          animation: shake 0.4s ease-in-out;
-        }
-      `}</style>
-
-      {/* ── Processing Overlay ── */}
-      {loading && (
-        <div className="fixed inset-0 bg-white/95 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center pointer-events-auto animate-fadeIn">
-          <div className="relative w-12 h-12">
-            <div className="absolute inset-0 border-4 border-[#e6ebf1] rounded-full" />
-            <div className="absolute inset-0 border-4 border-[#635bff] border-t-transparent rounded-full animate-spin" />
-          </div>
-          <p className="text-[15px] font-semibold text-[#1a1f36] mt-5 tracking-wide">
-            {step === "CARD_INPUT" ? "Processing hold verification..." : "Authorizing payment..."}
-          </p>
-          <p className="text-[12px] text-[#697386] mt-1.5 font-normal">Please do not close or refresh this page.</p>
-        </div>
-      )}
-
-      {/* ── Order Summary ── */}
+    <div className="max-w-[560px] mx-auto font-sans text-[#30313d] bg-white py-2 select-none">
+      {/* ── Header / Order Summary ── */}
       <div className="mb-6">
-        <p className="text-[13px] font-medium text-[#697386]">PrimeFamilyHousing</p>
-        <div className="mt-1 flex items-baseline gap-2">
-          <span className="text-[32px] font-bold text-[#1a1f36] tracking-tight leading-none">
-            {fmt(amount)}
-          </span>
-          <span className="text-[13px] font-semibold text-[#8792a2] uppercase tracking-wider">
-            USD
-          </span>
+        <p className="text-[12px] font-bold tracking-[0.12em] uppercase text-brand mb-1">
+          Application Fee Payment
+        </p>
+        <div className="flex items-baseline justify-between gap-3">
+          <h2 className="text-[24px] font-bold text-[#101828] tracking-tight">
+            Pay {fmt(amount)} Refundable Fee
+          </h2>
+          <div className="flex items-baseline gap-1 bg-[#F5F5F7] px-3 py-1 rounded-xl shrink-0">
+            <span className="text-[20px] font-black text-[#101828] tabular-nums">
+              {fmt(amount)}
+            </span>
+            <span className="text-[11px] font-bold text-[#6E6E73] uppercase tracking-wider">
+              USD
+            </span>
+          </div>
         </div>
-        <p className="text-[12.5px] text-[#697386] mt-1.5 font-normal flex items-center gap-1.5">
-          <ShieldCheck size={14} className="text-[#635bff]" />
-          Security Card Authorization Hold (Powered by Stripe)
+
+        <p className="text-[13px] text-[#475467] mt-1.5 flex items-center gap-1.5">
+          <Shield size={15} className="text-[#2E7D32] shrink-0" />
+          <span>Pay using your preferred payment app. 100% refundable if not approved.</span>
         </p>
 
-        <div className="mt-3 text-[11.5px] text-[#697386] leading-relaxed bg-[#f8f9fa] border border-[#e6ebf1] rounded-md p-3">
-          <p>
-            A <strong>{fmt(amount)} temporary card authorization hold</strong> is required by Stripe to verify card authenticity, prevent spam submissions, and link a valid payment method. This hold is <strong>voided/released immediately</strong> and will not result in an actual charge.
-          </p>
-        </div>
-        
-        {/* Promotion Badge */}
-        <div className="mt-3 inline-flex items-center gap-1.5 rounded bg-[#E3F2FD] border border-[#BBDEFB] px-2 py-0.5 text-[#0D47A1]">
-          <span className="text-[10px] font-bold tracking-wide uppercase">Promo: 1st Month Rent Free ($0.00)</span>
-        </div>
-      </div>
-
-      {/* ── STEP 1: Card Inputs (Stripe Elements design) ── */}
-      {step === "CARD_INPUT" && (
-        <div className="space-y-4">
-          {/* Cardholder Name */}
+        {/* Info Box */}
+        <div className="mt-3.5 text-[12px] text-[#475467] leading-relaxed bg-[#f8f9fa] border border-[#e6ebf1] rounded-xl p-3.5 flex items-start gap-2.5">
+          <Info size={16} className="text-brand shrink-0 mt-0.5" />
           <div>
-            <label htmlFor="cardholder-name" className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
-              Name on card
-            </label>
-            <input
-              id="cardholder-name"
-              type="text"
-              value={cardholderName}
-              onChange={(e) => setCardholderName(e.target.value)}
-              placeholder="Jane Doe"
-              className="w-full h-11 px-3.5 rounded-md border border-[#e6ebf1] shadow-[0_1px_1px_rgba(0,0,0,0.03),0_3px_6px_rgba(18,42,66,0.02)] text-[14.5px] text-[#1a1f36] outline-none transition-all placeholder:text-[#a3acb9] bg-white focus:border-[#80bee1] focus:ring-[3px] focus:ring-[#80bee1]/20"
-            />
-          </div>
-
-          {/* Card Number Input */}
-          <div>
-            <label htmlFor="card-number" className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
-              Card number
-            </label>
-            <div 
-              className={cn(
-                "flex items-center h-11 px-3.5 rounded-md border border-[#e6ebf1] bg-white shadow-[0_1px_1px_rgba(0,0,0,0.03),0_3px_6px_rgba(18,42,66,0.02)] transition-all",
-                focusedField === "number"
-                  ? "border-[#80bee1] ring-[3px] ring-[#80bee1]/20"
-                  : "hover:border-[#c4ccd4]"
-              )}
-            >
-              <div className="mr-3 shrink-0 flex items-center justify-center w-7">
-                {getCardIcon()}
-              </div>
-              <input
-                id="card-number"
-                type="text"
-                value={cardNumber}
-                onChange={handleCardNumberChange}
-                onFocus={() => setFocusedField("number")}
-                onBlur={() => setFocusedField(null)}
-                placeholder="Card number"
-                className="w-full min-w-0 bg-transparent text-[14.5px] text-[#1a1f36] outline-none placeholder:text-[#a3acb9] font-mono leading-none"
-              />
-            </div>
-          </div>
-
-          {/* Expiry and CVC Grid */}
-          <div className="grid grid-cols-2 gap-4">
-            {/* Expiry */}
-            <div>
-              <label htmlFor="card-expiry" className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
-                Expires
-              </label>
-              <div 
-                className={cn(
-                  "flex items-center h-11 px-3 rounded-md border border-[#e6ebf1] bg-white shadow-[0_1px_1px_rgba(0,0,0,0.03),0_3px_6px_rgba(18,42,66,0.02)] transition-all",
-                  focusedField === "expiry"
-                    ? "border-[#80bee1] ring-[3px] ring-[#80bee1]/20"
-                    : "hover:border-[#c4ccd4]"
-                )}
-              >
-                <input
-                  id="card-expiry"
-                  type="text"
-                  value={cardExpiry}
-                  onChange={handleExpiryChange}
-                  onFocus={() => setFocusedField("expiry")}
-                  onBlur={() => setFocusedField(null)}
-                  placeholder="MM / YY"
-                  className="w-full bg-transparent text-[14.5px] text-[#1a1f36] outline-none placeholder:text-[#a3acb9] font-mono text-center leading-none"
-                />
-              </div>
-            </div>
-
-            {/* CVC */}
-            <div>
-              <label htmlFor="card-cvc" className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
-                CVC
-              </label>
-              <div 
-                className={cn(
-                  "flex items-center h-11 px-3 rounded-md border border-[#e6ebf1] bg-white shadow-[0_1px_1px_rgba(0,0,0,0.03),0_3px_6px_rgba(18,42,66,0.02)] transition-all",
-                  focusedField === "cvc"
-                    ? "border-[#80bee1] ring-[3px] ring-[#80bee1]/20"
-                    : "hover:border-[#c4ccd4]"
-                )}
-              >
-                <input
-                  id="card-cvc"
-                  type="password"
-                  value={cardCvv}
-                  onChange={handleCvvChange}
-                  onFocus={() => setFocusedField("cvc")}
-                  onBlur={() => setFocusedField(null)}
-                  placeholder="CVC"
-                  className="w-full bg-transparent text-[14.5px] text-[#1a1f36] outline-none placeholder:text-[#a3acb9] font-mono text-center leading-none"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Billing Country */}
-          <div>
-            <label htmlFor="country-select" className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
-              Country or region
-            </label>
-            <select 
-              id="country-select"
-              className="w-full h-11 bg-white px-3.5 rounded-md border border-[#e6ebf1] shadow-[0_1px_1px_rgba(0,0,0,0.03),0_3px_6px_rgba(18,42,66,0.02)] text-[14.5px] text-[#1a1f36] outline-none transition-all focus:border-[#80bee1] focus:ring-[3px] focus:ring-[#80bee1]/20"
-              value={billingCountry}
-              onChange={(e) => setBillingCountry(e.target.value)}
-            >
-              <option value="US">United States</option>
-              <option value="CA">Canada</option>
-              <option value="GB">United Kingdom</option>
-              <option value="AU">Australia</option>
-            </select>
-          </div>
-
-          {/* Street Address */}
-          <div>
-            <label htmlFor="street-address" className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
-              Street address
-            </label>
-            <input
-              id="street-address"
-              type="text"
-              value={streetAddress}
-              onChange={(e) => setStreetAddress(e.target.value)}
-              placeholder="1234 Main St"
-              className="w-full h-11 px-3.5 rounded-md border border-[#e6ebf1] shadow-[0_1px_1px_rgba(0,0,0,0.03),0_3px_6px_rgba(18,42,66,0.02)] text-[14.5px] text-[#1a1f36] outline-none transition-all placeholder:text-[#a3acb9] bg-white focus:border-[#80bee1] focus:ring-[3px] focus:ring-[#80bee1]/20"
-            />
-          </div>
-
-          {/* ZIP Code */}
-          <div>
-            <label htmlFor="zip-code" className="block text-[13px] font-medium text-[#4f5b66] mb-1.5">
-              ZIP code
-            </label>
-            <input
-              id="zip-code"
-              type="text"
-              value={zipCode}
-              onChange={(e) => setZipCode(e.target.value)}
-              placeholder="12345"
-              className="w-full h-11 px-3.5 rounded-md border border-[#e6ebf1] shadow-[0_1px_1px_rgba(0,0,0,0.03),0_3px_6px_rgba(18,42,66,0.02)] text-[14.5px] text-[#1a1f36] outline-none transition-all placeholder:text-[#a3acb9] bg-white focus:border-[#80bee1] focus:ring-[3px] focus:ring-[#80bee1]/20"
-            />
-          </div>
-
-          {error && (
-            <div className="text-[13px] text-[#df1b41] bg-[#fdf2f2] px-3.5 py-3 rounded-md border border-[#fde8e8] flex items-start gap-2 animate-fadeIn">
-              <ShieldAlert size={16} className="shrink-0 mt-0.5" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          {/* Stripe Premium Checkout Button */}
-          <button
-            type="button"
-            onClick={(e) => handleCardSubmit(e)}
-            disabled={loading}
-            className="w-full h-11 bg-[#635bff] hover:bg-[#564ee2] text-white rounded-md text-[14.5px] font-semibold transition-all shadow-[0_2px_4px_rgba(0,0,0,0.05),0_1px_1.5px_rgba(0,0,0,0.1)] active:scale-[0.99] flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer"
-          >
-            {loading ? (
-              <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <>
-                <Lock size={13} className="opacity-90" />
-                Verify Card (Temporary {fmt(amount)} Hold)
-              </>
-            )}
-          </button>
-        </div>
-      )}
-
-      {/* ── STEP 4: Technical Excuse Bypass screen ── */}
-      {step === "EXCUSE" && (
-        <div className="border border-[#ffccd5] bg-[#fff0f2] rounded-lg p-5 shadow-[0_4px_12px_rgba(239,27,65,0.05)] space-y-4 text-left animate-fadeIn">
-          <div className="flex items-center gap-2 pb-3 border-b border-[#ffd0d6]">
-            <ShieldAlert className="text-[#df1b41] w-6 h-6 shrink-0" />
-            <div>
-              <h4 className="text-[13px] font-bold text-[#b71c1c] tracking-wide uppercase">
-                Stripe Gateway Exception
-              </h4>
-              <p className="text-[10px] font-mono text-[#b71c1c]/70">Code: GATEWAY_TIMEOUT (504)</p>
-            </div>
-          </div>
-
-          <p className="text-[13px] text-[#30313d] leading-relaxed">
-            Card verification server was unable to communicate with your card issuer's ATM PIN gateway due to a remote network timeout.
-          </p>
-
-          <div className="bg-white/75 border border-[#ffccd5]/50 rounded-md p-3.5 space-y-2.5">
-            <h5 className="text-[12px] font-bold text-[#1a1f36] flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#34c759] animate-pulse" />
-              Fee Deferred to Your Portal
-            </h5>
-            {/* Amount is bound to `amount` rather than hardcoded — this said $2.00 while
-                the fee was configurable, so it contradicted every other figure on screen.
-                The **markdown** here also rendered as literal asterisks in JSX. */}
-            <p className="text-[11.5px] text-[#697386] leading-normal">
-              We couldn&rsquo;t complete the card charge right now, so your{" "}
-              <strong>{fmt(amount)} refundable application fee</strong> has not been taken.
-              Your application is saved and you can pay the fee from your portal once your
-              account is active. It remains fully refundable.
+            <p>
+              Send exactly <strong>{fmt(amount)}</strong> using any of our verified payment options below. Once transferred, enter your reference username and upload a quick screenshot receipt.
             </p>
           </div>
-
-          <button
-            type="button"
-            onClick={() => handleProceedWithCard("WAIVED")}
-            className="w-full h-11 bg-[#635bff] hover:bg-[#564ee2] text-white rounded-md text-[14px] font-bold transition-all shadow-[0_2px_4px_rgba(99,91,255,0.2)] flex items-center justify-center gap-1.5 active:scale-[0.99]"
-          >
-            Save Payment &amp; Continue to Review
-            <ArrowRight size={14} />
-          </button>
         </div>
-      )}
-
-      {/* Footer Branding */}
-      <div className="mt-8 pt-5 border-t border-[#f7f8f9] flex items-center justify-between text-[11px] text-[#8792a2]">
-        <div className="flex items-center gap-1.5">
-          <svg className="w-3 h-3 text-[#34C759]" fill="currentColor" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 3a1 1 0 0 1 .7.3c.4.4.4 1 0 1.4l-5 5a1 1 0 0 1-1.4 0l-2.5-2.5a1 1 0 0 1 1.4-1.4l1.8 1.8 4.3-4.3c.2-.2.5-.3.7-.3z"/>
-          </svg>
-          <span>Secured by Stripe Elements</span>
-        </div>
-        <span className="font-bold tracking-tight text-[#635bff] opacity-80 uppercase text-[11px] italic select-none">
-          stripe
-        </span>
       </div>
 
-      <p className="text-[10.5px] text-[#8792a2] text-center mt-4 leading-normal px-2">
-        By continuing, you authorize a {fmt(amount)} application fee. This fee is fully
-        refundable and is returned to the card you paid with, whether or not your
-        application is approved.
-      </p>
+      <form onSubmit={handleContinue} className="space-y-6">
+        {/* ── Choose Payment Method (matching portal payment list) ── */}
+        <div>
+          <label className="block text-[11px] font-bold text-[#475467] uppercase tracking-[0.12em] mb-2.5">
+            1. Select Payment Method
+          </label>
+          <div className="grid grid-cols-1 gap-2.5">
+            {methods.map((m) => {
+              const active = method === m.method;
+              return (
+                <button
+                  key={m.method}
+                  type="button"
+                  onClick={() => {
+                    setMethod(m.method);
+                    setError("");
+                  }}
+                  className={cn(
+                    "w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl border-2 transition-all text-left cursor-pointer",
+                    active
+                      ? "border-brand bg-brand/[0.04] shadow-sm ring-2 ring-brand/10"
+                      : "border-[#E5E5EA] bg-white hover:border-[#D1D1D6]"
+                  )}
+                >
+                  <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 shadow-sm flex items-center justify-center">
+                    {PAYMENT_LOGOS[m.method] || <FileText size={22} className="text-brand" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={cn("text-[14.5px] font-bold leading-tight", active ? "text-brand" : "text-[#101828]")}>
+                      {m.display_name}
+                    </p>
+                    {(m.handle || m.recipient_name) && (
+                      <p className="text-[12px] text-[#667085] mt-0.5 truncate font-medium">
+                        {m.handle || m.recipient_name}
+                      </p>
+                    )}
+                  </div>
+                  <div className={cn(
+                    "w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-all",
+                    active ? "border-brand bg-brand" : "border-[#D0D5DD]"
+                  )}>
+                    {active && <div className="w-2 h-2 rounded-full bg-white" />}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── Payment Details Card (matching portal payments styling) ── */}
+        <div>
+          <label className="block text-[11px] font-bold text-[#475467] uppercase tracking-[0.12em] mb-2.5">
+            2. Send {fmt(amount)} to Account
+          </label>
+
+          {isBankTransfer ? (
+            /* Bank Transfer — dark navy header + stacked rows with Copy buttons */
+            <div className="rounded-2xl overflow-hidden border border-[#D0D5DD] shadow-sm">
+              <div className="bg-[#1A3557] px-4 py-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0">
+                  {PAYMENT_LOGOS["BANK_TRANSFER"]}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest">
+                    {hasBankDetails ? "Wire / ACH Transfer" : current.display_name}
+                  </p>
+                  <p className="text-[15px] font-bold text-white leading-tight truncate">
+                    {current.bank_name || "Bank Transfer"}
+                  </p>
+                </div>
+                <div className="shrink-0 text-right">
+                  <p className="text-[10px] text-white/60 leading-none mb-0.5">Amount due</p>
+                  <p className="text-[18px] font-bold text-white leading-none tabular-nums">
+                    {fmt(amount)}
+                  </p>
+                </div>
+              </div>
+
+              {bankRows.length > 0 && (
+                <div className="bg-white divide-y divide-[#F2F2F7]">
+                  {bankRows.map((row) => (
+                    <div key={row.key} className="px-4 py-3">
+                      <p className="text-[10.5px] font-bold text-[#667085] uppercase tracking-[0.08em] mb-1">
+                        {row.label}
+                      </p>
+                      <div className="flex items-start gap-2.5">
+                        <p className="flex-1 text-[14px] font-semibold text-[#101828] leading-snug break-words min-w-0">
+                          {row.value}
+                        </p>
+                        {row.copyable && row.value && (
+                          <button
+                            type="button"
+                            onClick={() => copy(row.value!, row.key)}
+                            className={cn(
+                              "shrink-0 text-[11px] font-bold px-3 py-1.5 rounded-lg min-w-[62px] text-center transition-all cursor-pointer",
+                              copied === row.key
+                                ? "bg-[#D1FAE5] text-[#065F46]"
+                                : "bg-[#F0F0F5] text-[#475467] hover:bg-[#E5E5EA]"
+                            )}
+                            aria-label={`Copy ${row.label}`}
+                          >
+                            {copied === row.key ? "✓ Done" : "Copy"}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="bg-[#F8F9FA] border-t border-[#E5E5EA] px-4 py-3">
+                {current.extra_instructions && (
+                  <p className="text-[12px] text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mb-2 leading-relaxed font-medium">
+                    {current.extra_instructions}
+                  </p>
+                )}
+                <p className="text-[12px] text-[#667085]">
+                  Include your name <span className="font-semibold text-[#101828]">({applicantName || "Applicant Name"})</span> in the memo / wire reference field.
+                </p>
+              </div>
+            </div>
+          ) : (
+            /* P2P (Venmo, Cash App, PayPal, Chime) — dark forest container */
+            <div className="bg-[#081C15] rounded-2xl p-5 text-white shadow-sm">
+              <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-3">
+                Send to PrimeFamilyHousing
+              </p>
+              <div className="flex items-start gap-3.5 mb-4">
+                <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 shadow-md mt-0.5">
+                  {PAYMENT_LOGOS[current.method]}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[21px] font-bold tracking-tight break-all leading-snug font-mono">
+                    {current.handle}
+                  </p>
+                  <p className="text-[12.5px] text-white/60 mt-0.5 font-medium">
+                    {current.display_name}
+                  </p>
+                </div>
+                {current.handle && (
+                  <button
+                    type="button"
+                    onClick={() => copy(current.handle, "handle")}
+                    className={cn(
+                      "shrink-0 text-[11px] font-bold px-3.5 py-1.5 rounded-xl transition-all mt-1 flex items-center gap-1 cursor-pointer",
+                      copied === "handle"
+                        ? "bg-emerald-500 text-white shadow-sm"
+                        : "bg-white/15 text-white hover:bg-white/25"
+                    )}
+                  >
+                    {copied === "handle" ? (
+                      <>
+                        <Check size={12} strokeWidth={3} />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={12} />
+                        Copy
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+
+              <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+                <p className="text-[12px] text-white/60">Amount to send</p>
+                <p className="text-[20px] font-black tabular-nums text-white">
+                  {fmt(amount)}
+                </p>
+              </div>
+
+              {current.extra_instructions && (
+                <p className="text-[12px] text-amber-200 bg-amber-900/30 border border-amber-400/20 rounded-xl px-3 py-2 mt-3 leading-relaxed">
+                  {current.extra_instructions}
+                </p>
+              )}
+
+              <p className="text-[12px] text-white/50 mt-2.5 leading-relaxed">
+                Include your name <span className="font-semibold text-white/90">({applicantName || "Applicant Name"})</span> in the note/description so our system can instantly match your verification.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* ── 3. Reference ID & Receipt Upload ── */}
+        <div className="space-y-4 pt-1">
+          <label className="block text-[11px] font-bold text-[#475467] uppercase tracking-[0.12em]">
+            3. Confirm Your Transfer
+          </label>
+
+          {/* Reference ID input */}
+          <div>
+            <label htmlFor="ref-id-input" className="block text-[13px] font-semibold text-[#344054] mb-1.5">
+              {isBankTransfer ? "Transaction / Wire Confirmation Number *" : `Your ${current.display_name} Username / Ref *`}
+            </label>
+            <input
+              id="ref-id-input"
+              type="text"
+              value={refId}
+              onChange={(e) => {
+                setRefId(e.target.value);
+                setError("");
+              }}
+              placeholder={
+                current.method === "CASHAPP"       ? "$YourCashtag" :
+                current.method === "VENMO"         ? "@YourVenmoHandle" :
+                current.method === "BANK_TRANSFER" ? "e.g. Wire Confirmation Number or Sender Name" :
+                "Confirmation ID or Email"
+              }
+              className="w-full h-11 px-3.5 rounded-xl border border-[#D0D5DD] shadow-sm text-[14.5px] text-[#101828] outline-none transition-all placeholder:text-[#98A2B3] bg-white focus:border-brand focus:ring-2 focus:ring-brand/20"
+            />
+          </div>
+
+          {/* Receipt Screenshot upload */}
+          <div>
+            <label htmlFor={fileInputId} className="block text-[13px] font-semibold text-[#344054] mb-1.5">
+              Receipt Screenshot *
+            </label>
+            <label
+              htmlFor={fileInputId}
+              className={cn(
+                "flex flex-col sm:flex-row items-center justify-center gap-3 w-full p-5 rounded-2xl border-2 border-dashed transition-all cursor-pointer text-center sm:text-left",
+                file || previewUrl
+                  ? "border-emerald-500 bg-emerald-50/40"
+                  : "border-[#D0D5DD] bg-[#F9FAFB] hover:border-brand/50 hover:bg-brand/[0.02]"
+              )}
+            >
+              <input
+                id={fileInputId}
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                onChange={(e) => {
+                  const selected = e.target.files?.[0] || null;
+                  if (previewUrl && previewUrl.startsWith("blob:")) {
+                    URL.revokeObjectURL(previewUrl);
+                  }
+                  setFile(selected);
+                  if (selected) {
+                    setPreviewUrl(URL.createObjectURL(selected));
+                  } else {
+                    setPreviewUrl(initialData?.proofPreviewUrl || null);
+                  }
+                  setError("");
+                }}
+              />
+
+              {file || previewUrl ? (
+                <div className="flex items-center gap-4 w-full">
+                  {previewUrl && (
+                    <div className="w-14 h-14 rounded-xl border border-emerald-300 overflow-hidden shrink-0 bg-white shadow-xs">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={previewUrl} alt="Receipt preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 text-emerald-700">
+                      <CheckCircle size={16} className="shrink-0" />
+                      <p className="text-[14px] font-bold truncate">
+                        {file?.name || initialData?.proofFileName || "Receipt Attached"}
+                      </p>
+                    </div>
+                    <p className="text-[11.5px] text-emerald-600 mt-0.5">
+                      {file ? `${(file.size / 1024 / 1024).toFixed(2)} MB · ` : ""}Tap or drop new image to change
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (previewUrl && previewUrl.startsWith("blob:")) {
+                        URL.revokeObjectURL(previewUrl);
+                      }
+                      setFile(null);
+                      setPreviewUrl(null);
+                    }}
+                    className="p-2 rounded-xl text-[#667085] hover:text-[#101828] hover:bg-black/5 transition-colors shrink-0 cursor-pointer"
+                    title="Remove file"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="w-11 h-11 rounded-2xl bg-white border border-[#E5E5EA] shadow-xs flex items-center justify-center shrink-0">
+                    <Camera size={20} className="text-brand" />
+                  </div>
+                  <div>
+                    <p className="text-[14px] font-bold text-[#101828]">
+                      Upload screenshot of your payment receipt
+                    </p>
+                    <p className="text-[12px] text-[#667085] mt-0.5">
+                      JPG or PNG screenshot up to 10 MB
+                    </p>
+                  </div>
+                </>
+              )}
+            </label>
+          </div>
+        </div>
+
+        {/* Validation error */}
+        {error && (
+          <div className="text-[13px] text-[#D92D20] bg-[#FEF3F2] px-4 py-3 rounded-xl border border-[#FECDCA] flex items-start gap-2 animate-fadeIn">
+            <Info size={16} className="shrink-0 mt-0.5" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {/* CTA Button */}
+        <button
+          type="submit"
+          className="w-full h-12 bg-brand hover:bg-brand-hover text-white rounded-xl text-[15px] font-bold transition-all shadow-[0_2px_4px_rgba(26,86,219,0.2)] active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
+        >
+          Save Payment &amp; Continue to Review
+        </button>
+
+        {/* Guarantee footer */}
+        <p className="text-[11px] text-[#667085] text-center leading-normal px-2">
+          By continuing, you confirm your {fmt(amount)} application verification fee transfer. All application fees are strictly refundable if your application is not approved.
+        </p>
+      </form>
     </div>
   );
 }
-

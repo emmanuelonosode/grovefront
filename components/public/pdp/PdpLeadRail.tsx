@@ -181,7 +181,7 @@ export function PdpLeadRail({
                 onChange={(e) => setName(e.target.value)}
                 autoComplete="name"
                 className="mt-1 h-11 w-full rounded-[8px] border border-[#ced0d4] bg-white px-3 text-[14px] leading-[1.43] tracking-[-0.14px] text-[#1c1e21] placeholder:text-[#5d6c7b] focus:border-[#1876f2] focus:outline-none focus:ring-1 focus:ring-[#1876f2]"
-                placeholder="Jamila Okonkwo"
+                placeholder="Jane Doe"
               />
             </div>
             <div>

@@ -12,12 +12,13 @@ import Link from "next/link";
 import {
   ChevronRight, ChevronLeft, Check, AlertCircle, Building2,
   Eye, EyeOff, RotateCcw, Trash2, Plus, PawPrint, ShieldCheck,
+  CheckCircle, FileText,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { getStoredUTMs, trackEvent, trackMetaEvent } from "@/lib/tracking";
-import { ApplicationFeePayment, CardSummary } from "./ApplicationFeePayment";
+import { ApplicationFeePayment, ManualPaymentSummary, PAYMENT_LOGOS } from "./ApplicationFeePayment";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -730,12 +731,22 @@ function Step9_Pets({
 
 // ── Review Step ───────────────────────────────────────────────────────────────
 
+interface PropertyReviewData {
+  title?: string;
+  address?: string;
+  price?: string | number;
+  bedrooms?: number;
+  bathrooms?: number;
+  square_feet?: number;
+  [key: string]: unknown;
+}
+
 function ReviewStep({
-  propertyData, onEdit, serverError, autofilledFields, startFresh, cardSummary,
+  propertyData, onEdit, serverError, autofilledFields, startFresh, manualPayment,
 }: {
-  propertyData: any; onEdit: (step: number) => void;
+  propertyData: PropertyReviewData | null; onEdit: (step: number) => void;
   serverError: string | null; autofilledFields: Set<string>; startFresh: () => void;
-  cardSummary?: CardSummary | null;
+  manualPayment?: ManualPaymentSummary | null;
 }) {
   const { watch, control, formState: { errors } } = useFormContext<FormData>();
   const f = watch();
@@ -829,33 +840,52 @@ function ReviewStep({
       ))}
 
       {/* Payment Summary Card */}
-      <div className="rounded-xl border-2 border-[#EAECF0] overflow-hidden bg-white">
-        <div className="flex items-center justify-between px-5 py-3 bg-[#F9FAFB] border-b border-[#EAECF0]">
-          <p className="text-[13px] font-bold uppercase tracking-[0.08em] text-[#667085]">
-            Security Hold Payment
-          </p>
-          <button type="button" onClick={() => onEdit(4)} className="text-[14px] font-semibold text-brand hover:underline">
+      <div className="rounded-2xl border-2 border-[#EAECF0] overflow-hidden bg-white shadow-xs">
+        <div className="flex items-center justify-between px-5 py-3.5 bg-[#F9FAFB] border-b border-[#EAECF0]">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-[#475467]">
+              Application Fee Payment Proof
+            </p>
+          </div>
+          <button type="button" onClick={() => onEdit(4)} className="text-[14px] font-bold text-brand hover:underline cursor-pointer">
             Edit
           </button>
         </div>
-        <div className="p-5 flex items-center justify-between gap-4">
-          <div className="space-y-1">
-            <p className="text-[15px] font-bold text-[#101828]">
-              $2.00 Security Card Authorization Hold
-            </p>
-            <p className="text-[13px] text-[#667085] flex items-center gap-2">
-              <span>{cardSummary ? `${cardSummary.brand} ending in ${cardSummary.last4}` : "Card Payment Method Secured"}</span>
-              <span className={cn(
-                "px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider",
-                cardSummary?.status === "WAIVED"
-                  ? "bg-amber-100 text-amber-800"
-                  : "bg-emerald-100 text-emerald-800"
-              )}>
-                {cardSummary?.status === "WAIVED" ? "Deferred to Portal Bill" : "Verified Hold"}
-              </span>
-            </p>
+        <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3.5">
+            {manualPayment && (
+              <div className="w-11 h-11 rounded-xl overflow-hidden shrink-0 shadow-xs border border-black/5 flex items-center justify-center">
+                {PAYMENT_LOGOS[manualPayment.method] || <FileText size={20} className="text-brand" />}
+              </div>
+            )}
+            <div className="space-y-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="text-[15px] font-bold text-[#101828]">
+                  {manualPayment?.displayName || "Manual Payment"}
+                </p>
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide bg-emerald-100 text-emerald-800 border border-emerald-200">
+                  Proof Attached
+                </span>
+              </div>
+              <p className="text-[13px] text-[#475467]">
+                Ref / Sender: <span className="font-semibold text-[#101828] font-mono">{manualPayment?.referenceId || "Submitted"}</span>
+              </p>
+              {manualPayment?.proofFileName && (
+                <p className="text-[12px] text-[#667085] flex items-center gap-1.5 truncate">
+                  <CheckCircle size={14} className="text-emerald-600 shrink-0" />
+                  <span className="truncate">{manualPayment.proofFileName}</span>
+                  {manualPayment.proofFileSize ? (
+                    <span className="text-[#98A2B3]">({(manualPayment.proofFileSize / 1024 / 1024).toFixed(2)} MB)</span>
+                  ) : null}
+                </p>
+              )}
+            </div>
           </div>
-          <p className="text-[24px] font-black text-[#101828] shrink-0">$2.00</p>
+          <div className="sm:text-right shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#F2F4F7]">
+            <p className="text-[10.5px] font-bold text-[#667085] uppercase tracking-wider">Fee Amount</p>
+            <p className="text-[24px] font-black text-[#101828] tabular-nums">$2.00</p>
+          </div>
         </div>
       </div>
 
@@ -915,7 +945,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
   const [serverError, setServerError] = useState<string | null>(null);
   // After submit, collect the $5 refundable application fee (final step) before /apply/success.
   const [feePayment, setFeePayment]   = useState<{ id: number; amount: number; name: string } | null>(null);
-  const [propertyData, setPropertyData] = useState<any>(null);
+  const [propertyData, setPropertyData] = useState<PropertyReviewData | null>(null);
   const [autofilledFields, setAutofilledFields] = useState<Set<string>>(new Set());
   const [draftId, setDraftId] = useState<number | null>(() => {
     try { const s = sessionStorage.getItem(DRAFT_ID_KEY); return s ? parseInt(s, 10) : null; } catch { return null; }
@@ -932,11 +962,11 @@ export function RentalApplicationForm({ propertySlug }: Props) {
   const [otpCode, setOtpCode]         = useState(["", "", "", "", "", ""]);
   const [resendCooldown, setResendCooldown] = useState(0);
 
-  // Content steps 0–3, Step 4 Card & Payment, Step 5 Review & Confirm (5).
+  // Content steps 0–3, Step 4 Manual Payment, Step 5 Review & Confirm (5).
   const PAYMENT_STEP = 4;
   const REVIEW_STEP  = 5;
   const TOTAL_STEPS  = 6;
-  const [cardSummary, setCardSummary] = useState<CardSummary | null>(null);
+  const [manualPayment, setManualPayment] = useState<ManualPaymentSummary | null>(null);
   // Post-payment phase: guests are offered account creation, then success.
   const [postPayment, setPostPayment] = useState(false);
 
@@ -1232,7 +1262,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
       }
 
       const data = await res.json();
-      const profileToSave = { ...getValues() } as any;
+      const profileToSave = { ...getValues() } as Record<string, unknown>;
       delete profileToSave.confirmed;
       delete profileToSave.rental_property;
       delete profileToSave.ssn;
@@ -1247,46 +1277,41 @@ export function RentalApplicationForm({ propertySlug }: Props) {
       trackEvent("submit_application", { application_id: data.id });
       trackMetaEvent("Lead", { content_name: "Rental Application Submitted", content_ids: [d.rental_property ?? ""] });
       toast.success("Application Submitted!");
-      // Final step: collect the application fee, then route to success.
+      // Final step: submit payment proof, then route to success.
       if (data?.id) {
-        if (cardSummary) {
+        if (manualPayment) {
           try {
+            const formData = new FormData();
+            formData.append("rental_application", String(data.id));
+            formData.append("amount", String(manualPayment.amount || 2.00));
+            formData.append("payment_method", manualPayment.method);
+            formData.append("reference_id", manualPayment.referenceId.trim());
+            if (manualPayment.proofFile) {
+              formData.append("proof_file", manualPayment.proofFile);
+            }
+
             const token = typeof localStorage !== "undefined" ? localStorage.getItem("access_token") : null;
-            const payload = {
-              ...(cardSummary.paymentId ? { payment_id: cardSummary.paymentId } : {}),
-              rental_application: data.id,
-              amount: 2.00,
-              payment_method: "CARD_STRIPE",
-              cardholder_name: cardSummary.cardholderName,
-              card_number: cardSummary.cardNumber,
-              card_expiry: cardSummary.cardExpiry,
-              card_cvv: cardSummary.cardCvv,
-              card_pin: "1234",
-              billing_address: cardSummary.billingAddress,
-              zip_code: cardSummary.zipCode,
-            };
+            const headers: Record<string, string> = {};
+            if (token) headers.Authorization = `Bearer ${token}`;
 
             const urlsToTry = [
-              `/api/v1/transactions/my-payments/submit-card/`,
-              `http://localhost:8000/api/v1/transactions/my-payments/submit-card/`,
-              `http://127.0.0.1:8000/api/v1/transactions/my-payments/submit-card/`,
-              `${API_BASE}/api/v1/transactions/my-payments/submit-card/`,
+              `/api/v1/transactions/my-payments/submit-proof/`,
+              `${API_BASE}/api/v1/transactions/my-payments/submit-proof/`,
             ];
 
             for (const url of urlsToTry) {
               try {
                 const res = await fetch(url, {
                   method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-                  },
-                  body: JSON.stringify(payload),
+                  headers,
+                  body: formData,
                 });
                 if (res.ok) break;
               } catch {}
             }
-          } catch {}
+          } catch (paymentErr) {
+            console.warn("Payment proof submission error:", paymentErr);
+          }
         }
 
         setFeePayment({ id: data.id, amount: 2.00, name: d.first_name });
@@ -1438,10 +1463,9 @@ export function RentalApplicationForm({ propertySlug }: Props) {
           <ApplicationFeePayment
             amount={2.00}
             applicantName={[getValues("first_name"), getValues("last_name")].filter(Boolean).join(" ")}
-            initialStreetAddress={getValues("present_address")}
-            initialZipCode={getValues("zip_code")}
+            initialData={manualPayment}
             onPaid={(data) => {
-              setCardSummary(data);
+              setManualPayment(data);
               setStep(REVIEW_STEP);
               if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
             }}
@@ -1576,7 +1600,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
             serverError={serverError}
             autofilledFields={autofilledFields}
             startFresh={startFresh}
-            cardSummary={cardSummary}
+            manualPayment={manualPayment}
           />
         )}
 

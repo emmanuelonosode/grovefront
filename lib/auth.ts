@@ -161,20 +161,26 @@ export async function refreshAccessToken(): Promise<string | null> {
 
 export async function apiFetch(url: string, options: RequestInit = {}): Promise<Response> {
   let token = getAccessToken();
+  const headers = { ...(options.headers ?? {}) } as Record<string, string>;
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
   const res = await fetch(url, {
     ...options,
-    headers: { ...(options.headers ?? {}), Authorization: `Bearer ${token}` },
+    headers,
   });
-  if (res.status === 401) {
+  if (res.status === 401 && token) {
     token = await refreshAccessToken();
     if (!token) {
       clearTokens();
       window.location.href = "/login";
       return res;
     }
+    const retryHeaders = { ...(options.headers ?? {}) } as Record<string, string>;
+    if (token) retryHeaders["Authorization"] = `Bearer ${token}`;
     return fetch(url, {
       ...options,
-      headers: { ...(options.headers ?? {}), Authorization: `Bearer ${token}` },
+      headers: retryHeaders,
     });
   }
   return res;
