@@ -204,6 +204,7 @@ export async function fetchProperties(
   const url = new URL(`${API_BASE}/api/v1/properties/`);
   if (params?.listing_type) url.searchParams.set("listing_type", params.listing_type);
   url.searchParams.set("is_published", "true");
+  url.searchParams.set("status", "available");
   if (params?.q)           url.searchParams.set("q", params.q);
   if (params?.beds)        url.searchParams.set("beds", params.beds);
   if (params?.baths)       url.searchParams.set("baths", params.baths);
@@ -332,7 +333,7 @@ export async function fetchHomepageProperties(): Promise<PropertyListItemAPI[]> 
       }
     }
     // Fallback: if homepage returns empty, fetch the 6 latest published properties
-    const fallbackRes = await fetch(`${API_BASE}/api/v1/properties/?page_size=6`, {
+    const fallbackRes = await fetch(`${API_BASE}/api/v1/properties/?page_size=6&status=available&is_published=true`, {
       next: { revalidate: 300 },
     });
     if (fallbackRes.ok) {
