@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/Button";
 import { CityLeadCapture } from "@/components/public/CityLeadCapture";
 import { StateHub } from "@/components/public/StateHub";
 import { getStateBySlug, getStateMedia, stateSlugForCode, STATE_NAMES } from "@/lib/states";
+import { jsonLdString } from "@/lib/json-ld";
 
 export const revalidate = 300;
 
@@ -93,16 +94,25 @@ export async function generateMetadata(
     };
   }
 
+  // Live stats for curated cities too, so the snippet can carry the real count.
+  const dbCities = await fetchAllCities().catch(() => []);
+  const stats = dbCities.find((c) => c.slug === slug);
   let city = getCityBySlug(slug);
-  if (!city) {
-    const dbCities = await fetchAllCities();
-    const stats = dbCities.find((c) => c.slug === slug);
+  if (city) {
+    if (stats) city = { ...city, stats };
+  } else {
     if (!stats) return { title: "City Not Found" };
     city = buildGenericCityData(stats);
   }
 
-  const title = `Houses for Rent in ${city.name}, ${city.stateCode} | PrimeFamilyHousing`;
-  const description = `Browse houses for rent in ${city.name}, ${city.stateCode} — 1 to 4 bedrooms from ${city.avgRent}/mo. Inspected, move-in ready, pet-friendly options. Decisions in 24 hours.`;
+  const title = `Houses for Rent in ${city.name}, ${city.stateCode} | Prime Family Housing`;
+  // A live count in the snippet ("38 houses for rent…") out-pulls a generic line in
+  // the results page, and it changes as inventory does, so it never reads stale.
+  const liveCount = city.stats?.count ?? 0;
+  const lead = liveCount > 1
+    ? `${liveCount} houses for rent in ${city.name}, ${city.stateCode}`
+    : `Browse houses for rent in ${city.name}, ${city.stateCode}`;
+  const description = `${lead} from ${city.avgRent}/mo. Inspected, move-in ready homes with pet-friendly options and application decisions in 24 hours.`;
   const url = `https://primefamilyhousing.com/rentals/${slug}`;
 
   return {
@@ -269,13 +279,25 @@ export default async function CityRentalsPage(
     name: `Affordable Homes for Rent in ${city.name}, ${city.stateCode}`,
     description: `Browse budget-friendly rental homes in ${city.name}, ${city.state}. Move-in ready homes, 24-hour application decisions.`,
     url: `https://primefamilyhousing.com/rentals/${slug}`,
-    isPartOf: { "@type": "WebSite", name: "PrimeFamilyHousing", url: "https://primefamilyhousing.com" },
+    isPartOf: { "@id": "https://primefamilyhousing.com/#website" },
     about: {
       "@type": "City",
       name: city.name,
       containedInPlace: { "@type": "State", name: city.state, containedInPlace: { "@type": "Country", name: "United States" } },
     },
     provider: realEstateAgentSchema(),
+    ...(properties.length > 0 && {
+      mainEntity: {
+        "@type": "ItemList",
+        numberOfItems: totalCount,
+        itemListElement: properties.map((p, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          url: `https://primefamilyhousing.com/houses-for-rent/${p.slug}`,
+          name: p.title,
+        })),
+      },
+    }),
   };
 
   const stateSlug = stateSlugForCode(city.stateCode);
@@ -291,7 +313,7 @@ export default async function CityRentalsPage(
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: "https://primefamilyhousing.com" },
-      { "@type": "ListItem", position: 2, name: "Properties", item: "https://primefamilyhousing.com/houses-for-rent" },
+      { "@type": "ListItem", position: 2, name: "Houses for Rent", item: "https://primefamilyhousing.com/houses-for-rent" },
       { "@type": "ListItem", position: 3, name: city.state, item: `https://primefamilyhousing.com/rentals/${stateSlug}` },
       { "@type": "ListItem", position: 4, name: `${city.name}, ${city.stateCode}`, item: `https://primefamilyhousing.com/rentals/${slug}` },
     ],
@@ -312,9 +334,9 @@ export default async function CityRentalsPage(
 
   return (
     <div>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(collectionSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faqSchema) }} />
 
       {/* ── HERO — full-bleed photo, forest gradient ─────────────── */}
       <section className="relative min-h-[520px] lg:min-h-[600px] flex items-end overflow-hidden">
@@ -333,10 +355,10 @@ export default async function CityRentalsPage(
         <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-12 pb-12 pt-32">
           {/* Breadcrumb */}
           <nav aria-label="Breadcrumb" className="mb-5 hero-animate">
-            <ol className="flex items-center gap-2 text-xs text-white/60">
+            <ol className="flex flex-wrap items-center gap-2 text-[13px] text-white/75">
               <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
               <li className="text-white/30">/</li>
-              <li><Link href="/communities" className="hover:text-white transition-colors">Communities</Link></li>
+              <li><Link href="/houses-for-rent" className="hover:text-white transition-colors">Houses for Rent</Link></li>
               <li className="text-white/30">/</li>
               <li><Link href={`/rentals/${stateSlug}`} className="hover:text-white transition-colors">{city.state}</Link></li>
               <li className="text-white/30">/</li>
@@ -344,7 +366,7 @@ export default async function CityRentalsPage(
             </ol>
           </nav>
 
-          <p className="text-secondary-container text-[14px] leading-5 font-semibold tracking-widest uppercase mb-3 hero-animate" style={{ animationDelay: "0ms" }}>
+          <p className="text-earth-beige text-[13px] leading-5 font-semibold tracking-[0.22em] uppercase mb-3 hero-animate" style={{ animationDelay: "0ms" }}>
             Community Profile
           </p>
           <h1 className="font-serif font-bold text-white drop-shadow-md hero-animate text-[2.2rem] leading-[1.15] sm:text-[3rem] lg:text-[3.5rem] lg:leading-[1.16]" style={{ letterSpacing: "-0.02em", animationDelay: "80ms" }}>
@@ -353,7 +375,7 @@ export default async function CityRentalsPage(
 
           <div className="flex flex-wrap gap-2 mt-5 hero-animate" style={{ animationDelay: "130ms" }}>
             {totalCount > 0 && (
-              <span className="bg-earth-beige text-on-secondary-container text-[12px] leading-4 px-3 py-1 rounded-full font-semibold tabular-nums">
+              <span className="bg-earth-beige text-forest-deep text-[12px] leading-4 px-3 py-1 rounded-full font-semibold tabular-nums">
                 {totalCount} Home{totalCount === 1 ? "" : "s"} Available
               </span>
             )}
@@ -372,14 +394,14 @@ export default async function CityRentalsPage(
           <div className="flex flex-wrap gap-3 mt-8 hero-animate" style={{ animationDelay: "240ms" }}>
             <Link
               href={`/houses-for-rent?q=${encodeURIComponent(city.name)}`}
-              className="inline-flex items-center gap-2 bg-primary text-on-primary text-[14px] tracking-[0.05em] font-semibold px-8 py-3.5 rounded-full hover:bg-primary-container transition-colors active:scale-95 shadow-md"
+              className="inline-flex items-center gap-2 bg-earth-beige text-forest-deep text-[15px] font-semibold px-7 py-3.5 rounded-full hover:bg-white transition-colors active:scale-95 shadow-md"
             >
               Browse {city.name} Inventory
               <ArrowRight size={16} />
             </Link>
             <Link
               href="/apply"
-              className="inline-flex items-center gap-2 bg-surface/90 backdrop-blur-sm text-primary text-[14px] tracking-[0.05em] font-semibold px-8 py-3.5 rounded-full hover:bg-surface transition-colors active:scale-95"
+              className="inline-flex items-center gap-2 border border-white/50 text-white text-[15px] font-semibold px-7 py-3.5 rounded-full hover:bg-white/10 hover:border-white transition-colors active:scale-95"
             >
               Apply Now — 10 Minutes
             </Link>
@@ -393,7 +415,7 @@ export default async function CityRentalsPage(
           <div className="flex items-center justify-between gap-6 overflow-x-auto scrollbar-hide">
             {TRUST_BADGES.map((b) => (
               <div key={b.label} className="flex items-center gap-2.5 shrink-0">
-                <b.icon size={16} className="text-brand" />
+                <b.icon size={16} className="text-sage-soft" />
                 <span className="text-white/80 text-xs font-medium tracking-wide whitespace-nowrap">{b.label}</span>
               </div>
             ))}
@@ -444,7 +466,7 @@ export default async function CityRentalsPage(
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16 lg:py-20">
           <div className="flex items-end justify-between mb-10">
             <div>
-              <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-2">Available Now</p>
+              <p className="text-accent text-xs font-semibold tracking-[0.2em] uppercase mb-2">Available Now</p>
               <h2 className="font-serif text-3xl lg:text-4xl font-bold text-brand-dark">
                 Homes in {city.name}
               </h2>
@@ -505,28 +527,28 @@ export default async function CityRentalsPage(
       </section>
 
       {/* ── LEAD CAPTURE ─────────────────────────────────────────── */}
-      <section className="bg-[#081C15] py-16 lg:py-20 px-6">
+      <section className="bg-forest-deep py-16 lg:py-20 px-6">
         <div className="max-w-xl mx-auto text-center">
-          <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-3">Be First</p>
+          <p className="text-sage-soft text-xs font-semibold tracking-[0.2em] uppercase mb-3">Be First</p>
           <h2 className="font-serif text-3xl lg:text-4xl font-bold text-white mb-4">
             New {city.name} listings drop weekly
           </h2>
-          <p className="text-blue-200 text-sm leading-relaxed mb-8 max-w-sm mx-auto">
+          <p className="text-white/70 text-sm leading-relaxed mb-8 max-w-sm mx-auto">
             Leave your details and we&apos;ll notify you the moment a home matching your needs becomes available — before it goes public.
           </p>
           <CityLeadCapture cityName={city.name} />
           <div className="flex flex-wrap justify-center items-center gap-4 mt-6">
-            <span className="text-blue-300/60 text-xs flex items-center gap-1.5">
-              <svg className="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+            <span className="text-white/50 text-xs flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5 text-sage-soft" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
               No spam
             </span>
-            <span className="text-blue-300/60 text-xs flex items-center gap-1.5">
-              <svg className="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+            <span className="text-white/50 text-xs flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5 text-sage-soft" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
               Unsubscribe anytime
             </span>
-            <span className="text-blue-300/60 text-xs flex items-center gap-1.5">
-              <svg className="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
-              2,400+ families already subscribed
+            <span className="text-white/50 text-xs flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5 text-sage-soft" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+              2,000+ families housed since 2012
             </span>
           </div>
         </div>
@@ -538,27 +560,14 @@ export default async function CityRentalsPage(
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-start">
             {/* Text */}
             <div>
-              <p className="text-brand text-xs font-semibold tracking-[0.3em] uppercase mb-4">Market Guide</p>
+              <p className="text-accent text-xs font-semibold tracking-[0.3em] uppercase mb-4">Market Guide</p>
               <h2 className="font-serif text-4xl lg:text-5xl font-bold text-brand-dark leading-tight mb-8">
                 Renting in {city.name}
               </h2>
-              {/* Inline stat row */}
-              <div className="grid grid-cols-3 gap-3 mb-6">
-                {[
-                  { label: "Avg. Rent", value: city.avgRent },
-                  { label: "Homes Available", value: totalCount > 0 ? `${totalCount}` : "New Soon" },
-                  { label: "Decision Time", value: "24 hrs" },
-                ].map((stat) => (
-                  <div key={stat.label} className="border-l-2 border-brand pl-3">
-                    <p className="text-base font-bold text-brand-dark">{stat.value}</p>
-                    <p className="text-[10px] text-neutral-500 uppercase tracking-wide mt-0.5">{stat.label}</p>
-                  </div>
-                ))}
-              </div>
 
               <div className="space-y-5">
                 {city.seoContent.split("\n\n").map((paragraph, i) => (
-                  <p key={i} className="text-neutral-600 text-sm leading-relaxed">{paragraph}</p>
+                  <p key={i} className="text-on-surface-variant text-[16px] leading-relaxed">{paragraph}</p>
                 ))}
               </div>
 
@@ -586,21 +595,15 @@ export default async function CityRentalsPage(
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
               </div>
-              {/* Trust card */}
-              <div className="border border-neutral-100 rounded-sm bg-neutral-50 p-6 grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <p className="font-serif text-xl font-bold text-brand-dark">{city.avgRent}</p>
-                  <p className="text-[10px] text-neutral-500 uppercase tracking-wide mt-0.5">Avg. Monthly Rent</p>
-                </div>
-                <div>
-                  <p className="font-serif text-xl font-bold text-brand-dark">24 hr</p>
-                  <p className="text-[10px] text-neutral-500 uppercase tracking-wide mt-0.5">Application Decision</p>
-                </div>
-                <div>
-                  <p className="font-serif text-xl font-bold text-brand-dark">$0</p>
-                  <p className="text-[10px] text-neutral-500 uppercase tracking-wide mt-0.5">Hidden Fees</p>
-                </div>
-              </div>
+              {/* What every lease includes */}
+              <ul className="rounded-2xl border border-surface-variant bg-brand-light p-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {["30-point inspection before listing", "Same-day maintenance response", "No admin or convenience fees", "Online rent pay & requests"].map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm text-brand-dark">
+                    <ShieldCheck size={16} className="text-brand mt-0.5 shrink-0" aria-hidden="true" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
@@ -610,7 +613,7 @@ export default async function CityRentalsPage(
       <section className="bg-brand-dark text-white py-20 lg:py-24 px-6">
         <div className="max-w-3xl mx-auto">
           <div className="mb-12">
-            <p className="text-blue-300 text-xs font-semibold tracking-[0.3em] uppercase mb-4">Common Questions</p>
+            <p className="text-sage-soft text-xs font-semibold tracking-[0.3em] uppercase mb-4">Common Questions</p>
             <h2 className="font-serif text-4xl font-bold leading-tight">
               Renting in {city.name} — FAQ
             </h2>
@@ -620,14 +623,14 @@ export default async function CityRentalsPage(
               <details key={faq.q} className="group border border-white/10 rounded-sm overflow-hidden bg-white/5 hover:bg-white/8 transition-colors">
                 <summary className="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer list-none hover:bg-white/5 transition-colors">
                   <span className="font-medium text-sm text-white leading-snug">{faq.q}</span>
-                  <div className="shrink-0 w-7 h-7 rounded-full border border-white/20 flex items-center justify-center group-open:border-brand group-open:bg-brand transition-colors duration-200">
-                    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" className="text-blue-300 group-open:text-white group-open:rotate-180 transition-all duration-200">
+                  <div className="shrink-0 w-7 h-7 rounded-full border border-white/20 flex items-center justify-center group-open:border-earth-beige group-open:bg-earth-beige transition-colors duration-200">
+                    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" className="text-sage-soft group-open:text-forest-deep group-open:rotate-180 transition-all duration-200">
                       <path d="M1.5 4L5.5 8L9.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 </summary>
                 <div className="px-6 pb-5 pt-2 border-t border-white/10">
-                  <p className="text-blue-100 text-sm leading-relaxed">{faq.a}</p>
+                  <p className="text-earth-beige/85 text-sm leading-relaxed">{faq.a}</p>
                 </div>
               </details>
             ))}
@@ -641,7 +644,7 @@ export default async function CityRentalsPage(
       {siblingCities.length > 0 && (
         <section className="bg-white border-t border-neutral-100">
           <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16 lg:py-20">
-            <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-2">Explore More</p>
+            <p className="text-accent text-xs font-semibold tracking-[0.2em] uppercase mb-2">Explore More</p>
             <h2 className="font-serif text-2xl lg:text-3xl font-bold text-brand-dark mb-8">
               More Cities in {city.state}
             </h2>
@@ -693,7 +696,7 @@ export default async function CityRentalsPage(
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-4">
                     <p className="text-white font-serif font-bold text-lg leading-tight">{c.name}</p>
-                    <p className="text-blue-200 text-xs mt-0.5">From {c.avgRent}/mo</p>
+                    <p className="text-white/70 text-xs mt-0.5">From {c.avgRent}/mo</p>
                   </div>
                 </Link>
               ))}

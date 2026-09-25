@@ -7,6 +7,7 @@ import { fetchAgentById, fetchAgents, fetchAgentListings } from "@/lib/agents";
 import { toPropertyCardShape, type PropertyListItemAPI } from "@/lib/properties";
 import type { Property } from "@/types";
 import { formatPrice, toCardImageUrl } from "@/lib/utils";
+import { jsonLdString } from "@/lib/json-ld";
 
 export const revalidate = 300;
 
@@ -29,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const bioExcerpt = profile?.bio?.slice(0, 100) ?? "";
     const description = `${agent.full_name} — ${specialty} at PrimeFamilyHousing. ${yearsExp}${bioExcerpt} Helping families find affordable, move-in ready rentals.`.slice(0, 160);
     return {
-      title: `${agent.full_name} — ${specialty} | PrimeFamilyHousing`,
+      title: `${agent.full_name} — ${specialty} | Prime Family Housing`,
       description,
       keywords: [
         `${agent.full_name} real estate agent`,
@@ -40,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ],
       alternates: { canonical: `https://primefamilyhousing.com/agents/${id}` },
       openGraph: {
-        title: `${agent.full_name} — ${specialty} | PrimeFamilyHousing`,
+        title: `${agent.full_name} — ${specialty} | Prime Family Housing`,
         description,
         type: "profile",
         url: `https://primefamilyhousing.com/agents/${id}`,
@@ -144,14 +145,14 @@ export default async function AgentProfilePage({ params }: Props) {
 
   return (
     <div className="pt-20">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(personSchema) }} />
       {/* Back link + hero */}
       <div className="bg-brand-dark text-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-10 pb-16">
           <Link
             href="/agents"
-            className="inline-flex items-center gap-2 text-blue-300 text-xs font-medium mb-8 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-sage-soft text-xs font-medium mb-8 hover:text-white transition-colors"
           >
             <ArrowLeft size={14} />
             All Advisors
@@ -187,7 +188,7 @@ export default async function AgentProfilePage({ params }: Props) {
                 </p>
               )}
               {profile?.license_number && (
-                <p className="text-blue-200 text-xs mb-6">Lic# {profile.license_number}</p>
+                <p className="text-white/70 text-xs mb-6">Lic# {profile.license_number}</p>
               )}
 
               {/* Stats row */}
@@ -196,7 +197,7 @@ export default async function AgentProfilePage({ params }: Props) {
                   <div key={label} className="bg-white/5 border border-white/10 rounded-sm p-3 text-center">
                     <Icon size={16} className="text-brand mx-auto mb-1.5" />
                     <p className="font-serif text-2xl font-bold">{value}</p>
-                    <p className="text-blue-200 text-[10px] uppercase tracking-wide mt-0.5">{label}</p>
+                    <p className="text-white/70 text-[10px] uppercase tracking-wide mt-0.5">{label}</p>
                   </div>
                 ))}
               </div>
@@ -335,7 +336,7 @@ export default async function AgentProfilePage({ params }: Props) {
               <h2 className="font-serif text-xl font-bold mb-2">
                 Work with {agent.first_name}
               </h2>
-              <p className="text-blue-100 text-sm leading-relaxed mb-5">
+              <p className="text-earth-beige/85 text-sm leading-relaxed mb-5">
                 Send a message and {agent.first_name} will be in touch within 24 hours.
               </p>
               <form className="space-y-3">

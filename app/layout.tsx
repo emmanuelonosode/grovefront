@@ -3,8 +3,9 @@ import { Montserrat, Source_Sans_3 } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
 import { TrackingScripts } from "@/components/TrackingScripts";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
-import { BUSINESS } from "@/lib/business";
+import { BUSINESS, postalAddressSchema } from "@/lib/business";
 import "./globals.css";
+import { jsonLdString } from "@/lib/json-ld";
 
 const sourceSans = Source_Sans_3({
   variable: "--font-source-sans",
@@ -109,7 +110,6 @@ export const metadata: Metadata = {
     title: "Prime Family Housing | Quality Houses for Rent across the US",
     description:
       "Find affordable houses for rent across Atlanta, Charlotte, Houston, Dallas, Tampa & more. Move-in ready single-family homes, fast approvals.",
-    creator: "@primefamilyhousing",
   },
   // Icons are provided by the App Router file conventions (app/icon.svg,
   // app/icon.png, app/apple-icon.png) — Next auto-emits the <link> tags with
@@ -170,26 +170,21 @@ const jsonLd = {
       "image": { "@id": "https://primefamilyhousing.com/#logo" },
       "description": "PrimeFamilyHousing is a licensed US real estate company founded in 2012, specializing in affordable single-family houses for rent across 12+ US cities. Well-maintained, move-in ready homes. 24-hour application decisions. 2,000+ families housed.",
       "foundingDate": "2012",
-      "telephone": "+17577924480",
-      "email": "info@primefamilyhousing.com",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "1425 S 1500 E Unit 222",
-        "addressLocality": "Clearfield",
-        "addressRegion": "UT",
-        "postalCode": "84015",
-        "addressCountry": "US"
-      },
+      // NAP read from BUSINESS so every emitter agrees (this node had drifted to
+      // info@ while the rest of the schema used BUSINESS.email).
+      "telephone": BUSINESS.telephone,
+      "email": BUSINESS.email,
+      "address": postalAddressSchema(),
       "contactPoint": [
         {
           "@type": "ContactPoint",
           "contactType": "customer service",
-          "telephone": "+17577924480",
-          "email": "info@primefamilyhousing.com",
+          "telephone": BUSINESS.telephone,
+          "email": BUSINESS.email,
           "availableLanguage": ["English"],
           "hoursAvailable": {
             "@type": "OpeningHoursSpecification",
-            "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+            "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
             "opens": "09:00",
             "closes": "18:00"
           }
@@ -290,7 +285,7 @@ export default function RootLayout({
         <meta name="referrer" content="no-referrer" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
         />
       </head>
       <body className="min-h-full flex flex-col antialiased">

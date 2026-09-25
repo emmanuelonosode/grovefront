@@ -14,7 +14,7 @@ export function PdpSchools({ schools, city }: { schools: SchoolEntry[]; city: st
           const inner = (
             <>
               <span className="min-w-0 flex-1">
-                <span className="block text-[16px] font-bold leading-[1.5] tracking-[-0.16px] text-[#0a1317] group-hover:text-[#0064e0]">
+                <span className="block text-[16px] font-bold leading-[1.5] tracking-[-0.16px] text-[#0a1317] group-hover:text-[#1b4332]">
                   {school.name}
                   {school.url && (
                     <ExternalLink

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Search, Home as HomeIcon } from "lucide-react";
 import { fetchAllCities, toDirectoryCities } from "@/lib/cities";
 import { STATE_NAMES, stateSlugForCode } from "@/lib/states";
+import { jsonLdString } from "@/lib/json-ld";
 
 export const metadata = {
   title: "Communities by State | Prime Family Housing",
@@ -68,12 +69,12 @@ export default async function CommunitiesPage() {
     name: "PrimeFamilyHousing Communities by State",
     description: "Family-centric rental communities across the United States.",
     url: "https://primefamilyhousing.com/communities",
-    isPartOf: { "@type": "WebSite", name: "PrimeFamilyHousing", url: "https://primefamilyhousing.com" },
+    isPartOf: { "@id": "https://primefamilyhousing.com/#website" },
   };
 
   return (
     <div>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(collectionSchema) }} />
 
       {/* ── HERO ─────────────────────────────────────────────── */}
       <section className="relative min-h-[400px] h-[614px] flex items-center justify-center overflow-hidden">

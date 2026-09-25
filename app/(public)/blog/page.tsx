@@ -2,16 +2,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { BookOpen, TrendingUp, Home, DollarSign, BarChart2, ArrowRight, Mail } from "lucide-react";
 import { fetchPosts, type BlogPost } from "@/lib/blog";
+import { jsonLdString } from "@/lib/json-ld";
 
 export const revalidate = 3600;
 
 export const metadata = {
-  title: "Renter's Guide & Housing Tips | PrimeFamilyHousing",
+  title: "Renter's Guide & Housing Tips | Prime Family Housing",
   description:
     "Free renter guides, moving tips, budgeting advice, lease explainers, and housing market updates from PrimeFamilyHousing. Written for real families finding affordable houses for rent in Atlanta, Charlotte, Houston, Dallas, Nashville and more.",
   alternates: { canonical: "https://primefamilyhousing.com/blog" },
   openGraph: {
-    title: "Renter's Guide & Housing Tips — PrimeFamilyHousing",
+    title: "Renter's Guide & Housing Tips — Prime Family Housing",
     description: "Free renter guides and housing tips for real families.",
     type: "website",
     url: "https://primefamilyhousing.com/blog",
@@ -36,7 +37,7 @@ const TOPIC_GUIDES = [
     title: "Finding & Applying",
     description: "How to search for an affordable rental, what to look for in a listing, and how to get your application approved fast.",
     tags: ["Application Tips", "Credit Score", "Background Checks"],
-    accent: "bg-blue-600",
+    accent: "bg-brand-hover",
     img: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&q=80",
   },
   {
@@ -145,8 +146,8 @@ export default async function BlogPage({ searchParams }: PageProps) {
 
   return (
     <div className="pt-20">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faqSchema) }} />
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section className="relative min-h-[480px] lg:min-h-[540px] flex items-end overflow-hidden">
@@ -338,9 +339,9 @@ export default async function BlogPage({ searchParams }: PageProps) {
       <section className="bg-brand-dark text-white py-24 lg:py-28 px-6">
         <div className="max-w-3xl mx-auto">
           <div className="mb-14">
-            <p className="text-blue-300 text-xs font-semibold tracking-[0.35em] uppercase mb-4">Questions We Get Asked</p>
+            <p className="text-sage-soft text-xs font-semibold tracking-[0.35em] uppercase mb-4">Questions We Get Asked</p>
             <h2 className="font-serif text-4xl font-bold leading-tight">Renter FAQs</h2>
-            <p className="text-blue-100 text-sm mt-4 leading-relaxed max-w-lg">
+            <p className="text-earth-beige/85 text-sm mt-4 leading-relaxed max-w-lg">
               Answers to the questions our team hears most from renters and applicants.
             </p>
           </div>
@@ -350,13 +351,13 @@ export default async function BlogPage({ searchParams }: PageProps) {
                 <summary className="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer list-none hover:bg-white/5 transition-colors">
                   <span className="font-medium text-sm text-white leading-snug">{faq.q}</span>
                   <div className="shrink-0 w-7 h-7 rounded-full border border-white/20 flex items-center justify-center group-open:border-brand group-open:bg-brand transition-colors duration-200">
-                    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" className="text-blue-300 group-open:text-white group-open:rotate-180 transition-all duration-200">
+                    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" className="text-sage-soft group-open:text-white group-open:rotate-180 transition-all duration-200">
                       <path d="M1.5 4L5.5 8L9.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 </summary>
                 <div className="px-6 pb-5 pt-2 border-t border-white/10">
-                  <p className="text-blue-100 text-sm leading-relaxed">{faq.a}</p>
+                  <p className="text-earth-beige/85 text-sm leading-relaxed">{faq.a}</p>
                 </div>
               </details>
             ))}
@@ -380,11 +381,11 @@ export default async function BlogPage({ searchParams }: PageProps) {
             </div>
             {/* Content */}
             <div className="bg-brand-dark text-white p-10 lg:p-16 flex flex-col justify-center lg:order-1">
-              <p className="text-blue-300 text-xs font-semibold tracking-[0.35em] uppercase mb-4">Stay Informed</p>
+              <p className="text-sage-soft text-xs font-semibold tracking-[0.35em] uppercase mb-4">Stay Informed</p>
               <h2 className="font-serif text-4xl lg:text-5xl font-bold leading-tight mb-5">
                 Get Housing Tips in Your Inbox
               </h2>
-              <p className="text-blue-100 text-sm leading-relaxed mb-8">
+              <p className="text-earth-beige/85 text-sm leading-relaxed mb-8">
                 Monthly renter guides, market updates, and new listing alerts — no spam,
                 unsubscribe any time. Join 3,000+ renters already on our list.
               </p>
@@ -394,7 +395,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
               >
                 <Mail size={15} /> Subscribe to Updates <ArrowRight size={14} />
               </Link>
-              <p className="text-[11px] text-blue-300/60 mt-5">
+              <p className="text-[11px] text-white/50 mt-5">
                 By subscribing you agree to receive marketing emails. Unsubscribe any time.
               </p>
             </div>

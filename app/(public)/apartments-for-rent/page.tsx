@@ -8,6 +8,7 @@ import { CityDirectory } from "@/components/public/CityDirectory";
 import { TrustSignals } from "@/components/public/TrustSignals";
 import { CityLeadCapture } from "@/components/public/CityLeadCapture";
 import { Button } from "@/components/ui/Button";
+import { jsonLdString } from "@/lib/json-ld";
 
 export const revalidate = 300;
 
@@ -94,16 +95,16 @@ export default async function ApartmentsPage() {
         name: "Apartments for Rent",
         description: "Affordable, move-in ready apartments for rent with transparent pricing and no hidden fees.",
         url: URL,
-        isPartOf: { "@type": "WebSite", name: "PrimeFamilyHousing", url: BASE },
+        isPartOf: { "@id": "https://primefamilyhousing.com/#website" },
       }
     : null;
 
   return (
     <div>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faqSchema) }} />
       {collectionSchema && (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(collectionSchema) }} />
       )}
 
       {/* ── HERO ─────────────────────────────────────────────── */}
@@ -114,19 +115,19 @@ export default async function ApartmentsPage() {
         />
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-32 pb-16 lg:pb-20">
           <nav aria-label="Breadcrumb" className="mb-6">
-            <ol className="flex items-center gap-2 text-xs text-blue-200">
+            <ol className="flex items-center gap-2 text-xs text-white/70">
               <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
-              <li className="text-blue-400">/</li>
+              <li className="text-white/40">/</li>
               <li className="text-white font-medium">Apartments for Rent</li>
             </ol>
           </nav>
-          <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-3">
+          <p className="text-sage-soft text-xs font-semibold tracking-[0.2em] uppercase mb-3">
             {live ? "Move-in ready apartments" : "Coming soon"}
           </p>
           <h1 className="font-serif text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight max-w-3xl">
             Apartments for Rent
           </h1>
-          <p className="text-blue-100 text-lg max-w-2xl mt-4 leading-relaxed">
+          <p className="text-earth-beige/85 text-lg max-w-2xl mt-4 leading-relaxed">
             {live
               ? "Browse affordable, move-in ready apartments — transparent pricing, no hidden fees, and a decision within 24 hours."
               : "Apartments are coming soon to PrimeFamilyHousing In the meantime, explore our affordable, move-in ready rental homes — or get notified the moment apartments go live in your city."}
@@ -152,7 +153,7 @@ export default async function ApartmentsPage() {
               { icon: Clock, label: "24-hour decisions" },
             ].map((b) => (
               <div key={b.label} className="flex items-center gap-2 text-white/80 text-sm">
-                <b.icon size={15} className="text-brand" /> {b.label}
+                <b.icon size={15} className="text-sage-soft" /> {b.label}
               </div>
             ))}
           </div>
@@ -182,13 +183,13 @@ export default async function ApartmentsPage() {
         <section className="bg-[#081C15] py-16 lg:py-20 px-6">
           <div className="max-w-xl mx-auto text-center">
             <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center mx-auto mb-5">
-              <BellRing size={22} className="text-brand" />
+              <BellRing size={22} className="text-sage-soft" />
             </div>
-            <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-3">Be first in line</p>
+            <p className="text-sage-soft text-xs font-semibold tracking-[0.2em] uppercase mb-3">Be first in line</p>
             <h2 className="font-serif text-3xl lg:text-4xl font-bold text-white mb-4">
               Get notified when apartments go live
             </h2>
-            <p className="text-blue-200 text-sm leading-relaxed mb-8 max-w-sm mx-auto">
+            <p className="text-white/70 text-sm leading-relaxed mb-8 max-w-sm mx-auto">
               Leave your details and we&apos;ll email you the moment apartment listings open in your area — before they go public.
             </p>
             <CityLeadCapture cityName="Apartments" />

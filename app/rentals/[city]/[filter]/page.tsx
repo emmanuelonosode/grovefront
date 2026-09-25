@@ -9,6 +9,7 @@ import {
 import { fetchProperties, toPropertyCardShape } from "@/lib/properties";
 import { PropertyCard } from "@/components/public/PropertyCard";
 import { Button } from "@/components/ui/Button";
+import { jsonLdString } from "@/lib/json-ld";
 
 export const revalidate = 300;
 
@@ -66,7 +67,7 @@ export async function generateMetadata(
   if (!city) return { title: "Not Found" };
 
   const filterLabel = getFilterLabel(spec);
-  const title = `${filterLabel} Rentals in ${city.name}, ${city.stateCode} | PrimeFamilyHousing`;
+  const title = `${filterLabel} Rentals in ${city.name}, ${city.stateCode} | Prime Family Housing`;
   const description = `Find ${filterLabel.toLowerCase()} rentals in ${city.name}, ${city.stateCode}. All homes inspected and move-in ready. 24-hour approval decisions. Browse current availability.`;
   const url = `https://primefamilyhousing.com/rentals/${slug}/${filter}`;
 
@@ -168,7 +169,7 @@ export default async function CityFilterPage(
     name: `${filterLabel} Rentals in ${city.name}, ${city.stateCode}`,
     description: `Browse ${filterLabel.toLowerCase()} rental listings in ${city.name}, ${city.stateCode}. Move-in ready homes, 24-hour decisions.`,
     url: pageUrl,
-    isPartOf: { "@type": "WebSite", name: "PrimeFamilyHousing", url: "https://primefamilyhousing.com" },
+    isPartOf: { "@id": "https://primefamilyhousing.com/#website" },
     about: {
       "@type": "City",
       name: city.name,
@@ -181,7 +182,7 @@ export default async function CityFilterPage(
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home",       item: "https://primefamilyhousing.com" },
-      { "@type": "ListItem", position: 2, name: "Properties", item: "https://primefamilyhousing.com/houses-for-rent" },
+      { "@type": "ListItem", position: 2, name: "Houses for Rent", item: "https://primefamilyhousing.com/houses-for-rent" },
       { "@type": "ListItem", position: 3, name: `${city.name}, ${city.stateCode}`, item: `https://primefamilyhousing.com/rentals/${slug}` },
       { "@type": "ListItem", position: 4, name: filterLabel,  item: pageUrl },
     ],
@@ -222,9 +223,9 @@ export default async function CityFilterPage(
 
   return (
     <div>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(collectionSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faqSchema) }} />
 
       {/* ── HERO ──────────────────────────────────────────────────────── */}
       <section className="relative min-h-[380px] lg:min-h-[420px] flex items-end overflow-hidden">
@@ -283,7 +284,7 @@ export default async function CityFilterPage(
       <section className="bg-brand-dark border-t border-white/10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4">
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-            <span className="text-blue-300 text-xs font-medium shrink-0 mr-1">Also in {city.name}:</span>
+            <span className="text-sage-soft text-xs font-medium shrink-0 mr-1">Also in {city.name}:</span>
             {siblingFilters.map((f) => (
               <Link
                 key={f.slug}
@@ -295,7 +296,7 @@ export default async function CityFilterPage(
             ))}
             <Link
               href={`/rentals/${slug}`}
-              className="shrink-0 px-3 py-1.5 rounded-full border border-white/20 hover:bg-white/10 text-blue-200 text-xs font-medium transition-colors"
+              className="shrink-0 px-3 py-1.5 rounded-full border border-white/20 hover:bg-white/10 text-white/70 text-xs font-medium transition-colors"
             >
               All {city.name} rentals
             </Link>
@@ -356,7 +357,7 @@ export default async function CityFilterPage(
       <section className="bg-brand-dark text-white py-16 lg:py-20 px-6">
         <div className="max-w-3xl mx-auto">
           <div className="mb-10">
-            <p className="text-blue-300 text-xs font-semibold tracking-[0.3em] uppercase mb-3">Common Questions</p>
+            <p className="text-sage-soft text-xs font-semibold tracking-[0.3em] uppercase mb-3">Common Questions</p>
             <h2 className="font-serif text-3xl font-bold">
               {filterLabel} Rentals in {city.name} — FAQ
             </h2>
@@ -367,13 +368,13 @@ export default async function CityFilterPage(
                 <summary className="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer list-none hover:bg-white/5 transition-colors">
                   <span className="font-medium text-sm text-white leading-snug">{faq.q}</span>
                   <div className="shrink-0 w-7 h-7 rounded-full border border-white/20 flex items-center justify-center group-open:border-brand group-open:bg-brand transition-colors duration-200">
-                    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" className="text-blue-300 group-open:text-white group-open:rotate-180 transition-all duration-200">
+                    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" className="text-sage-soft group-open:text-white group-open:rotate-180 transition-all duration-200">
                       <path d="M1.5 4L5.5 8L9.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 </summary>
                 <div className="px-6 pb-5 pt-2 border-t border-white/10">
-                  <p className="text-blue-100 text-sm leading-relaxed">{faq.a}</p>
+                  <p className="text-earth-beige/85 text-sm leading-relaxed">{faq.a}</p>
                 </div>
               </details>
             ))}

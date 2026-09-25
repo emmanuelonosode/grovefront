@@ -403,7 +403,7 @@ export default function ProfilePage() {
             </div>
             <div className="flex gap-2 shrink-0">
               <a
-                href="mailto:info@primefamilyhousing.com"
+                href="mailto:housings@primefamilyhousing.com"
                 className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-on-surface-variant border border-black/[0.1] bg-black/[0.03] px-3.5 py-2 rounded-xl hover:bg-black/[0.06] transition-colors duration-200"
               >
                 <Mail size={12} />
@@ -535,7 +535,7 @@ function LeaseCard({ transaction: t }: { transaction: Transaction }) {
             <ArrowRight size={12} strokeWidth={2} />
           </Link>
           <a
-            href="mailto:info@primefamilyhousing.com"
+            href="mailto:housings@primefamilyhousing.com"
             className="flex-1 flex items-center justify-center gap-1.5 bg-white/[0.08] text-white text-[12px] font-semibold px-4 py-2.5 rounded-xl hover:bg-white/[0.14] transition-colors duration-200 border border-white/[0.07]"
           >
             <Mail size={13} strokeWidth={2} />
@@ -577,7 +577,7 @@ function NoLeaseContent() {
           Browse Available Homes
         </Link>
         <a
-          href="mailto:info@primefamilyhousing.com"
+          href="mailto:housings@primefamilyhousing.com"
           className="flex items-center justify-center gap-1.5 text-[12px] font-semibold text-on-surface-variant border border-black/[0.1] bg-black/[0.02] px-4 py-2.5 rounded-xl hover:bg-black/[0.04] transition-colors duration-200"
         >
           <Mail size={13} strokeWidth={2} />

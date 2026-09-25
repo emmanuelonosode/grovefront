@@ -4,9 +4,10 @@ import { Mail, MapPin, Clock, ArrowRight, CheckCircle } from "lucide-react";
 import type { Metadata } from "next";
 import { CareerApplicationForm } from "@/components/public/CareerApplicationForm";
 import { FeaturedJobCard } from "@/components/public/FeaturedJobCard";
+import { jsonLdString } from "@/lib/json-ld";
 
 export const metadata: Metadata = {
-  title: "Careers at PrimeFamilyHousing | Join Our Team",
+  title: "Careers at Prime Family Housing | Join Our Team",
   description:
     "Build a meaningful career helping families find affordable homes. Join PrimeFamilyHousing — we're hiring real estate agents, leasing consultants, property managers, and more across Clearfield and beyond.",
   keywords: [
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
     "real estate employment",
   ],
   openGraph: {
-    title: "Careers at PrimeFamilyHousing",
+    title: "Careers at Prime Family Housing",
     description:
       "Join a team that helps real families find affordable homes. View open positions and apply today.",
     type: "website",
@@ -324,13 +325,13 @@ export default function CareersPage() {
     <div className="pt-20 bg-white">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }}
       />
       {jobPostings.map((jp, i) => (
         <script
           key={i}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jp) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdString(jp) }}
         />
       ))}
 
@@ -728,7 +729,7 @@ export default function CareersPage() {
                 </div>
                 <div className="flex items-center gap-3 text-sm text-neutral-500">
                   <Clock size={12} className="text-brand shrink-0" />
-                  Mon – Fri, 9 AM – 6 PM EST
+                  Mon – Sun, 9 AM – 6 PM EST
                 </div>
               </div>
             </div>

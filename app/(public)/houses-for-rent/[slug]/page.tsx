@@ -32,6 +32,8 @@ import { PdpTourAutoOpen } from "@/components/public/pdp/PdpTourAutoOpen";
 import { FavoriteButton } from "@/components/public/FavoriteButton";
 import { amenityIconFor } from "@/components/public/pdp/amenityIcon";
 import { formatNumber } from "@/lib/utils";
+import { jsonLdString } from "@/lib/json-ld";
+import { realEstateAgentSchema } from "@/lib/business";
 
 export const revalidate = 300;
 
@@ -118,13 +120,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         url: `https://primefamilyhousing.com/houses-for-rent/${decodedSlug}`,
         siteName: "Prime Family Housing",
         images: [{ url: ogImage, width: 1200, height: 800, alt: `${fullAddr} - Prime Family Housing` }],
-        type: "article",
+        type: "website",
       },
       twitter: {
         card: "summary_large_image",
         title: `${seoTitle} | Prime Family Housing`,
         description: seoDesc.slice(0, 160),
-        site: "@primefamilyhousing",
         images: [ogImage],
       },
     };
@@ -375,10 +376,13 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   // marking up ratings the site cannot show is a structured-data violation.
   const listingSchema = {
     "@context": "https://schema.org",
-    "@type": ["RealEstateListing", "Product"],
+    // RealEstateListing only. The old ["RealEstateListing", "Product"] pair opted
+    // every home into Google's merchant-listing checks (shipping, returns, GTIN),
+    // which a lease can never satisfy, so each PDP carried structured-data errors.
+    "@type": "RealEstateListing",
     mainEntity: residenceSchema,
     name: fullAddress,
-    description: `${fullAddress} is a ${property.bedrooms || 3}-bedroom single-family rental home in ${property.city}, ${property.state}. Monthly rent is $${formatNumber(priceNum)}/month.`,
+    description: `${fullAddress} is a ${property.bedrooms ? `${property.bedrooms}-bedroom ` : ""}single-family rental home in ${property.city}, ${property.state}. Monthly rent is $${formatNumber(priceNum)}/month.`,
     url: `https://primefamilyhousing.com/houses-for-rent/${property.slug}`,
     thumbnailUrl: primaryImage?.image_url ?? FALLBACK_IMAGE,
     primaryImageOfPage: {
@@ -407,13 +411,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
       },
     },
     datePosted: property.created_at ?? new Date().toISOString(),
-    broker: {
-      "@type": "RealEstateAgent",
-      name: "Prime Family Housing",
-      email: "info@primefamilyhousing.com",
-      telephone: "+17577924480",
-      url: "https://primefamilyhousing.com",
-    },
+    broker: realEstateAgentSchema(),
   };
 
   const faqSchema = {
@@ -457,23 +455,23 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
       <PropertyIntentCapture city={property.city} listingType={property.listing_type} />
       <PropertyPageTracker slug={property.slug} price={priceNum} listingType={property.listing_type} />
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(listingSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(listingSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faqSchema) }} />
       {videoSchema && (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(videoSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(videoSchema) }} />
       )}
 
       {/* ── Breadcrumb ─────────────────────────────────────────────────── */}
       <nav aria-label="Breadcrumb" className="mx-auto max-w-[1280px] px-4 pt-5 lg:px-8">
         <ol className="pdp-rail flex items-center gap-1.5 overflow-x-auto whitespace-nowrap text-[14px] leading-[1.43] tracking-[-0.14px]">
-          <li><Link href="/" className="-my-2 inline-flex min-h-11 items-center py-2 text-[#5d6c7b] hover:text-[#0064e0]">Home</Link></li>
+          <li><Link href="/" className="-my-2 inline-flex min-h-11 items-center py-2 text-[#5d6c7b] hover:text-[#1b4332]">Home</Link></li>
           <li aria-hidden="true" className="text-[#8595a4]">/</li>
-          <li><Link href="/houses-for-rent" className="-my-2 inline-flex min-h-11 items-center py-2 text-[#5d6c7b] hover:text-[#0064e0]">Houses for Rent</Link></li>
+          <li><Link href="/houses-for-rent" className="-my-2 inline-flex min-h-11 items-center py-2 text-[#5d6c7b] hover:text-[#1b4332]">Houses for Rent</Link></li>
           <li aria-hidden="true" className="text-[#8595a4]">/</li>
-          <li><Link href={stateHref} className="-my-2 inline-flex min-h-11 items-center py-2 text-[#5d6c7b] hover:text-[#0064e0]">{stateName}</Link></li>
+          <li><Link href={stateHref} className="-my-2 inline-flex min-h-11 items-center py-2 text-[#5d6c7b] hover:text-[#1b4332]">{stateName}</Link></li>
           <li aria-hidden="true" className="text-[#8595a4]">/</li>
-          <li><Link href={cityHref} className="-my-2 inline-flex min-h-11 items-center py-2 text-[#5d6c7b] hover:text-[#0064e0]">{property.city}</Link></li>
+          <li><Link href={cityHref} className="-my-2 inline-flex min-h-11 items-center py-2 text-[#5d6c7b] hover:text-[#1b4332]">{property.city}</Link></li>
           <li aria-hidden="true" className="text-[#8595a4]">/</li>
           <li aria-current="page" className="font-bold text-[#1c1e21]">{property.address}</li>
         </ol>
@@ -561,7 +559,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               {monthlyCost && monthlyCost.requiredTotal > priceNum && (
                 <p className="mt-1.5 text-[14px] leading-[1.43] tracking-[-0.14px] text-[#5d6c7b]">
                   ${formatMoney(monthlyCost.requiredTotal)}{priceLabel} with required monthly charges.{" "}
-                  <a href="#costs" className="-my-1 inline-block py-1 font-bold text-[#0064e0] hover:underline">
+                  <a href="#costs" className="-my-1 inline-block py-1 font-bold text-[#1b4332] hover:underline">
                     See the breakdown
                   </a>
                 </p>
@@ -882,7 +880,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                 </h2>
                 <Link
                   href={cityHref}
-                  className="-my-2 inline-flex min-h-11 items-center gap-1 py-2 text-[16px] font-bold leading-[1.5] tracking-[-0.16px] text-[#0064e0] hover:underline"
+                  className="-my-2 inline-flex min-h-11 items-center gap-1 py-2 text-[16px] font-bold leading-[1.5] tracking-[-0.16px] text-[#1b4332] hover:underline"
                 >
                   See all
                   <ChevronRight size={16} strokeWidth={2.5} aria-hidden="true" />
@@ -916,7 +914,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                           ${formatNumber(Math.round(Number(sim.price)))}
                           <span className="text-[14px] font-normal text-[#5d6c7b]">{sim.price_label || "/mo"}</span>
                         </p>
-                        <p className="mt-0.5 truncate text-[14px] leading-[1.43] tracking-[-0.14px] text-[#1c1e21] group-hover:text-[#0064e0]">
+                        <p className="mt-0.5 truncate text-[14px] leading-[1.43] tracking-[-0.14px] text-[#1c1e21] group-hover:text-[#1b4332]">
                           {sim.address}
                         </p>
                         <p className="mt-0.5 text-[14px] leading-[1.43] tracking-[-0.14px] text-[#5d6c7b]">

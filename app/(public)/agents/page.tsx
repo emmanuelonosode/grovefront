@@ -12,11 +12,12 @@ import {
 } from "lucide-react";
 import { fetchAgents } from "@/lib/agents";
 import { formatPrice } from "@/lib/utils";
+import { jsonLdString } from "@/lib/json-ld";
 
 export const revalidate = 300;
 
 export const metadata = {
-  title: "Our Housing Specialists | PrimeFamilyHousing",
+  title: "Our Housing Specialists | Prime Family Housing",
   description:
     "Meet the housing specialists at PrimeFamilyHousing. Real people helping real families find affordable houses for rent across Atlanta, Charlotte, Houston, Dallas, Tampa, Phoenix and more.",
   keywords: [
@@ -30,7 +31,7 @@ export const metadata = {
     "find a rental agent near me",
   ],
   openGraph: {
-    title: "Our Housing Specialists | PrimeFamilyHousing",
+    title: "Our Housing Specialists | Prime Family Housing",
     description:
       "Real people helping real families find affordable homes. No jargon, no pressure. Just honest, fast service.",
     type: "website",
@@ -188,7 +189,7 @@ export default async function AgentsPage() {
     <div className="pt-20">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }}
       />
 
       {/* ── HERO — clean photo, no overlay; text on a solid card ─────────── */}
@@ -489,7 +490,7 @@ export default async function AgentsPage() {
       <section className="bg-brand-dark text-white py-24 lg:py-32 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-14">
-            <p className="text-blue-300 text-xs font-semibold tracking-[0.35em] uppercase mb-4">
+            <p className="text-sage-soft text-xs font-semibold tracking-[0.35em] uppercase mb-4">
               What Renters Say
             </p>
             <h2 className="font-serif text-4xl lg:text-5xl font-bold leading-tight max-w-xl">
@@ -502,8 +503,8 @@ export default async function AgentsPage() {
                 key={t.name}
                 className="border border-white/10 rounded-sm p-7 bg-white/5 hover:bg-white/8 transition-colors duration-200"
               >
-                <Quote size={28} className="text-brand mb-5 opacity-80" />
-                <p className="text-blue-100 text-sm leading-relaxed mb-7 italic">
+                <Quote size={28} className="text-sage-soft mb-5 opacity-80" />
+                <p className="text-earth-beige/85 text-sm leading-relaxed mb-7 italic">
                   &ldquo;{t.quote}&rdquo;
                 </p>
                 <div className="flex items-center gap-3 border-t border-white/10 pt-5">
@@ -518,7 +519,7 @@ export default async function AgentsPage() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-white">{t.name}</p>
-                    <p className="text-xs text-blue-300">{t.city}</p>
+                    <p className="text-xs text-sage-soft">{t.city}</p>
                   </div>
                 </div>
               </div>

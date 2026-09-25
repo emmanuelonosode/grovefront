@@ -1,30 +1,9 @@
 ﻿import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
-export const alt = 'PrimeFamilyHousing — Quality Homes. Move-In Ready.'
+export const alt = 'Prime Family Housing — Quality Homes. Move-In Ready.'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
-
-// Trustpilot-green star box
-function Star() {
-  return (
-    <div
-      style={{
-        width: 28,
-        height: 28,
-        background: '#00B67A',
-        borderRadius: 3,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-      </svg>
-    </div>
-  )
-}
 
 // URL-encoded inline SVG for the brand icon mark (Satori requires img tags for SVGs)
 const ICON_SVG =
@@ -58,7 +37,7 @@ export default function Image() {
           overflow: 'hidden',
         }}
       >
-        {/* â”€â”€ Right photo panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* ── Right photo panel ──────────────────────────────────────── */}
         <div
           style={{
             position: 'absolute',
@@ -99,7 +78,7 @@ export default function Image() {
           />
         </div>
 
-        {/* â”€â”€ Blue left accent rail â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* ── Blue left accent rail ──────────────────────────────────── */}
         <div
           style={{
             position: 'absolute',
@@ -112,7 +91,7 @@ export default function Image() {
           }}
         />
 
-        {/* â”€â”€ Soft blue glow behind headline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* ── Soft blue glow behind headline ────────────────────────── */}
         <div
           style={{
             position: 'absolute',
@@ -126,7 +105,7 @@ export default function Image() {
           }}
         />
 
-        {/* â”€â”€ Left content column â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* ── Left content column ───────────────────────────────────── */}
         <div
           style={{
             display: 'flex',
@@ -154,11 +133,11 @@ export default function Image() {
                   display: 'flex',
                 }}
               >
-                PRIMEFAMILYHOUSING &amp; CO.
+                PRIME FAMILY HOUSING
               </div>
               <div
                 style={{
-                  color: '#012d1d',
+                  color: '#A3B18A',
                   fontSize: 10,
                   fontWeight: 500,
                   letterSpacing: '3.5px',
@@ -166,7 +145,7 @@ export default function Image() {
                   display: 'flex',
                 }}
               >
-                REALTY GROUP
+                GREAT PLACES TO CALL HOME
               </div>
             </div>
           </div>
@@ -187,7 +166,7 @@ export default function Image() {
           <div
             style={{
               display: 'flex',
-              color: '#60A5FA',
+              color: '#E9EDC6',
               fontSize: 13,
               fontWeight: 600,
               letterSpacing: '3px',
@@ -195,7 +174,7 @@ export default function Image() {
               marginBottom: 14,
             }}
           >
-            Affordable Homes Â· 12+ US Cities
+            Affordable Homes · 12+ US Cities
           </div>
 
           {/* Headline */}
@@ -212,7 +191,7 @@ export default function Image() {
             }}
           >
             <div style={{ display: 'flex' }}>Quality Homes.</div>
-            <div style={{ display: 'flex', color: '#93C5FD' }}>Move-In Ready.</div>
+            <div style={{ display: 'flex', color: '#A3B18A' }}>Move-In Ready.</div>
           </div>
 
           {/* Subheading */}
@@ -231,7 +210,7 @@ export default function Image() {
             Well-maintained homes, fast approvals.
           </div>
 
-          {/* Trustpilot badge */}
+          {/* Track-record badge */}
           <div
             style={{
               display: 'flex',
@@ -248,66 +227,31 @@ export default function Image() {
               marginBottom: 'auto',
             }}
           >
-            {/* Five green stars */}
-            <div style={{ display: 'flex', gap: 4 }}>
-              <Star />
-              <Star />
-              <Star />
-              <Star />
-              <Star />
-            </div>
-
-            {/* Score + label */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'baseline',
-                  gap: 6,
-                }}
-              >
-                <span
-                  style={{
-                    color: '#FFFFFF',
-                    fontSize: 17,
-                    fontWeight: 800,
-                    lineHeight: 1,
-                  }}
-                >
-                  4.9
-                </span>
-                <span
-                  style={{
-                    color: 'rgba(255,255,255,0.45)',
-                    fontSize: 13,
-                    fontWeight: 400,
-                    lineHeight: 1,
-                  }}
-                >
-                  / 5
-                </span>
-                <span
-                  style={{
-                    color: '#00B67A',
-                    fontSize: 13,
-                    fontWeight: 700,
-                    letterSpacing: 0.3,
-                    lineHeight: 1,
-                  }}
-                >
-                  Trustpilot
-                </span>
-              </div>
+            <span
+              style={{
+                color: '#E9EDC6',
+                fontSize: 30,
+                fontWeight: 800,
+                lineHeight: 1,
+                letterSpacing: -0.5,
+              }}
+            >
+              2,000+
+            </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <span style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700, lineHeight: 1 }}>
+                Families housed
+              </span>
               <span
                 style={{
-                  color: 'rgba(255,255,255,0.38)',
+                  color: 'rgba(255,255,255,0.6)',
                   fontSize: 12,
                   letterSpacing: 0.2,
                   lineHeight: 1,
                   display: 'flex',
                 }}
               >
-                Based on 2,000+ verified reviews
+                Across 12+ U.S. cities since 2012
               </span>
             </div>
           </div>
@@ -326,13 +270,13 @@ export default function Image() {
                 width: 6,
                 height: 6,
                 borderRadius: '50%',
-                background: '#081C15',
+                background: '#A3B18A',
                 display: 'flex',
               }}
             />
             <span
               style={{
-                color: '#012d1d',
+                color: 'rgba(255,255,255,0.75)',
                 fontSize: 15,
                 fontWeight: 700,
                 letterSpacing: 0.5,
@@ -343,7 +287,7 @@ export default function Image() {
           </div>
         </div>
 
-        {/* â”€â”€ Bottom-right overlay: key stats floating on the photo â”€â”€â”€ */}
+        {/* ── Bottom-right overlay: key stats floating on the photo ─── */}
         <div
           style={{
             position: 'absolute',
@@ -373,7 +317,7 @@ export default function Image() {
             >
               <span
                 style={{
-                  color: '#60A5FA',
+                  color: '#E9EDC6',
                   fontSize: 22,
                   fontWeight: 800,
                   lineHeight: 1,

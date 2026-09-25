@@ -10,6 +10,7 @@ import { TrustSignals } from "@/components/public/TrustSignals";
 import { CITIES, type CityData } from "@/lib/cities";
 import { getStateMedia, type StateInfo } from "@/lib/states";
 import { realEstateAgentSchema } from "@/lib/business";
+import { jsonLdString } from "@/lib/json-ld";
 
 interface Props {
   state: StateInfo;
@@ -60,7 +61,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
     name: `Houses for Rent in ${state.name}`,
     description: `Browse affordable houses for rent across ${state.name}. ${totalListings}+ move-in ready rentals in ${cityCount} cities and communities. 24-hour application decisions.`,
     url,
-    isPartOf: { "@type": "WebSite", name: "PrimeFamilyHousing", url: BASE },
+    isPartOf: { "@id": "https://primefamilyhousing.com/#website" },
     about: {
       "@type": "State",
       name: state.name,
@@ -110,9 +111,9 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
 
   return (
     <div>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(collectionSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faqSchema) }} />
 
       {/* ── HERO — full-bleed photo, forest gradient, centered ─── */}
       <section className="relative w-full min-h-[500px] md:min-h-[614px] flex items-center justify-center overflow-hidden">
@@ -426,11 +427,11 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
       {/* ── LEAD CAPTURE ─────────────────────────────────────── */}
       <section className="bg-[#081C15] py-16 lg:py-20 px-6">
         <div className="max-w-xl mx-auto text-center">
-          <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase mb-3">Be First</p>
+          <p className="text-sage-soft text-xs font-semibold tracking-[0.2em] uppercase mb-3">Be First</p>
           <h2 className="font-serif text-3xl lg:text-4xl font-bold text-white mb-4">
             New {state.name} listings drop weekly
           </h2>
-          <p className="text-blue-200 text-sm leading-relaxed mb-8 max-w-sm mx-auto">
+          <p className="text-white/70 text-sm leading-relaxed mb-8 max-w-sm mx-auto">
             Leave your details and we&apos;ll notify you the moment a {state.name} home matching your needs becomes available.
           </p>
           <CityLeadCapture cityName={state.name} />

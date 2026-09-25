@@ -137,7 +137,7 @@ export function PdpLeadRail({
       <a
         href={`/apply?property=${slug}`}
         onClick={() => trackClick("apply_now", { slug, where: variant })}
-        className="mt-5 flex w-full items-center justify-center rounded-[8px] bg-[#0064e0] px-[30px] py-[14px] text-[14px] font-bold leading-[1.43] tracking-[-0.14px] text-white transition-colors hover:bg-[#0457cb] active:bg-[#0457cb] active:scale-[0.98]"
+        className="mt-5 flex w-full items-center justify-center rounded-[8px] bg-[#1b4332] px-[30px] py-[14px] text-[14px] font-bold leading-[1.43] tracking-[-0.14px] text-white transition-colors hover:bg-[#012d1d] active:bg-[#012d1d] active:scale-[0.98]"
       >
         Apply now
       </a>

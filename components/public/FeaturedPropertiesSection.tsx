@@ -34,54 +34,55 @@ export function FeaturedPropertiesSection({ properties, totalCount }: Props) {
     "/houses-for-rent";
 
   return (
-    <section className="py-[88px] px-8 bg-white">
+    <section className="bg-white px-4 py-20 md:px-12 md:py-24">
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-8">
-          <div>
-            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-brand">Move-in ready</p>
-            <h2 className="font-serif font-bold text-brand-dark leading-[1.12] mt-3" style={{ fontSize: 38, letterSpacing: "-0.015em" }}>
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
+          <div className="max-w-2xl">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-accent">Move-in ready</p>
+            <h2 className="mt-3 font-serif text-[28px] font-bold leading-[1.15] tracking-[-0.02em] text-brand-dark md:text-[38px]">
               Available rentals this week.
             </h2>
             {totalCount != null && (
-              <p className="mt-2" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 14, color: "#475569" }}>
-                {totalCount} homes listed — inspected, maintained, and ready for you.
+              <p className="mt-4 text-[16px] leading-relaxed text-on-surface-variant md:text-[17px]">
+                {totalCount.toLocaleString()} homes listed — inspected, maintained, and ready for you.
               </p>
             )}
           </div>
           <Link
             href="/houses-for-rent"
-            className="shrink-0 inline-flex items-center gap-1.5 text-brand text-[14px] font-medium hover:opacity-80 transition-opacity"
+            className="group inline-flex shrink-0 items-center gap-1.5 text-[15px] font-semibold text-brand-dark hover:text-accent"
           >
-            Browse all rentals <ArrowRight size={14} />
+            Browse all rentals <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-px mb-8 border border-[#F1F5F9] w-fit rounded-sm overflow-hidden">
-          {tabs.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              className={`flex items-center gap-2 px-5 py-2.5 text-[13px] font-medium transition-colors cursor-pointer ${
-                tab === t.id
-                  ? "bg-brand-dark text-white"
-                  : "bg-white text-[#475569] hover:text-brand-dark"
-              }`}
-              style={{ fontFamily: "var(--font-source-sans), sans-serif" }}
-            >
-              {t.label}
-              {t.count > 0 && (
-                <span className={`text-[11px] tabular-nums font-semibold px-1.5 py-0.5 rounded-sm ${
-                  tab === t.id ? "bg-white/20 text-white" : "bg-[#F1F5F9] text-[#94A3B8]"
-                }`}>
-                  {t.count}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
+        {/* Tabs — only when the grid actually mixes rentals and sales */}
+        {forRent.length > 0 && forSale.length > 0 && (
+          <div role="tablist" aria-label="Filter homes" className="mb-8 inline-flex gap-1 rounded-full bg-brand-light p-1">
+            {tabs.map((t) => (
+              <button
+                key={t.id}
+                role="tab"
+                aria-selected={tab === t.id}
+                onClick={() => setTab(t.id)}
+                className={`flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-[14px] font-semibold transition-colors ${
+                  tab === t.id ? "bg-brand text-white" : "text-on-surface-variant hover:text-brand-dark"
+                }`}
+              >
+                {t.label}
+                {t.count > 0 && (
+                  <span className={`rounded-full px-1.5 py-0.5 text-[11px] font-semibold tabular-nums ${
+                    tab === t.id ? "bg-white/20 text-white" : "bg-white text-on-surface-variant"
+                  }`}>
+                    {t.count}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Property grid */}
         {display.length > 0 ? (
@@ -92,29 +93,29 @@ export function FeaturedPropertiesSection({ properties, totalCount }: Props) {
               ))}
             </div>
 
-            <div className="mt-10 text-center">
+            <div className="mt-12 text-center">
               <Link
                 href={viewAllHref}
-                className="inline-flex items-center gap-2 bg-brand-dark text-white text-[14px] font-medium tracking-[0.05em] h-[50px] px-8 rounded-sm hover:bg-brand transition-colors"
+                className="inline-flex h-12 items-center gap-2 rounded-full bg-brand px-7 text-[15px] font-semibold text-white transition-colors hover:bg-brand-hover"
               >
                 Browse all available homes
                 {totalCount != null && (
-                  <span className="text-white/50 font-normal text-[13px]">{totalCount} total</span>
+                  <span className="font-normal text-white/60 tabular-nums">{totalCount.toLocaleString()}</span>
                 )}
-                <ArrowRight size={14} />
+                <ArrowRight size={16} />
               </Link>
-              <p className="mt-4" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 13, color: "#94A3B8" }}>
+              <p className="mt-4 text-[14px] text-on-surface-variant">
                 Ready to apply?{" "}
-                <Link href="/apply" className="text-brand font-medium hover:underline">
-                  Start your application here
+                <Link href="/apply" className="font-semibold text-brand-dark underline-offset-4 hover:text-accent hover:underline">
+                  Start your application
                 </Link>
               </p>
             </div>
           </>
         ) : (
-          <div className="text-center py-20" style={{ color: "#94A3B8" }}>
-            <p className="font-serif font-bold text-[18px] text-brand-dark">New listings coming soon.</p>
-            <p className="mt-2" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 14, color: "#475569" }}>Check back shortly or browse all available rentals.</p>
+          <div className="py-20 text-center">
+            <p className="font-serif text-[18px] font-bold text-brand-dark">New listings coming soon.</p>
+            <p className="mt-2 text-[15px] text-on-surface-variant">Check back shortly or browse all available rentals.</p>
           </div>
         )}
       </div>

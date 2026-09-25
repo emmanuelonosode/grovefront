@@ -36,14 +36,14 @@ const TOUR_TYPES = [
 ];
 
 const TIME_SLOTS = [
-  { id: "morning",   label: "Morning",   hours: "9 AM ”“ 12 PM", Icon: Sun    },
-  { id: "afternoon", label: "Afternoon", hours: "1 ”“ 5 PM",     Icon: Sunset },
+  { id: "morning",   label: "Morning",   hours: "9 AM – 12 PM", Icon: Sun    },
+  { id: "afternoon", label: "Afternoon", hours: "1 – 5 PM",     Icon: Sunset },
 ];
 
 const TIMELINES = [
   { label: "ASAP",          value: "ASAP"         },
-  { label: "1”“3 months",    value: "1_3_MONTHS"   },
-  { label: "3”“6 months",    value: "3_6_MONTHS"   },
+  { label: "1–3 months",    value: "1_3_MONTHS"   },
+  { label: "3–6 months",    value: "3_6_MONTHS"   },
   { label: "6+ months",     value: "6_PLUS"       },
   { label: "Just browsing", value: "JUST_BROWSING" },
 ];
@@ -54,7 +54,7 @@ const CONTACT_METHODS = [
   { label: "Email", value: "EMAIL" },
 ];
 
-/* â”€â”€â”€ Shared style tokens â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Shared style tokens ─────────────────────────────────────────────── */
 
 const labelCls = "block text-[10px] font-semibold tracking-[0.18em] uppercase text-[#475569] mb-2.5";
 
@@ -63,7 +63,7 @@ const inputBaseCls =
   "placeholder:text-[#94A3B8] outline-none transition-[border-color,box-shadow] duration-100 " +
   "focus:border-brand focus:ring-2 focus:ring-brand/10";
 
-/* â”€â”€â”€ Step line â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Step line ───────────────────────────────────────────────────────── */
 
 function StepLine({ step, label }: { step: number; label: string }) {
   return (
@@ -82,7 +82,7 @@ function StepLine({ step, label }: { step: number; label: string }) {
   );
 }
 
-/* â”€â”€â”€ Header bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Header bar ──────────────────────────────────────────────────────── */
 
 function HeaderBar({
   mode,
@@ -127,7 +127,7 @@ function HeaderBar({
   );
 }
 
-/* â”€â”€â”€ Option card (tour type / date / time / pill) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Option card (tour type / date / time / pill) ───────────────────── */
 
 function OptCard({
   selected,
@@ -157,7 +157,7 @@ function OptCard({
   );
 }
 
-/* â”€â”€â”€ Main component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Main component ─────────────────────────────────────────────────── */
 
 export function PropertyInquiryForm({
   propertySlug,
@@ -271,7 +271,7 @@ export function PropertyInquiryForm({
     }
   }
 
-  /* â”€â”€ Success â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Success ─────────────────────────────────────────────────────── */
   if (success) {
     return (
       <div className="bg-white border border-[#F1F5F9] rounded-sm shadow-[0_1px_3px_rgba(1,45,29,0.04)] overflow-hidden">
@@ -297,7 +297,7 @@ export function PropertyInquiryForm({
               {[
                 { k: "Tour format",  v: selectedTourObj?.label,                             Icon: selectedTourObj?.Icon },
                 { k: "Date",         v: selectedDate.replace(/,\s\d{4}$/, ""),              Icon: undefined              },
-                { k: "Time window",  v: `${selectedTimeObj?.label} Â· ${selectedTimeObj?.hours}`, Icon: selectedTimeObj?.Icon },
+                { k: "Time window",  v: `${selectedTimeObj?.label} · ${selectedTimeObj?.hours}`, Icon: selectedTimeObj?.Icon },
               ].map((row, i) => (
                 <div
                   key={row.k}
@@ -345,7 +345,7 @@ export function PropertyInquiryForm({
     );
   }
 
-  /* â”€â”€ Step 2: Contact details â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Step 2: Contact details ─────────────────────────────────────── */
   if (step === 2) {
     const canSubmit = name.trim().length > 0 && /^\S+@\S+\.\S+$/.test(email);
     return (
@@ -510,7 +510,7 @@ export function PropertyInquiryForm({
     );
   }
 
-  /* â”€â”€ Step 1: Tour preferences â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Step 1: Tour preferences ────────────────────────────────────── */
   return (
     <div className="bg-white border border-[#F1F5F9] rounded-sm shadow-[0_1px_3px_rgba(1,45,29,0.04)] overflow-hidden">
       <HeaderBar mode="key" eyebrow="Schedule a Tour" title="Pick a time to visit." />

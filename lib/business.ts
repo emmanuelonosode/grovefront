@@ -10,7 +10,7 @@ export const BUSINESS = {
   url: "https://primefamilyhousing.com",
   telephone: "+17577924480",
   telephoneDisplay: "(757) 792-4480",
-  email: "housing@primefamilyhousing.com",
+  email: "housings@primefamilyhousing.com",
   address: {
     streetAddress: "1425 S 1500 E Unit 222",
     addressLocality: "Clearfield",

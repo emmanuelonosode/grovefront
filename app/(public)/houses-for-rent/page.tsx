@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { fetchProperties, type PropertyListItemAPI } from "@/lib/properties";
 import { PropertiesClient } from "@/components/public/PropertiesClient";
+import { jsonLdString } from "@/lib/json-ld";
 
 export const revalidate = 0;
 
@@ -29,14 +30,23 @@ export async function generateMetadata({ searchParams }: PageProps) {
   const canonical = qs ? `${BASE}?${qs}` : BASE;
   // Distinct title per page so paginated pages aren't seen as duplicate titles.
   const pageSuffix = pageNum > 1 ? ` — Page ${pageNum}` : "";
+  const q = typeof params.q === "string" ? params.q.trim().slice(0, 60) : "";
+  const title = q
+    ? `Houses for Rent in ${q}${pageSuffix} | Prime Family Housing`
+    : `Homes for Rent & Affordable Houses Nationwide${pageSuffix} | Prime Family Housing`;
 
   return {
-    title: `Homes for Rent & Affordable Houses Nationwide${pageSuffix} | Prime Family Housing`,
+    title,
     description:
       "Browse affordable homes, houses, and apartments for rent across the U.S. — move-in ready, pet-friendly options, transparent pricing, and 24-hour application decisions. Find your next rental by city.",
     alternates: { canonical },
+    // Search/filter views are unbounded (every free-text q, every facet combo) and
+    // compete with the curated /rentals/[city] landing pages for the same queries.
+    // Keep them out of the index but let crawlers follow through to the listings.
+    // The clean hub and its ?page=N pagination stay indexable.
+    ...(hasFilters && { robots: { index: false, follow: true } }),
     openGraph: {
-      title: `Homes for Rent & Affordable Houses Nationwide${pageSuffix} | Prime Family Housing`,
+      title,
       description: "Browse affordable houses for rent — inspected, move-in ready, 24-hour decisions.",
       type: "website",
       url: canonical,
@@ -116,14 +126,14 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
 
   return (
     <div>
-      <h1 className="sr-only">Houses for Rent — Affordable Houses Nationwide | Prime Family Housing</h1>
+      <h1 className="sr-only">{q ? `Houses for Rent in ${q}` : "Houses for Rent — Affordable Houses Nationwide"}</h1>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(itemListSchema) }}
       />
       <Suspense>
         <PropertiesClient

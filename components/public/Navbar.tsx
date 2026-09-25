@@ -4,10 +4,11 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BrandLogo } from "@/components/ui/BrandLogo";
-import { Menu, X, Phone, User, LogOut } from "lucide-react";
+import { Menu, X, Phone, Mail, User, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
+import { BUSINESS } from "@/lib/business";
 
 const navLinks = [
   { label: "Find a Home", href: "/houses-for-rent" },
@@ -83,15 +84,15 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "relative text-[15.5px] font-bold tracking-wide transition-colors hover:text-brand pb-0.5",
-                  solidBg ? "text-brand-dark" : "text-white/90",
-                  isActive(link.href) && solidBg && "text-brand",
+                  "relative text-[15px] font-semibold transition-colors pb-0.5",
+                  solidBg ? "text-brand-dark hover:text-accent" : "text-white/90 hover:text-white",
+                  isActive(link.href) && solidBg && "text-accent",
                   isActive(link.href) && !solidBg && "text-white",
                 )}
               >
                 {link.label}
                 {isActive(link.href) && (
-                  <span className="absolute -bottom-0.5 left-0 right-0 h-0.5 rounded-full bg-brand" />
+                  <span className={cn("absolute -bottom-1 left-0 right-0 h-0.5 rounded-full", solidBg ? "bg-accent" : "bg-earth-beige")} />
                 )}
               </Link>
             ))}
@@ -102,8 +103,8 @@ export function Navbar() {
             <button
               onClick={() => window.dispatchEvent(new Event("pfh:open-callback"))}
               className={cn(
-                "flex items-center gap-1.5 text-[15px] font-bold transition-colors hover:text-brand cursor-pointer",
-                solidBg ? "text-brand-dark" : "text-white/90"
+                "flex items-center gap-1.5 text-[15px] font-semibold transition-colors cursor-pointer",
+                solidBg ? "text-brand-dark hover:text-accent" : "text-white/90 hover:text-white"
               )}
             >
               <Phone size={15} />
@@ -114,8 +115,8 @@ export function Navbar() {
                 <Link
                   href="/portal/profile"
                   className={cn(
-                    "flex items-center gap-1.5 text-[15px] font-semibold transition-colors hover:text-brand",
-                    solidBg ? "text-brand-dark" : "text-white/90"
+                    "flex items-center gap-1.5 text-[15px] font-semibold transition-colors",
+                    solidBg ? "text-brand-dark hover:text-accent" : "text-white/90 hover:text-white"
                   )}
                 >
                   <User size={15} />
@@ -147,7 +148,10 @@ export function Navbar() {
                 </Link>
                 <Link
                   href="/apply"
-                  className="text-[14px] font-semibold tracking-[0.05em] bg-primary text-on-primary px-6 py-2 rounded-full hover:bg-primary-container transition-colors active:scale-95"
+                  className={cn(
+                    "text-[14px] font-semibold px-6 py-2.5 rounded-full transition-colors active:scale-95",
+                    solidBg ? "bg-brand text-white hover:bg-brand-hover" : "bg-earth-beige text-forest-deep hover:bg-white"
+                  )}
                 >
                   Apply Now
                 </Link>
@@ -211,23 +215,23 @@ export function Navbar() {
               className={cn(
                 "flex items-center justify-between py-3.5 text-[17px] font-semibold tracking-wide transition-colors border-b border-neutral-100 last:border-0",
                 isActive(link.href)
-                  ? "text-brand font-bold"
-                  : "text-brand-dark hover:text-brand"
+                  ? "text-accent font-bold"
+                  : "text-brand-dark hover:text-accent"
               )}
             >
               {link.label}
               {isActive(link.href) && (
-                <span className="w-1.5 h-1.5 rounded-full bg-brand" />
+                <span className="w-1.5 h-1.5 rounded-full bg-accent" />
               )}
             </Link>
           ))}
 
           <div className="pt-5 mt-2 border-t border-neutral-100 flex flex-col gap-3">
             <a
-              href="mailto:info@primefamilyhousing.com"
+              href={`mailto:${BUSINESS.email}`}
               className="flex items-center gap-2 text-brand-dark font-medium text-[15px] py-1"
             >
-              <Phone size={15} className="text-brand" />
+              <Mail size={15} className="text-brand" />
               Email Us
             </a>
             {user ? (

@@ -32,7 +32,7 @@ export function PdpMobileBar({ slug, price, priceLabel }: Props) {
         <a
           href={`/apply?property=${slug}`}
           onClick={() => trackClick("apply_now", { slug, where: "mobile_bar" })}
-          className="flex flex-1 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#0064e0] px-6 py-[14px] text-[14px] font-bold leading-[1.43] tracking-[-0.14px] text-white transition-transform active:scale-[0.98]"
+          className="flex flex-1 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1b4332] px-6 py-[14px] text-[14px] font-bold leading-[1.43] tracking-[-0.14px] text-white transition-transform active:scale-[0.98]"
         >
           Apply now
         </a>

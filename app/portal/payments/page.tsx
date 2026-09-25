@@ -98,7 +98,7 @@ function fmtCompact(v: number) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(v);
 }
 
-// â”€â”€ Inline SVG logos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Inline SVG logos ──────────────────────────────────────────────────────────
 function VenmoLogo() {
   return (
     <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" aria-hidden="true">
@@ -161,7 +161,7 @@ const FALLBACK_METHODS: PaymentConfig[] = [
   { method: "BANK_TRANSFER", display_name: "Bank Transfer", handle: "info@primefamilyhousing.com",     extra_instructions: "Contact us for full wire transfer details.",   ...EMPTY_BANK },
 ];
 
-// â”€â”€ Payment Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Payment Modal ─────────────────────────────────────────────────────────────
 function PaymentModal({
   invoice, paymentConfig, onClose, onSuccess,
 }: {
@@ -319,7 +319,7 @@ function PaymentModal({
               {step === "items" ? "Select Items to Pay" : "Submit Payment Proof"}
             </h3>
             <p className="text-[12px] text-on-surface-variant truncate">
-              {invoice.invoice_number} Â· {isPartial ? `Paying ${fmt(selectedAmount)} of ${fmt(invoice.total)}` : fmt(invoice.total)}
+              {invoice.invoice_number} · {isPartial ? `Paying ${fmt(selectedAmount)} of ${fmt(invoice.total)}` : fmt(invoice.total)}
             </p>
           </div>
           {!loading && step !== "success" && (
@@ -336,7 +336,7 @@ function PaymentModal({
         {/* Scrollable body */}
         <div className="overflow-y-auto flex-1">
           {step === "items" ? (
-            /* â”€â”€ Item Selector â”€â”€ */
+            /* ── Item Selector ── */
             <div className="p-5 flex flex-col min-h-full">
               {/* Title row */}
               <div className="flex items-start justify-between gap-3 mb-5">
@@ -358,7 +358,7 @@ function PaymentModal({
                       : "border-brand text-brand bg-brand/5 hover:bg-brand/10"
                   )}
                 >
-                  {allSelected ? "âœ“ All Selected" : "Pay All"}
+                  {allSelected ? "✓ All Selected" : "Pay All"}
                 </button>
               </div>
 
@@ -405,7 +405,7 @@ function PaymentModal({
                           {item.description}
                         </p>
                         {item.quantity > 1 && (
-                          <p className="text-[11px] text-on-surface-variant mt-0.5">Ã— {item.quantity}</p>
+                          <p className="text-[11px] text-on-surface-variant mt-0.5">× {item.quantity}</p>
                         )}
                       </div>
 
@@ -450,7 +450,7 @@ function PaymentModal({
                     onClick={() => setStep("form")}
                     className="mt-1.5 text-[12px] font-bold bg-surface-container-lowest text-[#012d1d] px-4 py-2 rounded-xl disabled:opacity-40 transition-all hover:bg-surface-container-low cursor-pointer disabled:cursor-not-allowed whitespace-nowrap"
                   >
-                    {allSelected ? "Pay Full Balance â†’" : "Continue with Selection â†’"}
+                    {allSelected ? "Pay Full Balance →" : "Continue with Selection →"}
                   </button>
                 </div>
               </div>
@@ -475,7 +475,7 @@ function PaymentModal({
           ) : (
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
 
-              {/* â”€â”€ Partial payment summary (when items were selected) â”€â”€ */}
+              {/* ── Partial payment summary (when items were selected) ── */}
               {isPartial && (
                 <div className="bg-brand/[0.05] border border-brand/20 rounded-xl px-4 py-3.5">
                   <p className="text-[10px] font-bold text-brand uppercase tracking-[0.1em] mb-2">Paying these items</p>
@@ -496,7 +496,7 @@ function PaymentModal({
                 </div>
               )}
 
-              {/* â”€â”€ Method selector — full-width radio cards â”€â”€ */}
+              {/* ── Method selector — full-width radio cards ── */}
               <div>
                 <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.12em] mb-3">Choose payment method</p>
                 <div className="space-y-2">
@@ -539,7 +539,7 @@ function PaymentModal({
                 </div>
               </div>
 
-              {/* â”€â”€ Payment details card â”€â”€ */}
+              {/* ── Payment details card ── */}
               {isBankTransfer ? (
                 /* Bank Transfer — dark header + stacked rows */
                 <div className="rounded-xl overflow-hidden border border-outline-variant">
@@ -586,7 +586,7 @@ function PaymentModal({
                                 )}
                                 aria-label={`Copy ${row.label}`}
                               >
-                                {copied === row.key ? "âœ“ Done" : "Copy"}
+                                {copied === row.key ? "✓ Done" : "Copy"}
                               </button>
                             )}
                           </div>
@@ -778,7 +778,7 @@ function PaymentModal({
                           <CheckCircle size={18} className="text-brand shrink-0" />
                           <div>
                             <p className="text-[13px] font-semibold text-brand truncate max-w-[200px]">{file.name}</p>
-                            <p className="text-[10px] text-brand/60">{(file.size / 1024 / 1024).toFixed(1)} MB Â· tap to change</p>
+                            <p className="text-[10px] text-brand/60">{(file.size / 1024 / 1024).toFixed(1)} MB · tap to change</p>
                           </div>
                         </>
                       ) : (
@@ -823,7 +823,7 @@ function PaymentModal({
   );
 }
 
-// â”€â”€ PaymentRow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── PaymentRow ─────────────────────────────────────────────────────────────────
 function PaymentRow({ payment: pay }: { payment: Payment }) {
   const isVerified = pay.status === "VERIFIED" || pay.status === "SUCCESSFUL";
   const isRejected = pay.status === "REJECTED" || pay.status === "FAILED";
@@ -863,7 +863,7 @@ function PaymentRow({ payment: pay }: { payment: Payment }) {
   );
 }
 
-// â”€â”€ InvoiceCard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── InvoiceCard ────────────────────────────────────────────────────────────────
 function InvoiceCard({
   invoice, expanded, onToggle, onPay, hasPendingPayment, hasAwaitingApproval, onApproveCashApp,
 }: {
@@ -1002,7 +1002,7 @@ function InvoiceCard({
                   </a>
                 )}
                 <a
-                  href={`mailto:info@primefamilyhousing.com?subject=Invoice ${invoice.invoice_number}`}
+                  href={`mailto:housings@primefamilyhousing.com?subject=Invoice ${invoice.invoice_number}`}
                   className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-on-surface-variant border border-black/[0.1] bg-surface-container-low px-4 py-2.5 rounded-xl hover:bg-black/[0.06] transition-colors"
                 >
                   <Mail size={13} /> Contact
@@ -1016,7 +1016,7 @@ function InvoiceCard({
   );
 }
 
-// â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Main Page ──────────────────────────────────────────────────────────────────
 export default function PaymentsPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -1159,7 +1159,7 @@ export default function PaymentsPage() {
             Pay via your preferred method using the invoice number as the reference, then submit proof below for manual verification.
           </p>
           <a
-            href="mailto:info@primefamilyhousing.com"
+            href="mailto:housings@primefamilyhousing.com"
             className="flex items-center gap-1.5 text-[14px] font-semibold text-primary hover:underline shrink-0"
           >
             <Mail size={13} /> Help

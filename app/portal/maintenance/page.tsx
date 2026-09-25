@@ -124,7 +124,7 @@ function RequestCard({ req }: { req: MaintenanceRequest }) {
           <div className="flex items-center gap-2 pt-1">
             <StatusIcon size={13} style={{ color: cfg.color }} />
             <span className="text-[12px] font-medium" style={{ color: cfg.color }}>{cfg.label}</span>
-            <span className="text-[11px] text-on-surface-variant">Â· Updated {timeAgo(req.updated_at)}</span>
+            <span className="text-[11px] text-on-surface-variant">· Updated {timeAgo(req.updated_at)}</span>
           </div>
         </div>
       )}
@@ -351,7 +351,7 @@ export default function MaintenancePage() {
                     type="text"
                     value={accessTime}
                     onChange={(e) => setAccessTime(e.target.value)}
-                    placeholder="e.g. Weekdays after 5pm, anytime Sat”“Sun"
+                    placeholder="e.g. Weekdays after 5pm, anytime Sat–Sun"
                     className="w-full bg-surface-container-low rounded-xl px-4 py-3 text-[15px] text-on-surface outline-none border border-transparent focus:border-brand/30 transition-colors"
                   />
                 </div>
@@ -418,7 +418,7 @@ export default function MaintenancePage() {
             </div>
           </div>
 
-          {/* â”€â”€ Request History â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+          {/* ── Request History ───────────────────────────────────────────── */}
           <div className="flex-1 min-w-0 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-serif font-semibold text-on-surface text-[24px] leading-8">Your Requests</h3>
@@ -445,7 +445,7 @@ export default function MaintenancePage() {
                   Your account isn&apos;t linked to a tenancy yet. Contact our team to get set up.
                 </p>
                 <a
-                  href="mailto:info@primefamilyhousing.com?subject=Account Tenancy Setup"
+                  href="mailto:housings@primefamilyhousing.com?subject=Account Tenancy Setup"
                   className="inline-flex items-center gap-1.5 bg-brand text-white text-[12px] font-semibold px-4 py-2.5 rounded-xl hover:bg-brand-hover transition-colors"
                 >
                   <Mail size={13} />
@@ -462,7 +462,7 @@ export default function MaintenancePage() {
                   There was a problem fetching your maintenance history. Please refresh the page or contact us if the issue persists.
                 </p>
                 <a
-                  href="mailto:info@primefamilyhousing.com"
+                  href="mailto:housings@primefamilyhousing.com"
                   className="inline-flex items-center gap-1.5 bg-brand text-white text-[12px] font-semibold px-4 py-2.5 rounded-xl hover:bg-brand-hover transition-colors"
                 >
                   <Mail size={13} />

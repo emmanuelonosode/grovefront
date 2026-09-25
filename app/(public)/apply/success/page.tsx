@@ -101,7 +101,7 @@ function SuccessContent() {
           </div>
           <div className="flex gap-2 shrink-0">
             <a
-              href={`mailto:info@primefamilyhousing.com?subject=Application ${refId}&body=Hi, I'm following up on my application ${refId}.`}
+              href={`mailto:housings@primefamilyhousing.com?subject=Application ${refId}&body=Hi, I'm following up on my application ${refId}.`}
               className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-white border border-white/20 px-3.5 py-2 rounded-xl hover:bg-white/10 transition-colors"
             >
               <Mail size={13} />

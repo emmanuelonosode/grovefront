@@ -163,7 +163,7 @@ export default function DocumentsPage() {
                   Your lease agreement and files will appear here once your tenancy is confirmed.
                 </p>
                 <a
-                  href="mailto:info@primefamilyhousing.com?subject=Document Request"
+                  href="mailto:housings@primefamilyhousing.com?subject=Document Request"
                   className="inline-flex items-center gap-2 bg-primary text-on-primary text-[14px] tracking-[0.05em] font-semibold px-6 py-3 rounded-lg hover:bg-primary-container transition-colors active:scale-[0.98]"
                 >
                   <Mail size={14} strokeWidth={2} />
@@ -235,11 +235,11 @@ export default function DocumentsPage() {
               Email us and we&apos;ll handle it promptly.
             </p>
             <a
-              href="mailto:info@primefamilyhousing.com?subject=Document Request"
+              href="mailto:housings@primefamilyhousing.com?subject=Document Request"
               className="inline-flex items-center gap-1.5 text-[14px] font-semibold text-primary mt-4 hover:underline"
             >
               <Mail size={13} />
-              info@primefamilyhousing.com
+              housings@primefamilyhousing.com
             </a>
           </section>
 
@@ -249,7 +249,7 @@ export default function DocumentsPage() {
             <h3 className="font-serif font-semibold text-on-primary text-[24px] leading-8 mb-4">Our Team is Ready.</h3>
             <p className="text-[12px] leading-4 text-on-primary/60 mb-5">We respond within 1 business day.</p>
             <a
-              href="mailto:info@primefamilyhousing.com?subject=Urgent Document Request"
+              href="mailto:housings@primefamilyhousing.com?subject=Urgent Document Request"
               className="w-full flex items-center justify-center gap-2 bg-earth-beige text-on-secondary-container text-[14px] tracking-[0.05em] font-semibold px-4 py-3 rounded-lg hover:bg-surface transition-colors active:scale-[0.98]"
             >
               <Mail size={14} strokeWidth={2} />

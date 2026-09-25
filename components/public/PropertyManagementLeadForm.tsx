@@ -86,7 +86,7 @@ export function PropertyManagementLeadForm() {
           Thank you for reaching out. A local PrimeFamilyHousing property specialist will perform a full rental valuation and contact you within 24 hours.
         </p>
         <div className="text-xs text-neutral-400">
-          Have an urgent question? Email us at <a href="mailto:info@primefamilyhousing.com" className="text-brand font-semibold hover:underline">info@primefamilyhousing.com</a>
+          Have an urgent question? Email us at <a href="mailto:housings@primefamilyhousing.com" className="text-brand font-semibold hover:underline">housings@primefamilyhousing.com</a>
         </div>
       </div>
     );

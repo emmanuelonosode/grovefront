@@ -63,7 +63,7 @@ export function CityLeadCapture({ cityName }: Props) {
           <CheckCircle size={30} className="text-brand" />
         </div>
         <h3 className="font-serif text-2xl font-bold text-white mb-2">You&apos;re on the list!</h3>
-        <p className="text-blue-200 text-sm leading-relaxed">
+        <p className="text-white/70 text-sm leading-relaxed">
           We&apos;ll be in touch within 24 hours with available listings{cityName ? ` in ${cityName}` : ""}.
         </p>
       </div>

@@ -2,9 +2,10 @@
 import Image from "next/image";
 import { RentalApplicationForm } from "@/components/public/RentalApplicationForm";
 import { Clock, Shield, Home } from "lucide-react";
+import { jsonLdString } from "@/lib/json-ld";
 
 export const metadata: Metadata = {
-  title: "Apply to Rent a Home | PrimeFamilyHousing",
+  title: "Apply to Rent a Home | Prime Family Housing",
   description:
     "Apply to rent an affordable home with PrimeFamilyHousing. Simple online application, reviewed within 24 hours. No pressure. Fast, honest decisions.",
   keywords: [
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
     "rent a house", "cheap houses to rent", "rental application online",
   ],
   openGraph: {
-    title: "Apply to Rent a Home | PrimeFamilyHousing",
+    title: "Apply to Rent a Home | Prime Family Housing",
     description: "Simple rental application reviewed in 24 hours. Affordable, move-in ready homes across 12+ cities.",
     type: "website",
     url: "https://primefamilyhousing.com/apply",
@@ -43,9 +44,9 @@ export default async function ApplyPage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen bg-white pt-20">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }} />
 
-      {/* â”€â”€ Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Hero ──────────────────────────────────────────────────── */}
       <section
         className="relative overflow-hidden bg-[#F0F5FF]"
         style={{
@@ -103,7 +104,7 @@ export default async function ApplyPage({ searchParams }: Props) {
         </div>
       </section>
 
-      {/* â”€â”€ Form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Form ──────────────────────────────────────────────────── */}
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 pb-16">
         <RentalApplicationForm propertySlug={property} />
       </div>

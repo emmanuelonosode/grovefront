@@ -6,6 +6,7 @@ import { ArrowLeft, Clock, Calendar, Tag } from "lucide-react";
 import sanitizeHtml from "sanitize-html";
 import { fetchPostBySlug, fetchPosts, type BlogPost } from "@/lib/blog";
 import { BUSINESS } from "@/lib/business";
+import { jsonLdString } from "@/lib/json-ld";
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -20,10 +21,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const post = await fetchPostBySlug(decodedSlug);
     return {
-      title: `${post.title} | PrimeFamilyHousing`,
+      title: `${post.title} | Prime Family Housing`,
       description: post.excerpt,
       alternates: { canonical: `https://primefamilyhousing.com/blog/${decodedSlug}` },
-      openGraph: { title: `${post.title} | PrimeFamilyHousing`, description: post.excerpt, type: "article", url: `https://primefamilyhousing.com/blog/${decodedSlug}`, images: post.featured_image_url ? [{ url: post.featured_image_url }] : [] },
+      openGraph: { title: `${post.title} | Prime Family Housing`, description: post.excerpt, type: "article", url: `https://primefamilyhousing.com/blog/${decodedSlug}`, images: post.featured_image_url ? [{ url: post.featured_image_url }] : [] },
     };
   } catch {
     return {};
@@ -99,8 +100,8 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <div className="pt-20">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(articleSchema) }} />
       {/* Hero — clean white article header; featured photo shown full-color below */}
       <div className="bg-white border-b border-neutral-100">
         <div className="max-w-4xl mx-auto px-6 lg:px-8 pt-12 pb-10">
@@ -214,13 +215,13 @@ export default async function BlogPostPage({ params }: Props) {
           <aside className="space-y-8">
             {/* CTA */}
             <div className="bg-brand-dark text-white rounded-sm p-6">
-              <p className="text-blue-300 text-xs font-semibold tracking-widest uppercase mb-3">
+              <p className="text-sage-soft text-xs font-semibold tracking-widest uppercase mb-3">
                 Find Your Home
               </p>
               <h2 className="font-serif text-xl font-bold mb-3">
                 Ready to Start Looking?
               </h2>
-              <p className="text-blue-100 text-sm leading-relaxed mb-5">
+              <p className="text-earth-beige/85 text-sm leading-relaxed mb-5">
                 Browse affordable homes in your city or talk to our team. We respond within 24 hours and never charge hidden fees.
               </p>
               <Link

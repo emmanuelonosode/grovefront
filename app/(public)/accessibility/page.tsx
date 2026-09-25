@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Accessibility | PrimeFamilyHousing",
+  title: "Accessibility | Prime Family Housing",
   description: "PrimeFamilyHousing's commitment to web accessibility and how to request assistance.",
   alternates: { canonical: "https://primefamilyhousing.com/accessibility" },
   robots: { index: true, follow: true },
@@ -11,9 +11,9 @@ export default function AccessibilityPage() {
   return (
     <div className="pt-20">
       <div className="bg-brand-dark pt-16 pb-14 px-6 text-white text-center">
-        <p className="text-blue-300 text-xs font-semibold tracking-[0.4em] uppercase mb-4">Commitment</p>
+        <p className="text-sage-soft text-xs font-semibold tracking-[0.4em] uppercase mb-4">Commitment</p>
         <h1 className="font-serif text-4xl lg:text-5xl font-bold mb-4">Accessibility</h1>
-        <p className="text-blue-100 max-w-xl mx-auto">
+        <p className="text-earth-beige/85 max-w-xl mx-auto">
           We are committed to making our website accessible to everyone.
         </p>
       </div>
@@ -54,7 +54,7 @@ export default function AccessibilityPage() {
         <ul>
           <li>
             Email:{" "}
-            <a href="mailto:info@primefamilyhousing.com">info@primefamilyhousing.com</a>
+            <a href="mailto:housings@primefamilyhousing.com">housings@primefamilyhousing.com</a>
           </li>
           <li>
             Address: 1230 Peachtree Street NE, Suite 400, Atlanta, GA 30309

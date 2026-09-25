@@ -430,6 +430,11 @@ export function cleanPropertyListItem<T>(p: T): T {
       image_url: cleanImageUrl(img.image_url ?? img.url ?? img.image)
     }));
   }
+  // Imported listings often carry a trailing comma ("106 Varhley St,", "Scranton,"),
+  // which printed as "St,, Dunmore" in cards, <title>s and meta descriptions.
+  for (const key of ["address", "city"]) {
+    if (typeof anyP[key] === "string") anyP[key] = anyP[key].replace(/[\s,]+$/, "").trim();
+  }
   return p;
 }
 

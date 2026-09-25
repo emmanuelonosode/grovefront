@@ -971,7 +971,7 @@ function PanelCard({ property, isActive }: { property: PropertyListItemAPI; isAc
   return (
     <article className={`flex flex-1 flex-col overflow-hidden rounded-[8px] border bg-white transition-shadow duration-150 ${
       isActive
-        ? "border-[#0064e0] shadow-[rgba(20,22,26,0.3)_0px_1px_4px_0px]"
+        ? "border-[#1b4332] shadow-[rgba(20,22,26,0.3)_0px_1px_4px_0px]"
         : "border-[#dee3e9] hover:shadow-[rgba(20,22,26,0.3)_0px_1px_4px_0px]"
     }`}>
 
@@ -1038,7 +1038,7 @@ function PanelCard({ property, isActive }: { property: PropertyListItemAPI; isAc
         <Link
           href={applyHref}
           onClick={() => trackClick("apply_now", { slug: property.slug, where: "listing_card" })}
-          className="flex min-h-11 flex-1 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#0064e0] px-3 text-[14px] font-bold leading-[1.43] tracking-[-0.14px] text-white transition-colors hover:bg-[#0457cb]"
+          className="flex min-h-11 flex-1 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1b4332] px-3 text-[14px] font-bold leading-[1.43] tracking-[-0.14px] text-white transition-colors hover:bg-[#012d1d]"
         >
           Apply now
         </Link>

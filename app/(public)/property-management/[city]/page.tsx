@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { getAllCitySlugs, getCityBySlug, resolveCityData } from "@/lib/cities";
 import { Button } from "@/components/ui/Button";
+import { jsonLdString } from "@/lib/json-ld";
 
 export const revalidate = 300;
 
@@ -28,7 +29,7 @@ export async function generateMetadata(
   const city = await resolveCityData(slug);
   if (!city) return { title: "Not Found" };
 
-  const title = `Property Management in ${city.name}, ${city.stateCode} | PrimeFamilyHousing`;
+  const title = `Property Management in ${city.name}, ${city.stateCode} | Prime Family Housing`;
   const description = `Professional property management in ${city.name}, ${city.stateCode}. Tenant screening, rent collection, maintenance coordination, and monthly reporting. Let PrimeFamilyHousing manage your investment.`;
   const url = `https://primefamilyhousing.com/property-management/${slug}`;
 
@@ -176,9 +177,9 @@ export default async function PropertyManagementCityPage(
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(serviceSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faqSchema) }} />
 
       {/* ── HERO ──────────────────────────────────────────────────────── */}
       <section className="relative min-h-[440px] lg:min-h-[500px] flex items-end overflow-hidden">
@@ -241,7 +242,7 @@ export default async function PropertyManagementCityPage(
             ].map((s) => (
               <div key={s.label}>
                 <p className="font-serif text-2xl font-bold text-white">{s.value}</p>
-                <p className="text-blue-200 text-xs mt-1 tracking-wide">{s.label}</p>
+                <p className="text-white/70 text-xs mt-1 tracking-wide">{s.label}</p>
               </div>
             ))}
           </div>
@@ -281,7 +282,7 @@ export default async function PropertyManagementCityPage(
           <h2 className="font-serif text-3xl lg:text-4xl font-bold text-white mb-4">
             Ready to stop self-managing?
           </h2>
-          <p className="text-blue-200 text-base mb-8 max-w-xl mx-auto">
+          <p className="text-white/70 text-base mb-8 max-w-xl mx-auto">
             Get a free rental market analysis for your {city.name} property. No commitment — just clarity on what your investment could earn.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -292,13 +293,13 @@ export default async function PropertyManagementCityPage(
               </Link>
             </Button>
             <Button variant="outline-white" size="lg" asChild>
-              <Link href="mailto:info@primefamilyhousing.com">
+              <Link href="mailto:housings@primefamilyhousing.com">
                 <Mail size={16} />
                 Email Us
               </Link>
             </Button>
           </div>
-          <p className="text-blue-300 text-xs mt-6">
+          <p className="text-sage-soft text-xs mt-6">
             Or call: <a href="tel:+17577924480" className="text-white font-semibold hover:underline">+1 (757) 792-4480</a>
           </p>
         </div>

@@ -2,13 +2,14 @@ import Image from "next/image";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import ContactForm from "./ContactForm";
 import { BUSINESS } from "@/lib/business";
+import { jsonLdString } from "@/lib/json-ld";
 
 export const metadata = {
-  title: "Contact Us | PrimeFamilyHousing",
+  title: "Contact Us | Prime Family Housing",
   description:
     "Looking for an affordable home to rent or buy? Contact PrimeFamilyHousing. Our housing specialists respond within 24 hours with matching properties. No fees, no pressure.",
   alternates: { canonical: "https://primefamilyhousing.com/contact" },
-  openGraph: { title: "Contact Us | PrimeFamilyHousing", description: "Our housing specialists respond within 24 hours. No fees, no pressure.", type: "website", url: "https://primefamilyhousing.com/contact" },
+  openGraph: { title: "Contact Us | Prime Family Housing", description: "Our housing specialists respond within 24 hours. No fees, no pressure.", type: "website", url: "https://primefamilyhousing.com/contact" },
 };
 
 const offices = [
@@ -17,28 +18,28 @@ const offices = [
     address: `${BUSINESS.address.streetAddress}\n${BUSINESS.address.addressLocality}, ${BUSINESS.address.addressRegion} ${BUSINESS.address.postalCode}`,
     phone: BUSINESS.telephoneDisplay,
     email: BUSINESS.email,
-    hours: "Mon – Fri: 9am – 6pm ET\nSat: 10am – 4pm ET",
+    hours: "Mon – Sun: 9am – 6pm ET",
   },
   {
     city: "Atlanta",
     address: "1230 Peachtree Street NE, Suite 400\nAtlanta, GA 30309",
     phone: "",
-    email: "housing@primefamilyhousing.com",
-    hours: "Mon – Fri: 9am – 6pm ET\nSat: 10am – 4pm ET",
+    email: BUSINESS.email,
+    hours: "Mon – Sun: 9am – 6pm ET",
   },
   {
     city: "Charlotte",
     address: "525 North Tryon Street, Suite 1200\nCharlotte, NC 28202",
     phone: "",
-    email: "housing@primefamilyhousing.com",
-    hours: "Mon – Fri: 9am – 6pm ET\nSat: 10am – 3pm ET",
+    email: BUSINESS.email,
+    hours: "Mon – Sun: 9am – 6pm ET",
   },
   {
     city: "Houston",
     address: "3900 Essex Lane, Suite 1000\nHouston, TX 77027",
     phone: "",
-    email: "housing@primefamilyhousing.com",
-    hours: "Mon – Fri: 9am – 6pm CT\nSat: By Appointment",
+    email: BUSINESS.email,
+    hours: "Mon – Sun: 9am – 6pm CT",
   },
 ];
 
@@ -46,17 +47,17 @@ const breadcrumb = { "@context": "https://schema.org", "@type": "BreadcrumbList"
 export default function ContactPage() {
   return (
     <div className="pt-20">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }} />
       {/* Header */}
       <section className="bg-brand-dark pt-16 pb-0 px-6">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-end">
           {/* Copy */}
           <div className="text-white py-10 lg:py-14">
-            <p className="text-blue-300 text-xs font-semibold tracking-[0.4em] uppercase mb-4">
+            <p className="text-sage-soft text-xs font-semibold tracking-[0.4em] uppercase mb-4">
               We&apos;re Here to Help
             </p>
             <h1 className="font-serif text-4xl lg:text-5xl font-bold mb-4 leading-tight">Find Your Next Home</h1>
-            <p className="text-blue-100 max-w-lg leading-relaxed">
+            <p className="text-earth-beige/85 max-w-lg leading-relaxed">
               Tell us what you&apos;re looking for and our rental specialists will match you with the
               perfect home. We typically reply within 24 hours.
             </p>

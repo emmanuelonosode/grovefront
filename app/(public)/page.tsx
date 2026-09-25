@@ -1,15 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ShieldCheck, MapPin, Wrench, BadgeDollarSign } from "lucide-react";
+import { ArrowRight, MapPin, Check, Search, FileCheck2, KeyRound, Plus, Minus } from "lucide-react";
 import { HeroSearch } from "@/components/public/HeroSearch";
 import { HeroCarousel } from "@/components/public/HeroCarousel";
-import { HeroHeadline } from "@/components/public/HeroHeadline";
 import { WorkersScene, PetScene } from "@/components/public/HomepageIllustrations";
 import { StateDirectory } from "@/components/public/StateDirectory";
 import { FeaturedPropertiesSection } from "@/components/public/FeaturedPropertiesSection";
 import { fetchProperties, fetchHomepageProperties, toPropertyCardShape } from "@/lib/properties";
-import { fetchAllCities, toDirectoryCities } from "@/lib/cities";
+import { CITIES, fetchAllCities, toDirectoryCities } from "@/lib/cities";
+import { STATE_NAMES } from "@/lib/states";
 import { BUSINESS, postalAddressSchema } from "@/lib/business";
+import { jsonLdString } from "@/lib/json-ld";
 
 // Hero background carousel rotates through the 3 curated residential community photos
 const HERO_IMAGES = [
@@ -25,24 +26,6 @@ export const metadata = {
   title: "Prime Family Housing | Affordable Houses for Rent",
   description:
     "Prime Family Housing — find affordable single-family houses for rent across Atlanta, Charlotte, Houston, Dallas, Tampa and Phoenix. Decisions in 24 hrs.",
-  keywords: [
-    "houses for rent",
-    "homes for rent near me",
-    "houses for rent Atlanta",
-    "affordable rentals Charlotte",
-    "rental homes Houston",
-    "rental homes Dallas",
-    "affordable houses for rent Tampa",
-    "single family homes for rent",
-    "move-in ready rental",
-    "24 hour rental approval",
-    "pet friendly rentals",
-    "2 bedroom houses for rent",
-    "3 bedroom houses for rent",
-    "affordable housing for families",
-    "Prime Family Housing",
-    "primefamilyhousing.com",
-  ],
   openGraph: {
     // siteName must be repeated here. Next merges metadata shallowly, so a page that
     // defines `openGraph` REPLACES the layout's block wholesale rather than merging into
@@ -57,10 +40,9 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PrimeFamilyHousing | Affordable Houses for Rent",
-    description: "PrimeFamilyHousing — quality homes, well-maintained and move-in ready. Fast approvals. 12+ cities.",
+    title: "Prime Family Housing | Affordable Houses for Rent",
+    description: "Prime Family Housing — quality homes, well-maintained and move-in ready. Fast approvals. 12+ cities.",
     images: ["https://primefamilyhousing.com/opengraph-image"],
-    creator: "@primefamilyhousing",
   },
   alternates: { canonical: "https://primefamilyhousing.com" },
 };
@@ -69,120 +51,63 @@ export const revalidate = 300;
 
 const BASE_URL = "https://primefamilyhousing.com";
 
-const LOCAL_BUSINESS_SCHEMA = {
-  "@context": "https://schema.org",
-  "@type": "RealEstateAgent",
-  "@id": `${BASE_URL}/#local-business`,
-  name: "Prime Family Housing",
-  legalName: "Prime Family Housing",
-  alternateName: ["Prime Family Housing", "PrimeFamilyHousing.com"],
-  parentOrganization: { "@id": `${BASE_URL}/#organization` },
-  url: BASE_URL,
-  logo: BUSINESS.logo.url,
-  image: `${BASE_URL}/opengraph-image`,
-  description: "Prime Family Housing — affordable single-family houses for rent. Quality homes, move-in ready, fast decisions. 2,000+ families housed across 12+ US cities since 2012.",
-  email: BUSINESS.email,
-  telephone: BUSINESS.telephone,
-  priceRange: "$$",
-  foundingDate: "2012",
-  address: postalAddressSchema(),
-  // Geo coordinates strengthen local-pack / Google Maps eligibility for a
-  // location-based real-estate business. Approximate to the HQ ZIP (Clearfield,
-  // UT 84015) — confirm the exact pin in Google Business Profile.
-  geo: { "@type": "GeoCoordinates", latitude: 41.1041, longitude: -112.0119 },
-  hasMap: "https://www.google.com/maps/search/?api=1&query=1425+S+1500+E+Unit+222+Clearfield+UT+84015",
-  openingHoursSpecification: [
-    { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday"], opens: "09:00", closes: "18:00" },
-    { "@type": "OpeningHoursSpecification", dayOfWeek: ["Saturday"], opens: "10:00", closes: "16:00" },
-  ],
-  areaServed: [
-    "Atlanta, GA", "Charlotte, NC", "Houston, TX", "Dallas, TX", "Nashville, TN", "Phoenix, AZ",
-    "Austin, TX", "Miami, FL", "Denver, CO", "Seattle, WA", "Las Vegas, NV", "Tampa, FL",
-    "Raleigh, NC", "Orlando, FL", "San Antonio, TX", "Jacksonville, FL", "Philadelphia, PA",
-  ],
-  // Read from BUSINESS rather than hardcoding: this list had drifted out of sync —
-  // it was missing TikTok entirely and pointed at a /primefamilyhousing Facebook
-  // vanity URL while every other emitter used the /share/1G6G3YcUd3/ profile.
-  // Conflicting sameAs sets for one @id weaken entity resolution.
-  sameAs: [...BUSINESS.sameAs],
-};
+// Organization and WebSite nodes live once, in the root layout's @graph. Emitting
+// second copies here (with different alternateName lists and no shared @id on the
+// WebSite) gave Google two conflicting descriptions of the same entities.
+function localBusinessSchema(areaServed: { name: string; state: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    "@id": `${BASE_URL}/#local-business`,
+    name: BUSINESS.displayName,
+    legalName: BUSINESS.displayName,
+    alternateName: [...BUSINESS.alternateNames],
+    parentOrganization: { "@id": `${BASE_URL}/#organization` },
+    url: BASE_URL,
+    logo: BUSINESS.logo.url,
+    image: `${BASE_URL}/opengraph-image`,
+    description: "Prime Family Housing — affordable single-family houses for rent. Quality homes, move-in ready, fast decisions. 2,000+ families housed across 12+ US cities since 2012.",
+    email: BUSINESS.email,
+    telephone: BUSINESS.telephone,
+    priceRange: "$$",
+    foundingDate: "2012",
+    address: postalAddressSchema(),
+    // Geo coordinates strengthen local-pack / Google Maps eligibility for a
+    // location-based real-estate business. Approximate to the HQ ZIP (Clearfield,
+    // UT 84015) — confirm the exact pin in Google Business Profile.
+    geo: { "@type": "GeoCoordinates", latitude: 41.1041, longitude: -112.0119 },
+    hasMap: "https://www.google.com/maps/search/?api=1&query=1425+S+1500+E+Unit+222+Clearfield+UT+84015",
+    openingHoursSpecification: [
+      { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], opens: "09:00", closes: "18:00" },
+    ],
+    // Built from live inventory rather than a hand-kept list, which had drifted to
+    // include markets (Seattle, Las Vegas, Miami) with no homes behind them.
+    areaServed: areaServed.map((c) => ({
+      "@type": "City",
+      name: c.name,
+      containedInPlace: { "@type": "State", name: c.state },
+    })),
+    sameAs: [...BUSINESS.sameAs],
+  };
+}
 
-const WEBSITE_SCHEMA = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  // Must match the WebSite node in layout.tsx — conflicting names across two WebSite
-  // nodes is exactly the ambiguity that makes Google fall back to showing the domain.
-  name: BUSINESS.displayName,
-  alternateName: [...BUSINESS.alternateNames],
-  url: BASE_URL,
-  potentialAction: {
-    "@type": "SearchAction",
-    target: { "@type": "EntryPoint", urlTemplate: `${BASE_URL}/houses-for-rent?q={search_term_string}` },
-    "query-input": "required name=search_term_string",
-  },
-};
-
-const ORGANIZATION_SCHEMA = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "@id": `${BASE_URL}/#organization`,
-  name: "Prime Family Housing",
-  legalName: "Prime Family Housing",
-  alternateName: ["Prime Family Housing", "PrimeFamilyHousing.com"],
-  url: BASE_URL,
-  logo: BUSINESS.logo.url,
-  email: BUSINESS.email,
-  telephone: BUSINESS.telephone,
-  address: postalAddressSchema(),
-  contactPoint: { "@type": "ContactPoint", email: BUSINESS.email, telephone: BUSINESS.telephone, contactType: "customer service", availableLanguage: "English" },
-  sameAs: [...BUSINESS.sameAs],
-};
-
-const FAQ_SCHEMA = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    { "@type": "Question", name: "What is Prime Family Housing?", acceptedAnswer: { "@type": "Answer", text: "Prime Family Housing — officially named PrimeFamilyHousing — is a licensed US real estate company founded in 2012 and headquartered in Clearfield, UT. The company specializes in affordable single-family houses for rent across 12+ US cities." } },
-    { "@type": "Question", name: "How long does it take to get approved for a rental?", acceptedAnswer: { "@type": "Answer", text: "PrimeFamilyHousing reviews every rental application within 24 hours. You can apply online in under 10 minutes at primefamilyhousing.com/apply." } },
-    { "@type": "Question", name: "Does PrimeFamilyHousing charge hidden fees?", acceptedAnswer: { "@type": "Answer", text: "No. The listed price is what you pay. No administrative processing fees or convenience surcharges beyond the standard security deposit." } },
-    { "@type": "Question", name: "Can I rent with bad credit through PrimeFamilyHousing?", acceptedAnswer: { "@type": "Answer", text: "PrimeFamilyHousing reviews applications individually and works with renters who have imperfect credit or limited rental history." } },
-    { "@type": "Question", name: "Does PrimeFamilyHousing have pet-friendly rentals?", acceptedAnswer: { "@type": "Answer", text: "Yes. Many of our rental listings across Atlanta, Charlotte, Houston, Dallas and other cities are pet-friendly. Pet policies are disclosed upfront on every listing." } },
-  ],
-};
-
-const BREADCRUMB_HOME = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: BASE_URL }],
-};
-
-const HOW_IT_WORKS_SCHEMA = {
-  "@context": "https://schema.org",
-  "@type": "HowTo",
-  name: "How to Rent a Home with PrimeFamilyHousing",
-  description: "Apply for an affordable rental home in 3 simple steps. Decisions within 24 hours.",
-  totalTime: "PT10M",
-  estimatedCost: { "@type": "MonetaryAmount", currency: "USD", value: "2" },
-  step: [
-    { "@type": "HowToStep", position: 1, name: "Browse available homes", text: "Filter by city, beds, and budget. Every listing has photos, full pricing, and pet policy.", url: `${BASE_URL}/houses-for-rent` },
-    { "@type": "HowToStep", position: 2, name: "Apply in 10 minutes", text: "One online form. No paperwork run-around. Reviewed within 24 hours.", url: `${BASE_URL}/apply` },
-    { "@type": "HowToStep", position: 3, name: "Move in", text: "Sign your lease, pay your deposit, get your keys. We handle the rest.", url: `${BASE_URL}/apply` },
-  ],
-};
-
-const howItWorks = [
-  { n: "01", title: "Browse available homes",  desc: "Filter by city, beds, and budget. Every listing has photos, full pricing, and pet policy." },
-  { n: "02", title: "Apply in 10 minutes",     desc: "One online form. No paperwork run-around. Reviewed within 24 hours." },
-  { n: "03", title: "Move in",                 desc: "Sign your lease, pay your deposit, get your keys. We handle the rest." },
+const steps = [
+  { Icon: Search,     title: "Browse available homes", desc: "Filter by city, beds, and budget. Every listing shows real photos, full pricing, and the pet policy up front.", href: "/houses-for-rent", cta: "Search homes" },
+  { Icon: FileCheck2, title: "Apply in 10 minutes",    desc: "One online form, no paperwork run-around. Every application is reviewed within 24 hours.",                  href: "/apply",           cta: "Start an application" },
+  { Icon: KeyRound,   title: "Get your keys",          desc: "Sign your lease, pay your deposit, and move in. Our team stays on call for everything after.",              href: "/apply",           cta: "See requirements" },
 ];
 
-const maintenancePromises = [
-  { h: "30-point pre-listing inspection",  d: "Every home is checked before a single photo goes online. If it can't pass, it isn't listed." },
-  { h: "Same-day maintenance response",    d: "Submit a request in the portal — a real person responds within the business day. No 7-day ticket queues." },
-  { h: "In-house team, not third-party",   d: "Our own technicians service every home. They know the property, you, and the history." },
+const promises = [
+  { h: "30-point pre-listing inspection", d: "Every home is checked before a single photo goes online. If it can't pass, it isn't listed." },
+  { h: "Same-day maintenance response",   d: "Submit a request in the tenant portal and a real person responds within the business day." },
+  { h: "In-house team, not a call center", d: "Our own technicians service every home. They know the property, you, and its history." },
+  { h: "The listed price is the price",   d: "No inflated rents, no admin or convenience fees, and pet policies disclosed on every listing." },
 ];
 
+// Single source for the visible FAQ and the FAQPage JSON-LD — Google requires the
+// markup to match what's on the page, and the two had drifted apart.
 const faqs = [
+  { q: "What is Prime Family Housing?",                        a: "Prime Family Housing is a licensed U.S. real estate company, founded in 2012 and headquartered in Clearfield, UT, that rents well-maintained single-family houses across 12+ U.S. cities." },
   { q: "How long does it take to get approved?",               a: "Every application gets reviewed within 24 hours. Most renters hear back the same business day." },
   { q: "Do you charge hidden fees or admin charges?",          a: "No. The listed price is what you pay. Standard security deposit and that's it — no admin fees, no convenience surcharges." },
   { q: "Can I apply with limited credit or rental history?",   a: "Yes. We review every application individually and look at your full financial picture — not just a credit score." },
@@ -191,7 +116,49 @@ const faqs = [
   { q: "Do you handle maintenance after I move in?",           a: "Yes. Submit a request in the tenant portal and our team responds same day. We don't leave you waiting." },
 ];
 
+const FAQ_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
 const petTags = ["Dogs welcome", "Cats welcome", "$300 pet deposit", "$25/mo pet rent", "No breed restrictions"];
+
+const heroPoints = ["Decisions in 24 hours", "No hidden fees", "Pet-friendly homes"];
+
+function SectionHeading({
+  eyebrow,
+  title,
+  children,
+  align = "left",
+  tone = "light",
+}: {
+  eyebrow: string;
+  title: string;
+  children?: React.ReactNode;
+  align?: "left" | "center";
+  tone?: "light" | "dark";
+}) {
+  return (
+    <div className={align === "center" ? "mx-auto max-w-2xl text-center" : "max-w-2xl"}>
+      <p className={`text-[12px] font-semibold uppercase tracking-[0.22em] ${tone === "dark" ? "text-sage-soft" : "text-accent"}`}>
+        {eyebrow}
+      </p>
+      <h2 className={`mt-3 font-serif text-[28px] font-bold leading-[1.15] tracking-[-0.02em] text-balance md:text-[38px] ${tone === "dark" ? "text-white" : "text-brand-dark"}`}>
+        {title}
+      </h2>
+      {children && (
+        <p className={`mt-4 text-[16px] leading-relaxed md:text-[17px] ${tone === "dark" ? "text-white/70" : "text-on-surface-variant"}`}>
+          {children}
+        </p>
+      )}
+    </div>
+  );
+}
 
 export default async function HomePage() {
   const [totalCountRaw, homepageRaw, allCitiesRaw] = await Promise.allSettled([
@@ -221,39 +188,98 @@ export default async function HomePage() {
     dbCities.map((c) => [c.slug, c.count])
   );
 
+  // Five curated cities with the most homes. Curated only: their editorial photos
+  // are reliable, whereas DB-derived city images point at listing photos on the
+  // admin media host, many of which 404 — the biggest cards on the page can't risk that.
+  const spotlightCities = mergedCities
+    .filter((c) => CITIES[c.slug] && c.heroImage)
+    .map((c, i) => ({ c, i, n: cityCounts[c.slug] ?? 0 }))
+    .sort((a, b) => b.n - a.n || a.i - b.i)
+    .slice(0, 5)
+    .map(({ c }) => c);
+
+  const areaServed = [...dbCities]
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 20)
+    .map((c) => ({ name: c.city, state: STATE_NAMES[(c.state || "").toUpperCase()] ?? c.state }));
+
+  const stats = [
+    { v: totalProperties != null ? totalProperties.toLocaleString() : "—", l: "Homes available", s: "right now" },
+    { v: "2,000+", l: "Families housed", s: "since 2012" },
+    { v: "12+", l: "U.S. cities", s: "and growing" },
+    { v: "24h", l: "Application decisions", s: "typical review" },
+  ];
+
   return (
     <div>
-      {/* JSON-LD */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(LOCAL_BUSINESS_SCHEMA) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_SCHEMA) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_SCHEMA) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_HOME) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_SCHEMA) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(HOW_IT_WORKS_SCHEMA) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(localBusinessSchema(areaServed)) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(FAQ_SCHEMA) }} />
 
-      {/* â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="relative w-full min-h-[600px] md:min-h-[700px] flex items-center justify-center overflow-hidden bg-surface-container-low">
-        {/* Background carousel + forest gradient */}
+      {/* ── HERO ─────────────────────────────────────────────────────────── */}
+      <section className="relative flex min-h-[640px] items-center overflow-hidden bg-forest-deep md:min-h-[720px]">
         <div className="absolute inset-0 z-0">
           <HeroCarousel images={HERO_IMAGES} />
-          <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/80 via-forest-deep/30 to-transparent pointer-events-none" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-forest-deep/75 via-forest-deep/40 to-forest-deep/90" />
         </div>
 
-        {/* Content */}
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-12 text-center mt-16 pb-12">
-          {/* Rotating headline + subtitle */}
-          <div className="hero-animate">
-            <HeroHeadline />
-          </div>
+        {/* pointer-events-none on the full-width wrapper so the carousel arrows
+            underneath stay clickable; the content itself opts back in. */}
+        <div className="pointer-events-none relative z-10 mx-auto w-full max-w-7xl px-4 pb-20 pt-32 text-center md:px-12">
+          <div className="pointer-events-auto">
+            <h1
+              className="hero-animate mx-auto max-w-4xl font-serif text-[2.4rem] font-bold leading-[1.08] tracking-[-0.025em] text-white text-balance drop-shadow-sm sm:text-[3.25rem] lg:text-[4rem]"
+            >
+              Well-kept houses for rent, ready when you are.
+            </h1>
 
-          {/* Smart search bar */}
-          <div className="hero-animate w-full" style={{ animationDelay: "160ms" }}>
-            <HeroSearch />
+            <p
+              className="hero-animate mx-auto mb-10 mt-5 max-w-2xl text-[17px] leading-[1.55] text-earth-beige sm:text-[19px]"
+              style={{ animationDelay: "140ms" }}
+            >
+              Single-family homes across 12+ U.S. cities, with honest pricing, pet-friendly options, and a
+              decision on your application within 24 hours.
+            </p>
+
+            <div className="hero-animate w-full" style={{ animationDelay: "200ms" }}>
+              <HeroSearch />
+            </div>
+
+            <ul
+              className="hero-animate mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[14px] font-semibold text-white/85"
+              style={{ animationDelay: "260ms" }}
+            >
+              {heroPoints.map((p) => (
+                <li key={p} className="inline-flex items-center gap-1.5">
+                  <Check size={15} className="text-earth-beige" aria-hidden="true" />
+                  {p}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
 
-      {/* ── FEATURED RENTALS ─────────────────────────────────────────────────
+      {/* ── STATS ────────────────────────────────────────────────────────── */}
+      <section className="bg-forest-deep text-white" aria-label="Prime Family Housing at a glance">
+        <div className="mx-auto max-w-7xl px-4 md:px-12">
+          <div className="grid grid-cols-2 border-t border-white/10 lg:grid-cols-4">
+            {stats.map((stat, i) => (
+              <div
+                key={stat.l}
+                className={`px-4 py-8 md:px-6 md:py-10 ${i % 2 === 1 ? "border-l border-white/10" : ""} ${i >= 2 ? "border-t border-white/10 lg:border-t-0" : ""} ${i === 2 ? "lg:border-l" : ""}`}
+              >
+                <p className="font-serif text-[36px] font-bold leading-none tracking-[-0.02em] tabular-nums md:text-[44px]">{stat.v}</p>
+                <p className="mt-2.5 text-[14px] font-semibold text-white/85">
+                  {stat.l}
+                  <span className="mt-0.5 block text-[12px] font-normal tracking-[0.04em] text-white/55">{stat.s}</span>
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── AVAILABLE HOMES ──────────────────────────────────────────────────
           Real move-in-ready homes, directly below the hero. This is the first
           thing a visitor (or crawler) sees after the search — concrete proof the
           site lists actual houses for rent. Rendered only when we have listings so
@@ -262,372 +288,219 @@ export default async function HomePage() {
         <FeaturedPropertiesSection properties={featuredProperties} totalCount={totalProperties} />
       )}
 
-      {/* â”€â”€ STATS STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section style={{ background: "#081C15", color: "#fff" }}>
-        <div className="max-w-7xl mx-auto px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4">
-            {[
-              { v: totalProperties != null ? String(totalProperties) : "—", l: "Homes available",      s: "right now" },
-              { v: "2,400+",                                                  l: "Families housed",      s: "since 2012" },
-              { v: "12+",                                                     l: "U.S. cities",          s: "and growing" },
-              { v: "24h",                                                     l: "Application decisions", s: "typical review" },
-            ].map((stat, i) => (
-              <div key={stat.l} className="px-6 py-10" style={{ borderLeft: i > 0 ? "1px solid rgba(255,255,255,0.12)" : "none" }}>
-                <div className="font-serif font-bold text-white leading-none" style={{ fontSize: 44, letterSpacing: "-0.02em" }}>{stat.v}</div>
-                <div className="font-semibold mt-[10px]" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 13, color: "rgba(255,255,255,0.85)" }}>{stat.l}</div>
-                <div className="mt-[3px]" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 11, color: "rgba(255,255,255,0.4)", letterSpacing: "0.04em" }}>{stat.s}</div>
-              </div>
-            ))}
+      {/* ── COMMUNITIES ──────────────────────────────────────────────────── */}
+      {spotlightCities.length > 0 && (
+        <section className="bg-brand-light px-4 py-20 md:px-12 md:py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+              <SectionHeading eyebrow="Where we rent" title="Explore our most popular cities.">
+                Neighborhoods with space to grow, good schools nearby, and homes our own team maintains.
+              </SectionHeading>
+              <Link
+                href="#all-cities"
+                className="group inline-flex shrink-0 items-center gap-1.5 text-[15px] font-semibold text-brand-dark hover:text-accent"
+              >
+                See every city
+                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:h-[560px] md:grid-cols-4 md:grid-rows-2">
+              {spotlightCities.map((city, i) => {
+                const isLarge = i === 0;
+                const homeCount = cityCounts[city.slug];
+                return (
+                  <Link
+                    key={city.slug}
+                    href={`/rentals/${city.slug}`}
+                    className={`group relative block overflow-hidden rounded-2xl bg-surface-container ${
+                      isLarge ? "h-[320px] sm:col-span-2 md:col-span-2 md:row-span-2 md:h-auto" : "h-[220px] md:h-auto"
+                    }`}
+                  >
+                    <Image
+                      src={city.heroImage}
+                      alt={`Houses for rent in ${city.name}, ${city.stateCode}`}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      sizes={isLarge ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 640px) 100vw, (max-width: 768px) 50vw, 25vw"}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/90 via-forest-deep/25 to-transparent" />
+                    <div className={`absolute bottom-0 left-0 w-full ${isLarge ? "p-7 md:p-8" : "p-5"}`}>
+                      {homeCount != null && homeCount > 0 && (
+                        <span className="mb-3 inline-block rounded-full bg-earth-beige px-3 py-1 text-[12px] font-semibold text-forest-deep tabular-nums">
+                          {homeCount} home{homeCount === 1 ? "" : "s"} available
+                        </span>
+                      )}
+                      <h3 className={`font-serif font-bold text-white ${isLarge ? "text-[28px] leading-9 md:text-[34px]" : "text-[21px] leading-7"}`}>
+                        {city.name}
+                      </h3>
+                      <p className={`mt-1 flex items-center gap-1 text-white/80 ${isLarge ? "text-[15px]" : "text-[13px]"}`}>
+                        <MapPin size={isLarge ? 16 : 13} className="shrink-0" aria-hidden="true" />
+                        {city.state}
+                        {city.avgRent && <span className="text-white/60"> · from {city.avgRent}/mo</span>}
+                      </p>
+                      {isLarge && city.tagline && (
+                        <p className="mt-3 line-clamp-2 max-w-lg text-[16px] leading-6 text-white/85">{city.tagline}</p>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
+        </section>
+      )}
+
+      {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
+      <section className="bg-white px-4 py-20 md:px-12 md:py-24">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeading eyebrow="Simple process" title="From search to keys in three steps." align="center" />
+          <ol className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
+            {steps.map((step, i) => (
+              <li key={step.title} className="relative flex flex-col rounded-2xl border border-surface-variant bg-surface p-8">
+                <div className="flex items-center justify-between">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-fixed text-brand">
+                    <step.Icon size={22} aria-hidden="true" />
+                  </span>
+                  <span className="font-serif text-[40px] font-bold leading-none text-surface-dim" aria-hidden="true">
+                    0{i + 1}
+                  </span>
+                </div>
+                <h3 className="mt-6 font-serif text-[21px] font-bold leading-tight text-brand-dark">{step.title}</h3>
+                <p className="mt-2.5 flex-1 text-[15.5px] leading-relaxed text-on-surface-variant">{step.desc}</p>
+                <Link href={step.href} className="group mt-6 inline-flex items-center gap-1.5 text-[14px] font-semibold text-brand-dark hover:text-accent">
+                  {step.cta}
+                  <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
-      {/* â”€â”€ FEATURED RENTALS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-16 md:py-24 px-4 md:px-12 max-w-7xl mx-auto w-full">
-        <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
+      {/* ── WHY US ───────────────────────────────────────────────────────── */}
+      <section className="border-t border-surface-variant bg-background px-4 py-20 md:px-12 md:py-24">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          <div className="overflow-hidden rounded-2xl border border-surface-variant bg-white">
+            <WorkersScene />
+          </div>
           <div>
-            <h2 className="font-serif font-semibold text-primary mb-2 text-[26px] leading-[34px] md:text-[32px] md:leading-[40px]">Featured Communities</h2>
-            <p className="text-[16px] leading-6 text-on-surface-variant max-w-2xl">
-              Explore our most popular neighborhoods, featuring spacious homes, top-tier amenities, and a welcoming atmosphere.
-            </p>
-          </div>
-          <Link
-            href="#all-cities"
-            className="shrink-0 font-semibold text-[14px] tracking-[0.05em] text-secondary hover:text-terracotta-warm flex items-center transition-colors group"
-          >
-            View All Communities
-            <ArrowRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-6 h-auto md:h-[600px]">
-          {mergedCities.slice(0, 3).map((city, i) => {
-            const isLarge = i === 0;
-            const homeCount = cityCounts[city.slug];
-            return (
+            <SectionHeading eyebrow="Quality you can see" title="The best-maintained rentals on the market.">
+              We don&apos;t list homes we wouldn&apos;t live in. Every property is inspected, cleaned, and turned by
+              our in-house team before move-in — then supported the same way after.
+            </SectionHeading>
+            <ul className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
+              {promises.map((p) => (
+                <li key={p.h} className="flex gap-3">
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand text-white">
+                    <Check size={14} strokeWidth={3} aria-hidden="true" />
+                  </span>
+                  <div>
+                    <p className="text-[15.5px] font-semibold text-brand-dark">{p.h}</p>
+                    <p className="mt-1 text-[14.5px] leading-relaxed text-on-surface-variant">{p.d}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link
-                key={city.slug}
-                href={`/rentals/${city.slug}`}
-                className={`${isLarge ? "md:col-span-2 md:row-span-2" : "h-[280px] md:h-auto"} rounded-xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition-shadow block bg-surface-container`}
+                href="/houses-for-rent"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-brand px-7 text-[15px] font-semibold text-white transition-colors hover:bg-brand-hover"
               >
-                {city.heroImage && (
-                  <Image
-                    src={city.heroImage}
-                    alt={`Homes for rent in ${city.name}, ${city.state}`}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes={isLarge ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
-                  />
-                )}
-                <div className={`absolute inset-0 bg-gradient-to-t ${isLarge ? "from-forest-deep/90 via-forest-deep/20" : "from-forest-deep/80 via-transparent"} to-transparent`} />
-                <div className={`absolute bottom-0 left-0 w-full ${isLarge ? "p-8" : "p-6"}`}>
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {homeCount != null && homeCount > 0 && (
-                      <span className="bg-earth-beige text-on-secondary-container text-[12px] leading-4 px-3 py-1 rounded-md font-semibold">
-                        {homeCount} Home{homeCount === 1 ? "" : "s"} Available
-                      </span>
-                    )}
-                    {city.avgRent && (
-                      <span className="bg-surface/90 text-primary text-[12px] leading-4 px-3 py-1 rounded-md backdrop-blur-sm">
-                        from {city.avgRent}/mo
-                      </span>
-                    )}
-                  </div>
-                  <h3 className={`font-serif font-semibold text-white mb-1 ${isLarge ? "text-[28px] leading-9 md:text-[32px] md:leading-[40px]" : "text-[22px] leading-8"}`}>
-                    {city.name}
-                  </h3>
-                  <div className={`flex items-center text-earth-beige ${isLarge ? "text-[16px] leading-6 mb-3" : "text-[13px]"}`}>
-                    <MapPin size={isLarge ? 17 : 14} className="mr-1 shrink-0" />
-                    {city.state}
-                  </div>
-                  {isLarge && city.tagline && (
-                    <p className="text-white/90 text-[16px] leading-6 line-clamp-2 max-w-lg">{city.tagline}</p>
-                  )}
-                </div>
+                Browse houses for rent <ArrowRight size={16} />
               </Link>
-            );
-          })}
-        </div>
-
-        <div className="mt-10 text-center">
-          <Link
-            href="/houses-for-rent"
-            className="inline-flex items-center gap-2 bg-primary text-on-primary text-[14px] font-semibold tracking-[0.05em] h-[50px] px-8 rounded-full hover:bg-primary-container transition-colors active:scale-95"
-          >
-            Browse all available homes
-            {totalProperties != null && (
-              <span className="text-white/60 font-normal text-[13px]">{totalProperties} total</span>
-            )}
-            <ArrowRight size={14} />
-          </Link>
+              <Link
+                href="/apply"
+                className="inline-flex h-12 items-center justify-center rounded-full border border-brand-dark/25 px-7 text-[15px] font-semibold text-brand-dark transition-colors hover:border-brand-dark hover:bg-brand-dark hover:text-white"
+              >
+                Apply now — 24h decision
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* â”€â”€ HOW IT WORKS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section style={{ background: "#f3f4ec" }} className="py-[88px] px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-brand">Simple process</p>
-            <h2 className="font-serif font-bold text-brand-dark leading-[1.12] mt-3" style={{ fontSize: 38, letterSpacing: "-0.015em" }}>
-              From search to keys, in three steps.
-            </h2>
+      {/* ── PETS ─────────────────────────────────────────────────────────── */}
+      <section className="bg-white px-4 py-20 md:px-12 md:py-24">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          <div className="lg:order-2 overflow-hidden rounded-2xl border border-surface-variant bg-white">
+            <PetScene />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 bg-white border border-[#F1F5F9]">
-            {howItWorks.map((step, i) => (
-              <div key={step.n} className="p-10" style={{ borderRight: i < 2 ? "1px solid #F1F5F9" : "none" }}>
-                <div className="font-serif font-bold leading-none mb-5" style={{ fontSize: 64, color: "#c1ecd4" }}>{step.n}</div>
-                <h3 className="font-serif font-bold text-brand-dark leading-[1.2] mb-[10px]" style={{ fontSize: 22 }}>{step.title}</h3>
-                <p className="leading-[1.6]" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 14, color: "#475569" }}>{step.desc}</p>
-              </div>
-            ))}
-          </div>
-          <div className="text-center mt-10">
+          <div>
+            <SectionHeading eyebrow="Paws welcome" title="Bring your whole family.">
+              Most of our homes welcome pets — no breed restrictions on the majority of listings, transparent
+              deposits, and a team that&apos;s genuinely happy you brought the dog.
+            </SectionHeading>
+            <ul className="mt-7 flex flex-wrap gap-2">
+              {petTags.map((tag) => (
+                <li key={tag} className="rounded-full border border-surface-variant bg-brand-light px-3.5 py-1.5 text-[13.5px] font-semibold text-brand-dark">
+                  {tag}
+                </li>
+              ))}
+            </ul>
             <Link
-              href="/apply"
-              className="inline-flex items-center gap-2 bg-brand-dark text-white text-[14px] font-medium tracking-[0.05em] h-[50px] px-7 rounded-sm hover:bg-brand transition-colors"
+              href="/houses-for-rent?pets=true"
+              className="group mt-8 inline-flex items-center gap-1.5 text-[15px] font-semibold text-brand-dark hover:text-accent"
             >
-              Start an application <ArrowRight size={14} />
+              Browse pet-friendly rentals
+              <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* â”€â”€ MAINTENANCE PITCH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-[88px] px-8 border-t border-[#F1F5F9]" style={{ background: "#FBF9F4" }}>
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            {/* Illustration */}
-            <div className="border border-[#F1F5F9] bg-white rounded-sm overflow-hidden">
-              <WorkersScene />
-            </div>
-            {/* Copy */}
-            <div>
-              <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-brand">Quality you can see</p>
-              <h2 className="font-serif font-bold text-brand-dark leading-[1.12] mt-[14px] mb-[14px]" style={{ fontSize: 42, letterSpacing: "-0.015em" }}>
-                The best-maintained rentals on the market.
-              </h2>
-              <p className="leading-[1.65] mb-7" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 15.5, color: "#475569", maxWidth: 460 }}>
-                We don&apos;t list homes we wouldn&apos;t live in. Every property is inspected, cleaned, and turned by our in-house maintenance team before move-in — then supported the same way after.
-              </p>
-              <div className="flex flex-col gap-[18px]">
-                {maintenancePromises.map((pr) => (
-                  <div key={pr.h} className="grid gap-[14px] items-start" style={{ gridTemplateColumns: "22px 1fr" }}>
-                    <div className="mt-1 w-[18px] h-[18px] rounded-full bg-brand flex items-center justify-center shrink-0">
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    </div>
-                    <div>
-                      <div className="font-semibold mb-[3px]" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 14.5, color: "#081C15" }}>{pr.h}</div>
-                      <div className="leading-[1.55]" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 13, color: "#475569" }}>{pr.d}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* CTA */}
-              <div className="mt-9 flex flex-col sm:flex-row gap-3">
-                <Link
-                  href="/houses-for-rent"
-                  className="inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-hover text-white font-bold text-[15px] px-8 py-4 rounded-xl shadow-lg shadow-brand/20 hover:shadow-brand/30 transition-all"
-                >
-                  Browse Houses for Rent <ArrowRight size={16} />
-                </Link>
-                <Link
-                  href="/apply"
-                  className="inline-flex items-center justify-center gap-2 border-2 border-brand-dark/80 text-brand-dark hover:bg-brand-dark hover:text-white font-bold text-[15px] px-8 py-4 rounded-xl transition-all"
-                >
-                  Apply Now — 24hr Decision
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* â”€â”€ CITIES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-[88px] px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-8">
-            <div>
-              <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-brand">Where we operate</p>
-              <h2 className="font-serif font-bold text-brand-dark leading-[1.12] mt-3" style={{ fontSize: 38, letterSpacing: "-0.015em" }}>
-                Cities we serve.
-              </h2>
-              <p className="mt-3 max-w-[460px] leading-[1.6]" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 14, color: "#475569" }}>
-                Affordable rentals in Atlanta, Charlotte, Houston, Dallas, Nashville, Phoenix, Austin, Miami, Denver, Seattle, Las Vegas, and Tampa.
-              </p>
-            </div>
-            <Link
-              href="#all-cities"
-              className="shrink-0 inline-flex items-center gap-1.5 text-brand text-[14px] font-medium hover:opacity-80 transition-opacity"
-            >
-              See all cities <ArrowRight size={14} />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
-            {mergedCities.slice(0, 6).map((city) => (
-              <Link
-                key={city.slug}
-                href={`/rentals/${city.slug}`}
-                className="relative rounded-sm overflow-hidden block hover:opacity-90 transition-opacity"
-                style={{ aspectRatio: "3 / 4" }}
-              >
-                <Image
-                  src={city.heroImage}
-                  alt={`Homes for rent in ${city.name}`}
-                  fill
-                  className="object-cover object-center"
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
-                />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(1,45,29,0) 40%, rgba(1,45,29,0.85) 100%)" }} />
-                <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                  <div className="font-serif font-bold leading-[1.1]" style={{ fontSize: 20 }}>{city.name}</div>
-                  <div className="mt-0.5" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 11, color: "rgba(255,255,255,0.6)" }}>
-                    {city.state} Â· from {city.avgRent}/mo
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* â”€â”€ STATE DIRECTORY (cards with search; links to state hubs + top cities) â”€â”€ */}
+      {/* ── STATE DIRECTORY (cards with search; links to state hubs + top cities) ── */}
       <StateDirectory cities={mergedCities} counts={cityCounts} />
 
-      {/* â”€â”€ PET PITCH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-[88px] px-8 bg-white border-t border-[#F1F5F9]">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-brand">Paws welcome</p>
-              <h2 className="font-serif font-bold text-brand-dark leading-[1.12] mt-[14px] mb-[14px]" style={{ fontSize: 42, letterSpacing: "-0.015em" }}>
-                Bring your whole family.
-              </h2>
-              <p className="leading-[1.65] mb-6" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 15.5, color: "#475569", maxWidth: 460 }}>
-                Most of our homes welcome pets. No breed restrictions on the majority of listings, transparent deposits, and a tenant team that&apos;s genuinely happy you brought the dog.
-              </p>
-              <div className="flex flex-wrap gap-2 mb-7">
-                {petTags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center border border-[#F1F5F9] rounded-sm"
-                    style={{ background: "#FBF9F4", color: "#012d1d", fontFamily: "var(--font-source-sans), sans-serif", fontSize: 12.5, fontWeight: 500, padding: "7px 12px" }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <Link
-                href="/houses-for-rent?q=pet"
-                className="inline-flex items-center gap-1.5 text-brand text-[14px] font-medium hover:opacity-80 transition-opacity"
-              >
-                Browse pet-friendly rentals <ArrowRight size={14} />
-              </Link>
-            </div>
-            {/* Illustration */}
-            <div className="border border-[#F1F5F9] bg-white rounded-sm overflow-hidden">
-              <PetScene />
-            </div>
+      {/* ── FAQ ──────────────────────────────────────────────────────────── */}
+      <section className="border-t border-surface-variant bg-brand-light px-4 py-20 md:px-12 md:py-24">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 lg:grid-cols-[1fr_1.6fr] lg:gap-16">
+          <div>
+            <SectionHeading eyebrow="Common questions" title="Renter FAQs.">
+              Still wondering about something? Our team answers every message within one business day.
+            </SectionHeading>
+            <Link
+              href="/contact"
+              className="group mt-6 inline-flex items-center gap-1.5 text-[15px] font-semibold text-brand-dark hover:text-accent"
+            >
+              Ask us a question
+              <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+            </Link>
           </div>
-        </div>
-      </section>
-
-      {/* â”€â”€ WHY PRIMEFAMILYHOUSING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-16 md:py-24 bg-surface-container-low border-t border-outline-variant/40">
-        <div className="max-w-7xl mx-auto px-4 md:px-12">
-          <div className="text-center mb-16">
-            <h2 className="font-serif font-semibold text-primary mb-4 text-[26px] leading-[34px] md:text-[32px] md:leading-[40px]">
-              The PrimeFamilyHousing Difference
-            </h2>
-            <p className="text-[18px] leading-7 text-on-surface-variant max-w-3xl mx-auto">
-              We believe leasing a home should be as reliable and rewarding as owning one. Experience professional management with a personal touch.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            {[
-              {
-                icon: <ShieldCheck size={28} />,
-                iconBg: "bg-earth-beige text-secondary",
-                title: "Trusted Stability",
-                desc: "Long-term lease options and predictable renewals mean you can put down roots without the anxiety of sudden changes.",
-              },
-              {
-                icon: <Wrench size={28} />,
-                iconBg: "bg-primary-fixed text-primary",
-                title: "Proactive Maintenance",
-                desc: "Our dedicated service teams ensure your home stays in perfect condition, handling repairs swiftly and professionally — same-day responses, no 7-day ticket queues.",
-              },
-              {
-                icon: <BadgeDollarSign size={28} />,
-                iconBg: "bg-secondary-container text-secondary",
-                title: "Honest Pricing",
-                desc: "The listed price is what you pay. No inflated rents, no surprise move-in fees, and transparent pet policies on every listing.",
-              },
-            ].map((f) => (
-              <div key={f.title} className="bg-surface rounded-xl p-8 shadow-sm hover:shadow-md transition-shadow border border-surface-variant">
-                <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-6 ${f.iconBg}`}>
-                  {f.icon}
-                </div>
-                <h3 className="font-serif font-semibold text-on-surface mb-3 text-[22px] leading-8">{f.title}</h3>
-                <p className="text-[16px] leading-relaxed text-on-surface-variant">{f.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* â”€â”€ FAQ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-[88px] px-8 border-t border-[#F1F5F9]" style={{ background: "#FBF9F4" }}>
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-brand">Common questions</p>
-            <h2 className="font-serif font-bold text-brand-dark leading-[1.12] mt-3" style={{ fontSize: 38, letterSpacing: "-0.015em" }}>
-              Renter FAQs.
-            </h2>
-          </div>
-          <div className="mx-auto" style={{ maxWidth: 820 }}>
+          <div className="divide-y divide-surface-variant rounded-2xl border border-surface-variant bg-white">
             {faqs.map((faq, i) => (
-              <details key={i} className="group py-5 border-t border-[#F1F5F9]" open={i === 0}>
-                <summary
-                  className="flex items-center justify-between cursor-pointer font-serif font-bold text-brand-dark leading-[1.3] list-none"
-                  style={{ fontSize: 19 }}
-                >
+              <details key={faq.q} className="group px-6 py-5" open={i === 0}>
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[17px] font-semibold leading-snug text-brand-dark [&::-webkit-details-marker]:hidden">
                   <span>{faq.q}</span>
-                  <span className="shrink-0 ml-4 text-brand text-[20px] leading-none select-none group-open:hidden">+</span>
-                  <span className="shrink-0 ml-4 text-brand text-[20px] leading-none select-none hidden group-open:inline">âˆ’</span>
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-light text-brand group-open:bg-brand group-open:text-white" aria-hidden="true">
+                    <Plus size={16} className="group-open:hidden" />
+                    <Minus size={16} className="hidden group-open:block" />
+                  </span>
                 </summary>
-                <p className="leading-[1.65] mt-3.5" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 15, color: "#475569", maxWidth: 720 }}>{faq.a}</p>
+                <p className="mt-3 max-w-2xl pr-10 text-[15.5px] leading-relaxed text-on-surface-variant">{faq.a}</p>
               </details>
             ))}
-            <div className="border-t border-[#F1F5F9]" />
           </div>
         </div>
       </section>
 
-      {/* â”€â”€ FINAL CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-[88px] px-8 text-center" style={{ background: "#081C15", color: "#fff" }}>
-        <div className="max-w-7xl mx-auto">
-          <p className="text-[11px] font-semibold tracking-[0.3em] uppercase" style={{ color: "#a5d0b9" }}>Ready when you are</p>
-          <h2 className="font-serif font-bold text-white leading-[1.05] mt-3.5" style={{ fontSize: 48, letterSpacing: "-0.02em" }}>
-            Find your next home.
-          </h2>
-          <p className="leading-[1.6] mt-[18px] mb-8 mx-auto" style={{ fontFamily: "var(--font-source-sans), sans-serif", fontSize: 16, color: "rgba(255,255,255,0.7)", maxWidth: 540 }}>
-            Browse {totalProperties ?? "hundreds of"} move-in ready rentals across 12 cities. Decisions in 24 hours. No hidden fees.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+      {/* ── FINAL CTA ────────────────────────────────────────────────────── */}
+      <section className="bg-forest-deep px-4 py-20 text-center text-white md:px-12 md:py-24">
+        <div className="mx-auto max-w-3xl">
+          <SectionHeading eyebrow="Ready when you are" title="Find your next home." align="center" tone="dark">
+            Browse {totalProperties != null ? totalProperties.toLocaleString() : "hundreds of"} move-in ready
+            rentals across 12+ cities. Decisions in 24 hours. No hidden fees.
+          </SectionHeading>
+          <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
               href="/houses-for-rent"
-              className="inline-flex items-center justify-center gap-2 bg-brand text-white h-[50px] px-7 rounded-sm text-[14px] font-medium tracking-[0.05em] hover:bg-brand-hover transition-colors"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-earth-beige px-7 text-[15px] font-semibold text-forest-deep transition-colors hover:bg-white"
             >
-              Browse homes <ArrowRight size={14} />
+              Browse homes <ArrowRight size={16} />
             </Link>
             <Link
               href="/apply"
-              className="inline-flex items-center justify-center h-[50px] px-7 rounded-sm text-[14px] font-medium tracking-[0.05em] transition-colors"
-              style={{ border: "1px solid rgba(255,255,255,0.4)", color: "#fff" }}
+              className="inline-flex h-12 items-center justify-center rounded-full border border-white/40 px-7 text-[15px] font-semibold text-white transition-colors hover:border-white hover:bg-white/10"
             >
               Start an application
             </Link>

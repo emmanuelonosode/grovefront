@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | PrimeFamilyHousing",
+  title: "Terms of Service | Prime Family Housing",
   description: "Terms and conditions for using PrimeFamilyHousing's website and services.",
   alternates: { canonical: "https://primefamilyhousing.com/terms" },
   robots: { index: true, follow: true },
@@ -11,9 +11,9 @@ export default function TermsPage() {
   return (
     <div className="pt-20">
       <div className="bg-brand-dark pt-16 pb-14 px-6 text-white text-center">
-        <p className="text-blue-300 text-xs font-semibold tracking-[0.4em] uppercase mb-4">Legal</p>
+        <p className="text-sage-soft text-xs font-semibold tracking-[0.4em] uppercase mb-4">Legal</p>
         <h1 className="font-serif text-4xl lg:text-5xl font-bold mb-4">Terms of Service</h1>
-        <p className="text-blue-100 max-w-xl mx-auto">Last updated: January 1, 2025</p>
+        <p className="text-earth-beige/85 max-w-xl mx-auto">Last updated: January 1, 2025</p>
       </div>
 
       <div className="max-w-3xl mx-auto px-6 lg:px-8 py-16 prose prose-neutral">
@@ -65,7 +65,7 @@ export default function TermsPage() {
         <h2>8. Contact</h2>
         <p>
           For questions about these Terms, contact us at{" "}
-          <a href="mailto:info@primefamilyhousing.com">info@primefamilyhousing.com</a>.
+          <a href="mailto:housings@primefamilyhousing.com">housings@primefamilyhousing.com</a>.
         </p>
       </div>
     </div>

@@ -8,13 +8,14 @@ import {
 import { fetchAllCities, CITIES } from "@/lib/cities";
 import { Button } from "@/components/ui/Button";
 import { PropertyManagementLeadForm } from "@/components/public/PropertyManagementLeadForm";
+import { jsonLdString } from "@/lib/json-ld";
 
 export const revalidate = 300;
 
 /* ── Metadata ───────────────────────────────────────────────────────── */
 
 export const metadata: Metadata = {
-  title: "Professional Property Management Services | PrimeFamilyHousing",
+  title: "Professional Property Management Services | Prime Family Housing",
   description:
     "Maximize your rental income with zero hassle. Let PrimeFamilyHousing handle tenant screening, automated rent collection, 24/7 maintenance, and reporting across 12+ US cities.",
   keywords: [
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "https://primefamilyhousing.com/property-management" },
   openGraph: {
-    title: "Professional Property Management Services | PrimeFamilyHousing",
+    title: "Professional Property Management Services | Prime Family Housing",
     description: "Maximize your rental income with zero hassle. Vetted tenants, 24/7 maintenance, and flat fees.",
     url: "https://primefamilyhousing.com/property-management",
     type: "website",
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Professional Property Management Services | PrimeFamilyHousing",
+    title: "Professional Property Management Services | Prime Family Housing",
     description: "Maximize your rental income with zero hassle. Vetted tenants, 24/7 maintenance, and flat fees.",
     images: ["https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&q=80"],
   },
@@ -161,9 +162,9 @@ export default async function PropertyManagementPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(serviceSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faqSchema) }} />
 
       {/* ── HERO SECTION ─────────────────────────────────────────────────── */}
       <section className="relative bg-[#0B1F3A] text-white pt-32 pb-24 overflow-hidden">
@@ -181,7 +182,7 @@ export default async function PropertyManagementPage() {
                 Worry-Free Leasing.<br />
                 <span className="text-brand">Consistent Returns.</span>
               </h1>
-              <p className="text-blue-100 text-base sm:text-lg max-w-xl leading-relaxed mb-8">
+              <p className="text-earth-beige/85 text-base sm:text-lg max-w-xl leading-relaxed mb-8">
                 PrimeFamilyHousing manages single-family rental homes with institution-grade precision and local care. Vetted tenants, 24/7 maintenance coordination, and transparent flat fees. No surprise charges.
               </p>
               <div className="flex flex-wrap gap-3">
@@ -228,12 +229,12 @@ export default async function PropertyManagementPage() {
             {[
               { value: "$0", label: "Hidden Admin Fees" },
               { value: "24h", label: "Typical Response" },
-              { value: "4.9 ★", label: "Trustpilot Rating" },
+              { value: "12+", label: "U.S. Cities Served" },
               { value: "2,000+", label: "Families Housed" },
             ].map((s) => (
               <div key={s.label} className="flex flex-col items-center">
                 <p className="font-serif text-3xl sm:text-4xl font-bold">{s.value}</p>
-                <p className="text-blue-100 text-xs sm:text-sm mt-1.5 tracking-wide font-medium">{s.label}</p>
+                <p className="text-earth-beige/85 text-xs sm:text-sm mt-1.5 tracking-wide font-medium">{s.label}</p>
               </div>
             ))}
           </div>

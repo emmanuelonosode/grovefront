@@ -1,8 +1,8 @@
 ﻿import type { ReactElement } from 'react'
 
-// â”€â”€ Icon assets (URL-encoded SVGs for satori <img>) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Icon assets (URL-encoded SVGs for satori <img>) ──────────────────────────
 
-// Small icon mark (circle bg + house) — 44Ã—44 viewBox
+// Small icon mark (circle bg + house) — 44×44 viewBox
 const ICON_SVG =
   '%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2044%2044%22%3E' +
   '%3Ccircle%20cx%3D%2222%22%20cy%3D%2222%22%20r%3D%2222%22%20fill%3D%22%230B1F3A%22/%3E' +
@@ -14,7 +14,7 @@ const ICON_SVG =
   '%3C/g%3E' +
   '%3C/svg%3E'
 
-// Large decorative mark (house only, no circle bg) — 320Ã—320 viewBox
+// Large decorative mark (house only, no circle bg) — 320×320 viewBox
 const DECO_SVG =
   '%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20320%20320%22%3E' +
   '%3Cpolygon%20points%3D%2276%2C160%20160%2C56%20244%2C160%20160%2C264%22%20fill%3D%22none%22%20stroke%3D%22%23012d1d%22%20stroke-width%3D%228%22/%3E' +
@@ -35,7 +35,7 @@ export type OGImageProps = {
 }
 
 /**
- * Shared OG image layout (1200Ã—630) rendered by next/og Satori.
+ * Shared OG image layout (1200×630) rendered by next/og Satori.
  * Layout: brand lockup + eyebrow + headline left | large decorative
  * house mark right. Premium dark-navy aesthetic.
  */
@@ -55,7 +55,7 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
         overflow: 'hidden',
       }}
     >
-      {/* â”€â”€ Blue left accent rail â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Blue left accent rail ──────────────────────────────── */}
       <div
         style={{
           position: 'absolute',
@@ -66,7 +66,7 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
         }}
       />
 
-      {/* â”€â”€ Right decorative panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Right decorative panel ─────────────────────────────── */}
       {/* Outer glow circle */}
       <div
         style={{
@@ -108,7 +108,7 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
         <img src={ICON_SRC} width={152} height={152} alt="" />
       </div>
 
-      {/* â”€â”€ Left content column â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Left content column ────────────────────────────────── */}
       <div
         style={{
           display: 'flex',
@@ -159,7 +159,7 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
         {eyebrow ? (
           <div style={{
             display: 'flex',
-            color: '#60A5FA',
+            color: '#E9EDC6',
             fontSize: '15px',
             fontWeight: 600,
             letterSpacing: '3px',
@@ -188,7 +188,7 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
         {/* Subtitle */}
         <div style={{
           display: 'flex',
-          color: '#93C5FD',
+          color: '#A3B18A',
           fontSize: '21px',
           lineHeight: 1.45,
           marginTop: '24px',
@@ -199,7 +199,7 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
         </div>
       </div>
 
-      {/* â”€â”€ Bottom strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Bottom strip ──────────────────────────────────────── */}
       <div
         style={{
           position: 'absolute',
@@ -235,7 +235,7 @@ export function OGImage({ title, subtitle, eyebrow, tags }: OGImageProps): React
                 border: '1px solid rgba(26,86,219,0.3)',
                 borderRadius: '999px',
                 padding: '6px 16px',
-                color: '#93C5FD',
+                color: '#A3B18A',
                 fontSize: '14px',
                 fontWeight: 600,
                 letterSpacing: '0.2px',
