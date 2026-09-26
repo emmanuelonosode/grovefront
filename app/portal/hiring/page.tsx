@@ -103,7 +103,7 @@ function ApplicationDrawer({
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch {
-      // ignore — show nothing on error, let user retry
+      // ignore - show nothing on error, let user retry
     } finally {
       setSaving(false);
     }
@@ -164,7 +164,7 @@ function ApplicationDrawer({
           {app.extra_field_label && (
             <div>
               <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">{app.extra_field_label}</p>
-              <p className="text-sm text-forest-deep">{app.extra_field_value || "—"}</p>
+              <p className="text-sm text-forest-deep">{app.extra_field_value || "-"}</p>
             </div>
           )}
 
@@ -207,7 +207,7 @@ function ApplicationDrawer({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={4}
-              placeholder="Add notes for your team — interview feedback, follow-up actions, etc."
+              placeholder="Add notes for your team - interview feedback, follow-up actions, etc."
               className="w-full border border-outline-variant rounded-lg px-3.5 py-2.5 text-sm text-forest-deep placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand resize-none leading-relaxed"
             />
           </div>

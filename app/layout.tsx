@@ -103,7 +103,7 @@ export const metadata: Metadata = {
     url: "https://primefamilyhousing.com",
     siteName: BUSINESS.displayName,
     title: "Prime Family Housing | Quality Houses for Rent across the US",
-    description: "Discover quality, affordable houses for rent — move-in ready single-family homes, fast approvals.",
+    description: "Discover quality, affordable houses for rent - move-in ready single-family homes, fast approvals.",
   },
   twitter: {
     card: "summary_large_image",
@@ -112,7 +112,7 @@ export const metadata: Metadata = {
       "Find affordable houses for rent across Atlanta, Charlotte, Houston, Dallas, Tampa & more. Move-in ready single-family homes, fast approvals.",
   },
   // Icons are provided by the App Router file conventions (app/icon.svg,
-  // app/icon.png, app/apple-icon.png) — Next auto-emits the <link> tags with
+  // app/icon.png, app/apple-icon.png) - Next auto-emits the <link> tags with
   // content hashes, so no manual `icons` block is needed (it would duplicate them).
   robots: {
     index: true,
@@ -127,7 +127,7 @@ export const metadata: Metadata = {
   },
   // Google Search Console site verification. Set NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
   // to the token from the GSC "HTML tag" verification method (the content= value).
-  // Preferred long-term: verify the whole DOMAIN property via DNS TXT instead — that
+  // Preferred long-term: verify the whole DOMAIN property via DNS TXT instead - that
   // also covers admin.* and www.* and survives host changes. This tag is the quick path.
   ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
     ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } }
@@ -138,11 +138,11 @@ export const metadata: Metadata = {
   },
 };
 
-// ── Global entity graph — present on every page ──────────────────────────
+// ── Global entity graph - present on every page ──────────────────────────
 // The @graph pattern lets Google resolve all entities together and is the
 // correct way to establish an Organisation Knowledge Panel entry.
 // alternateName is the primary signal that "PrimeFamilyHousing" is intentional, not a
-// typo — Google uses it to suppress "Did you mean?" autocorrections.
+// typo - Google uses it to suppress "Did you mean?" autocorrections.
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
@@ -165,7 +165,7 @@ const jsonLd = {
         "contentUrl": "https://primefamilyhousing.com/logo/logo.png",
         "width": 512,
         "height": 280,
-        "caption": "PrimeFamilyHousing — Great Places to Call Home"
+        "caption": "PrimeFamilyHousing - Great Places to Call Home"
       },
       "image": { "@id": "https://primefamilyhousing.com/#logo" },
       "description": "PrimeFamilyHousing is a licensed US real estate company founded in 2012, specializing in affordable single-family houses for rent across 12+ US cities. Well-maintained, move-in ready homes. 24-hour application decisions. 2,000+ families housed.",
@@ -192,7 +192,7 @@ const jsonLd = {
       ],
       // Sourced from BUSINESS so the profile list can't drift between emitters again
       // (the homepage Organization/LocalBusiness schemas had silently fallen out of
-      // sync — no TikTok, and a different Facebook URL). BUSINESS.url is appended to
+      // sync - no TikTok, and a different Facebook URL). BUSINESS.url is appended to
       // keep the self-reference this node has always carried.
       "sameAs": [...BUSINESS.sameAs, BUSINESS.url],
       "slogan": "Quality Homes. Well-Maintained. Move-In Ready.",
@@ -201,12 +201,12 @@ const jsonLd = {
         "Equal Housing Opportunity Provider"
       ],
       "hasCredential": [
-        { "@type": "EducationalOccupationalCredential", "name": "Licensed Real Estate Broker — Utah", "credentialCategory": "license" },
-        { "@type": "EducationalOccupationalCredential", "name": "Licensed Real Estate Broker — Georgia", "credentialCategory": "license" },
-        { "@type": "EducationalOccupationalCredential", "name": "Licensed Real Estate Broker — Texas", "credentialCategory": "license" },
-        { "@type": "EducationalOccupationalCredential", "name": "Licensed Real Estate Broker — North Carolina", "credentialCategory": "license" },
-        { "@type": "EducationalOccupationalCredential", "name": "Licensed Real Estate Broker — Tennessee", "credentialCategory": "license" },
-        { "@type": "EducationalOccupationalCredential", "name": "Licensed Real Estate Broker — Arizona", "credentialCategory": "license" }
+        { "@type": "EducationalOccupationalCredential", "name": "Licensed Real Estate Broker - Utah", "credentialCategory": "license" },
+        { "@type": "EducationalOccupationalCredential", "name": "Licensed Real Estate Broker - Georgia", "credentialCategory": "license" },
+        { "@type": "EducationalOccupationalCredential", "name": "Licensed Real Estate Broker - Texas", "credentialCategory": "license" },
+        { "@type": "EducationalOccupationalCredential", "name": "Licensed Real Estate Broker - North Carolina", "credentialCategory": "license" },
+        { "@type": "EducationalOccupationalCredential", "name": "Licensed Real Estate Broker - Tennessee", "credentialCategory": "license" },
+        { "@type": "EducationalOccupationalCredential", "name": "Licensed Real Estate Broker - Arizona", "credentialCategory": "license" }
       ],
       "knowsAbout": [
         "Residential Real Estate",
@@ -233,7 +233,7 @@ const jsonLd = {
         {
           "@type": "Offer",
           "itemOffered": { "@type": "Service", "name": "Affordable Home Rentals",
-            "description": "Quality, affordable single-family houses for rent — inspected, move-in ready, fast approvals." }
+            "description": "Quality, affordable single-family houses for rent - inspected, move-in ready, fast approvals." }
         },
         {
           "@type": "Offer",
@@ -256,7 +256,7 @@ const jsonLd = {
       // result link. It must be the spaced brand, not the closed-up domain-alike form.
       "name": BUSINESS.displayName,
       "alternateName": [...BUSINESS.alternateNames],
-      "description": "Official website of Prime Family Housing — affordable rental homes and properties for sale across 12+ US cities. Founded 2012. Move-in ready homes.",
+      "description": "Official website of Prime Family Housing - affordable rental homes and properties for sale across 12+ US cities. Founded 2012. Move-in ready homes.",
       "publisher": { "@id": "https://primefamilyhousing.com/#organization" },
       "potentialAction": {
         "@type": "SearchAction",

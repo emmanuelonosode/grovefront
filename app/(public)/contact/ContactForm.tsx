@@ -223,7 +223,7 @@ export default function ContactForm() {
           rows={5}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Tell us about your rental needs — preferred city, move-in date, must-haves, etc."
+          placeholder="Tell us about your rental needs - preferred city, move-in date, must-haves, etc."
           className="w-full border border-neutral-200 rounded-sm px-4 py-3 text-sm text-brand-dark outline-none focus:border-brand transition-colors resize-none"
         />
       </div>

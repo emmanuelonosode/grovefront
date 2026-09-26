@@ -33,7 +33,7 @@ const REFERRAL_KEY = "pfh_referral_code";
 
 /**
  * Reads ?ref= from the URL and stores it in sessionStorage.
- * Safe to call without consent — no data leaves the browser.
+ * Safe to call without consent - no data leaves the browser.
  */
 export function captureReferralCode(): void {
   if (typeof window === "undefined") return;
@@ -58,7 +58,7 @@ export interface UTMParams {
 /**
  * Reads UTM params from the current URL and stores them in sessionStorage.
  * Only overwrites if the URL contains fresh UTM values (paid/organic click).
- * Safe to call without consent — no data leaves the browser.
+ * Safe to call without consent - no data leaves the browser.
  */
 export function captureUTMs(): void {
   if (typeof window === "undefined") return;
@@ -98,7 +98,7 @@ export interface LocationData {
 }
 
 /**
- * Silently detects city from IP via ipapi.co — no browser permission needed.
+ * Silently detects city from IP via ipapi.co - no browser permission needed.
  * Only runs once per session. Safe without consent (no PII sent to third party,
  * IP geolocation is standard industry practice).
  */
@@ -116,7 +116,7 @@ export async function captureLocation(): Promise<void> {
     };
     sessionStorage.setItem(LOCATION_KEY, JSON.stringify(location));
   } catch {
-    // Silently swallow — never block page load
+    // Silently swallow - never block page load
   }
 }
 
@@ -131,7 +131,7 @@ export function getStoredLocation(): LocationData {
   }
 }
 
-/** Stores explicit search/browse intent city — overrides IP city when present. */
+/** Stores explicit search/browse intent city - overrides IP city when present. */
 export function captureSearchIntent(city: string, listingType?: string): void {
   if (typeof window === "undefined" || !city.trim()) return;
   sessionStorage.setItem(
@@ -162,7 +162,7 @@ export function getBestKnownCity(): string {
 // ── Device & Session Context ──────────────────────────────────────────────────
 
 /**
- * Collects passive browser/session signals — no permission required.
+ * Collects passive browser/session signals - no permission required.
  * Used to enrich lead message fields with context agents find useful.
  */
 export function getDeviceContext(): string {
@@ -302,7 +302,7 @@ export function identifyUser(email: string, userId?: string | number): void {
   nativeIdentify(email, userId);
 }
 
-/** Kept for API compatibility — routes to the native event spool (Meta Pixel removed). */
+/** Kept for API compatibility - routes to the native event spool (Meta Pixel removed). */
 export function trackMetaEvent(
   eventName: string,
   params?: Record<string, unknown>
@@ -310,7 +310,7 @@ export function trackMetaEvent(
   trackEvent(eventName, params);
 }
 
-/** Kept for API compatibility — routes to the native event spool (Meta Pixel removed). */
+/** Kept for API compatibility - routes to the native event spool (Meta Pixel removed). */
 export function trackMetaCustom(
   eventName: string,
   params?: Record<string, unknown>

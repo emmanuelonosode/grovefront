@@ -34,7 +34,7 @@ export function PropertiesCarousel({ properties }: { properties: Property[] }) {
         ))}
       </div>
 
-      {/* Arrows — desktop, appear on hover */}
+      {/* Arrows - desktop, appear on hover */}
       <button
         type="button"
         onClick={() => scrollBy(-1)}

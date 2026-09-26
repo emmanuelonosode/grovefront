@@ -7,7 +7,7 @@ export const contentType = "image/png";
 
 const FALLBACK = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&q=80";
 
-// URL-encoded icon mark — diamond house shape (matches logo.svg geometry)
+// URL-encoded icon mark - diamond house shape (matches logo.svg geometry)
 const ICON_SVG =
   '%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2044%2044%22%3E' +
   '%3Ccircle%20cx%3D%2222%22%20cy%3D%2222%22%20r%3D%2222%22%20fill%3D%22rgba(11%2C31%2C58%2C0.7)%22/%3E' +
@@ -68,7 +68,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           style={{ objectFit: "cover", position: "absolute", inset: 0 }}
         />
 
-        {/* Gradient overlay — dark at bottom for text legibility */}
+        {/* Gradient overlay - dark at bottom for text legibility */}
         <div
           style={{
             position: "absolute",
@@ -79,7 +79,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           }}
         />
 
-        {/* Logo badge — top left */}
+        {/* Logo badge - top left */}
         <div
           style={{
             position: "absolute",

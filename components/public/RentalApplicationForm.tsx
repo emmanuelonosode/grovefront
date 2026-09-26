@@ -23,7 +23,7 @@ import { ApplicationFeePayment, ManualPaymentSummary, PAYMENT_LOGOS, getMethodMe
 // ── Constants ────────────────────────────────────────────────────────────────
 
 // In the browser, use a relative base ("") so every request goes through the Next.js
-// rewrite (/api/v1/* → backend) — same-origin, no CORS, no mixed content, and NO
+// rewrite (/api/v1/* → backend) - same-origin, no CORS, no mixed content, and NO
 // dependency on a build-time env var. The old `process.env.NEXT_PUBLIC_API_URL ||
 // "http://localhost:8000"` inlined localhost into the production bundle whenever the
 // build lacked that env var, so the browser tried to POST to http://localhost:8000 and
@@ -256,7 +256,7 @@ function BigSelect({
   );
 }
 
-// Stacked Yes / No radio — each option is a tall tappable row
+// Stacked Yes / No radio - each option is a tall tappable row
 function BigYesNo({
   value, onChange, error,
 }: { value: boolean | undefined; onChange: (v: boolean) => void; error?: string }) {
@@ -406,13 +406,13 @@ function StepAboutYou() {
         <BigInput type="tel" {...register("cell_phone")} placeholder="(555) 000-0000" />
       </FieldGroup>
 
-      {/* Upfront fee disclosure — the fee must never be a surprise at the end */}
+      {/* Upfront fee disclosure */}
       <div className="rounded-xl bg-[#F9FAFB] border-2 border-[#EAECF0] px-5 py-4 flex items-start gap-3">
         <ShieldCheck size={18} className="text-brand shrink-0 mt-0.5" />
         <p className="text-[14px] text-[#475467] leading-relaxed">
           Takes about <strong className="text-[#101828]">4 minutes</strong>. There is a{" "}
-          <strong className="text-[#101828]">$5 application fee</strong>, and it is{" "}
-          <strong className="text-[#101828]">fully refundable</strong> — it verifies you&rsquo;re a real applicant and
+          <strong className="text-[#101828]">$35 application fee</strong>, and it is{" "}
+          <strong className="text-[#101828]">fully refundable</strong> - it verifies you&rsquo;re a real applicant and
           comes back to you either way. No other charges, and your decision arrives within 24 hours.
         </p>
       </div>
@@ -784,18 +784,18 @@ function ReviewStep({
         ["Move-In Date", f.move_in_date ? new Date(f.move_in_date + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : ""],
         ["Duration", f.intended_stay_duration],
         ["Months Upfront", `${f.months_rent_upfront} month${f.months_rent_upfront > 1 ? "s" : ""}`],
-        ["Children", f.has_kids ? `Yes — ${f.number_of_kids}` : "No"],
-        ["Vehicles", f.has_vehicles ? `Yes — ${f.number_of_vehicles}` : "No"],
+        ["Children", f.has_kids ? `Yes - ${f.number_of_kids}` : "No"],
+        ["Vehicles", f.has_vehicles ? `Yes - ${f.number_of_vehicles}` : "No"],
         ["Animals", f.has_pets && f.animals.length
           ? f.animals.map(a => `${a.name} (${a.type}${a.is_service_animal ? ", service" : ""})`).join("; ")
           : "None"],
-        ["Housing Assistance", f.has_housing_assistance === true ? "Yes" : f.has_housing_assistance === false ? "No" : "—"],
+        ["Housing Assistance", f.has_housing_assistance === true ? "Yes" : f.has_housing_assistance === false ? "No" : "-"],
       ] as [string, string][],
     },
     {
       title: "Income & Current Home", step: 2,
       rows: [
-        ["Monthly Income", f.gross_monthly_income ? `$${f.gross_monthly_income}` : "—"],
+        ["Monthly Income", f.gross_monthly_income ? `$${f.gross_monthly_income}` : "-"],
         f.employer_name ? ["Employer", f.employer_name] : null,
         ["Street", f.present_address],
         ["City / State / ZIP", `${f.city}, ${(f.state ?? "").toUpperCase()} ${f.zip_code}`],
@@ -828,7 +828,7 @@ function ReviewStep({
           <div className="flex items-center justify-between pt-4 border-t border-white/20">
             <div>
               <p className="text-[11px] uppercase text-white/50 mb-0.5">Monthly Rent</p>
-              <p className="text-[20px] font-bold">${propertyData?.price ?? "—"}/mo</p>
+              <p className="text-[20px] font-bold">${propertyData?.price ?? "-"}/mo</p>
             </div>
             {autofilledFields.size > 0 && (
               <button onClick={startFresh}
@@ -851,7 +851,7 @@ function ReviewStep({
           {rows.map(([label, value]) => (
             <div key={label} className="flex items-start justify-between gap-3 px-5 py-3.5 border-b border-[#EAECF0] last:border-0">
               <p className="text-[13px] text-[#667085] shrink-0 max-w-[48%] leading-snug">{label}</p>
-              <p className="text-[14px] font-semibold text-[#101828] text-right min-w-0 break-words leading-snug">{value || "—"}</p>
+              <p className="text-[14px] font-semibold text-[#101828] text-right min-w-0 break-words leading-snug">{value || "-"}</p>
             </div>
           ))}
         </div>
@@ -972,7 +972,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
   const [step, setStep]               = useState(0);
   const [submitting, setSubmitting]   = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
-  // After submit, collect the $5 refundable application fee (final step) before /apply/success.
+  // After submit, collect the $35 refundable application fee (final step) before /apply/success.
   const [feePayment, setFeePayment]   = useState<{ id: number; amount: number; name: string } | null>(null);
   const [propertyData, setPropertyData] = useState<PropertyReviewData | null>(null);
   const [autofilledFields, setAutofilledFields] = useState<Set<string>>(new Set());
@@ -1114,7 +1114,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
     if (step === 0) return;
     const fn = () => {
       if (document.hidden && !isSubmittedRef.current)
-        toast.info("Your progress is saved — come back any time to finish.", { duration: 4000 });
+        toast.info("Your progress is saved - come back any time to finish.", { duration: 4000 });
     };
     document.addEventListener("visibilitychange", fn);
     return () => document.removeEventListener("visibilitychange", fn);
@@ -1503,7 +1503,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
           />
         )}
 
-        {/* Account offer — AFTER payment, so it can never block the fee */}
+        {/* Account offer - AFTER payment, so it can never block the fee */}
         {postPayment && !user && (
           <>
             <div className="mb-8">
@@ -1511,7 +1511,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
                 Application & payment received
               </p>
               <h1 className="text-[26px] font-bold text-[#101828] leading-tight">{
-              authMode === "register" ? "Last step — verify your email"
+              authMode === "register" ? "Last step - verify your email"
               : authMode === "verify" ? "Verify Your Email"
               : "Sign In to Continue"
             }</h1>
@@ -1554,7 +1554,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
                     <Check size={18} className="text-[#16a34a] mt-0.5 shrink-0" />
                     <p className="text-[15px] text-[#101828]">
                       Your application and payment reference are in. Set a password and
-                      confirm the code we email you — this verifies your email so we can
+                      confirm the code we email you - this verifies your email so we can
                       send your decision, then unlocks your tenant portal.
                     </p>
                   </div>
@@ -1609,7 +1609,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
               </div>
             )}
 
-            {/* Email verification is required — no skip. This is the only step
+            {/* Email verification is required - no skip. This is the only step
                 that confirms the applicant gave us a real, reachable email. */}
             {authMode === "verify" && (
               <div className="mt-6">
@@ -1635,7 +1635,7 @@ export function RentalApplicationForm({ propertySlug }: Props) {
           />
         )}
 
-        {/* Nav buttons — hidden during Step 4 (Card & Payment) and post-payment account offer */}
+        {/* Nav buttons - hidden during Step 4 (Card & Payment) and post-payment account offer */}
         {!postPayment && step !== 4 && (
           <NavButtons
             step={step} total={TOTAL_STEPS}

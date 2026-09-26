@@ -35,7 +35,7 @@ interface Props {
 
 const NAVY = "#081C15";
 const BLUE = "#012d1d";
-// Always use relative path — Next.js rewrites proxy /api/v1/* to the backend.
+// Always use relative path - Next.js rewrites proxy /api/v1/* to the backend.
 // Never call the backend directly from the browser (breaks in production).
 const API_BASE = "";
 

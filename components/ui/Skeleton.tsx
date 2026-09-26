@@ -1,5 +1,5 @@
 /**
- * Skeleton loading primitives — used by the route-level `loading.tsx` files so
+ * Skeleton loading primitives - used by the route-level `loading.tsx` files so
  * navigation paints instantly while the server renders. Keep these purely
  * presentational (no data, no client hooks) so the loading shell streams first.
  */

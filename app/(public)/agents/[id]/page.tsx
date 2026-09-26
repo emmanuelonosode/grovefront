@@ -28,9 +28,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const specialty = profile?.specialties?.[0] ?? "Housing Specialist";
     const yearsExp = profile?.years_experience ? `${profile.years_experience}+ years experience. ` : "";
     const bioExcerpt = profile?.bio?.slice(0, 100) ?? "";
-    const description = `${agent.full_name} — ${specialty} at PrimeFamilyHousing. ${yearsExp}${bioExcerpt} Helping families find affordable, move-in ready rentals.`.slice(0, 160);
+    const description = `${agent.full_name} - ${specialty} at PrimeFamilyHousing. ${yearsExp}${bioExcerpt} Helping families find affordable, move-in ready rentals.`.slice(0, 160);
     return {
-      title: `${agent.full_name} — ${specialty} | Prime Family Housing`,
+      title: `${agent.full_name} - ${specialty} | Prime Family Housing`,
       description,
       keywords: [
         `${agent.full_name} real estate agent`,
@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ],
       alternates: { canonical: `https://primefamilyhousing.com/agents/${id}` },
       openGraph: {
-        title: `${agent.full_name} — ${specialty} | Prime Family Housing`,
+        title: `${agent.full_name} - ${specialty} | Prime Family Housing`,
         description,
         type: "profile",
         url: `https://primefamilyhousing.com/agents/${id}`,
@@ -91,11 +91,11 @@ export default async function AgentProfilePage({ params }: Props) {
   const profile = agent.agent_profile;
 
   const stats = [
-    { icon: Award, label: "Years Experience", value: profile?.years_experience ? `${profile.years_experience}+` : "—" },
+    { icon: Award, label: "Years Experience", value: profile?.years_experience ? `${profile.years_experience}+` : "-" },
     {
       icon: TrendingUp,
       label: "Total Volume",
-      value: profile?.total_sales ? formatPrice(profile.total_sales, { compact: true }) : "—",
+      value: profile?.total_sales ? formatPrice(profile.total_sales, { compact: true }) : "-",
     },
     { icon: Home, label: "Active Listings", value: String(agent.active_listings) },
   ];

@@ -21,7 +21,7 @@ export function HeroCarousel({ images }: { images: string[] }) {
     [images.length]
   );
 
-  // Autoplay — restarted whenever the user navigates so it never fights a
+  // Autoplay - restarted whenever the user navigates so it never fights a
   // manual choice. Skipped entirely for prefers-reduced-motion users.
   const restartAutoplay = useCallback(() => {
     if (timer.current) clearInterval(timer.current);

@@ -32,7 +32,7 @@ export default function ForgotPasswordPage() {
         throw new Error("Request failed");
       }
     } catch {
-      // Show success anyway — never confirm/deny if email exists
+      // Show success anyway - never confirm/deny if email exists
       setStatus("success");
     }
   }

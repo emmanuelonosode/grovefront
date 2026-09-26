@@ -74,8 +74,8 @@ export async function generateMetadata(
   // Property-type filters are duplicates of the city page: PrimeFamilyHousing rents
   // single-family houses only, so /residential-homes returns the same inventory as
   // /rentals/[city] (every other type slug 404s for lack of listings). Both URLs were
-  // ranking for the same query — "houses for rent in concord nc" held #25 with the
-  // city page and #36 with /concord-nc/residential-homes — so the two split relevance
+  // ranking for the same query - "houses for rent in concord nc" held #25 with the
+  // city page and #36 with /concord-nc/residential-homes - so the two split relevance
   // and internal links instead of compounding on one URL. Canonicalize them onto the
   // city page, which is also the meatier document (~5.9k words vs ~3.6k).
   //
@@ -148,12 +148,11 @@ export default async function CityFilterPage(
   const properties = data.results.map(toPropertyCardShape);
   const totalCount = data.count;
 
-  // A filter page with zero matching listings is thin duplicate content —
-  // 404 it so Google drops it instead of flagging a soft 404.
+  // A filter page with zero matching listings is thin duplicate content - // 404 it so Google drops it instead of flagging a soft 404.
   if (totalCount === 0) notFound();
 
   // Sibling filter links. Condos/townhouses are omitted for the same reason as on the
-  // city page — no such inventory exists, so those URLs 404 in every city.
+  // city page - no such inventory exists, so those URLs 404 in every city.
   const siblingFilters = [
     { slug: "residential-homes", label: "Homes" },
     { slug: "1-bedroom",         label: "1 Bed" },
@@ -203,7 +202,7 @@ export default async function CityFilterPage(
       : [
           {
             q: `Are there ${spec.plural.toLowerCase()} for rent in ${city.name}?`,
-            a: `Yes. PrimeFamilyHousing lists verified ${spec.plural.toLowerCase()} in ${city.name} — all inspected and move-in ready, with transparent pricing. Current listings are shown above.`,
+            a: `Yes. PrimeFamilyHousing lists verified ${spec.plural.toLowerCase()} in ${city.name} - all inspected and move-in ready, with transparent pricing. Current listings are shown above.`,
           },
           {
             q: `How much does it cost to rent a ${spec.label.toLowerCase()} in ${city.name}?`,
@@ -359,7 +358,7 @@ export default async function CityFilterPage(
           <div className="mb-10">
             <p className="text-sage-soft text-xs font-semibold tracking-[0.3em] uppercase mb-3">Common Questions</p>
             <h2 className="font-serif text-3xl font-bold">
-              {filterLabel} Rentals in {city.name} — FAQ
+              {filterLabel} Rentals in {city.name} - FAQ
             </h2>
           </div>
           <div className="space-y-3">

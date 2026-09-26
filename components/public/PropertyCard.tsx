@@ -15,7 +15,7 @@ interface PropertyCardProps {
 
 export function PropertyCard({ property, variant = "default" }: PropertyCardProps) {
   const primaryImage = property.images.find((i) => i.isPrimary) ?? property.images[0];
-  // Primary first, then the rest — feeds the swipeable card carousel.
+  // Primary first, then the rest - feeds the swipeable card carousel.
   const galleryImages = [...property.images]
     .sort((a, b) => (a.isPrimary === b.isPrimary ? 0 : a.isPrimary ? -1 : 1))
     .map((i) => i.url)
@@ -74,7 +74,7 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
   return (
     <article className="group flex flex-col bg-white border border-neutral-200 rounded-xl overflow-hidden hover:shadow-lg hover:border-neutral-300 transition-all duration-200">
 
-      {/* Image — swipeable carousel */}
+      {/* Image - swipeable carousel */}
       <div className="relative aspect-[3/2] overflow-hidden bg-neutral-100">
         {galleryImages.length > 0 ? (
           <CardImageCarousel
@@ -90,10 +90,10 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
         )}
       </div>
 
-      {/* Info — linked to property detail */}
+      {/* Info - linked to property detail */}
       <Link href={detailHref} className="flex flex-col p-4 flex-1 min-w-0">
 
-        {/* Price — most important, shown first */}
+        {/* Price - most important, shown first */}
         <p className="font-bold text-[1.35rem] leading-none text-neutral-900">
           {isRental
             ? formatPrice(property.price, { perMonth: true })
@@ -103,7 +103,7 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
           )}
         </p>
 
-        {/* Specs — segmented stat strip so beds/baths/sqft read at a glance */}
+        {/* Specs - segmented stat strip so beds/baths/sqft read at a glance */}
         <div className="grid grid-cols-3 mt-2.5 rounded-lg border border-neutral-100 bg-neutral-50/70 divide-x divide-neutral-100 text-center">
           <div className="py-2 px-1">
             <div className="flex items-center justify-center gap-1.5">
@@ -125,7 +125,7 @@ export function PropertyCard({ property, variant = "default" }: PropertyCardProp
             <div className="flex items-center justify-center gap-1.5">
               <Maximize size={14} className="text-brand shrink-0" />
               <span className="text-[15px] font-bold text-neutral-900 leading-none">
-                {property.sqft > 0 ? formatNumber(property.sqft) : "—"}
+                {property.sqft > 0 ? formatNumber(property.sqft) : "-"}
               </span>
             </div>
             <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500 mt-1">Sqft</p>

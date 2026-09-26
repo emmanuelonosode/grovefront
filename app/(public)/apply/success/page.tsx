@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 function SuccessContent() {
   const searchParams = useSearchParams();
-  const ref = searchParams.get("ref") ?? "—";
+  const ref = searchParams.get("ref") ?? "-";
   const name = searchParams.get("name") ?? "Applicant";
   const refId = `APP-${String(ref).padStart(5, "0")}`;
 

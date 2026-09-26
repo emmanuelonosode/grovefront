@@ -52,7 +52,7 @@ const teamValues = [
     icon: Star,
     title: "No Commission Pressure",
     description:
-      "Our specialists are incentivized to find you the right fit — not the highest-margin unit. We succeed when you're genuinely happy with your home.",
+      "Our specialists are incentivized to find you the right fit - not the highest-margin unit. We succeed when you're genuinely happy with your home.",
   },
   {
     icon: Users,
@@ -70,14 +70,14 @@ const teamValues = [
     icon: MapPin,
     title: "Multi-City Coverage",
     description:
-      "Whether you're relocating to Atlanta, Charlotte, Houston, or staying local in Utah — we have a specialist for your market.",
+      "Whether you're relocating to Atlanta, Charlotte, Houston, or staying local in Utah - we have a specialist for your market.",
   },
 ];
 
 const testimonials = [
   {
     quote:
-      "Our specialist found us a 3-bedroom in Katy under $1,400 within two weeks. I kept waiting for the hidden fees — there weren't any.",
+      "Our specialist found us a 3-bedroom in Katy under $1,400 within two weeks. I kept waiting for the hidden fees - there weren't any.",
     name: "Deja M.",
     city: "Houston, TX",
     image:
@@ -93,7 +93,7 @@ const testimonials = [
   },
   {
     quote:
-      "We relocated from Seattle with two kids and a dog. Our specialist handled everything remotely — virtual tour, digital lease, the works. We moved in before our furniture arrived.",
+      "We relocated from Seattle with two kids and a dog. Our specialist handled everything remotely - virtual tour, digital lease, the works. We moved in before our furniture arrived.",
     name: "Priya & Arun K.",
     city: "Charlotte, NC",
     image:
@@ -104,7 +104,7 @@ const testimonials = [
 const faqs = [
   {
     q: "Do I need to pay an agent fee to use your services?",
-    a: "No. Our services are free for renters and buyers. We are compensated through a standard co-brokerage arrangement with the listing owner — you pay nothing out of pocket for working with our team.",
+    a: "No. Our services are free for renters and buyers. We are compensated through a standard co-brokerage arrangement with the listing owner - you pay nothing out of pocket for working with our team.",
   },
   {
     q: "Can I work with a specific agent I've spoken with before?",
@@ -116,7 +116,7 @@ const faqs = [
   },
   {
     q: "How quickly can an agent respond to my inquiry?",
-    a: "Our standard is within 24 hours on business days — usually much faster. For urgent moves or expiring application deadlines, call us directly and we'll prioritize your case.",
+    a: "Our standard is within 24 hours on business days - usually much faster. For urgent moves or expiring application deadlines, call us directly and we'll prioritize your case.",
   },
   {
     q: "Can your agents help with both renting and buying?",
@@ -192,7 +192,7 @@ export default async function AgentsPage() {
         dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }}
       />
 
-      {/* ── HERO — clean photo, no overlay; text on a solid card ─────────── */}
+      {/* ── HERO - clean photo, no overlay; text on a solid card ─────────── */}
       <section className="relative min-h-[560px] lg:min-h-[620px] flex items-end overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=1600&q=80"
@@ -214,7 +214,7 @@ export default async function AgentsPage() {
             </h1>
             <p className="text-neutral-600 text-lg leading-relaxed mb-9">
               Our team knows every neighbourhood, every price point, every
-              shortcut. We work for families — not commissions — and we find
+              shortcut. We work for families - not commissions - and we find
               affordable homes fast.
             </p>
 
@@ -404,7 +404,7 @@ export default async function AgentsPage() {
                     <div className="grid grid-cols-3 gap-3 mb-5 text-center bg-neutral-50 rounded-sm p-3">
                       <div>
                         <p className="font-serif text-lg font-bold text-brand-dark">
-                          {agent.agent_profile?.years_experience ?? "—"}+
+                          {agent.agent_profile?.years_experience ?? "-"}+
                         </p>
                         <p className="text-[10px] text-neutral-400 uppercase tracking-wide">
                           Years
@@ -424,7 +424,7 @@ export default async function AgentsPage() {
                             ? formatPrice(agent.agent_profile.total_sales, {
                                 compact: true,
                               })
-                            : "—"}
+                            : "-"}
                         </p>
                         <p className="text-[10px] text-neutral-400 uppercase tracking-wide">
                           Volume

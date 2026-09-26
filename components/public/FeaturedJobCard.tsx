@@ -10,7 +10,7 @@ const ROLE_TITLE = "Remote Listing & Client Communication Specialist";
 const highlights = [
   "Manage premium listings across 12+ markets",
   "Own all client & tenant communications",
-  "High-autonomy — no micromanagement",
+  "High-autonomy - no micromanagement",
   "Home office stipend + full benefits",
 ];
 
@@ -31,12 +31,12 @@ export function FeaturedJobCard() {
           }}
         />
 
-        {/* Soft brand glow — top-right */}
+        {/* Soft brand glow - top-right */}
         <div
           aria-hidden="true"
           className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-brand/10 blur-3xl pointer-events-none"
         />
-        {/* Soft emerald glow — bottom-left */}
+        {/* Soft emerald glow - bottom-left */}
         <div
           aria-hidden="true"
           className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-emerald-500/5 blur-3xl pointer-events-none"
@@ -67,7 +67,7 @@ export function FeaturedJobCard() {
               <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] text-white/30 mb-5">
                 <span className="flex items-center gap-1.5">
                   <MapPin size={11} className="text-brand shrink-0" />
-                  Remote — US (all time zones)
+                  Remote - US (all time zones)
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Clock size={11} className="text-brand shrink-0" />
@@ -80,7 +80,7 @@ export function FeaturedJobCard() {
               </div>
 
               <p className="text-sm text-white/45 leading-relaxed mb-7 max-w-xl">
-                You&apos;ll own the listings and the inbox — managing premium property listings across
+                You&apos;ll own the listings and the inbox - managing premium property listings across
                 12+ markets, handling every client and tenant communication, and keeping our remote
                 operations running without missing a beat. High autonomy. Real impact.
               </p>

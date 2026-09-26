@@ -343,7 +343,7 @@ export function PropertiesClient({
 
   const activeFiltersCount = [q, beds, baths, propType, priceRange, minSqft, maxSqft].filter(Boolean).length + (pets ? 1 : 0);
 
-  // Active filter chips — one per applied filter, each removable.
+  // Active filter chips - one per applied filter, each removable.
   const priceLabel = PRICE_RANGES.find((r) => r.value === priceRange)?.label
     ?? (priceRange ? (() => { const [mn, mx] = priceRange.split("-"); return `$${mn || "0"}–$${mx || "∞"}`; })() : undefined);
   const activeChips: { key: string; label: string; clear: () => void }[] = [];
@@ -452,7 +452,7 @@ export function PropertiesClient({
               )}
             </div>
 
-            {/* Search button — icon on mobile, icon + label on desktop */}
+            {/* Search button - icon on mobile, icon + label on desktop */}
             <button
               type="submit"
               aria-label="Search"
@@ -466,7 +466,7 @@ export function PropertiesClient({
             </button>
           </div>
 
-          {/* Row 2: Filter chips — always visible, horizontal scroll on mobile */}
+          {/* Row 2: Filter chips - always visible, horizontal scroll on mobile */}
           <div className="flex items-center gap-2 overflow-x-auto px-4 pb-3 scrollbar-none">
 
             {/* Rent / Buy / All toggle */}
@@ -487,7 +487,7 @@ export function PropertiesClient({
               ))}
             </div>
 
-            {/* Price filter — presets + custom min/max popover */}
+            {/* Price filter - presets + custom min/max popover */}
             <div className="relative shrink-0" ref={priceRef}>
               <button
                 type="button"
@@ -622,7 +622,7 @@ export function PropertiesClient({
         </form>
       </div>
 
-      {/* ── Active filter chips — always visible, persist when filter bar collapses ─ */}
+      {/* ── Active filter chips - always visible, persist when filter bar collapses ─ */}
       {activeChips.length > 0 && (
         <div className="shrink-0 bg-white border-b border-neutral-100 flex items-center gap-2 overflow-x-auto px-4 py-2 scrollbar-none">
           <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 shrink-0">Filters</span>
@@ -714,7 +714,7 @@ export function PropertiesClient({
         {/* Cards panel */}
         <div className={`${mobileView === "map" ? "hidden" : "flex"} lg:flex w-full lg:w-[50%] xl:w-[46%] shrink-0 flex-col border-l border-neutral-200 bg-white`}>
 
-          {/* Overwhelmed banner — shows when 50+ results and user hasn't captured or dismissed */}
+          {/* Overwhelmed banner - shows when 50+ results and user hasn't captured or dismissed */}
           {initialTotal > 50 && !leadCaptured && !bannerDismissed && (
             <div className="shrink-0 bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex items-center justify-between gap-3">
               <p className="text-xs font-semibold text-amber-800 leading-snug">
@@ -800,7 +800,7 @@ export function PropertiesClient({
                   Try widening your search. These usually bring back results:
                 </p>
 
-                {/* Relaxed-search suggestions — drop one filter at a time */}
+                {/* Relaxed-search suggestions - drop one filter at a time */}
                 <div className="flex flex-wrap items-center justify-center gap-2 mb-6 max-w-[280px]">
                   {priceRange && (
                     <button onClick={() => { setPriceRange(""); navigate({ minPrice: undefined, maxPrice: undefined }); }}
@@ -889,7 +889,7 @@ export function PropertiesClient({
         </div>
       </div>
 
-      {/* Mobile bottom toolbar — segmented Map/List + Call (replaces the floating callback button) */}
+      {/* Mobile bottom toolbar - segmented Map/List + Call (replaces the floating callback button) */}
       <div className="lg:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
         <div className="flex items-stretch bg-white rounded-full shadow-2xl border border-neutral-200 overflow-hidden">
           <button
@@ -975,7 +975,7 @@ function PanelCard({ property, isActive }: { property: PropertyListItemAPI; isAc
         : "border-[#dee3e9] hover:shadow-[rgba(20,22,26,0.3)_0px_1px_4px_0px]"
     }`}>
 
-      {/* Photo — swipeable carousel at base, overlays at z-10 */}
+      {/* Photo - swipeable carousel at base, overlays at z-10 */}
       <div className="relative h-[200px] shrink-0 overflow-hidden bg-[#f1f4f7]">
         <CardImageCarousel images={images} alt={property.title} href={detailHref} />
 
@@ -1003,7 +1003,7 @@ function PanelCard({ property, isActive }: { property: PropertyListItemAPI; isAc
         </div>
       </div>
 
-      {/* Body — the whole block links through to the detail page */}
+      {/* Body - the whole block links through to the detail page */}
       <Link href={detailHref} className="flex flex-1 flex-col gap-1.5 px-4 pb-3 pt-3.5">
         <p className="text-[18px] font-bold leading-[1.44] text-[#0a1317]">
           ${Math.round(Number(property.price) || 0).toLocaleString()}
@@ -1032,7 +1032,7 @@ function PanelCard({ property, isActive }: { property: PropertyListItemAPI; isAc
         </p>
       </Link>
 
-      {/* Actions — siblings of the card link, never nested inside it, so the
+      {/* Actions - siblings of the card link, never nested inside it, so the
           anchors stay valid and the clicks don't fight the card navigation. */}
       <div className="flex items-center gap-2 px-4 pb-4">
         <Link
@@ -1191,7 +1191,7 @@ function InlineLeadCard({ onCaptured }: { onCaptured: () => void }) {
           <ArrowRight size={18} className="text-emerald-600" />
         </div>
         <p className="font-serif font-bold text-emerald-800 text-sm">Thanks! We&apos;ll be in touch.</p>
-        <p className="text-xs text-emerald-600 leading-relaxed">Check your inbox — we&apos;ll match you with the right home.</p>
+        <p className="text-xs text-emerald-600 leading-relaxed">Check your inbox - we&apos;ll match you with the right home.</p>
       </div>
     );
   }
@@ -1206,7 +1206,7 @@ function InlineLeadCard({ onCaptured }: { onCaptured: () => void }) {
           Can&apos;t find what you&apos;re looking for?
         </p>
         <p className="text-xs text-neutral-500 mt-1 leading-relaxed">
-          Tell us what you need — we&apos;ll find the right home and reach out.
+          Tell us what you need - we&apos;ll find the right home and reach out.
         </p>
       </div>
 

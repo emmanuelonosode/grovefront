@@ -10,7 +10,7 @@ interface Props {
   images: string[];
   alt: string;
   href: string;
-  /** sizes attr for the <Image> — tune per card layout */
+  /** sizes attr for the <Image> - tune per card layout */
   sizes?: string;
 }
 

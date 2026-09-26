@@ -193,9 +193,9 @@ export function ActiveSpecialModal({
       {/* Modal */}
       <div className="relative w-full max-w-lg bg-white rounded-xl overflow-hidden shadow-2xl border border-neutral-100 animate-in fade-in zoom-in-95 duration-200">
 
-        {/* ── Header (dark navy — no purple) ── */}
+        {/* ── Header (dark navy - no purple) ── */}
         <div className="bg-brand-dark px-6 py-7 text-white relative overflow-hidden">
-          {/* Decorative illustration — right side, low opacity */}
+          {/* Decorative illustration - right side, low opacity */}
           <div className="absolute right-0 top-0 bottom-0 w-48 flex items-center justify-end pr-4 pointer-events-none">
             <OfferIllustration className="w-44 h-auto text-white opacity-20" />
           </div>

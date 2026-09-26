@@ -15,7 +15,7 @@ export const revalidate = 300;
 /* ── Static params ──────────────────────────────────────────────────── */
 
 export async function generateStaticParams() {
-  // Only pre-render hardcoded cities at build time — unknown slugs are served
+  // Only pre-render hardcoded cities at build time - unknown slugs are served
   // via ISR on first request (dynamicParams defaults to true).
   return getAllCitySlugs().map((city) => ({ city }));
 }
@@ -99,7 +99,7 @@ export default async function PropertyManagementCityPage(
       name: city.name,
       containedInPlace: { "@type": "State", name: city.stateCode },
     },
-    description: `Full-service property management in ${city.name} — tenant screening, rent collection, maintenance, and monthly reporting.`,
+    description: `Full-service property management in ${city.name} - tenant screening, rent collection, maintenance, and monthly reporting.`,
     url: pageUrl,
   };
 
@@ -120,7 +120,7 @@ export default async function PropertyManagementCityPage(
     },
     {
       q: `What does PrimeFamilyHousing handle when managing my ${city.name} property?`,
-      a: `We handle everything: tenant screening and placement, rent collection, late fee enforcement, 24/7 maintenance coordination, monthly owner statements, and lease renewals. You own — we manage.`,
+      a: `We handle everything: tenant screening and placement, rent collection, late fee enforcement, 24/7 maintenance coordination, monthly owner statements, and lease renewals. You own - we manage.`,
     },
     {
       q: `How quickly can you find tenants for my ${city.name} rental?`,
@@ -146,12 +146,12 @@ export default async function PropertyManagementCityPage(
     {
       icon: ShieldCheck,
       title: "Tenant Screening",
-      desc: "Background checks, credit reports, income verification, and rental history — so you only get qualified, reliable tenants.",
+      desc: "Background checks, credit reports, income verification, and rental history - so you only get qualified, reliable tenants.",
     },
     {
       icon: DollarSign,
       title: "Rent Collection",
-      desc: "Automated online rent collection, late fee enforcement, and direct deposit to your account — on time, every month.",
+      desc: "Automated online rent collection, late fee enforcement, and direct deposit to your account - on time, every month.",
     },
     {
       icon: Wrench,
@@ -161,7 +161,7 @@ export default async function PropertyManagementCityPage(
     {
       icon: BarChart3,
       title: "Monthly Reporting",
-      desc: "Detailed owner statements, expense tracking, and year-end tax documents — everything you need to understand your investment.",
+      desc: "Detailed owner statements, expense tracking, and year-end tax documents - everything you need to understand your investment.",
     },
     {
       icon: Clock,
@@ -197,7 +197,7 @@ export default async function PropertyManagementCityPage(
               <ol className="flex items-center gap-2 text-xs text-neutral-500">
                 <li><Link href="/" className="hover:text-brand">Home</Link></li>
                 <li className="text-neutral-300">/</li>
-                <li className="text-neutral-800 font-medium">Property Management — {city.name}, {city.stateCode}</li>
+                <li className="text-neutral-800 font-medium">Property Management - {city.name}, {city.stateCode}</li>
               </ol>
             </nav>
 
@@ -209,7 +209,7 @@ export default async function PropertyManagementCityPage(
               Let Us Manage Your {city.name} Property
             </h1>
             <p className="text-neutral-600 text-lg mt-4 leading-relaxed">
-              From tenant screening to maintenance to monthly reporting — we handle everything so you can focus on growing your portfolio.
+              From tenant screening to maintenance to monthly reporting - we handle everything so you can focus on growing your portfolio.
             </p>
 
             <div className="flex flex-wrap gap-3 mt-8">
@@ -258,7 +258,7 @@ export default async function PropertyManagementCityPage(
               Full-Service Management for {city.name} Landlords
             </h2>
             <p className="text-neutral-500 text-sm mt-3 max-w-xl mx-auto">
-              One team. Every detail. You own the property — we run it.
+              One team. Every detail. You own the property - we run it.
             </p>
           </div>
 
@@ -283,7 +283,7 @@ export default async function PropertyManagementCityPage(
             Ready to stop self-managing?
           </h2>
           <p className="text-white/70 text-base mb-8 max-w-xl mx-auto">
-            Get a free rental market analysis for your {city.name} property. No commitment — just clarity on what your investment could earn.
+            Get a free rental market analysis for your {city.name} property. No commitment - just clarity on what your investment could earn.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button variant="accent" size="lg" asChild>
@@ -311,7 +311,7 @@ export default async function PropertyManagementCityPage(
           <div className="mb-10">
             <p className="text-brand text-xs font-semibold tracking-[0.3em] uppercase mb-3">Landlord Questions</p>
             <h2 className="font-serif text-3xl font-bold text-brand-dark">
-              Property Management in {city.name} — FAQ
+              Property Management in {city.name} - FAQ
             </h2>
           </div>
           <div className="space-y-3">

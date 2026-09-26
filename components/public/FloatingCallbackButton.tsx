@@ -102,14 +102,14 @@ export function FloatingCallbackButton() {
   }
 
   // On the full-screen search/map page the floating pill blocks content, so it's
-  // hidden there — the Call action lives in the bottom toolbar instead, which opens
+  // hidden there - the Call action lives in the bottom toolbar instead, which opens
   // this same modal via the `pfh:open-callback` event. The modal + listener stay
   // mounted on every page so that trigger always works.
   const showFloating = !alreadySent && !pathname.startsWith("/houses-for-rent") && !pathname.startsWith("/apply");
 
   return (
     <>
-      {/* Floating button — bottom-right, above mobile nav */}
+      {/* Floating button - bottom-right, above mobile nav */}
       {showFloating && (
         <button
           onClick={() => { trackClick("callback_open", { where: "floating" }); setOpen(true); }}
@@ -160,7 +160,7 @@ export function FloatingCallbackButton() {
             <div className="p-5">
               {!submitted ? (
                 <form onSubmit={handleSubmit} className="space-y-3" noValidate>
-                  {/* Phone — first, required */}
+                  {/* Phone - first, required */}
                   <div>
                     <label className="block text-[10px] font-black tracking-widest uppercase text-neutral-500 mb-1.5">
                       Phone Number <span className="text-red-400">*</span>

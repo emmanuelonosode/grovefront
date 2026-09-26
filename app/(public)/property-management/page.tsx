@@ -363,7 +363,7 @@ export default async function PropertyManagementPage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {/* Plain text links — no per-row icons. Rendering two inline SVGs
+            {/* Plain text links - no per-row icons. Rendering two inline SVGs
                 across all ~565 rows serialized ~1MB into this page. */}
             {allCities.map((city) => (
               <Link

@@ -43,9 +43,9 @@ export async function generateMetadata(
   const { city: rawSlug } = await params;
   const slug = decodeURIComponent(rawSlug).toLowerCase().replace(/\s+/g, "-");
 
-  // State hub (e.g. /rentals/georgia) — distinct from city pages.
+  // State hub (e.g. /rentals/georgia) - distinct from city pages.
   // Only states with actual inventory get a page; the other ~40 state slugs
-  // must 404 (they were rendering empty hubs — soft-404s in Search Console).
+  // must 404 (they were rendering empty hubs - soft-404s in Search Console).
   const stateInfo = getStateBySlug(slug);
   if (stateInfo) {
     const dbCities = await fetchAllCities().catch(() => []);
@@ -81,7 +81,7 @@ export async function generateMetadata(
             url: ogImage,
             width: 1200,
             height: 630,
-            alt: `Houses for rent in ${stateInfo.name} — Prime Family Housing`,
+            alt: `Houses for rent in ${stateInfo.name} - Prime Family Housing`,
           },
         ],
       },
@@ -164,7 +164,7 @@ const TRUST_BADGES = [
 /* ── Market stats ───────────────────────────────────────────────────── */
 
 function MarketStats({ city }: { city: CityData }) {
-  // Generic (DB-derived) cities have no population figure — show a real
+  // Generic (DB-derived) cities have no population figure - show a real
   // inventory stat instead of the old "Metro Pop. N/A".
   const beds = city.stats?.bedrooms
     ? Object.keys(city.stats.bedrooms).map(Number).sort((a, b) => a - b)
@@ -247,7 +247,7 @@ export default async function CityRentalsPage(
     );
   }
 
-  // Always fetch live city stats (cached 1h) — generic cities are built from
+  // Always fetch live city stats (cached 1h) - generic cities are built from
   // them, curated cities carry them for FAQ/stat blocks, and the sibling-city
   // links below need the full list either way.
   const dbCities = await fetchAllCities();
@@ -268,7 +268,7 @@ export default async function CityRentalsPage(
   const properties = data.results.map(toPropertyCardShape);
   const totalCount = data.count;
 
-  // Generic DB-derived city pages are pure listing pages — with zero listings
+  // Generic DB-derived city pages are pure listing pages - with zero listings
   // they're thin soft-404s. Curated CITIES pages keep rendering (rich content).
   if (totalCount === 0 && !isCurated) notFound();
 
@@ -319,7 +319,7 @@ export default async function CityRentalsPage(
     ],
   };
 
-  // Single FAQ source for both the JSON-LD and the visible section — Google
+  // Single FAQ source for both the JSON-LD and the visible section - Google
   // requires FAQPage markup to match on-page content.
   const faqs = buildCityFaqs(city);
   const faqSchema = {
@@ -338,7 +338,7 @@ export default async function CityRentalsPage(
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faqSchema) }} />
 
-      {/* ── HERO — full-bleed photo, forest gradient ─────────────── */}
+      {/* ── HERO - full-bleed photo, forest gradient ─────────────── */}
       <section className="relative min-h-[520px] lg:min-h-[600px] flex items-end overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
@@ -388,7 +388,7 @@ export default async function CityRentalsPage(
           </div>
 
           <p className="text-earth-beige text-[17px] sm:text-[18px] leading-[1.55] max-w-2xl mt-4 drop-shadow-md hero-animate" style={{ animationDelay: "160ms" }}>
-            {city.tagline} Browse affordable, move-in ready houses — decisions in 24 hours.
+            {city.tagline} Browse affordable, move-in ready houses - decisions in 24 hours.
           </p>
 
           <div className="flex flex-wrap gap-3 mt-8 hero-animate" style={{ animationDelay: "240ms" }}>
@@ -403,7 +403,7 @@ export default async function CityRentalsPage(
               href="/apply"
               className="inline-flex items-center gap-2 border border-white/50 text-white text-[15px] font-semibold px-7 py-3.5 rounded-full hover:bg-white/10 hover:border-white transition-colors active:scale-95"
             >
-              Apply Now — 10 Minutes
+              Apply Now - 10 Minutes
             </Link>
           </div>
         </div>
@@ -534,7 +534,7 @@ export default async function CityRentalsPage(
             New {city.name} listings drop weekly
           </h2>
           <p className="text-white/70 text-sm leading-relaxed mb-8 max-w-sm mx-auto">
-            Leave your details and we&apos;ll notify you the moment a home matching your needs becomes available — before it goes public.
+            Leave your details and we&apos;ll notify you the moment a home matching your needs becomes available - before it goes public.
           </p>
           <CityLeadCapture cityName={city.name} />
           <div className="flex flex-wrap justify-center items-center gap-4 mt-6">
@@ -554,7 +554,7 @@ export default async function CityRentalsPage(
         </div>
       </section>
 
-      {/* ── SEO CONTENT BLOCK — split layout ─────────────────────── */}
+      {/* ── SEO CONTENT BLOCK - split layout ─────────────────────── */}
       <section className="bg-white border-t border-neutral-100">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-20 lg:py-28">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-start">
@@ -589,7 +589,7 @@ export default async function CityRentalsPage(
               <div className="relative aspect-[4/3] rounded-sm overflow-hidden bg-neutral-100">
                 <Image
                   src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900&q=80"
-                  alt={`Affordable home interior — ${city.name}`}
+                  alt={`Affordable home interior - ${city.name}`}
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"
@@ -615,7 +615,7 @@ export default async function CityRentalsPage(
           <div className="mb-12">
             <p className="text-sage-soft text-xs font-semibold tracking-[0.3em] uppercase mb-4">Common Questions</p>
             <h2 className="font-serif text-4xl font-bold leading-tight">
-              Renting in {city.name} — FAQ
+              Renting in {city.name} - FAQ
             </h2>
           </div>
           <div className="space-y-3">
@@ -640,7 +640,7 @@ export default async function CityRentalsPage(
 
       {/* ── MORE CITIES IN THIS STATE ────────────────────────────── */}
       {/* Same-state sibling links build the topical cluster Google needs to
-          rank every city in a state — not just the 8 curated ones. */}
+          rank every city in a state - not just the 8 curated ones. */}
       {siblingCities.length > 0 && (
         <section className="bg-white border-t border-neutral-100">
           <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16 lg:py-20">

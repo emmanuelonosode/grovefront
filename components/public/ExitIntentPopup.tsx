@@ -15,7 +15,7 @@ const POPUP_TS_KEY   = "pfh_popup_ts";        // 24h cross-session cooldown
 const SHOWN_KEY      = "pfh_popup_shown";     // hard once-per-session guard
 const LEAD_KEY       = "pfh_lead_captured";   // set by any lead form
 const COOLDOWN_MS    = 24 * 60 * 60 * 1000;
-const TIMER_DELAY_MS = 30_000;                    // calm — only after real browsing
+const TIMER_DELAY_MS = 30_000;                    // calm - only after real browsing
 
 const INPUT_CLS =
   "w-full h-[50px] rounded-xl border border-neutral-200 bg-neutral-50/60 pl-11 pr-4 " +
@@ -36,7 +36,7 @@ export function ExitIntentPopup() {
 
   const phoneInputRef = useRef<HTMLInputElement>(null);
 
-  // Trigger — fires at most ONCE. Re-arms on navigation only until it has shown.
+  // Trigger - fires at most ONCE. Re-arms on navigation only until it has shown.
   useEffect(() => {
     const suppressed =
       pathname.startsWith("/apply") ||
@@ -51,7 +51,7 @@ export function ExitIntentPopup() {
     const show = () => {
       if (fired) return;
       fired = true;
-      // Mark seen the moment it appears — closing without submitting still counts,
+      // Mark seen the moment it appears - closing without submitting still counts,
       // so it never re-pops this session or for the next 24h.
       sessionStorage.setItem(SHOWN_KEY, "true");
       localStorage.setItem(POPUP_TS_KEY, String(Date.now()));
@@ -118,7 +118,7 @@ export function ExitIntentPopup() {
       trackEvent("generate_lead", { source: "exit_popup", type: "callback", city });
       setSubmitted(true);
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : "Something went wrong — please try again.");
+      setErrorMsg(err instanceof Error ? err.message : "Something went wrong - please try again.");
     } finally {
       setLoading(false);
     }
@@ -151,7 +151,7 @@ export function ExitIntentPopup() {
 
         {!submitted ? (
           <>
-            {/* Header — warm, calm, centered */}
+            {/* Header - warm, calm, centered */}
             <div className="px-7 pt-10 pb-5 text-center">
               <div className="mx-auto w-14 h-14 rounded-xl bg-brand-light ring-1 ring-brand/10 flex items-center justify-center mb-4">
                 <PhoneCall size={22} className="text-brand" />
@@ -164,7 +164,7 @@ export function ExitIntentPopup() {
                 Let an agent do<br />the searching.
               </h3>
               <p className="text-[13.5px] text-neutral-500 mt-2.5 leading-relaxed max-w-[19rem] mx-auto">
-                Leave your number and a local agent calls within the hour with homes that fit — no endless scrolling.
+                Leave your number and a local agent calls within the hour with homes that fit - no endless scrolling.
               </p>
             </div>
 

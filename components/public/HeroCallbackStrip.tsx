@@ -49,7 +49,7 @@ export function HeroCallbackStrip() {
       trackEvent("generate_lead", { source: "hero_strip", city });
       setDone(true);
     } catch {
-      setError("Something went wrong — try again.");
+      setError("Something went wrong - try again.");
     } finally {
       setLoading(false);
     }
@@ -60,7 +60,7 @@ export function HeroCallbackStrip() {
   return (
     <div className="mt-4 flex flex-col items-center gap-2">
       <p className="text-white/60 text-xs tracking-wide">
-        Or let us call you — a real agent within 1 hour
+        Or let us call you - a real agent within 1 hour
       </p>
       {!done ? (
         <form onSubmit={handleSubmit} className="flex items-center gap-2 w-full max-w-sm">

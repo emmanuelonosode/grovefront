@@ -9,7 +9,7 @@ import { jsonLdString } from "@/lib/json-ld";
 export const metadata: Metadata = {
   title: "Careers at Prime Family Housing | Join Our Team",
   description:
-    "Build a meaningful career helping families find affordable homes. Join PrimeFamilyHousing — we're hiring real estate agents, leasing consultants, property managers, and more across Clearfield and beyond.",
+    "Build a meaningful career helping families find affordable homes. Join PrimeFamilyHousing - we're hiring real estate agents, leasing consultants, property managers, and more across Clearfield and beyond.",
   keywords: [
     "real estate careers Clearfield",
     "real estate agent jobs Clearfield",
@@ -35,15 +35,15 @@ const openRoles = [
     id: "remote-listing-specialist",
     title: "Remote Listing & Client Communication Specialist",
     type: "Full-Time · Remote",
-    location: "Remote — US (all time zones)",
+    location: "Remote - US (all time zones)",
     department: "Client Services",
     featured: true,
     urgent: true,
     description:
-      "We are actively hiring for this role and need someone who can start quickly. You will manage property listings across all 12 of our markets — writing descriptions, updating availability, coordinating photos — while handling all inbound client and tenant inquiries via email, phone, and our portal. This is a high-autonomy, fully remote position that sits at the center of everything we do. If you are organized, a strong communicator, and comfortable working independently without micromanagement, this role was built for you.",
+      "We are actively hiring for this role and need someone who can start quickly. You will manage property listings across all 12 of our markets - writing descriptions, updating availability, coordinating photos - while handling all inbound client and tenant inquiries via email, phone, and our portal. This is a high-autonomy, fully remote position that sits at the center of everything we do. If you are organized, a strong communicator, and comfortable working independently without micromanagement, this role was built for you.",
     requirements: [
       "2+ years in a remote client-facing role (real estate, property management, or customer success preferred)",
-      "Excellent written communication — you write clearly and respond quickly",
+      "Excellent written communication - you write clearly and respond quickly",
       "Comfortable managing a high volume of inbound inquiries across multiple channels",
       "Experience with CRM software or property management platforms",
       "Highly organized with strong attention to listing accuracy and detail",
@@ -54,7 +54,7 @@ const openRoles = [
       "Competitive base salary + performance bonuses",
       "Full health and dental benefits",
       "Home office equipment stipend",
-      "Direct access to senior leadership — no corporate layers",
+      "Direct access to senior leadership - no corporate layers",
     ],
   },
   {
@@ -135,7 +135,7 @@ const openRoles = [
       "Drive our online presence and tenant acquisition through content, SEO, social media, and digital campaigns. You'll write property descriptions, manage our blog, create social content, and track what's working.",
     requirements: [
       "2+ years of digital marketing experience",
-      "Strong copywriting skills — you can write for real people, not robots",
+      "Strong copywriting skills - you can write for real people, not robots",
       "Experience with SEO fundamentals and content strategy",
       "Proficiency with social media platforms and scheduling tools",
       "Real estate or property management experience is a big plus",
@@ -181,7 +181,7 @@ const openRoles = [
       "2+ years in a customer-facing role",
       "Experience with conflict resolution",
       "Comfortable working in a fast-paced, multi-tasking environment",
-      "Strong written communication — email and tenant portal responses",
+      "Strong written communication - email and tenant portal responses",
       "Property management software experience a plus",
     ],
     benefits: [
@@ -204,13 +204,13 @@ const values = [
     num: "02",
     title: "Honest Always",
     description:
-      "No hidden fees, no jargon, no runaround. We treat every tenant the way we'd want to be treated — with transparency and respect.",
+      "No hidden fees, no jargon, no runaround. We treat every tenant the way we'd want to be treated - with transparency and respect.",
   },
   {
     num: "03",
     title: "Grow With Us",
     description:
-      "We invest in our team's development. License sponsorship, training stipends, clear promotion paths — we want you to advance.",
+      "We invest in our team's development. License sponsorship, training stipends, clear promotion paths - we want you to advance.",
   },
   {
     num: "04",
@@ -335,7 +335,7 @@ export default function CareersPage() {
         />
       ))}
 
-      {/* ── HERO — clean photo, no overlay; text on a solid card ─────────── */}
+      {/* ── HERO - clean photo, no overlay; text on a solid card ─────────── */}
       <section className="relative min-h-[580px] lg:min-h-[640px] flex flex-col justify-end overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1600&q=80"
@@ -651,7 +651,7 @@ export default function CareersPage() {
             </h2>
             <p className="text-neutral-500 text-sm leading-relaxed mb-14 max-w-sm">
               No portals, no 12-page forms. Send your resume and a short note
-              about why you want to work with us — that&apos;s it. We keep
+              about why you want to work with us - that&apos;s it. We keep
               hiring human.
             </p>
 
@@ -661,7 +661,7 @@ export default function CareersPage() {
                   step: "01",
                   img: "/illustrations/spot-clipboard.png",
                   title: "Fill In the Form",
-                  desc: "Open any role, hit Apply, fill in a short form — name, contact, a few questions, and a brief note. No cover letter required.",
+                  desc: "Open any role, hit Apply, fill in a short form - name, contact, a few questions, and a brief note. No cover letter required.",
                 },
                 {
                   step: "02",
@@ -712,7 +712,7 @@ export default function CareersPage() {
               <p className="text-neutral-500 text-sm leading-relaxed mb-8">
                 Whether you&apos;re a seasoned real estate professional or just
                 starting out, we&apos;d love a conversation. Send us your resume
-                — no cover letter required.
+                - no cover letter required.
               </p>
               <a
                 href="mailto:career@primefamilyhousing.com"

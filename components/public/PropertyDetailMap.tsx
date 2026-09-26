@@ -113,7 +113,7 @@ function addMarkers(
   nearby: DetailMarker[],
   markersRef: MutableRefObject<any[]>,
 ) {
-  // Current property — house icon, always opens popup
+  // Current property - house icon, always opens popup
   if (validCoord(current)) {
     const m = L.marker([current.lat, current.lng], {
       icon: makeCurrentIcon(L),
@@ -125,7 +125,7 @@ function addMarkers(
     markersRef.current.push(m);
   }
 
-  // Nearby — price bubbles, hover to open popup
+  // Nearby - price bubbles, hover to open popup
   nearby.filter(validCoord).forEach((nb) => {
     const mk = L.marker([nb.lat, nb.lng], {
       icon: makeNearbyIcon(L, nb.price, nb.price_label),
@@ -180,7 +180,7 @@ export function PropertyDetailMap({ current, nearby, satellite }: Props) {
         ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
         : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
       const attribution = satellite
-        ? "Tiles &copy; Esri &mdash; Source: Esri"
+        ? "Tiles &copy; Esri  -  Source: Esri"
         : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
       L.tileLayer(tileUrl, {

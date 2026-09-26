@@ -272,7 +272,7 @@ export default function SettingsPage() {
                 <div className="bg-surface-container-low rounded-xl px-4 py-3 flex items-center gap-2">
                   <Shield size={13} className="text-outline-variant" />
                   <span className="text-[15px] text-on-surface-variant">
-                    {roleLabel[user?.role ?? ""] ?? user?.role ?? "—"}
+                    {roleLabel[user?.role ?? ""] ?? user?.role ?? "-"}
                   </span>
                 </div>
               </div>
@@ -363,7 +363,7 @@ export default function SettingsPage() {
 
         </div>
 
-        {/* Contact info card — side column */}
+        {/* Contact info card - side column */}
         <div className="bg-forest-deep rounded-xl shadow-sm p-6">
           <p className="text-[16px] leading-6 text-on-primary/80 mb-1">Need to update your email?</p>
           <h3 className="font-serif font-semibold text-on-primary text-[24px] leading-8 mb-4">Our Team is Ready.</h3>

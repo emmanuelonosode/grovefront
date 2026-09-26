@@ -68,7 +68,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
           </p>
         </div>
 
-        {/* User block — links to settings */}
+        {/* User block - links to settings */}
         <Link
           href="/portal/settings"
           className="flex items-center gap-4 mb-8 pb-6 border-b border-outline-variant px-2 group"

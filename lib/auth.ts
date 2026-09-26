@@ -38,7 +38,7 @@ export function saveTokens(tokens: AuthTokens) {
   localStorage.setItem("access_token", tokens.access);
   localStorage.setItem("refresh_token", tokens.refresh);
   localStorage.setItem("auth_user", JSON.stringify(tokens.user));
-  setCookie("access_token", tokens.access, 4 * 60 * 60); // 4 hours — matches JWT expiry
+  setCookie("access_token", tokens.access, 4 * 60 * 60); // 4 hours - matches JWT expiry
   
   // Track login to map fingerprint to user
   trackLogin();

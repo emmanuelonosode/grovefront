@@ -53,13 +53,13 @@ export function truncate(str: string, length: number): string {
 
 /**
  * Downscale a listing photo URL for card/thumbnail contexts. Images arrive
- * sized for hero display (1500px+) but cards render at ~200–500px — with
+ * sized for hero display (1500px+) but cards render at ~200–500px - with
  * `images.unoptimized` in next.config, the full-size file ships to the
  * browser. Only URL patterns we recognize are rewritten; anything else is
  * returned untouched so an upstream format change can never break images.
  *
  * Listing photos are now served from our own /media/properties/... proxy, which
- * caches one canonical size and takes no width parameter — so there is nothing
+ * caches one canonical size and takes no width parameter - so there is nothing
  * to rewrite for them and they fall through unchanged. (The branch that
  * rewrote the syndication CDN's transform segment was removed with the URLs
  * themselves; resizing those would now mean teaching the proxy to accept a
@@ -76,7 +76,7 @@ export function toCardImageUrl(url: string): string {
 /**
  * Downscale + re-encode an image File in the browser before upload. Phone
  * cameras produce 5–12MB photos that blow past proxy body limits
- * (nginx client_max_body_size defaults to 1MB) — a dropped connection surfaces
+ * (nginx client_max_body_size defaults to 1MB) - a dropped connection surfaces
  * in the browser as an opaque "Load failed". Shrinking to ~maxDim px JPEG puts
  * a government-ID photo well under 1MB while staying readable.
  *
@@ -102,7 +102,7 @@ export async function compressImageFile(
     el.onerror = () => reject(new Error("decode-failed"));
     el.src = dataUrl;
   }).catch(() => null);
-  if (!img) return file; // browser couldn't decode (e.g. HEIC) — send original
+  if (!img) return file; // browser couldn't decode (e.g. HEIC) - send original
 
   const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
   const w = Math.round(img.width * scale);

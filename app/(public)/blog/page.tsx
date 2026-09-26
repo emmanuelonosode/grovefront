@@ -12,7 +12,7 @@ export const metadata = {
     "Free renter guides, moving tips, budgeting advice, lease explainers, and housing market updates from PrimeFamilyHousing. Written for real families finding affordable houses for rent in Atlanta, Charlotte, Houston, Dallas, Nashville and more.",
   alternates: { canonical: "https://primefamilyhousing.com/blog" },
   openGraph: {
-    title: "Renter's Guide & Housing Tips — Prime Family Housing",
+    title: "Renter's Guide & Housing Tips - Prime Family Housing",
     description: "Free renter guides and housing tips for real families.",
     type: "website",
     url: "https://primefamilyhousing.com/blog",
@@ -21,7 +21,7 @@ export const metadata = {
 
 const CATEGORIES = [
   { label: "All",             value: "" },
-  // Mirrors PostCategory in groveback/apps/blog/models.py — this list is hardcoded, so a
+  // Mirrors PostCategory in groveback/apps/blog/models.py - this list is hardcoded, so a
   // category added on the backend stays unfilterable here until it's added below too.
   { label: "Renter's Guide",  value: "RENTER_GUIDE" },
   { label: "Market Analysis", value: "MARKET_ANALYSIS" },
@@ -77,7 +77,7 @@ const TOPIC_GUIDES = [
 const RENTER_FAQS = [
   {
     q: "How much income do I need to rent a home?",
-    a: "Most landlords require gross monthly income to be at least 3× the monthly rent. For example, a $1,200/mo rental typically requires $3,600/mo gross income. We can help you find properties that match your actual income — just use our search filters.",
+    a: "Most landlords require gross monthly income to be at least 3× the monthly rent. For example, a $1,200/mo rental typically requires $3,600/mo gross income. We can help you find properties that match your actual income - just use our search filters.",
   },
   {
     q: "Can I rent with bad credit or no rental history?",
@@ -85,7 +85,7 @@ const RENTER_FAQS = [
   },
   {
     q: "What's usually included in the rent?",
-    a: "It varies by property. Some of our listings include water/sewer, lawn care, or even WiFi. We list what's included on every property page. Always ask us before applying if you need clarity — we'll get a direct answer from the landlord.",
+    a: "It varies by property. Some of our listings include water/sewer, lawn care, or even WiFi. We list what's included on every property page. Always ask us before applying if you need clarity - we'll get a direct answer from the landlord.",
   },
   {
     q: "How long does the application and approval process take?",
@@ -93,7 +93,7 @@ const RENTER_FAQS = [
   },
   {
     q: "What fees do I need to pay upfront?",
-    a: "Typically a security deposit (usually 1–2 months rent) and the first month's rent. Some properties charge a pet deposit or non-refundable admin fee. We clearly list all fees on every listing — there are no surprises after you apply.",
+    a: "Typically a security deposit (usually 1–2 months rent) and the first month's rent. Some properties charge a pet deposit or non-refundable admin fee. We clearly list all fees on every listing - there are no surprises after you apply.",
   },
   {
     q: "Are your homes available for Section 8 / Housing Choice Vouchers?",
@@ -119,7 +119,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
     const data = await fetchPosts(activeCategory ? { category: activeCategory } : undefined);
     posts = data.results;
   } catch {
-    // API offline in dev — graceful empty state
+    // API offline in dev - graceful empty state
   }
 
   const featured = posts.find((p) => p.is_featured);
@@ -167,7 +167,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
               Renter&apos;s Guide &amp; Housing Tips
             </h1>
             <p className="text-neutral-600 text-lg leading-relaxed">
-              Practical advice written by our team for real families — budgeting guides, moving
+              Practical advice written by our team for real families - budgeting guides, moving
               checklists, lease explainers, and local market updates.
             </p>
           </div>
@@ -309,7 +309,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
           </div>
         )}
 
-        {/* Empty state — illustrated */}
+        {/* Empty state - illustrated */}
         {posts.length === 0 && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 border border-neutral-100 rounded-sm overflow-hidden">
             <div className="flex items-center justify-center min-h-[280px] bg-[#c1ecd4] p-12">
@@ -324,7 +324,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
             <div className="bg-white p-10 lg:p-14 flex flex-col justify-center">
               <h3 className="font-serif text-2xl font-bold text-brand-dark mb-3">New guides coming soon.</h3>
               <p className="text-neutral-500 text-sm leading-relaxed mb-8">
-                Our team is writing in-depth renter guides for every city we serve — from budgeting
+                Our team is writing in-depth renter guides for every city we serve - from budgeting
                 basics to neighbourhood-level market reports. Check back soon, or ask us directly.
               </p>
               <Link href="/contact" className="inline-flex items-center gap-2 bg-brand-dark text-white text-sm font-semibold px-7 py-3.5 rounded-sm hover:bg-brand transition-colors self-start">
@@ -365,7 +365,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
         </div>
       </section>
 
-      {/* ── NEWSLETTER CTA — split layout ────────────────────────────────── */}
+      {/* ── NEWSLETTER CTA - split layout ────────────────────────────────── */}
       <section className="border-t border-neutral-100">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2">
@@ -386,7 +386,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
                 Get Housing Tips in Your Inbox
               </h2>
               <p className="text-earth-beige/85 text-sm leading-relaxed mb-8">
-                Monthly renter guides, market updates, and new listing alerts — no spam,
+                Monthly renter guides, market updates, and new listing alerts - no spam,
                 unsubscribe any time. Join 3,000+ renters already on our list.
               </p>
               <Link

@@ -1,8 +1,8 @@
 /**
- * PrimeFamilyHousing — official brand mark (house + tree over a hill swoosh).
+ * PrimeFamilyHousing - official brand mark (house + tree over a hill swoosh).
  *
  * Renders the real vector logo from /public/brand as an <img> (the browser
- * rasterizes SVG crisply at any size — no next/image SVG config needed).
+ * rasterizes SVG crisply at any size - no next/image SVG config needed).
  *
  * variant="on-white" → forest-green (nav on a light/solid background)
  * variant="on-dark"  → beige        (footer, transparent hero nav)
@@ -36,7 +36,7 @@ export function BrandLogo({
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={src}
-      alt="PrimeFamilyHousing — Great Places to Call Home"
+      alt="PrimeFamilyHousing - Great Places to Call Home"
       width={width}
       height={height}
       style={{ height, width: "auto", display: "block" }}

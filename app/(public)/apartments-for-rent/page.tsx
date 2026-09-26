@@ -29,10 +29,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const live = count > 0;
   const title = live
     ? "Apartments for Rent | Move-In Ready Rentals | PrimeFamilyHousing"
-    : "Apartments for Rent — Coming Soon | PrimeFamilyHousing";
+    : "Apartments for Rent - Coming Soon | PrimeFamilyHousing";
   const description = live
-    ? "Browse affordable apartments for rent — move-in ready, transparent pricing, no hidden fees. Apply online and get a decision in 24 hours."
-    : "Affordable apartments for rent are coming soon. Get notified the moment new apartment listings go live in your city — no spam, unsubscribe anytime.";
+    ? "Browse affordable apartments for rent - move-in ready, transparent pricing, no hidden fees. Apply online and get a decision in 24 hours."
+    : "Affordable apartments for rent are coming soon. Get notified the moment new apartment listings go live in your city - no spam, unsubscribe anytime.";
   return {
     title,
     description,
@@ -54,7 +54,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const FAQS = [
   {
     q: "Do you have apartments for rent?",
-    a: "We're expanding our rental inventory to include apartments. Add yourself to the notify list and we'll email you the moment apartment listings go live in your city — alongside our move-in ready rental homes.",
+    a: "We're expanding our rental inventory to include apartments. Add yourself to the notify list and we'll email you the moment apartment listings go live in your city - alongside our move-in ready rental homes.",
   },
   {
     q: "How do I apply for an apartment?",
@@ -71,7 +71,7 @@ export default async function ApartmentsPage() {
   const live = count > 0;
 
   const dbCities = await fetchAllCities().catch(() => []);
-  // Slim projection — the directory only needs name/photo/count.
+  // Slim projection - the directory only needs name/photo/count.
   const mergedCities = toDirectoryCities(dbCities);
   const cityCounts: Record<string, number> = Object.fromEntries(dbCities.map((c) => [c.slug, c.count]));
 
@@ -129,8 +129,8 @@ export default async function ApartmentsPage() {
           </h1>
           <p className="text-earth-beige/85 text-lg max-w-2xl mt-4 leading-relaxed">
             {live
-              ? "Browse affordable, move-in ready apartments — transparent pricing, no hidden fees, and a decision within 24 hours."
-              : "Apartments are coming soon to PrimeFamilyHousing In the meantime, explore our affordable, move-in ready rental homes — or get notified the moment apartments go live in your city."}
+              ? "Browse affordable, move-in ready apartments - transparent pricing, no hidden fees, and a decision within 24 hours."
+              : "Apartments are coming soon to PrimeFamilyHousing In the meantime, explore our affordable, move-in ready rental homes - or get notified the moment apartments go live in your city."}
           </p>
           <div className="flex flex-wrap gap-3 mt-8">
             {live ? (
@@ -143,7 +143,7 @@ export default async function ApartmentsPage() {
               </Button>
             )}
             <Button variant="outline-white" size="lg" asChild>
-              <Link href="/apply">Apply Now — 10 Minutes</Link>
+              <Link href="/apply">Apply Now - 10 Minutes</Link>
             </Button>
           </div>
           <div className="flex flex-wrap gap-x-6 gap-y-2 mt-10">
@@ -190,7 +190,7 @@ export default async function ApartmentsPage() {
               Get notified when apartments go live
             </h2>
             <p className="text-white/70 text-sm leading-relaxed mb-8 max-w-sm mx-auto">
-              Leave your details and we&apos;ll email you the moment apartment listings open in your area — before they go public.
+              Leave your details and we&apos;ll email you the moment apartment listings open in your area - before they go public.
             </p>
             <CityLeadCapture cityName="Apartments" />
           </div>
@@ -206,7 +206,7 @@ export default async function ApartmentsPage() {
           <div className="space-y-5 text-neutral-600 text-[15px] leading-relaxed">
             <p>
               PrimeFamilyHousing is growing its rental selection to include apartments alongside our
-              affordable, move-in ready houses. Every listing — apartment or home — shows transparent pricing,
+              affordable, move-in ready houses. Every listing - apartment or home - shows transparent pricing,
               photos, and pet policy upfront, with no hidden administrative or processing fees.
             </p>
             <p>
@@ -228,7 +228,7 @@ export default async function ApartmentsPage() {
       <section className="bg-white py-16 lg:py-20 px-6">
         <div className="max-w-3xl mx-auto">
           <p className="text-brand text-xs font-semibold tracking-[0.3em] uppercase mb-3">Common Questions</p>
-          <h2 className="font-serif text-3xl lg:text-4xl font-bold text-brand-dark leading-tight mb-10">Apartments — FAQ</h2>
+          <h2 className="font-serif text-3xl lg:text-4xl font-bold text-brand-dark leading-tight mb-10">Apartments - FAQ</h2>
           <div className="space-y-3">
             {FAQS.map((f) => (
               <details key={f.q} className="group border border-neutral-200 rounded-sm overflow-hidden">
@@ -254,7 +254,7 @@ export default async function ApartmentsPage() {
         cities={mergedCities}
         counts={cityCounts}
         heading="Rentals by city & state"
-        intro="Browse move-in ready rentals in every city we serve. Tap a location to see available homes — with apartments rolling out soon."
+        intro="Browse move-in ready rentals in every city we serve. Tap a location to see available homes - with apartments rolling out soon."
       />
     </div>
   );

@@ -530,7 +530,7 @@ export function ApplicationFeePayment({
           </label>
 
           {isBankTransfer ? (
-            /* Bank Transfer — dark navy header + stacked rows with Copy buttons */
+            /* Bank Transfer - dark navy header + stacked rows with Copy buttons */
             <div className="rounded-2xl overflow-hidden border border-[#D0D5DD] shadow-sm">
               <div className="bg-[#1A3557] px-4 py-4 flex items-center gap-3">
                 <div className="w-11 h-11 rounded-xl bg-white p-1 overflow-hidden shrink-0 flex items-center justify-center">
@@ -600,7 +600,7 @@ export function ApplicationFeePayment({
               </div>
             </div>
           ) : (
-            /* P2P (Venmo, Cash App, PayPal, Chime) — dark forest container */
+            /* P2P (Venmo, Cash App, PayPal, Chime) - dark forest container */
             <div className="bg-[#081C15] rounded-2xl p-5 text-white shadow-sm">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">

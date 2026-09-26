@@ -102,7 +102,7 @@ export default async function BlogPostPage({ params }: Props) {
     <div className="pt-20">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(articleSchema) }} />
-      {/* Hero — clean white article header; featured photo shown full-color below */}
+      {/* Hero - clean white article header; featured photo shown full-color below */}
       <div className="bg-white border-b border-neutral-100">
         <div className="max-w-4xl mx-auto px-6 lg:px-8 pt-12 pb-10">
           <Link

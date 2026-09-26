@@ -101,10 +101,10 @@ function SplitScreenLogin() {
           <MarqueeRow direction="right" items={HOUSE_IMAGES} speed="50s" />
         </div>
 
-        {/* Branding — logo + tagline only, no glass */}
+        {/* Branding - logo + tagline only, no glass */}
         <div className="absolute inset-0 z-20 flex flex-col justify-center items-center pointer-events-none">
           {/* Beige brand variant, not the green one force-whitened with
-              brightness-0/invert — that filter flattened the mark to pure white and
+              brightness-0/invert - that filter flattened the mark to pure white and
               threw away the two-tone artwork. */}
           <div className="mb-4">
             <BrandLogo variant="on-dark" height={48} />

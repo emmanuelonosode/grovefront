@@ -99,7 +99,7 @@ export function TourBookingForm({ propertySlug, propertyTitle, propertyId, prope
     if (!idFront) return setError("Please add a photo of your ID.");
     setLoading(true); setError("");
     try {
-      // Shrink camera photos in the browser first — a raw phone image (5–12MB)
+      // Shrink camera photos in the browser first - a raw phone image (5–12MB)
       // exceeds proxy body limits and the upload dies as an opaque "Load failed".
       const [front, back] = await Promise.all([
         compressImageFile(idFront),
@@ -124,9 +124,9 @@ export function TourBookingForm({ propertySlug, propertyTitle, propertyId, prope
           method: "POST", body: fd,
         });
       } catch {
-        // fetch() itself rejected — network drop, offline, or the request body
+        // fetch() itself rejected - network drop, offline, or the request body
         // was refused before a response ("Load failed" in Safari).
-        throw new Error("Upload failed — please check your connection and try again with a clear, well-lit photo.");
+        throw new Error("Upload failed - please check your connection and try again with a clear, well-lit photo.");
       }
       if (!res.ok) {
         const data = await res.json().catch(() => null);
@@ -253,7 +253,7 @@ export function TourBookingForm({ propertySlug, propertyTitle, propertyId, prope
                 {loading ? <Loader2 size={18} className="animate-spin" /> : "Continue to verify ID"}
               </button>
             </div>
-            <p className="text-[11px] text-center text-neutral-400">Your request is saved now — verify your ID next to confirm.</p>
+            <p className="text-[11px] text-center text-neutral-400">Your request is saved now - verify your ID next to confirm.</p>
           </form>
         )}
 

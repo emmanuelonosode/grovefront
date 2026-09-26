@@ -145,7 +145,7 @@ export function PropertyEligibilityDrawer({
           move_in_timeline: moveInTimeline || undefined,
           preferred_contact: preferredContact || undefined,
           preferred_location: [loc1.city, loc1.region].filter(Boolean).join(", ") || undefined,
-          message: `Started eligibility check for "${propertyTitle}" — contact captured at step 1.` + getDeviceContext(),
+          message: `Started eligibility check for "${propertyTitle}" - contact captured at step 1.` + getDeviceContext(),
           detected_city: propertyCity || getBestKnownCity() || undefined,
           referral_code: getStoredReferralCode() || undefined,
           ...getStoredUTMs(),
@@ -386,7 +386,7 @@ export function PropertyEligibilityDrawer({
                     </h3>
                     <p className="text-sm text-neutral-500 mt-2 leading-relaxed">
                       Your income of <strong className="text-brand-dark font-semibold">${parsedIncome.toLocaleString()}/mo</strong> is{" "}
-                      <strong className="text-emerald-700 font-bold">{(parsedIncome / propertyPrice).toFixed(1)}×</strong> the rent — well above the 3× guideline.
+                      <strong className="text-emerald-700 font-bold">{(parsedIncome / propertyPrice).toFixed(1)}×</strong> the rent - well above the 3× guideline.
                     </p>
                   </div>
 
@@ -458,7 +458,7 @@ export function PropertyEligibilityDrawer({
                     </ul>
                   </div>
 
-                  {/* Alert subscription — clean teal card, no purple */}
+                  {/* Alert subscription - clean teal card, no purple */}
                   <div className="border border-brand/20 rounded-xl overflow-hidden">
                     <div className="bg-brand/5 px-4 py-3 flex items-center gap-3 border-b border-brand/10">
                       <div className="w-8 h-8 rounded-xl bg-brand/10 flex items-center justify-center shrink-0">
@@ -491,7 +491,7 @@ export function PropertyEligibilityDrawer({
                       ) : (
                         <div className="flex items-center justify-center gap-1.5 h-10 bg-emerald-50 border border-emerald-100 rounded-xl text-[11px] font-bold text-emerald-700">
                           <CheckCircle2 size={13} className="text-emerald-500" />
-                          Alert Set — We&apos;ll Reach Out
+                          Alert Set - We&apos;ll Reach Out
                         </div>
                       )}
                     </div>
@@ -507,7 +507,7 @@ export function PropertyEligibilityDrawer({
                     onClick={onClose}
                     className="w-full flex items-center justify-center gap-2 bg-brand text-white font-bold py-4 rounded-xl hover:bg-brand-hover shadow-md shadow-brand/15 transition-all text-sm cursor-pointer"
                   >
-                    Apply Now — Fast Decision <ArrowRight size={15} />
+                    Apply Now - Fast Decision <ArrowRight size={15} />
                   </Link>
                 ) : (
                   <>
@@ -637,7 +637,7 @@ export function PropertyEligibilityDrawer({
                         />
                       </div>
                       <p className="text-[10px] text-neutral-400 mt-2 leading-relaxed">
-                        Before tax — includes salary, child support, vouchers, or other assistance.
+                        Before tax - includes salary, child support, vouchers, or other assistance.
                       </p>
                     </div>
 
@@ -674,7 +674,7 @@ export function PropertyEligibilityDrawer({
                           : <AlertTriangle size={14} className="text-amber-600 shrink-0" />
                         }
                         <span>
-                          Required: <strong>${(propertyPrice * 3).toLocaleString()}/mo</strong> —{" "}
+                          Required: <strong>${(propertyPrice * 3).toLocaleString()}/mo</strong> - {" "}
                           {passesIncomeRatio ? "Your income qualifies" : `You need $${(propertyPrice * 3 - parsedIncome).toLocaleString()} more`}
                         </span>
                       </div>
@@ -690,7 +690,7 @@ export function PropertyEligibilityDrawer({
                           className="w-10 h-10 rounded-xl border-2 border-neutral-200 text-neutral-500 font-bold text-lg hover:border-neutral-300 hover:bg-neutral-50 transition-all flex items-center justify-center cursor-pointer"
                         >−</button>
                         <div className="flex-1 h-10 border border-neutral-200 rounded-xl flex items-center justify-center text-sm font-bold text-brand-dark">
-                          {occupants || "—"}
+                          {occupants || "-"}
                           {occupants && <span className="text-xs text-neutral-400 font-normal ml-1">{parseInt(occupants) === 1 ? "person" : "people"}</span>}
                         </div>
                         <button

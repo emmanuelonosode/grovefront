@@ -62,7 +62,7 @@ export default function ContactPage() {
               perfect home. We typically reply within 24 hours.
             </p>
           </div>
-          {/* Illustration — desktop only */}
+          {/* Illustration - desktop only */}
           <div className="hidden lg:flex items-end justify-center">
             <div className="bg-white rounded-t-2xl shadow-2xl px-8 pt-8 pb-0 inline-block">
               <Image

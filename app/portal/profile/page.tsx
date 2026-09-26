@@ -221,7 +221,7 @@ export default function ProfilePage() {
             <KpiWidget
               icon={Wallet}
               label="Monthly Rent"
-              value={active ? fmtMoney(active.agreed_price) : "—"}
+              value={active ? fmtMoney(active.agreed_price) : "-"}
               sub={active ? txLabel(active.transaction_type) : "No active lease"}
               accent="blue"
             />
@@ -547,7 +547,7 @@ function LeaseCard({ transaction: t }: { transaction: Transaction }) {
   );
 }
 
-// ── No Lease Content (renders inside a Card — no own card wrapper) ─────────────
+// ── No Lease Content (renders inside a Card - no own card wrapper) ─────────────
 
 function NoLeaseContent() {
   return (
@@ -696,7 +696,7 @@ function ApplicationRow({
         <div className="flex-1 min-w-0">
           <p className="text-[13px] font-semibold text-on-surface truncate">{app.property_title || "Application"}</p>
           <p className="text-[11px] text-on-surface-variant truncate">
-            {app.submitted_at ? `Submitted ${fmtDate(app.submitted_at)}` : "Draft — not yet submitted"}
+            {app.submitted_at ? `Submitted ${fmtDate(app.submitted_at)}` : "Draft - not yet submitted"}
           </p>
         </div>
         <div className="flex items-center gap-2">

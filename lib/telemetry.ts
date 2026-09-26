@@ -74,7 +74,7 @@ function flush(useBeacon: boolean) {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (token) headers["Authorization"] = `Bearer ${token}`;
   fetch(API_ENDPOINT, { method: "POST", headers, body, keepalive: true }).catch(() => {
-    // fail silently — analytics must never disrupt the user
+    // fail silently - analytics must never disrupt the user
   });
 }
 
@@ -126,7 +126,7 @@ export async function initTelemetryEngine() {
     referral_code: getStoredReferralCode(),
   });
 
-  // Scroll depth (passive — never blocks the main thread).
+  // Scroll depth (passive - never blocks the main thread).
   window.addEventListener("scroll", () => {
     const depth = ((window.scrollY + window.innerHeight) / document.body.scrollHeight) * 100;
     if (depth > maxScroll) maxScroll = depth;
@@ -143,7 +143,7 @@ export async function initTelemetryEngine() {
     window.addEventListener(evt, resetIdle, { passive: true })
   );
 
-  // Flush when the tab is hidden — far more reliable than `beforeunload`,
+  // Flush when the tab is hidden - far more reliable than `beforeunload`,
   // especially on mobile where pages are frozen rather than unloaded.
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") {

@@ -32,7 +32,7 @@ function TikTokIcon() {
   );
 }
 
-// States we serve — links to the /rentals/[state] hub pages (sitewide internal
+// States we serve - links to the /rentals/[state] hub pages (sitewide internal
 // linking for SEO). Derived from live inventory so we never link a state whose
 // hub page 404s (states with no listings), with the curated CITIES as fallback
 // when the API is unreachable.

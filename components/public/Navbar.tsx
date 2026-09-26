@@ -18,7 +18,7 @@ const navLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
-// Pages where the hero fills the full viewport — transparent navbar looks great there.
+// Pages where the hero fills the full viewport - transparent navbar looks great there.
 // All other pages get a solid dark navbar from the start.
 const HERO_PAGES = ["/"];
 
@@ -54,7 +54,7 @@ export function Navbar() {
   const solidBg = scrolled || !isHeroPage;
 
   // Full-screen search/map page hides the global navbar to reclaim vertical space.
-  // (Property detail pages /houses-for-rent/[slug] keep it — only the exact search route is hidden.)
+  // (Property detail pages /houses-for-rent/[slug] keep it - only the exact search route is hidden.)
   if (pathname === "/houses-for-rent") return null;
 
   return (
@@ -159,7 +159,7 @@ export function Navbar() {
             )}
           </div>
 
-          {/* Mobile toggle — 44 px touch target via p-2.5 */}
+          {/* Mobile toggle - 44 px touch target via p-2.5 */}
           <button
             type="button"
             className={cn(
@@ -175,7 +175,7 @@ export function Navbar() {
         </nav>
       </header>
 
-      {/* Scrim — always in DOM, visible only when menu is open */}
+      {/* Scrim - always in DOM, visible only when menu is open */}
       <div
         aria-hidden="true"
         onClick={() => setMobileOpen(false)}
@@ -185,7 +185,7 @@ export function Navbar() {
         )}
       />
 
-      {/* Drawer — always in DOM, slides in/out with CSS */}
+      {/* Drawer - always in DOM, slides in/out with CSS */}
       <div
         className={cn(
           "fixed inset-x-0 top-20 z-50 md:hidden bg-white shadow-xl border-t border-neutral-100",
@@ -197,13 +197,13 @@ export function Navbar() {
         )}
       >
         <div className="px-6 py-5 flex flex-col gap-1">
-          {/* Apply Free accent card — primary CTA at top of mobile menu */}
+          {/* Apply Free accent card - primary CTA at top of mobile menu */}
           <Link
             href="/apply"
             onClick={() => setMobileOpen(false)}
             className="flex items-center justify-between bg-brand text-white font-semibold text-sm px-5 py-4 rounded-md mb-4 hover:bg-brand-hover transition-colors"
           >
-            <span>Apply Now — Get a Decision in 24 Hours</span>
+            <span>Apply Now - Get a Decision in 24 Hours</span>
             <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
           </Link>
 

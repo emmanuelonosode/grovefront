@@ -8,7 +8,7 @@ interface Props {
   listingType: string;
 }
 
-/** Invisible component — records browse intent when a property detail page loads. */
+/** Invisible component - records browse intent when a property detail page loads. */
 export function PropertyIntentCapture({ city, listingType }: Props) {
   useEffect(() => {
     if (city) captureSearchIntent(city, listingType);

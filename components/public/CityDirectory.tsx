@@ -5,7 +5,7 @@ import { STATE_NAMES } from "@/lib/states";
 
 interface Props {
   cities: DirectoryCity[];
-  /** Live listing counts keyed by city slug (optional — shown next to each city). */
+  /** Live listing counts keyed by city slug (optional - shown next to each city). */
   counts?: Record<string, number>;
   heading?: string;
   intro?: string;
@@ -14,7 +14,7 @@ interface Props {
 /**
  * Server-rendered, fully crawlable directory of every city landing page, grouped
  * by state. This is the internal-linking hub that lets Google discover and pass
- * authority to all `/rentals/[city]` pages — the engine for ranking
+ * authority to all `/rentals/[city]` pages - the engine for ranking
  * "houses for rent in [city]" nationally. Plain links, no client JS.
  */
 export function CityDirectory({ cities, counts = {}, heading, intro }: Props) {
@@ -45,7 +45,7 @@ export function CityDirectory({ cities, counts = {}, heading, intro }: Props) {
           </h2>
           <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-[#475569]">
             {intro ??
-              "Find affordable houses for rent in every city we serve. Browse move-in ready rentals by location — transparent pricing, pet-friendly options, and 24-hour application decisions."}
+              "Find affordable houses for rent in every city we serve. Browse move-in ready rentals by location - transparent pricing, pet-friendly options, and 24-hour application decisions."}
           </p>
         </div>
 

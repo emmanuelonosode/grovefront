@@ -113,9 +113,9 @@ function money(n: number): string {
 const ACTIVE_MAINTENANCE = new Set(["SUBMITTED", "ACKNOWLEDGED", "IN_PROGRESS"]);
 
 const MAINTENANCE_STATUS_LABEL: Record<string, string> = {
-  SUBMITTED: "Submitted — awaiting review",
+  SUBMITTED: "Submitted - awaiting review",
   ACKNOWLEDGED: "Acknowledged by our team",
-  IN_PROGRESS: "Technician assigned — in progress",
+  IN_PROGRESS: "Technician assigned - in progress",
 };
 
 function daysUntil(dateStr: string): number {
@@ -412,7 +412,7 @@ export default function DashboardPage() {
 
       {/* ── Community board + quick links ────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Community board — latest news from the blog */}
+        {/* Community board - latest news from the blog */}
         <section className="lg:col-span-2 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-6">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-serif font-semibold text-on-surface text-[24px] leading-8">Community Board</h3>
@@ -425,7 +425,7 @@ export default function DashboardPage() {
               <p className="text-[14px] text-on-surface-variant animate-pulse">Loading updates…</p>
             )}
             {!loading && announcements.length === 0 && (
-              <p className="text-[14px] text-on-surface-variant">No announcements right now — check back soon.</p>
+              <p className="text-[14px] text-on-surface-variant">No announcements right now - check back soon.</p>
             )}
             {announcements.map((post) => (
               <div key={post.id} className="flex gap-4 pb-6 border-b border-outline-variant last:border-0 last:pb-0">

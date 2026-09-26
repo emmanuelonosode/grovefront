@@ -13,7 +13,7 @@ export const metadata = {
   openGraph: {
     title: "Communities by State | Prime Family Housing",
     description:
-      "Explore our carefully curated family-centric neighborhoods in top states — find a sanctuary where your family can thrive.",
+      "Explore our carefully curated family-centric neighborhoods in top states - find a sanctuary where your family can thrive.",
     url: "https://primefamilyhousing.com/communities",
     type: "website",
   },

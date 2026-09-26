@@ -14,7 +14,7 @@ export interface CityData {
   population: string;
   marketHighlight: string;
   seoContent: string;
-  /** Live inventory stats — present for DB-derived cities, absent for curated-only. */
+  /** Live inventory stats - present for DB-derived cities, absent for curated-only. */
   stats?: CityStats;
 }
 
@@ -29,14 +29,14 @@ export const CITIES: Record<string, CityData> = {
     avgRent: "$1,150",
     population: "6.1M metro",
     marketHighlight: "One of the most affordable large metros in the Southeast",
-    seoContent: `Atlanta is one of the most affordable major cities in the US for renters. With a thriving job market anchored by Fortune 500 headquarters, world-class dining, and neighborhoods ranging from the historic charm of Grant Park to the modern energy of Midtown, Atlanta offers something for every budget.\n\nPrimeFamilyHousing maintains a curated inventory of affordable rental homes across Atlanta's most desirable neighborhoods — including Buckhead, East Atlanta Village, Decatur, Sandy Springs, and Marietta. Our listings start from around $950/month for one-bedroom homes, with family-sized homes available from $1,400/month.\n\nAtlanta's cost of living is approximately 5% below the national average, making it an ideal destination for families, young professionals, and anyone relocating to the Southeast. With MARTA public transit, Hartsfield-Jackson International Airport, and a rapidly expanding BeltLine trail system, Atlanta combines big-city amenities with Southern affordability.`,
+    seoContent: `Atlanta is one of the most affordable major cities in the US for renters. With a thriving job market anchored by Fortune 500 headquarters, world-class dining, and neighborhoods ranging from the historic charm of Grant Park to the modern energy of Midtown, Atlanta offers something for every budget.\n\nPrimeFamilyHousing maintains a curated inventory of affordable rental homes across Atlanta's most desirable neighborhoods - including Buckhead, East Atlanta Village, Decatur, Sandy Springs, and Marietta. Our listings start from around $950/month for one-bedroom homes, with family-sized homes available from $1,400/month.\n\nAtlanta's cost of living is approximately 5% below the national average, making it an ideal destination for families, young professionals, and anyone relocating to the Southeast. With MARTA public transit, Hartsfield-Jackson International Airport, and a rapidly expanding BeltLine trail system, Atlanta combines big-city amenities with Southern affordability.`,
   },
   "charlotte-nc": {
     slug: "charlotte-nc",
     name: "Charlotte",
     state: "North Carolina",
     stateCode: "NC",
-    tagline: "The Queen City — fast-growing and family-friendly.",
+    tagline: "The Queen City - fast-growing and family-friendly.",
     heroImage: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1600&q=80",
     avgRent: "$1,100",
     population: "2.7M metro",
@@ -48,12 +48,12 @@ export const CITIES: Record<string, CityData> = {
     name: "Houston",
     state: "Texas",
     stateCode: "TX",
-    tagline: "Space City — big opportunities, affordable homes.",
+    tagline: "Space City - big opportunities, affordable homes.",
     heroImage: "https://images.unsplash.com/photo-1530089711124-9ca31fb9e863?w=1600&q=80",
     avgRent: "$1,050",
     population: "7.1M metro",
     marketHighlight: "Largest affordable housing supply in Texas",
-    seoContent: `Houston offers one of the largest supplies of affordable rental housing among major US cities. With no state income tax, a diverse economy spanning energy, healthcare, aerospace, and technology, and a cost of living well below coastal metros, Houston is a top choice for budget-conscious renters.\n\nPrimeFamilyHousing maintains extensive listings across Houston's sprawling metro — from the cultural richness of Montrose and the Heights to family-friendly suburbs like Katy, Sugar Land, and Pearland. One-bedroom homes start from around $900/month, with spacious family homes from $1,350/month.\n\nHouston's lack of zoning laws creates a unique rental market with diverse housing options at every price point. The Texas Medical Center, NASA's Johnson Space Center, and the Port of Houston drive steady employment, while the city's world-renowned food scene and 640+ parks provide quality of life that rivals cities twice the cost.`,
+    seoContent: `Houston offers one of the largest supplies of affordable rental housing among major US cities. With no state income tax, a diverse economy spanning energy, healthcare, aerospace, and technology, and a cost of living well below coastal metros, Houston is a top choice for budget-conscious renters.\n\nPrimeFamilyHousing maintains extensive listings across Houston's sprawling metro - from the cultural richness of Montrose and the Heights to family-friendly suburbs like Katy, Sugar Land, and Pearland. One-bedroom homes start from around $900/month, with spacious family homes from $1,350/month.\n\nHouston's lack of zoning laws creates a unique rental market with diverse housing options at every price point. The Texas Medical Center, NASA's Johnson Space Center, and the Port of Houston drive steady employment, while the city's world-renowned food scene and 640+ parks provide quality of life that rivals cities twice the cost.`,
   },
   "dallas-tx": {
     slug: "dallas-tx",
@@ -72,48 +72,48 @@ export const CITIES: Record<string, CityData> = {
     name: "Nashville",
     state: "Tennessee",
     stateCode: "TN",
-    tagline: "Music City — where culture meets community.",
+    tagline: "Music City - where culture meets community.",
     heroImage: "https://images.unsplash.com/photo-1587162146766-e06b1189b907?w=1600&q=80",
     avgRent: "$1,200",
     population: "2.0M metro",
     marketHighlight: "Growing market with affordable options outside downtown",
-    seoContent: `Nashville has experienced tremendous growth over the past decade, yet affordable rental options remain available throughout the metro — particularly in neighborhoods just outside the downtown core. With no state income tax on wages, a booming healthcare and music industry, and a vibrant cultural scene, Nashville attracts renters from across the country.\n\nPrimeFamilyHousing offers affordable rentals across Nashville including East Nashville, Germantown, Berry Hill, Antioch, and Murfreesboro. One-bedroom homes are available from around $1,000/month, and family homes start from $1,450/month.\n\nNashville's economy is anchored by healthcare giants like HCA and Vanderbilt, a thriving music and entertainment industry, and a rapidly growing tech sector. The city's walkable neighborhoods, excellent food scene, and strong sense of community make it an increasingly popular choice for families and young professionals seeking affordable Southern living.`,
+    seoContent: `Nashville has experienced tremendous growth over the past decade, yet affordable rental options remain available throughout the metro - particularly in neighborhoods just outside the downtown core. With no state income tax on wages, a booming healthcare and music industry, and a vibrant cultural scene, Nashville attracts renters from across the country.\n\nPrimeFamilyHousing offers affordable rentals across Nashville including East Nashville, Germantown, Berry Hill, Antioch, and Murfreesboro. One-bedroom homes are available from around $1,000/month, and family homes start from $1,450/month.\n\nNashville's economy is anchored by healthcare giants like HCA and Vanderbilt, a thriving music and entertainment industry, and a rapidly growing tech sector. The city's walkable neighborhoods, excellent food scene, and strong sense of community make it an increasingly popular choice for families and young professionals seeking affordable Southern living.`,
   },
   "phoenix-az": {
     slug: "phoenix-az",
     name: "Phoenix",
     state: "Arizona",
     stateCode: "AZ",
-    tagline: "Valley of the Sun — sunshine and savings.",
+    tagline: "Valley of the Sun - sunshine and savings.",
     heroImage: "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1600&q=80",
     avgRent: "$1,100",
     population: "4.9M metro",
     marketHighlight: "Strong affordable housing stock in a warm desert climate",
-    seoContent: `Phoenix is the fifth-largest city in the United States and one of the most affordable major metros in the Sun Belt. With over 300 days of sunshine per year, a growing technology and healthcare sector, and rental prices significantly below California and Pacific Northwest competitors, Phoenix is ideal for budget-conscious renters seeking warm-weather living.\n\nPrimeFamilyHousing serves the greater Phoenix metro including Scottsdale, Tempe, Mesa, Chandler, Gilbert, and Glendale. Homes start from around $950/month, with family homes available from $1,400/month across the Valley.\n\nPhoenix's cost of living is approximately 3% below the national average, with particular savings in housing. The metro's extensive freeway system, growing light rail network, and proximity to outdoor recreation — from Camelback Mountain to Sedona day trips — provide a quality of life that makes Phoenix one of the fastest-growing cities in America.`,
+    seoContent: `Phoenix is the fifth-largest city in the United States and one of the most affordable major metros in the Sun Belt. With over 300 days of sunshine per year, a growing technology and healthcare sector, and rental prices significantly below California and Pacific Northwest competitors, Phoenix is ideal for budget-conscious renters seeking warm-weather living.\n\nPrimeFamilyHousing serves the greater Phoenix metro including Scottsdale, Tempe, Mesa, Chandler, Gilbert, and Glendale. Homes start from around $950/month, with family homes available from $1,400/month across the Valley.\n\nPhoenix's cost of living is approximately 3% below the national average, with particular savings in housing. The metro's extensive freeway system, growing light rail network, and proximity to outdoor recreation - from Camelback Mountain to Sedona day trips - provide a quality of life that makes Phoenix one of the fastest-growing cities in America.`,
   },
   "austin-tx": {
     slug: "austin-tx",
     name: "Austin",
     state: "Texas",
     stateCode: "TX",
-    tagline: "Keep it affordable — tech hub with Texas prices.",
+    tagline: "Keep it affordable - tech hub with Texas prices.",
     heroImage: "https://images.unsplash.com/photo-1531218150217-54595bc2b934?w=1600&q=80",
     avgRent: "$1,250",
     population: "2.3M metro",
     marketHighlight: "Tech hub affordability outside the central zone",
-    seoContent: `Austin is a top-tier technology hub with a cost of living that remains well below Silicon Valley, Seattle, or New York. While central Austin has seen price increases, affordable rental options are abundant in surrounding areas — and PrimeFamilyHousing specializes in finding them.\n\nOur Austin-area listings span neighborhoods like East Austin, Mueller, Pflugerville, Round Rock, Cedar Park, and Kyle. One-bedroom homes start from around $1,050/month, and family homes are available from $1,500/month.\n\nAustin's economy is powered by major employers including Tesla, Apple, Google, Dell, and the University of Texas. Combined with no state income tax, a world-famous live music scene, excellent outdoor recreation along Lady Bird Lake and the Barton Creek Greenbelt, and consistently mild winters, Austin offers an exceptional quality-to-cost ratio for renters willing to explore beyond the downtown core.`,
+    seoContent: `Austin is a top-tier technology hub with a cost of living that remains well below Silicon Valley, Seattle, or New York. While central Austin has seen price increases, affordable rental options are abundant in surrounding areas - and PrimeFamilyHousing specializes in finding them.\n\nOur Austin-area listings span neighborhoods like East Austin, Mueller, Pflugerville, Round Rock, Cedar Park, and Kyle. One-bedroom homes start from around $1,050/month, and family homes are available from $1,500/month.\n\nAustin's economy is powered by major employers including Tesla, Apple, Google, Dell, and the University of Texas. Combined with no state income tax, a world-famous live music scene, excellent outdoor recreation along Lady Bird Lake and the Barton Creek Greenbelt, and consistently mild winters, Austin offers an exceptional quality-to-cost ratio for renters willing to explore beyond the downtown core.`,
   },
   "miami-fl": {
     slug: "miami-fl",
     name: "Miami",
     state: "Florida",
     stateCode: "FL",
-    tagline: "Gateway to the Americas — tropical living within reach.",
+    tagline: "Gateway to the Americas - tropical living within reach.",
     heroImage: "/images/states/florida/florida-beach-palms.jpg",
     avgRent: "$1,350",
     population: "6.1M metro",
     marketHighlight: "Targeted affordable options in the metro area",
-    seoContent: `Miami is known for its beaches, international culture, and vibrant nightlife — but it also has pockets of genuinely affordable housing throughout the greater metro area. With no state income tax, a growing tech and finance sector, and year-round tropical weather, Miami attracts renters from across the globe.\n\nPrimeFamilyHousing focuses on affordable Miami-area rentals in neighborhoods like Little Havana, Hialeah, Kendall, Homestead, North Miami, and Doral. One-bedroom homes start from around $1,100/month, and family homes are available from $1,600/month.\n\nWhile South Beach and Brickell command premium prices, the greater Miami metro offers a wide range of budget-friendly options with easy access to the beach, diverse cuisine, and a thriving cultural scene. Miami's Metrorail and Metrobus systems connect affordable neighborhoods to employment centers, making it possible to enjoy Miami living without Miami Beach prices.`,
+    seoContent: `Miami is known for its beaches, international culture, and vibrant nightlife - but it also has pockets of genuinely affordable housing throughout the greater metro area. With no state income tax, a growing tech and finance sector, and year-round tropical weather, Miami attracts renters from across the globe.\n\nPrimeFamilyHousing focuses on affordable Miami-area rentals in neighborhoods like Little Havana, Hialeah, Kendall, Homestead, North Miami, and Doral. One-bedroom homes start from around $1,100/month, and family homes are available from $1,600/month.\n\nWhile South Beach and Brickell command premium prices, the greater Miami metro offers a wide range of budget-friendly options with easy access to the beach, diverse cuisine, and a thriving cultural scene. Miami's Metrorail and Metrobus systems connect affordable neighborhoods to employment centers, making it possible to enjoy Miami living without Miami Beach prices.`,
   },
   "tampa-fl": {
     slug: "tampa-fl",
@@ -125,7 +125,7 @@ export const CITIES: Record<string, CityData> = {
     avgRent: "$1,250",
     population: "3.2M metro",
     marketHighlight: "High-demand coastal market with move-in ready single family homes",
-    seoContent: `Tampa is one of Florida's premier destinations for renters, offering a vibrant waterfront downtown, historic brick-lined streets in Ybor City, and top-tier family neighborhoods across Hillsborough and Pinellas counties.\n\nPrimeFamilyHousing provides move-in ready single-family homes and rentals across the greater Tampa Bay area — including Hyde Park, Seminole Heights, Brandon, Carrollwood, Riverview, and Wesley Chapel. Enjoy spacious floor plans, fenced yards, and fast 24-hour application decisions with no hidden administrative fees.\n\nWith no state income tax, booming healthcare and financial tech industries, and quick access to world-famous Gulf Coast beaches (Clearwater Beach and St. Pete Beach), Tampa delivers the quintessential Florida lifestyle at an accessible price point.`,
+    seoContent: `Tampa is one of Florida's premier destinations for renters, offering a vibrant waterfront downtown, historic brick-lined streets in Ybor City, and top-tier family neighborhoods across Hillsborough and Pinellas counties.\n\nPrimeFamilyHousing provides move-in ready single-family homes and rentals across the greater Tampa Bay area - including Hyde Park, Seminole Heights, Brandon, Carrollwood, Riverview, and Wesley Chapel. Enjoy spacious floor plans, fenced yards, and fast 24-hour application decisions with no hidden administrative fees.\n\nWith no state income tax, booming healthcare and financial tech industries, and quick access to world-famous Gulf Coast beaches (Clearwater Beach and St. Pete Beach), Tampa delivers the quintessential Florida lifestyle at an accessible price point.`,
   },
 };
 
@@ -148,7 +148,7 @@ export interface CityStats {
   min_price: number | null;
   max_price: number | null;
   listing_types: string[];
-  // Enriched fields (optional — older backend deploys omit them).
+  // Enriched fields (optional - older backend deploys omit them).
   bedrooms?: Record<string, number>;
   types?: Record<string, number>;
   sqft?: { min: number; max: number; avg: number } | null;
@@ -160,7 +160,7 @@ export interface CityStats {
 }
 
 /**
- * Mirrors Django's slugify(f"{city}-{state}") byte-for-byte — the backend
+ * Mirrors Django's slugify(f"{city}-{state}") byte-for-byte - the backend
  * generates city slugs this way, and every internal link to /rentals/[city]
  * must agree with it. Never hand-build city slugs anywhere else.
  */
@@ -179,7 +179,7 @@ const API_BASE =
 
 /**
  * Fetches distinct cities with published rental listings from the API.
- * Safe to call at build time — never throws, returns [] on any error.
+ * Safe to call at build time - never throws, returns [] on any error.
  */
 export async function fetchAllCities(): Promise<CityStats[]> {
   try {
@@ -195,7 +195,7 @@ export async function fetchAllCities(): Promise<CityStats[]> {
 
 // ── Generic city content engine ───────────────────────────────────────────────
 // Every non-curated city page used to share one 2-paragraph template and one
-// stock hero photo — 550+ near-duplicate thin pages that Google left unindexed.
+// stock hero photo - 550+ near-duplicate thin pages that Google left unindexed.
 // Content is now composed from the city's real inventory facts, with phrasing
 // picked by a hash of the slug: deterministic (stable across ISR regenerations)
 // but different city to city.
@@ -259,7 +259,7 @@ function buildSeoContent(stats: CityStats, seed: number): string {
 
   const paragraphs: string[] = [];
 
-  // Intro — inventory + price range
+  // Intro - inventory + price range
   const priceClause = hasRange
     ? ` priced from ${usd(stats.min_price!)} to ${usd(stats.max_price!)} per month`
     : stats.avg_price
@@ -267,11 +267,11 @@ function buildSeoContent(stats: CityStats, seed: number): string {
       : "";
   paragraphs.push(pickVariant([
     `Looking for a house to rent in ${city}, ${stateName}? PrimeFamilyHousing has ${num(stats.count)} verified ${listingWord}${priceClause} available right now. Every home is inspected and move-in ready, with transparent pricing and no hidden administrative fees.`,
-    `PrimeFamilyHousing currently lists ${num(stats.count)} verified ${listingWord} in ${city}, ${stateName}${priceClause}. Each one is inspected, move-in ready, and priced transparently — the rent you see is the rent you pay.`,
+    `PrimeFamilyHousing currently lists ${num(stats.count)} verified ${listingWord} in ${city}, ${stateName}${priceClause}. Each one is inspected, move-in ready, and priced transparently - the rent you see is the rent you pay.`,
     `${city}, ${stateName} renters can choose from ${num(stats.count)} verified ${listingWord} with PrimeFamilyHousing${priceClause}. All of our ${city} homes are inspected and move-in ready, with no hidden administrative fees at any step.`,
   ], seed, 0));
 
-  // Inventory make-up — bedrooms, property types, square footage
+  // Inventory make-up - bedrooms, property types, square footage
   const mixSentences: string[] = [];
   if (stats.bedrooms && Object.keys(stats.bedrooms).length > 0) {
     mixSentences.push(pickVariant([
@@ -285,12 +285,12 @@ function buildSeoContent(stats: CityStats, seed: number): string {
   if (stats.sqft) {
     mixSentences.push(pickVariant([
       `Homes range from ${num(stats.sqft.min)} to ${num(stats.sqft.max)} square feet, averaging about ${num(stats.sqft.avg)} sq ft.`,
-      `Living space runs between ${num(stats.sqft.min)} and ${num(stats.sqft.max)} square feet — around ${num(stats.sqft.avg)} sq ft on average.`,
+      `Living space runs between ${num(stats.sqft.min)} and ${num(stats.sqft.max)} square feet - around ${num(stats.sqft.avg)} sq ft on average.`,
     ], seed, 2));
   }
   if (mixSentences.length > 0) paragraphs.push(mixSentences.join(" "));
 
-  // Coverage — ZIP codes and neighborhoods
+  // Coverage - ZIP codes and neighborhoods
   const areaSentences: string[] = [];
   const zips = stats.zips ?? [];
   if (zips.length > 1) {
@@ -307,7 +307,7 @@ function buildSeoContent(stats: CityStats, seed: number): string {
   }
   if (areaSentences.length > 0) paragraphs.push(areaSentences.join(" "));
 
-  // Closer — recency + application CTA
+  // Closer - recency + application CTA
   const newest = stats.newest_listed ? new Date(stats.newest_listed) : null;
   const newestClause =
     newest && !isNaN(newest.getTime())
@@ -315,7 +315,7 @@ function buildSeoContent(stats: CityStats, seed: number): string {
       : "";
   paragraphs.push(pickVariant([
     `Apply online in under 10 minutes and get a decision within 24 hours.${newestClause} Once approved, you can sign and move in on your schedule.`,
-    `Every listing accepts online applications — under 10 minutes to complete, with decisions within 24 hours.${newestClause}`,
+    `Every listing accepts online applications - under 10 minutes to complete, with decisions within 24 hours.${newestClause}`,
     `When you find a fit, apply online in about 10 minutes; we review every application within 24 hours.${newestClause} Move-in dates are flexible once you're approved.`,
   ], seed, 4));
 
@@ -356,7 +356,7 @@ export function buildGenericCityData(stats: CityStats): CityData {
 }
 
 /**
- * City FAQ content — single source for BOTH the FAQPage JSON-LD and the visible
+ * City FAQ content - single source for BOTH the FAQPage JSON-LD and the visible
  * FAQ section (Google requires the markup to match what's on the page). Answers
  * use the city's real inventory numbers when stats are available.
  */
@@ -368,7 +368,7 @@ export function buildCityFaqs(city: CityData): { q: string; a: string }[] {
     q: `How much does it cost to rent a home in ${city.name}?`,
     a:
       s?.min_price && s?.max_price && s.max_price > s.min_price
-        ? `Rentals in ${city.name} currently range from ${usd(s.min_price)} to ${usd(s.max_price)} per month, with an average around ${city.avgRent}/month. PrimeFamilyHousing shows transparent pricing on every listing — no hidden fees.`
+        ? `Rentals in ${city.name} currently range from ${usd(s.min_price)} to ${usd(s.max_price)} per month, with an average around ${city.avgRent}/month. PrimeFamilyHousing shows transparent pricing on every listing - no hidden fees.`
         : `The average rent in ${city.name} starts around ${city.avgRent}/month. PrimeFamilyHousing offers affordable, move-in ready rentals across ${city.name} with transparent pricing on every listing.`,
   });
 
@@ -377,7 +377,7 @@ export function buildCityFaqs(city: CityData): { q: string; a: string }[] {
     const bedList = beds.length === 1 ? `${beds[0]}-bedroom` : `${beds.slice(0, -1).join(", ")} and ${beds[beds.length - 1]}-bedroom`;
     faqs.push({
       q: `What size homes are available for rent in ${city.name}?`,
-      a: `PrimeFamilyHousing currently lists ${bedList} homes in ${city.name}, ${city.stateCode} — ${bedroomPhrase(s.bedrooms)} in total${s.sqft ? `, ranging from ${num(s.sqft.min)} to ${num(s.sqft.max)} square feet` : ""}.`,
+      a: `PrimeFamilyHousing currently lists ${bedList} homes in ${city.name}, ${city.stateCode} - ${bedroomPhrase(s.bedrooms)} in total${s.sqft ? `, ranging from ${num(s.sqft.min)} to ${num(s.sqft.max)} square feet` : ""}.`,
     });
   } else {
     faqs.push({
@@ -412,7 +412,7 @@ export function buildCityFaqs(city: CityData): { q: string; a: string }[] {
 
 // ── Directory projection ───────────────────────────────────────────────────────
 // The homepage/listing directory components (StateDirectory, CityDirectory) only
-// render a name, count, and photo — but were being handed full CityData for all
+// render a name, count, and photo - but were being handed full CityData for all
 // ~565 cities, which serialized every city's multi-paragraph seoContent + stats
 // into the page (≈1MB of the homepage). Pass this slim shape instead.
 
@@ -426,7 +426,7 @@ export interface DirectoryCity {
   tagline?: string;
 }
 
-/** Curated cities first (with their editorial photos), then every DB city — slim. */
+/** Curated cities first (with their editorial photos), then every DB city - slim. */
 export function toDirectoryCities(dbCities: CityStats[]): DirectoryCity[] {
   const out: DirectoryCity[] = [];
   const seen = new Set<string>();
@@ -453,7 +453,7 @@ export function toDirectoryCities(dbCities: CityStats[]): DirectoryCity[] {
 }
 
 /**
- * Resolves a city slug to CityData — checks hardcoded CITIES first, then DB.
+ * Resolves a city slug to CityData - checks hardcoded CITIES first, then DB.
  * Returns null if the slug doesn't exist in either source.
  */
 export async function resolveCityData(slug: string): Promise<CityData | null> {

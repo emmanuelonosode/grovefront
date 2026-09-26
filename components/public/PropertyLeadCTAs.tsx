@@ -42,14 +42,14 @@ export function PropertyLeadCTAs({
 
   const browseHref = `/houses-for-rent?q=${encodeURIComponent(propertyCity || "")}`;
 
-  // ── Home no longer available — redirect intent to similar homes ─────────────
+  // ── Home no longer available - redirect intent to similar homes ─────────────
   if (!available && mode === "sidebar") {
     return (
       <div className="space-y-3">
         <div className="rounded-xl bg-neutral-100 border border-neutral-200 p-4 text-center">
           <p className="text-sm font-bold text-brand-dark">This home is no longer available</p>
           <p className="text-xs text-neutral-500 mt-1 leading-snug">
-            It&apos;s been taken — but we can help you find a similar place{propertyCity ? ` in ${propertyCity}` : ""}.
+            It&apos;s been taken - but we can help you find a similar place{propertyCity ? ` in ${propertyCity}` : ""}.
           </p>
         </div>
         <Link
@@ -104,7 +104,7 @@ export function PropertyLeadCTAs({
                   <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
                 </h4>
                 <p className="text-xs text-neutral-500 mt-1 leading-normal max-w-xl">
-                  Get your <strong className="text-brand-dark font-semibold">first month&apos;s rent FREE</strong> on qualifying rentals. Limited time — offer ends soon.
+                  Get your <strong className="text-brand-dark font-semibold">first month&apos;s rent FREE</strong> on qualifying rentals. Limited time - offer ends soon.
                 </p>
               </div>
             </div>
@@ -142,7 +142,7 @@ export function PropertyLeadCTAs({
           </div>
         </div>
 
-        {/* Book a Tour — primary (opens the tour modal) */}
+        {/* Book a Tour - primary (opens the tour modal) */}
         <button
           onClick={() => openTour(propertySlug)}
           className="w-full flex items-center justify-center gap-2 h-13 py-3.5 bg-brand hover:bg-brand-hover text-white text-sm font-bold rounded-xl shadow-lg shadow-brand/15 hover:shadow-brand/25 transition-all cursor-pointer"
@@ -150,7 +150,7 @@ export function PropertyLeadCTAs({
           <Calendar size={16} /> Book a Tour
         </button>
 
-        {/* Apply Now — secondary */}
+        {/* Apply Now - secondary */}
         <Link
           href={`/apply?property=${propertySlug}`}
           onClick={() => trackClick("apply_now", { slug: propertySlug, where: "sidebar" })}
@@ -169,7 +169,7 @@ export function PropertyLeadCTAs({
   if (mode === "mobile-sticky") {
     return (
       <div className="flex items-stretch gap-3 w-full">
-        {/* Book a Tour — low-commitment option (opens the tour modal) */}
+        {/* Book a Tour - low-commitment option (opens the tour modal) */}
         <button
           onClick={() => openTour(propertySlug)}
           className="flex-1 h-13 px-3 border-2 border-brand-dark text-brand-dark text-[15px] font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-brand-dark hover:text-white active:scale-[0.98] transition-all cursor-pointer bg-white"
@@ -177,7 +177,7 @@ export function PropertyLeadCTAs({
           <Calendar size={17} /> Book Tour
         </button>
 
-        {/* Apply Now — primary conversion, given more visual weight */}
+        {/* Apply Now - primary conversion, given more visual weight */}
         <Link
           href={`/apply?property=${propertySlug}`}
           onClick={() => trackClick("apply_now", { slug: propertySlug, where: "mobile_sticky" })}

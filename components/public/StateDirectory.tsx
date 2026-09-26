@@ -9,7 +9,7 @@ import { STATE_NAMES, stateSlugForCode } from "@/lib/states";
 
 interface Props {
   cities: DirectoryCity[];
-  /** Live listing counts keyed by city slug (optional — used for totals and city ordering). */
+  /** Live listing counts keyed by city slug (optional - used for totals and city ordering). */
   counts?: Record<string, number>;
 }
 
@@ -19,7 +19,7 @@ interface StateGroup {
   slug: string;
   cities: DirectoryCity[];
   totalHomes: number;
-  /** Landmark/skyline photo — taken from the state's best curated city page. */
+  /** Landmark/skyline photo - taken from the state's best curated city page. */
   image: string;
 }
 
@@ -100,7 +100,7 @@ export function StateDirectory({ cities, counts = {} }: Props) {
               Houses for rent by state
             </h2>
             <p className="mt-3 text-[18px] leading-7 text-on-surface-variant">
-              Pick a state to see every city we serve — transparent pricing, pet-friendly
+              Pick a state to see every city we serve - transparent pricing, pet-friendly
               options, and 24-hour application decisions.
             </p>
           </div>
@@ -148,7 +148,7 @@ export function StateDirectory({ cities, counts = {} }: Props) {
                   key={state.code}
                   className="group flex flex-col bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] border border-surface-variant hover:-translate-y-1 transition-transform duration-300"
                 >
-                  {/* Landmark photo header — links to the state hub */}
+                  {/* Landmark photo header - links to the state hub */}
                   <Link href={`/rentals/${state.slug}`} className="relative block h-64 w-full overflow-hidden bg-surface-container">
                     {state.image && (
                       <Image
@@ -217,7 +217,7 @@ export function StateDirectory({ cities, counts = {} }: Props) {
               No state or city matches “{query}”.
             </p>
             <p className="mt-1 text-[13px] text-on-surface-variant">
-              Try a state name like “Texas” or a city like “Atlanta” — or{" "}
+              Try a state name like “Texas” or a city like “Atlanta” - or{" "}
               <Link href="/houses-for-rent" className="text-primary font-semibold hover:underline">
                 browse all rentals
               </Link>

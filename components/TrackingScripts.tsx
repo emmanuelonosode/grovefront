@@ -6,11 +6,11 @@ import { captureUTMs, captureReferralCode, captureLocation } from "@/lib/trackin
 import { initTelemetryEngine, trackPageView } from "@/lib/telemetry";
 
 /**
- * First-party analytics only. No Google (GA4/GTM) and no Meta Pixel — the site
+ * First-party analytics only. No Google (GA4/GTM) and no Meta Pixel - the site
  * ships zero third-party tracking scripts, which keeps the page fast (no extra
  * DNS lookups, no render-blocking/afterInteractive vendor JS, no ad cookies).
  * Everything below is our own telemetry beaconing to /api/v1/analytics/visitors/.
- * (Google Search Console is unaffected — that's a static verification <meta>,
+ * (Google Search Console is unaffected - that's a static verification <meta>,
  * not a script.)
  */
 function PageViewTracker() {

@@ -71,7 +71,7 @@ export async function fetchPostsForSitemap(): Promise<{ slug: string; lastModifi
     // Match the sitemap route's 5-min window, same as the property feed. At 3600 the
     // sitemap route (revalidate = 300) rebuilt every 5 minutes but kept re-reading an
     // hour-stale blog response, so newly published posts were missing from
-    // /sitemap.xml for up to an hour after going live — and buildCore swallows the
+    // /sitemap.xml for up to an hour after going live - and buildCore swallows the
     // staleness silently via Promise.allSettled, so nothing surfaces the gap.
     next: { revalidate: 300 },
   });

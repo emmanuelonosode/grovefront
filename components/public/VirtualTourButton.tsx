@@ -58,7 +58,7 @@ function TourModal({ url, onClose }: { url: string; onClose: () => void }) {
 }
 
 /**
- * Unmissable amber pill overlaid on the photo gallery (top-left) — the primary
+ * Unmissable amber pill overlaid on the photo gallery (top-left) - the primary
  * discovery point for the 360° tour, styled to stand out against any photo.
  */
 export function VirtualTourBadge({ url }: { url: string }) {
@@ -79,7 +79,7 @@ export function VirtualTourBadge({ url }: { url: string }) {
   );
 }
 
-/** Compact chip for the gallery controls strip — opens the same tour modal. */
+/** Compact chip for the gallery controls strip - opens the same tour modal. */
 export function VirtualTourChip({ url }: { url: string }) {
   const [open, setOpen] = useState(false);
   return (
@@ -112,7 +112,7 @@ export function VirtualTourButton({ url, thumbnailUrl, mobile }: Props) {
           </div>
           <div className="text-left flex-1 min-w-0">
             <p className="text-sm font-semibold text-brand-dark">360° Virtual Tour</p>
-            <p className="text-xs text-neutral-500">Interactive 3D walkthrough — tap to view</p>
+            <p className="text-xs text-neutral-500">Interactive 3D walkthrough - tap to view</p>
           </div>
           <span className="text-xs font-bold text-brand shrink-0">View →</span>
         </button>

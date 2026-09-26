@@ -28,7 +28,7 @@ const TRUST_BADGES = [
 ];
 
 /**
- * State hub page (/rentals/[state]) — e.g. "Houses for Rent in Georgia".
+ * State hub page (/rentals/[state]) - e.g. "Houses for Rent in Georgia".
  * Funnels authority city → state → home and ranks for "houses for rent in [state]".
  * Lists EVERY city / community in the state with live counts (crawlable links).
  */
@@ -87,7 +87,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
     },
     {
       q: `Which cities in ${state.name} have rentals?`,
-      a: `We list houses for rent in cities and communities across ${state.name} — including ${topCityNames}, and more. You can browse every market on this page.`,
+      a: `We list houses for rent in cities and communities across ${state.name} - including ${topCityNames}, and more. You can browse every market on this page.`,
     },
     {
       q: `How fast can I get approved for a rental in ${state.name}?`,
@@ -95,7 +95,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
     },
     {
       q: `Are there affordable and pet-friendly rentals in ${state.name}?`,
-      a: `Yes. Many of our ${state.name} listings are budget-friendly and pet-friendly. Pricing and pet policies are shown upfront on every listing — no hidden fees.`,
+      a: `Yes. Many of our ${state.name} listings are budget-friendly and pet-friendly. Pricing and pet policies are shown upfront on every listing - no hidden fees.`,
     },
   ];
 
@@ -115,7 +115,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faqSchema) }} />
 
-      {/* ── HERO — full-bleed photo, forest gradient, centered ─── */}
+      {/* ── HERO - full-bleed photo, forest gradient, centered ─── */}
       <section className="relative w-full min-h-[500px] md:min-h-[614px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
@@ -138,7 +138,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
           </h1>
           <p className="text-[17px] sm:text-[18px] leading-[1.55] text-surface-container-low max-w-2xl mb-10 drop-shadow-md">
             Browse affordable, move-in ready houses across {state.name}
-            {totalListings > 0 ? ` — ${totalListings} verified listings in ${cityCount} cities and communities` : ""}.
+            {totalListings > 0 ? ` - ${totalListings} verified listings in ${cityCount} cities and communities` : ""}.
             Transparent pricing, pet-friendly options, and decisions in 24 hours.
           </p>
 
@@ -356,7 +356,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
               {state.name} offers families a blend of opportunity and community. From
               {topCityNames ? ` ${topCityNames.split(", ").slice(0, 2).join(" and ")}` : " its top cities"} to
               quieter neighborhoods, our {state.name} homes put schools, parks, and everyday
-              essentials within easy reach — with transparent pricing and none of the runaround.
+              essentials within easy reach - with transparent pricing and none of the runaround.
             </p>
             <ul className="space-y-4 mb-8">
               <li className="flex items-start gap-3">
@@ -400,7 +400,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
               Looking for a house for rent in {state.name}? PrimeFamilyHousing lists affordable,
               move-in ready rental homes across {cityCount} {state.name} cities and communities
               {topCityNames ? `, including ${topCityNames}` : ""}. Every listing shows transparent pricing,
-              photos, and pet policy upfront — no hidden fees, no surprises.
+              photos, and pet policy upfront - no hidden fees, no surprises.
             </p>
             <p>
               Whether you need a cozy 2-bedroom house, a family-sized 3 or 4-bedroom home, or a pet-friendly
@@ -444,7 +444,7 @@ export function StateHub({ state, cities, counts, totalListings, otherStates }: 
           <div className="mb-10">
             <p className="text-brand text-xs font-semibold tracking-[0.3em] uppercase mb-3">Common Questions</p>
             <h2 className="font-serif text-3xl lg:text-4xl font-bold text-brand-dark leading-tight">
-              Renting in {state.name} — FAQ
+              Renting in {state.name} - FAQ
             </h2>
           </div>
           <div className="space-y-3">

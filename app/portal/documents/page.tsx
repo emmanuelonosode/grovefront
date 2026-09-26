@@ -126,7 +126,7 @@ export default function DocumentsPage() {
           My Documents
         </h2>
         <p className="text-[18px] leading-7 text-on-surface-variant">
-          Lease agreements, receipts, and files — all in one place.
+          Lease agreements, receipts, and files - all in one place.
         </p>
       </header>
 
@@ -243,7 +243,7 @@ export default function DocumentsPage() {
             </a>
           </section>
 
-          {/* Urgent CTA — image-card style like the dashboard */}
+          {/* Urgent CTA - image-card style like the dashboard */}
           <section className="bg-forest-deep rounded-xl shadow-sm p-6">
             <p className="text-[16px] leading-6 text-on-primary/80 mb-1">Need a document urgently?</p>
             <h3 className="font-serif font-semibold text-on-primary text-[24px] leading-8 mb-4">Our Team is Ready.</h3>

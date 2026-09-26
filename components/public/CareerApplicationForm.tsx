@@ -182,7 +182,7 @@ export function CareerApplicationForm({ roleId, roleTitle }: Props) {
         >
           <div>
             <p className="font-serif text-lg font-bold text-brand-dark mb-1">
-              Apply — {roleTitle}
+              Apply - {roleTitle}
             </p>
             <p className="text-xs text-neutral-500">
               Fill in the details below and we&apos;ll be in touch within 2–3 business days.
@@ -289,7 +289,7 @@ export function CareerApplicationForm({ roleId, roleTitle }: Props) {
               name="message"
               required
               rows={4}
-              placeholder="Tell us a bit about yourself, your experience, and why this role is a good fit for you. No formal cover letter needed — just be yourself."
+              placeholder="Tell us a bit about yourself, your experience, and why this role is a good fit for you. No formal cover letter needed - just be yourself."
               className="w-full border border-neutral-200 rounded-sm px-3.5 py-2.5 text-sm text-brand-dark placeholder:text-neutral-400 focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand/20 transition-colors bg-white resize-none leading-relaxed"
             />
           </div>

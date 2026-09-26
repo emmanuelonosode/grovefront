@@ -39,7 +39,7 @@ export async function buildCore(): Promise<SitemapEntry[]> {
     { url: `${BASE_URL}/accessibility`,   lastModified: new Date(), changeFrequency: "yearly",  priority: 0.3 },
   ];
 
-  // Note: no /apartments-for-rent in the sitemap — PrimeFamilyHousing rents
+  // Note: no /apartments-for-rent in the sitemap - PrimeFamilyHousing rents
   // single-family houses only. That page self-noindexes and is intentionally
   // excluded from the sitemap.
 
@@ -54,7 +54,7 @@ export async function buildCore(): Promise<SitemapEntry[]> {
 
 // Honest <lastmod>: use the newest listing update per city (from the API);
 // omit the tag entirely when unknown. Emitting `new Date()` on every
-// regeneration told Google every page changed constantly — it learns to
+// regeneration told Google every page changed constantly - it learns to
 // distrust lastmod sitewide.
 function cityLastMod(c: { last_updated?: string | null }): Date | undefined {
   if (!c.last_updated) return undefined;
@@ -105,7 +105,7 @@ export async function buildCities(): Promise<SitemapEntry[]> {
 
   // Per-city bedroom inventory. A bedroom filter page 404s (notFound) when that
   // city has no listings with that bed count, so emitting one purely because the
-  // city cleared FILTER_MIN_LISTINGS submits URLs that don't exist — Google logs
+  // city cleared FILTER_MIN_LISTINGS submits URLs that don't exist - Google logs
   // those as "Submitted URL not found (404)" and burns crawl budget on them.
   // Only emit a filter URL when the city actually has that bedroom count.
   const bedroomsBySlug = new Map(dbCities.map((c) => [c.slug, c.bedrooms ?? undefined]));
@@ -114,7 +114,7 @@ export async function buildCities(): Promise<SitemapEntry[]> {
     const beds = bedroomsBySlug.get(slug);
     return BEDROOM_FILTERS.filter((filter) => {
       // No breakdown available (curated-only city, or an older backend that
-      // omits `bedrooms`) — keep prior behaviour rather than dropping the page.
+      // omits `bedrooms`) - keep prior behaviour rather than dropping the page.
       if (!beds) return true;
       const n = Number(filter.split("-")[0]);
       return (beds[String(n)] ?? 0) >= FILTER_MIN_LISTINGS;
@@ -135,10 +135,10 @@ export async function buildCities(): Promise<SitemapEntry[]> {
 }
 
 export async function buildProperties(): Promise<SitemapEntry[]> {
-  // No .catch here — a failed fetch must propagate so the sitemap route can
+  // No .catch here - a failed fetch must propagate so the sitemap route can
   // return 503 instead of serving a sitemap missing every property URL.
   const all = await fetchPropertiesForSitemap();
-  // Property listings are the priority — highest non-homepage priority. Image sitemap
+  // Property listings are the priority - highest non-homepage priority. Image sitemap
   // extensions were removed: a clean <urlset> of plain <loc> URLs is the most reliably
   // crawlable form, and Google discovers listing photos from each page's own markup
   // (og:image + the RealEstateListing/SingleFamilyResidence JSON-LD) rather than needing
@@ -163,7 +163,7 @@ export function urlsetXml(entries: SitemapEntry[]): string {
     const pr = e.priority != null ? `<priority>${e.priority}</priority>` : "";
     return `  <url><loc>${escapeXml(e.url)}</loc>${lm}${cf}${pr}</url>`;
   }).join("\n");
-  // Plain sitemaps namespace only — the image extension namespace is gone with the
+  // Plain sitemaps namespace only - the image extension namespace is gone with the
   // <image:image> tags it declared.
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${items}\n</urlset>`;
 }

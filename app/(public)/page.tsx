@@ -25,23 +25,23 @@ export const metadata = {
   // as the domain rather than a brand.
   title: "Prime Family Housing | Affordable Houses for Rent",
   description:
-    "Prime Family Housing — find affordable single-family houses for rent across Atlanta, Charlotte, Houston, Dallas, Tampa and Phoenix. Decisions in 24 hrs.",
+    "Prime Family Housing - find affordable single-family houses for rent across Atlanta, Charlotte, Houston, Dallas, Tampa and Phoenix. Decisions in 24 hrs.",
   openGraph: {
     // siteName must be repeated here. Next merges metadata shallowly, so a page that
     // defines `openGraph` REPLACES the layout's block wholesale rather than merging into
-    // it — the layout's siteName was being dropped on the homepage, the one page where
+    // it - the layout's siteName was being dropped on the homepage, the one page where
     // the site-name signal matters most.
     siteName: BUSINESS.displayName,
     title: "Prime Family Housing | Affordable Houses for Rent",
-    description: "Prime Family Housing — quality homes, well-maintained and move-in ready. Fast approvals. 12+ cities.",
+    description: "Prime Family Housing - quality homes, well-maintained and move-in ready. Fast approvals. 12+ cities.",
     type: "website",
     url: "https://primefamilyhousing.com",
-    images: [{ url: "https://primefamilyhousing.com/opengraph-image", width: 1200, height: 630, alt: "Prime Family Housing — Affordable Homes" }],
+    images: [{ url: "https://primefamilyhousing.com/opengraph-image", width: 1200, height: 630, alt: "Prime Family Housing - Affordable Homes" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Prime Family Housing | Affordable Houses for Rent",
-    description: "Prime Family Housing — quality homes, well-maintained and move-in ready. Fast approvals. 12+ cities.",
+    description: "Prime Family Housing - quality homes, well-maintained and move-in ready. Fast approvals. 12+ cities.",
     images: ["https://primefamilyhousing.com/opengraph-image"],
   },
   alternates: { canonical: "https://primefamilyhousing.com" },
@@ -66,7 +66,7 @@ function localBusinessSchema(areaServed: { name: string; state: string }[]) {
     url: BASE_URL,
     logo: BUSINESS.logo.url,
     image: `${BASE_URL}/opengraph-image`,
-    description: "Prime Family Housing — affordable single-family houses for rent. Quality homes, move-in ready, fast decisions. 2,000+ families housed across 12+ US cities since 2012.",
+    description: "Prime Family Housing - affordable single-family houses for rent. Quality homes, move-in ready, fast decisions. 2,000+ families housed across 12+ US cities since 2012.",
     email: BUSINESS.email,
     telephone: BUSINESS.telephone,
     priceRange: "$$",
@@ -74,7 +74,7 @@ function localBusinessSchema(areaServed: { name: string; state: string }[]) {
     address: postalAddressSchema(),
     // Geo coordinates strengthen local-pack / Google Maps eligibility for a
     // location-based real-estate business. Approximate to the HQ ZIP (Clearfield,
-    // UT 84015) — confirm the exact pin in Google Business Profile.
+    // UT 84015) - confirm the exact pin in Google Business Profile.
     geo: { "@type": "GeoCoordinates", latitude: 41.1041, longitude: -112.0119 },
     hasMap: "https://www.google.com/maps/search/?api=1&query=1425+S+1500+E+Unit+222+Clearfield+UT+84015",
     openingHoursSpecification: [
@@ -104,15 +104,15 @@ const promises = [
   { h: "The listed price is the price",   d: "No inflated rents, no admin or convenience fees, and pet policies disclosed on every listing." },
 ];
 
-// Single source for the visible FAQ and the FAQPage JSON-LD — Google requires the
+// Single source for the visible FAQ and the FAQPage JSON-LD - Google requires the
 // markup to match what's on the page, and the two had drifted apart.
 const faqs = [
   { q: "What is Prime Family Housing?",                        a: "Prime Family Housing is a licensed U.S. real estate company, founded in 2012 and headquartered in Clearfield, UT, that rents well-maintained single-family houses across 12+ U.S. cities." },
   { q: "How long does it take to get approved?",               a: "Every application gets reviewed within 24 hours. Most renters hear back the same business day." },
-  { q: "Do you charge hidden fees or admin charges?",          a: "No. The listed price is what you pay. Standard security deposit and that's it — no admin fees, no convenience surcharges." },
-  { q: "Can I apply with limited credit or rental history?",   a: "Yes. We review every application individually and look at your full financial picture — not just a credit score." },
+  { q: "Do you charge hidden fees or admin charges?",          a: "No. The listed price is what you pay. Standard security deposit and that's it - no admin fees, no convenience surcharges." },
+  { q: "Can I apply with limited credit or rental history?",   a: "Yes. We review every application individually and look at your full financial picture - not just a credit score." },
   { q: "Are pets allowed?",                                    a: "Most of our homes are pet-friendly. Each listing shows the policy up front. Pet deposits and rent vary by home." },
-  { q: "How do I tour a property?",                            a: "Pick a time on any listing — in-person, video, or phone. A specialist confirms within 24 hours." },
+  { q: "How do I tour a property?",                            a: "Pick a time on any listing - in-person, video, or phone. A specialist confirms within 24 hours." },
   { q: "Do you handle maintenance after I move in?",           a: "Yes. Submit a request in the tenant portal and our team responds same day. We don't leave you waiting." },
 ];
 
@@ -165,7 +165,7 @@ export default async function HomePage() {
     fetchProperties(),
     // Purpose-built endpoint for the homepage grid: admin-curated homes, with a
     // server-side fallback to is_featured when none are hand-picked. Showing real
-    // houses here is the clearest signal — to visitors and to Google — that this is a
+    // houses here is the clearest signal - to visitors and to Google - that this is a
     // rentals site, not just a lead form.
     fetchHomepageProperties(),
     fetchAllCities(),
@@ -173,24 +173,24 @@ export default async function HomePage() {
 
   const totalProperties = totalCountRaw.status === "fulfilled" ? totalCountRaw.value.count : null;
 
-  // Adapt the list-item API shape to the Property shape PropertyCard consumes — the
+  // Adapt the list-item API shape to the Property shape PropertyCard consumes - the
   // same conversion the city pages use.
   const homepageItems = homepageRaw.status === "fulfilled" ? homepageRaw.value : [];
   const featuredProperties = homepageItems.map(toPropertyCardShape);
 
   const dbCities = allCitiesRaw.status === "fulfilled" ? allCitiesRaw.value : [];
-  // Slim projection — the directory + city grid only need name/photo/count, so
+  // Slim projection - the directory + city grid only need name/photo/count, so
   // we must NOT ship every city's full seoContent to the client (that alone was
   // ~1MB of the homepage).
   const mergedCities = toDirectoryCities(dbCities);
-  // Live listing counts per city slug — shown in the crawlable city directory.
+  // Live listing counts per city slug - shown in the crawlable city directory.
   const cityCounts: Record<string, number> = Object.fromEntries(
     dbCities.map((c) => [c.slug, c.count])
   );
 
   // Five curated cities with the most homes. Curated only: their editorial photos
   // are reliable, whereas DB-derived city images point at listing photos on the
-  // admin media host, many of which 404 — the biggest cards on the page can't risk that.
+  // admin media host, many of which 404 - the biggest cards on the page can't risk that.
   const spotlightCities = mergedCities
     .filter((c) => CITIES[c.slug] && c.heroImage)
     .map((c, i) => ({ c, i, n: cityCounts[c.slug] ?? 0 }))
@@ -204,7 +204,7 @@ export default async function HomePage() {
     .map((c) => ({ name: c.city, state: STATE_NAMES[(c.state || "").toUpperCase()] ?? c.state }));
 
   const stats = [
-    { v: totalProperties != null ? totalProperties.toLocaleString() : "—", l: "Homes available", s: "right now" },
+    { v: totalProperties != null ? totalProperties.toLocaleString() : "-", l: "Homes available", s: "right now" },
     { v: "2,000+", l: "Families housed", s: "since 2012" },
     { v: "12+", l: "U.S. cities", s: "and growing" },
     { v: "24h", l: "Application decisions", s: "typical review" },
@@ -281,7 +281,7 @@ export default async function HomePage() {
 
       {/* ── AVAILABLE HOMES ──────────────────────────────────────────────────
           Real move-in-ready homes, directly below the hero. This is the first
-          thing a visitor (or crawler) sees after the search — concrete proof the
+          thing a visitor (or crawler) sees after the search - concrete proof the
           site lists actual houses for rent. Rendered only when we have listings so
           a fetch failure degrades to the rest of the page rather than an empty grid. */}
       {featuredProperties.length > 0 && (
@@ -387,7 +387,7 @@ export default async function HomePage() {
           <div>
             <SectionHeading eyebrow="Quality you can see" title="The best-maintained rentals on the market.">
               We don&apos;t list homes we wouldn&apos;t live in. Every property is inspected, cleaned, and turned by
-              our in-house team before move-in — then supported the same way after.
+              our in-house team before move-in - then supported the same way after.
             </SectionHeading>
             <ul className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
               {promises.map((p) => (
@@ -413,7 +413,7 @@ export default async function HomePage() {
                 href="/apply"
                 className="inline-flex h-12 items-center justify-center rounded-full border border-brand-dark/25 px-7 text-[15px] font-semibold text-brand-dark transition-colors hover:border-brand-dark hover:bg-brand-dark hover:text-white"
               >
-                Apply now — 24h decision
+                Apply now - 24h decision
               </Link>
             </div>
           </div>
@@ -428,7 +428,7 @@ export default async function HomePage() {
           </div>
           <div>
             <SectionHeading eyebrow="Paws welcome" title="Bring your whole family.">
-              Most of our homes welcome pets — no breed restrictions on the majority of listings, transparent
+              Most of our homes welcome pets - no breed restrictions on the majority of listings, transparent
               deposits, and a team that&apos;s genuinely happy you brought the dog.
             </SectionHeading>
             <ul className="mt-7 flex flex-wrap gap-2">

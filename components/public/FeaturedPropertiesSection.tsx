@@ -46,7 +46,7 @@ export function FeaturedPropertiesSection({ properties, totalCount }: Props) {
             </h2>
             {totalCount != null && (
               <p className="mt-4 text-[16px] leading-relaxed text-on-surface-variant md:text-[17px]">
-                {totalCount.toLocaleString()} homes listed — inspected, maintained, and ready for you.
+                {totalCount.toLocaleString()} homes listed - inspected, maintained, and ready for you.
               </p>
             )}
           </div>
@@ -58,7 +58,7 @@ export function FeaturedPropertiesSection({ properties, totalCount }: Props) {
           </Link>
         </div>
 
-        {/* Tabs — only when the grid actually mixes rentals and sales */}
+        {/* Tabs - only when the grid actually mixes rentals and sales */}
         {forRent.length > 0 && forSale.length > 0 && (
           <div role="tablist" aria-label="Filter homes" className="mb-8 inline-flex gap-1 rounded-full bg-brand-light p-1">
             {tabs.map((t) => (

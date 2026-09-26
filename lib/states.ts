@@ -1,5 +1,5 @@
 /**
- * US state registry — shared source of truth for state name ↔ code ↔ slug.
+ * US state registry - shared source of truth for state name ↔ code ↔ slug.
  * Used by the state hub pages (/rentals/[state]), the city directory, and the footer.
  */
 

@@ -34,7 +34,7 @@ const POINTS = [
 ];
 
 /**
- * Honest, welcoming trust section — genuine signals only (no fabricated reviews).
+ * Honest, welcoming trust section - genuine signals only (no fabricated reviews).
  * Editorial split layout (warm intro + divided list) rather than a uniform card
  * grid, so it reads human instead of automated.
  */
@@ -64,7 +64,7 @@ export function TrustSignals({
             </div>
           </div>
 
-          {/* Trust points — divided list, not a card grid */}
+          {/* Trust points - divided list, not a card grid */}
           <div className="divide-y divide-[#EDF1F5]">
             {POINTS.map((p, i) => (
               <div key={p.title} className={`flex gap-4 sm:gap-5 py-5 ${i === 0 ? "lg:pt-0" : ""}`}>

@@ -10,7 +10,7 @@ interface PageProps {
 }
 
 const BASE = "https://primefamilyhousing.com/houses-for-rent";
-// The facet params. When any is set the URL is a filtered view — those must NOT each
+// The facet params. When any is set the URL is a filtered view - those must NOT each
 // get their own canonical (infinite combinations = index bloat), so they consolidate to
 // the clean hub. Only pure ?page=N pagination is allowed a self-referential canonical.
 const FILTER_KEYS = ["q", "beds", "baths", "minPrice", "maxPrice", "minSqft", "maxSqft", "type", "pets", "listing_type", "sort"];
@@ -29,7 +29,7 @@ export async function generateMetadata({ searchParams }: PageProps) {
   // so deep properties aren't orphan-canonicalized out of existence.
   const canonical = qs ? `${BASE}?${qs}` : BASE;
   // Distinct title per page so paginated pages aren't seen as duplicate titles.
-  const pageSuffix = pageNum > 1 ? ` — Page ${pageNum}` : "";
+  const pageSuffix = pageNum > 1 ? ` - Page ${pageNum}` : "";
   const q = typeof params.q === "string" ? params.q.trim().slice(0, 60) : "";
   const title = q
     ? `Houses for Rent in ${q}${pageSuffix} | Prime Family Housing`
@@ -38,7 +38,7 @@ export async function generateMetadata({ searchParams }: PageProps) {
   return {
     title,
     description:
-      "Browse affordable homes, houses, and apartments for rent across the U.S. — move-in ready, pet-friendly options, transparent pricing, and 24-hour application decisions. Find your next rental by city.",
+      "Browse affordable homes, houses, and apartments for rent across the U.S. - move-in ready, pet-friendly options, transparent pricing, and 24-hour application decisions. Find your next rental by city.",
     alternates: { canonical },
     // Search/filter views are unbounded (every free-text q, every facet combo) and
     // compete with the curated /rentals/[city] landing pages for the same queries.
@@ -47,7 +47,7 @@ export async function generateMetadata({ searchParams }: PageProps) {
     ...(hasFilters && { robots: { index: false, follow: true } }),
     openGraph: {
       title,
-      description: "Browse affordable houses for rent — inspected, move-in ready, 24-hour decisions.",
+      description: "Browse affordable houses for rent - inspected, move-in ready, 24-hour decisions.",
       type: "website",
       url: canonical,
     },
@@ -77,7 +77,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
 
   // When no sort is specified by the user, use "diverse" so properties from
   // the same street/estate don't cluster together on the default browse page.
-  // Search results + city directory are independent — fetch in parallel.
+  // Search results + city directory are independent - fetch in parallel.
   const effectiveSort = sort ?? "diverse";
   const [propertiesResult] = await Promise.allSettled([
     fetchProperties({
@@ -99,7 +99,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
   if (propertiesResult.status === "fulfilled") {
     results = propertiesResult.value.results;
     total   = propertiesResult.value.count;
-  } /* else: API offline — render empty state */
+  } /* else: API offline - render empty state */
 
   const breadcrumb = {
     "@context": "https://schema.org",
@@ -110,7 +110,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
     ],
   };
 
-  // ItemList of the current results — gives crawlers structured data for the listings on this page.
+  // ItemList of the current results - gives crawlers structured data for the listings on this page.
   const itemListSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -126,7 +126,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
 
   return (
     <div>
-      <h1 className="sr-only">{q ? `Houses for Rent in ${q}` : "Houses for Rent — Affordable Houses Nationwide"}</h1>
+      <h1 className="sr-only">{q ? `Houses for Rent in ${q}` : "Houses for Rent - Affordable Houses Nationwide"}</h1>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }}

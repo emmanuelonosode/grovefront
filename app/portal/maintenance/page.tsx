@@ -27,7 +27,7 @@ const PRIORITIES = [
   { value: "LOW",    label: "Low",    sub: "Non-urgent, no immediate risk",    color: "#414844" },
   { value: "MEDIUM", label: "Medium", sub: "Needs attention soon",             color: "#BC6C25" },
   { value: "HIGH",   label: "High",   sub: "Affecting daily life",             color: "#FF6B00" },
-  { value: "URGENT", label: "Urgent", sub: "Safety risk — needs immediate fix", color: "#ba1a1a" },
+  { value: "URGENT", label: "Urgent", sub: "Safety risk - needs immediate fix", color: "#ba1a1a" },
 ] as const;
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ElementType }> = {
@@ -194,7 +194,7 @@ export default function MaintenancePage() {
       const res = await apiFetch(`${API_BASE}/api/v1/maintenance/`, {
         method: "POST",
         body,
-        // No Content-Type — let browser set multipart boundary
+        // No Content-Type - let browser set multipart boundary
       });
 
       if (!res.ok) {
@@ -226,7 +226,7 @@ export default function MaintenancePage() {
         <h2 className="font-serif font-bold text-on-surface mb-2 text-[32px] leading-10 md:text-[48px] md:leading-[56px]" style={{ letterSpacing: "-0.02em" }}>
           Maintenance
         </h2>
-        <p className="text-[18px] leading-7 text-on-surface-variant">Report issues and track repair status — we respond within 1 business day.</p>
+        <p className="text-[18px] leading-7 text-on-surface-variant">Report issues and track repair status - we respond within 1 business day.</p>
       </header>
 
       <div>

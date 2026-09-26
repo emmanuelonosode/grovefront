@@ -256,7 +256,7 @@ export interface SmartFilters {
 
 /**
  * Heuristic: is this query worth sending to the AI parser?
- * Single city names ("Atlanta", "Charlotte NC") skip AI — the regex/relevance
+ * Single city names ("Atlanta", "Charlotte NC") skip AI - the regex/relevance
  * path already nails them. Multi-word, numeric, or descriptive queries do.
  */
 export function looksNaturalLanguage(q: string): boolean {
@@ -390,7 +390,7 @@ export interface SitemapProperty {
 }
 
 export async function fetchPropertiesForSitemap(): Promise<SitemapProperty[]> {
-  // Match the sitemap route's 5-min window — otherwise the route could rebuild
+  // Match the sitemap route's 5-min window - otherwise the route could rebuild
   // with hour-stale property data and keep deleted homes in the sitemap.
   const res = await fetch(`${API_BASE}/api/v1/properties/sitemap/`, {
     next: { revalidate: 300 },

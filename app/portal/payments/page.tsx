@@ -271,7 +271,7 @@ function PaymentModal({
     }
   }
 
-  // Portal payments are manual only — tenants pay via the configured payment
+  // Portal payments are manual only - tenants pay via the configured payment
   // methods (Venmo, Cash App, PayPal, Chime, Bank Transfer) and submit proof.
   // The card option was intentionally removed here.
   const methods = paymentConfig.length > 0 ? paymentConfig : FALLBACK_METHODS;
@@ -466,7 +466,7 @@ function PaymentModal({
               <p className="text-[13px] text-on-surface-variant leading-relaxed max-w-xs">
                 {method === "CARD_CASHAPP" 
                   ? "Your card details were saved. The property manager will charge your card through Cash App and request approval."
-                  : "Our team will verify your payment. You'll receive an email once it's confirmed — typically within 1–2 business hours."}
+                  : "Our team will verify your payment. You'll receive an email once it's confirmed - typically within 1–2 business hours."}
               </p>
               <div className="mt-6 w-full bg-surface-container-low rounded-full h-1 overflow-hidden">
                 <div className="h-full bg-brand animate-[shrink_2.5s_linear_forwards] rounded-full" />
@@ -496,7 +496,7 @@ function PaymentModal({
                 </div>
               )}
 
-              {/* ── Method selector — full-width radio cards ── */}
+              {/* ── Method selector - full-width radio cards ── */}
               <div>
                 <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.12em] mb-3">Choose payment method</p>
                 <div className="space-y-2">
@@ -541,7 +541,7 @@ function PaymentModal({
 
               {/* ── Payment details card ── */}
               {isBankTransfer ? (
-                /* Bank Transfer — dark header + stacked rows */
+                /* Bank Transfer - dark header + stacked rows */
                 <div className="rounded-xl overflow-hidden border border-outline-variant">
                   {/* Dark header */}
                   <div className="bg-[#1A3557] px-4 py-4 flex items-center gap-3">
@@ -627,7 +627,7 @@ function PaymentModal({
                   </div>
                 </div>
               ) : (
-                /* P2P — dark send-to card with break-all handle + Copy pill */
+                /* P2P - dark send-to card with break-all handle + Copy pill */
                 <div className="bg-forest-deep rounded-xl p-5 text-white">
                   <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Send to</p>
                   <div className="flex items-start gap-3 mb-4">
@@ -786,7 +786,7 @@ function PaymentModal({
                           <Camera size={20} className="text-on-surface-variant opacity-50 shrink-0" />
                           <div>
                             <p className="text-[13px] font-medium text-on-surface-variant">Upload receipt screenshot</p>
-                            <p className="text-[11px] text-on-surface-variant opacity-60">PNG, JPG — up to 10 MB</p>
+                            <p className="text-[11px] text-on-surface-variant opacity-60">PNG, JPG - up to 10 MB</p>
                           </div>
                         </>
                       )}
@@ -1110,7 +1110,7 @@ export default function PaymentsPage() {
           <p className="text-[18px] leading-7 text-on-surface-variant">Invoices and payments issued by your property manager.</p>
         </header>
 
-        {/* Stats row — dashboard-style bento cards */}
+        {/* Stats row - dashboard-style bento cards */}
         {!loading && !loadError && hasData && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant">

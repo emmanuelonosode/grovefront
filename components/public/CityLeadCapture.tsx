@@ -98,7 +98,7 @@ export function CityLeadCapture({ cityName }: Props) {
         <Phone size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
         <input
           type="tel"
-          placeholder="Phone number (optional — for faster follow-up)"
+          placeholder="Phone number (optional - for faster follow-up)"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           className="w-full bg-white border border-neutral-200 rounded-lg pl-10 pr-4 py-3.5 text-brand-dark placeholder-neutral-400 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all"
